@@ -47,3 +47,11 @@ related: []
 ---
 
 *Created: 2026-06-24*
+
+## Связи
+* [AI Factory Entity](entities/ai-factory.md) — workflow schema (инструкции для любого harness)
+* [Pi Coding Agent](entities/pi-coding-agent.md) — конкретная среда (harness runtime)
+
+---
+
+*Created: 2026-06-24*

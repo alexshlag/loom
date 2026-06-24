@@ -63,3 +63,8 @@ curl -fsSL https://pi.dev/install.sh | sh
 * **Uninstall:** `npm uninstall -g @earendil-works/pi-coding-agent` (также pnpm/yarn/bun)
 * **Аутентификация:** `/login` для subscription providers или `ANTHROPIC_API_KEY`
 * Дополнительные разделы: Windows, Termux, tmux, Terminal setup
+
+## Новые связи (2026-06-24)
+* [AI Factory vs Pi — Category Distinction](concepts/ai-factory-vs-pi.md) — различение категорий: AI Factory = workflow schema, Pi = harness runtime
+* [Andrej Karpathy](entities/andrej-karpathy.md) — автор LLM Wiki Pattern, источник идеи compounding wiki
+

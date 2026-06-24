@@ -68,3 +68,11 @@ ai-factory init → .ai-factory/config.yaml → DESCRIPTION.md + AGENTS.md + ARC
 - [Getting Started](raw/github/lee-to/ai-factory@2.x/getting-started.md)
 - [Development Workflow](raw/github/lee-to/ai-factory@2.x/workflow.md)
 - [Core Skills Reference](raw/github/lee-to/ai-factory@2.x/skills.md)
+
+## Новые связи (2026-06-24)
+* [AI Factory vs Pi — Category Distinction](concepts/ai-factory-vs-pi.md) — различение категорий: AI Factory = workflow schema, Pi = harness runtime
+* [Pi Coding Agent](entities/pi-coding-agent.md) — конкретная среда (harness), в которой можно запустить AI Factory
+
+
+* [LLM Wiki Pattern](concepts/llm-wiki-pattern.md) — compounding knowledge base подход, аналогичен AI Factory workflow для накопления знаний через LLM
+
