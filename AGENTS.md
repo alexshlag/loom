@@ -2,119 +2,128 @@
 
 ## 📋 Overview
 
-This document defines the structure, conventions, and workflows for maintaining this wiki. It serves as the single source of truth for how the LLM agent should operate when:
-- Ingesting new sources
-- Answering queries against the knowledge base
-- Maintaining and health-checking the wiki
+Данный документ определяет структуру, конвенции и рабочие процессы wiki. Он служит единственным источником истины о том, как агент должен оперировать при:
+- Ингесте новых источников
+- Ответе на вопросы через базу знаний
+- Поддержании и health-checkwiki
 
-The schema **co-evolves** with you over time — update it as we discover what works best for your domain.
+Schema **co-evolves** по мере работы с пользователем — обновляется вместе с опытом.
 
 ---
 
 ## 🏗 Architecture Layers
 
 ### 1. Raw Sources (`raw/`)
-* Immutable collection of original documents, articles, images, data files
-* LLM reads from these but never modifies them directly
-* Write access restricted via `scripts/validate-path.sh` guardrails
-* All changes must go through: capture → integrate flow (never direct edits)
+* Immutable коллекция оригинальных документов, статей, изображений, данных
+* Агент читает из них, но не модифицирует напрямую
+* Write-доступ ограничен через `scripts/validate-path.sh` guardrails
+* Все изменения только через: capture → integrate flow (никогда прямые правки)
 
 ### 2. The Wiki (`wiki/`)
-* Directory of LLM-generated markdown files organized by type
-* LLM owns this layer entirely — creates pages, updates them, maintains cross-references
-* You read it; the LLM writes and maintains it
-* Structure:
-  * `entities/` — concrete identifiable objects (people, companies, technologies)
-  * `concepts/` — abstract ideas, principles, methodologies
-  * `comparisons/` — comparative analysis of entities/concepts
-  * `syntheses/` — deep analysis combining multiple sources/pages
-  * `notes/` — personal notes, meeting transcripts, observations
-  * `bibliography/` — books, articles, research papers
-  * `resources/` — tools, plugins, libraries references
+* Каталог LLM-generated markdown-файлов, организованная по типам
+* Агент владеет этим слоем полностью — создаёт страницы, обновляет их, поддерживает cross-references
+* Пользователь читает; агент пишет и поддерживает
+
+```json
+{
+  "structure": {
+    "entities/": "конкретные идентифицируемые объекты (люди, компании, технологии)",
+    "concepts/": "абстрактные идеи, принципы, методологии",
+    "comparisons/": "сравнительный анализ сущностей и концептов",
+    "syntheses/": "глубокий анализ, объединяющий несколько источников/страниц",
+    "notes/": "личные заметки, транскрипты встреч, наблюдения",
+    "meetings/": "встречи с решениями",
+    "projects/": "проекты со статусом и вехами",
+    "bibliography/": "книги, статьи, исследования",
+    "resources/": "инструменты, плагины, библиотеки"
+  }
+}
+```
 
 ### 3. Schema (this document)
-* Defines how the wiki is structured and what workflows to follow
-* What makes the LLM a disciplined wiki maintainer rather than generic chatbot
-* Co-evolved between human and agent based on experience
+* Определяет структуру wiki, конвенции и рабочие процессы
+* Делает агента дисциплинированным хранителем wiki, а не общим чат-ботом
+* Co-evolves между человеком и агентом по оригинальной идее Karpathy
 
 ---
 
 ## 📄 Page Formats & Templates
 
-Every page must include YAML frontmatter:
+### Frontmatter Schema
 
-```yaml
----
-tags: [entity, coding-agent, terminal]
-date: YYYY-MM-DD
-sources: [raw/sources/...]
-related: [wiki/entities/example.md]
----
+```json
+{
+  "frontmatter": {
+    "required": ["tags", "date", "sources"],
+    "optional": ["related"],
+    "template": "---\ntags: [entity, coding-agent]\ndate: YYYY-MM-DD\nsources: [raw/sources/...]\nrelated: [wiki/entities/example.md]\n---"
+  }
+}
 ```
 
 ### Entity Pages
-```markdown
-# [Name of concrete object]
-Brief definition (1-2 sentences)
 
-## Key Characteristics
-* **Characteristic 1** — description
-* **Characteristic 2** — description
-
-## Sources
-* `raw/sources/...` — URL/context
-
-## Updated YYYY-MM-DD — new clarification
-[what changed, what's new]
+```json
+{
+  "format": {
+    "title": "# [Название]",
+    "definition": "Краткое определение (1-2 предложения)",
+    "sections": [
+      {"name": "## Ключевые характеристики", "type": "bullet_list"},
+      {"name": "## Связи", "type": "links_list"},
+      {"name": "## Источники", "type": "raw_refs"},
+      {"name": "## Обновлено [date] — новое уточнение (если обновлялось)", "type": "update_section"}
+    ]
+  }
+}
 ```
 
 ### Concept Pages
-```markdown
-# [Concept Name]
-Definition section
 
-## Principles
-1. Principle one with explanation
-2. How it works in practice
-
-## Context & Application
-When and why this concept is relevant
-
-## Examples
-Concrete examples of usage
-
-## Updated YYYY-MM-DD — new clarification
-[what changed, what's new]
+```json
+{
+  "format": {
+    "title": "# [Название концепции]",
+    "sections": [
+      {"name": "## Определение", "content": "формальное определение"},
+      {"name": "## Принципы работы", "type": "numbered_list"},
+      {"name": "## Контекст и применение", "type": "use_cases"},
+      {"name": "## Примеры", "type": "code_or_text_examples"},
+      {"name": "## Обновлено [date] — новое уточнение (если обновлялось)", "type": "update_section"}
+    ]
+  }
+}
 ```
 
 ### Comparison Pages
-```markdown
-# Comparison: [Entity A] vs [Entity B]
 
-| Parameter | Entity A | Entity B |
-|-----------|----------|----------|
-| ... | ... | ... |
-
-## Analysis
-Detailed comparison and synthesis
-
-## Conclusion
-When to use which, trade-offs
+```json
+{
+  "format": {
+    "title": "# Сравнение: [Сущность A] vs [Сущность B]",
+    "sections": [
+      {"name": "## Таблица сравнения", "type": "markdown_table"},
+      {"name": "## Анализ", "content": "детальный анализ и синтез"},
+      {"name": "## Выводы", "content": "когда использовать, trade-offs"}
+    ]
+  }
+}
 ```
 
 ### Synthesis Pages
-```markdown
-# [Synthesis Title]
-Context section
 
-## Analysis
-Deep dive combining multiple sources/pages
-
-## Insights & Conclusions
-Novel findings that weren't obvious from individual sources
-
-## Connections
-How this synthesis connects to other wiki pages
+```json
+{
+  "format": {
+    "title": "# [Название синтеза]",
+    "sections": [
+      {"name": "## Контекст", "content": "вводный контекст"},
+      {"name": "## Анализ", "content": "deep dive, объединяющий несколько страниц/источников"},
+      {"name": "## Инсайты и выводы", "content": "новые находки, не очевидные из отдельных источников"},
+      {"name": "## Связи", "type": "links_to_related_pages"}
+    ]
+  }
+}
 ```
 
 ---
@@ -122,30 +131,110 @@ How this synthesis connects to other wiki pages
 ## 🔄 Workflows
 
 ### Ingest Flow (capture → integrate)
-1. User provides source (URL, file, pasted text)
-2. Agent classifies: entity / concept / notes / project / bibliography
-3. Agent reads source, identifies key theses and entities mentioned
-4. Agent checks for contradictions with existing wiki pages
-5. Agent discusses findings with user (proposes which pages to create/update)
-6. User confirms → agent creates/updates wiki pages
-7. Agent updates index.md, log.md
-8. Agent runs `scripts/rebuild-meta.sh` after any write
+
+```json
+{
+  "workflow": "ingest",
+  "steps": [
+    {"step": 1, "name": "guardrails_validation", "action": "validate_path_for_write"},
+    {"step": 2, "name": "source_analysis", "actions": ["classify_source", "extract_theses", "identify_entities_mentioned", "check_for_contradications"]},
+    {"step": 3, "name": "discussion_with_user", "action": "present_summary_and_propose_pages"},
+    {"step": 4, "name": "create_or_update", "actions": ["fill_sections", "add_citations", "update_frontmatter"]},
+    {"step": 5, "name": "log_registration", "actions": ["append_to_log.md"]},
+    {"step": 6, "name": "index_update", "action": "update_index_categories"},
+    {"step": 7, "name": "meta_rebuild", "command": "./scripts/rebuild-meta.sh"}
+  ],
+  "rules": {
+    "raw_immutable": "никогда не редактировать raw/ напрямую",
+    "capture_first_integrate_second": "сначала оригинал в raw/, затем wiki-страница"
+  }
+}
+```
 
 ### Query Flow
-1. User asks question against the wiki
-2. Agent reads index.md first (content-oriented catalog)
-3. Agent performs semantic search via `wiki_recall(query)` to find relevant pages by meaning
-4. If no results, falls back to grep-recursive over wiki/
-5. Agent reads all relevant pages, notes key facts
-6. Agent synthesizes answer with citations from multiple sources
-7. **Compounding:** If answer contains novel insight or contradiction resolution → save as new page (see Compounding section below)
+
+```json
+{
+  "workflow": "query",
+  "steps": [
+    {"step": 1, "name": "search", "priority_order": ["read_index_categories_matching_topic", "wiki_recall(query)", "grep_recursive_fallback"]},
+    {"step": 2, "name": "synthesis", "actions": ["read_relevant_pages", "note_key_facts", "cross_reference_same_topic", "identify_matches_or_contradications"]},
+    {"step": 3, "name": "compounding_decision", "condition": "answer_synthesizes_2_plus_sources", "action": "propose_save_as_new_page"},
+    {"step": 4, "name": "result_fixation", "actions": ["create_or_update_page", "add_source_citations", "update_index"]},
+    {"step": 5, "name": "meta_rebuild", "command": "./scripts/rebuild-meta.sh"}
+  ],
+  "contradiction_resolution": {
+    "temporal_conflict_detected": "prefer_newer_version",
+    "fact_conflict_no_date_info": "flag_for_user_review",
+    "source_conflict_with_authoritative_source": "prioritize: docs > community_wiki > notes"
+  }
+}
+```
 
 ### Lint Flow (periodic health check)
-1. Check for contradictions between pages
-2. Flag stale claims superseded by newer sources
-3. Identify orphan pages with no inbound links
-4. Find important concepts mentioned but lacking their own page
-5. Suggest new questions to investigate, new sources to look for
+
+```json
+{
+  "workflow": "lint",
+  "checks": [
+    {"check_id": 1, "name": "contradictions_between_pages", "actions": ["read_all_wiki_by_category", "compare_facts", "identify_conflicts"]},
+    {"check_id": 2, "name": "orphan_pages_detection", "rule": "page_with_zero_backlinks"},
+    {"check_id": 3, "name": "knowledge_gaps_detection", "rule": "mentioned_but_no_page"},
+    {"check_id": 4, "name": "new_topics_proposal", "inputs": ["conversation_context", "index_links", "external_sources"]},
+    {"check_id": 5, "name": "mechanical_linting", "checks": [
+      {"check": "orphaned_pages", "rule": "has_at_least_one_backlink"},
+      {"check": "broken_links", "rule": "all_paths_resolve_from_wiki_root"},
+      {"check": "duplicate_titles", "rule": "no_duplicate_within_same_category"},
+      {"check": "missing_frontmatter", "rule": "required: [tags, date, sources]"}
+    ]},
+    {"check_id": 6, "name": "date_consistency_check", "actions": ["extract_date_from_fm", "extract_dates_from_updates"]},
+    {"check_id": 7, "name": "link_validation_with_auto_fix", "rule": "validate_all_wiki_links_and_rewrite_to_wiki_relative"}
+  ]
+}
+```
+
+---
+
+## 🔗 Link Conventions & Auto-Fix
+
+### Path Resolution
+
+```json
+{
+  "path_resolution": {
+    "base": "wiki_root",
+    "format": "wiki-relative_from_wiki_root",
+    "examples": ["entities/pi-coding-agent.md", "concepts/llm-wiki-pattern.md"],
+    "never_use": ["./paths", "../relative_paths", "/absolute/wiki/..."]
+  }
+}
+```
+
+### Auto-Fix Protocol
+
+```json
+{
+  "auto_fix_protocol": {
+    "steps": [
+      {"step": 1, "action": "validate_all_internal_links"},
+      {"step": 2, "condition": "path_is_filesystem_relative", "auto_fix": "rewrite_to_wiki_relative"},
+      {"step": 3, "condition": "target_page_does_not_exist", "fallback_message": "[!] Broken link: [text](path) — target does not exist. Proposed fix: create page or remove link."}
+    ]
+  }
+}
+```
+
+### Link Format Standards
+
+```json
+{
+  "link_formats": {
+    "markdown_body_text": "[link text](wiki-relative-path.md)",
+    "yaml_frontmatter_sources": "[raw/path/to/file]",
+    "yaml_frontmatter_related": "[wiki/entities/example.md]"
+  }
+}
+```
 
 ---
 
@@ -154,39 +243,27 @@ How this synthesis connects to other wiki pages
 ```json
 {
   "default_mode": "silent",
-  "verbose_phrases": [
-    "давай проверим", "нет ли ошибок", "покажи как работает",
-    "verbose mode", "покажи шаги выполнения"
-  ],
+  "verbose_phrases": ["давай проверим", "нет ли ошибок", "покажи как работает", "verbose mode", "покажи шаги выполнения"],
   "return_to_silent_after": 3,
-  "process_overrides": {}
-}
-```
-
-### Правила применения
-1. `default_mode` = базовый режим (по умолчанию silent)
-2. Если процесс.json содержит поле `"execution_mode"`, оно **переопределяет** default для этого процесса
-3. Фраза из `verbose_phrases` → принудительный verbose до команды `"silent"`
-
-### Verbose-логирование (шаблоны)
-```json
-{
-  "query_verbose": [
-    "[✓] Index lookup: index.md прочитан",
-    "[✓] Semantic search: найдено X релевантных страниц",
-    "[!] Grep fallback использован для Y фактов",
-    "[✓] Synthesis из Z источников"
-  ],
-  "ingest_verbose": [
-    "[✓] Source classified: entity/concept/notes",
-    "[!] Contradiction detected in X.md",
-    "[✓] Pages created/updated: N"
-  ],
-  "lint_verbose": [
-    "[✓] Check 1/N: contradictions — M конфликтов",
-    "[✗] Check 2/N: orphan_pages — найдено K сирот",
-    "[!] Check 3/N: knowledge_gaps — X нехватки"
-  ]
+  "process_overrides": {},
+  "logging_templates": {
+    "query_verbose": [
+      "[✓] Index lookup: index.md прочитан",
+      "[✓] Semantic search: найдено X релевантных страниц",
+      "[!] Grep fallback использован для Y фактов",
+      "[✓] Synthesis из Z источников"
+    ],
+    "ingest_verbose": [
+      "[✓] Source classified: entity/concept/notes",
+      "[!] Contradiction detected in X.md",
+      "[✓] Pages created/updated: N"
+    ],
+    "lint_verbose": [
+      "[✓] Check 1/N: contradictions — M конфликтов",
+      "[✗] Check 2/N: orphan_pages — найдено K сирот",
+      "[!] Check 3/N: knowledge_gaps — X нехватки"
+    ]
+  }
 }
 ```
 
@@ -195,102 +272,110 @@ How this synthesis connects to other wiki pages
 ## 🛡 Rules & Guardrails
 
 ### Protected Zones
-* `raw/**` — immutable, read-only via links on source packets only
-* `meta/**` — auto-generated files (registry.json, backlinks.json) never edit manually
-  * Rebuild automatically after any wiki write via `scripts/rebuild-meta.sh`
 
-### Never Do
-* Directly edit files in protected zones
-* Skip the capture flow for raw sources
-* Manually modify meta/ files
+```json
+{
+  "protected_zones": {
+    "raw/**": {"rule": "immutable", "access": "read-only via links"},
+    "meta/**": {"rule": "auto-generated", "files": ["registry.json", "backlinks.json"], "rebuild_command": "./scripts/rebuild-meta.sh"}
+  },
+  "never_do": [
+    "directly_edit_protected_zones",
+    "skip_capture_flow_for_raw_sources",
+    "manually_modify_meta_files"
+  ]
+}
+```
 
 ---
 
 ## 🔍 Search Strategy
 
 Priority order:
-1. **Index lookup** — read index.md by categories matching topic
-2. **Semantic search** — call `wiki_recall(query)` to find pages by meaning, not keywords
-3. **Grep recursive** — fallback if semantic search returns nothing
 
-This works surprisingly well at moderate scale (~100 sources, hundreds of pages). As wiki grows beyond this, consider adding proper search engine (qmd or similar hybrid BM25/vector tool).
+```json
+{
+  "search_priority": [
+    {"priority": 1, "method": "index_lookup", "description": "read index.md by categories matching topic"},
+    {"priority": 2, "method": "semantic_search", "command": "wiki_recall(query)", "description": "find pages by meaning, not keywords"},
+    {"priority": 3, "method": "grep_recursive", "fallback": true, "command": "grep -r query wiki/"}
+  ]
+}
+```
 
 ---
 
 ## 📊 Compounding Knowledge Base
 
 ### Why This Matters
-The key insight from Andrej Karpathy's LLM Wiki Pattern: **the wiki keeps getting richer with every source you add and every question you ask**. Unlike standard RAG where knowledge is rediscovered fresh on every query, our wiki compounds — cross-references already exist, contradictions already flagged, synthesis already reflects everything read.
+
+```json
+{
+  "compounding_principle": {
+    "insight": "wiki keeps getting richer with every source added and every question asked",
+    "contrast_to_rag": "standard RAG rediscover knowledge fresh on each query; wiki compounds cross-references, contradictions flagged, synthesis reflects all sources"
+  }
+}
+```
 
 ### How Compounding Works
-When answering a query:
-1. If answer synthesizes information from 2+ existing pages → consider saving as new synthesis/comparison page
-2. If you discover novel insight or contradiction resolution not previously recorded → save as new page
-3. Always add backlinks to related pages when creating new content
-4. Update index.md with new entry
+
+```json
+{
+  "compounding_workflow": {
+    "when_synthesizing_answer": [
+      {"condition": "answer_from_2_plus_existing_pages", "action": "consider_save_as_new_page"},
+      {"condition": "novel_insight_or_contradiction_resolution_not_recorded", "action": "save_as_new_page"},
+      {"condition": "creating_new_content", "action": "always_add_backlinks_to_related_pages"},
+      {"condition": "new_entry_created", "action": "update_index.md"}
+    ]
+  }
+}
+```
 
 ### When to Create New Pages
-* User explicitly requests saving answer as wiki page
-* Answer contains synthesis from multiple sources (valuable exploration)
-* Comparison/analysis that could be useful for future queries
-* Contradiction resolution that should become permanent record
 
-This way explorations compound in the knowledge base just like ingested sources do.
-
----
-
-## 🔗 Link Conventions & Auto-Fix
-
-### Path Resolution
-All internal wiki links are **wiki-relative** — resolved from the `wiki/` root, not filesystem-relative:
-```markdown
-[Pi Coding Agent](entities/pi-coding-agent.md)
-[LLM Wiki Pattern](concepts/llm-wiki-pattern.md)
+```json
+{
+  "save_conditions": [
+    {"condition": "user_explicitly_requests_save", "priority": 1},
+    {"condition": "answer_contains_synthesis_from_multiple_sources", "priority": 2},
+    {"condition": "comparison_or_analysis_useful_for_future_queries", "priority": 3},
+    {"condition": "contradiction_resolution_should_become_permanent_record", "priority": 4}
+  ]
+}
 ```
-Never use `./`, `../`, or absolute `/wiki/...` paths. Always write from wiki root perspective.
-
-### Auto-Fix Protocol
-When creating or updating any page:
-1. **Validate all internal links** — check `[text](path)` and YAML frontmatter `related:` fields resolve from `wiki/`
-2. **Auto-correct**: if link uses filesystem-relative path (`../` or `../../`), rewrite to wiki-relative
-3. **Fallback message**: if a link targets a non-existent page → flag it:
-   ```
-   [!] Broken link: `[text](path/to/page)` — target does not exist.
-       Proposed fix: create page or remove link.
-   ```
-4. **After write, auto-run** `scripts/rebuild-meta.sh` to refresh registry + backlinks
-
-### Link Format Standards
-| Context | Format |
-|---------|--------|
-| Markdown body text | `[link text](wiki-relative-path.md)` |
-| YAML frontmatter `sources:` | `[raw/path/to/file]` (square brackets) |
-| YAML frontmatter `related:` | `[wiki/entities/example.md]` (path from wiki root) |
 
 ---
 
 ## 📈 Schema Evolution Guidelines
 
-Over time, we'll discover what works best for your domain:
-* Add new page types if needed (e.g., `projects/`, `meetings/`)
-* Refine categorization criteria as wiki grows
-* Update workflows based on usage patterns and pain points
-* Document discoveries in log.md with consistent prefix format
-
-**Tip:** If each log entry starts with consistent prefix like `## [YYYY-MM-DD] ...`, the log becomes parseable: `grep "^## \[" log.md | tail -5` gives last 5 entries.
+```json
+{
+  "evolution_rules": {
+    "add_new_page_types_if_needed": ["projects/", "meetings/"],
+    "refine_categorization_as_wiki_grows": true,
+    "update_workflows_based_on_usage_patterns": true,
+    "document_discoveries_in_log.md_with_prefix": "## [YYYY-MM-DD] ..."
+  }
+}
+```
 
 ---
 
 ## 📚 Additional Tools (Optional)
 
-At some point you may want CLI tools to help agent operate efficiently:
-* **Obsidian Web Clipper** — convert web articles to markdown quickly
-* **qmd** — local search engine with hybrid BM25/vector + LLM re-ranking
-* **Marp** — markdown-based slide decks from wiki content
-* **Dataview** — Obsidian plugin for queries over page frontmatter
-
-The wiki is just a git repo of markdown files — version history, branching, collaboration come free.
+```json
+{
+  "optional_tools": {
+    "obsidian_web_clipper": {"purpose": "convert web articles to markdown"},
+    "qmd": {"purpose": "local search engine with hybrid BM25/vector + LLM re-ranking"},
+    "marp": {"purpose": "markdown-based slide decks from wiki content"},
+    "dataview": {"purpose": "Obsidian plugin for queries over page frontmatter"}
+  }
+}
+```
 
 ---
 
-*Schema Version: 1 | Last Updated: 2026-06-24 | Author Pattern: Andrej Karpathy (LLM Wiki)*
+*Schema Version: 2 | Last Updated: 2026-06-24 | Author Pattern: Andrej Karpathy (LLM Wiki)*
