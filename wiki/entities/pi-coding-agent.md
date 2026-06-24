@@ -1,6 +1,6 @@
 ---
 tags: [entity, coding-agent, terminal]
-date: 2025-06-24
+date: 2026-06-24
 sources: [raw/sources/SRC-2025-06-24-001/pi-dev-docs-latest.md]
 related: []
 ---

@@ -1,6 +1,6 @@
 ---
 tags: [synthesis, nixos, python, development-environment]
-date: 2025-06-24
+date: 2026-06-24
 sources: [wiki/concepts/python-nixos-development.md, raw/sources/SRC-2025-06-24-002/nixos-python-wiki.md]
 related: []
 ---
@@ -72,3 +72,8 @@ $ nix-shell -p python3 --command "python -m venv .venv --copies"
 * [Nixpkgs Manual - Contributing Guidelines](https://nixos.org/nixpkgs/manual/#contributing-guidelines)
 
 ## Обновлено 2025-06-24 — синтез по запросу пользователя
+## Инсайты и выводы
+* **nix develop** vs **nix shell**:前者 для проекта (зависимости определены в flake.nix),后者 для ad-hoc сессии. Используйте前者 когда есть проект,后者 когда нужно быстро тестировать.
+* **NixOS modules** — единственный правильный способ интеграции flake-зависимостей в NixOS конфигурации (не через `nixpkgs.override`, а через imports).
+* **Build vs shell**: `nix build` компилирует и сохраняет результат в store, `nix shell` временно загружает зависимости только для текущей сессии.
+

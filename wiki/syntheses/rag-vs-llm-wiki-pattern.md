@@ -38,3 +38,9 @@ related: []
 * [LLM Wiki Pattern Concept](concepts/llm-wiki-pattern.md) — compounding knowledge base approach
 * [Entity: Andrej Karpathy](entities/andrej-karpathy.md) — автор LLM Wiki Pattern
 
+
+## Инсайты и выводы
+* **LLM Wiki Pattern > RAG** для долгосрочного накопления знаний: компounding knowledge base растёт с каждым запросом, тогда как RAG остаётся stateless.
+* **RAG still useful for**: ad-hoc queries, one-shot document analysis, when you don't have an existing wiki to compound into.
+* **Hybrid approach possible**: Use RAG for initial document ingestion, then migrate findings into a compounding knowledge base (wiki) for future queries.
+

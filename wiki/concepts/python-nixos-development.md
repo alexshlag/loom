@@ -1,6 +1,6 @@
 ---
 tags: [concept, nixos, python, development-environment]
-date: 2025-06-24
+date: 2026-06-24
 sources: [raw/sources/SRC-2025-06-24-002/nixos-python-wiki.md]
 related: []
 ---
@@ -85,3 +85,10 @@ environment.systemPackages = with pkgs; [
 * Добавлено: **Debug Build** — enableDebug = true override для Python-пакетов
 * Добавлено: **Installing Multiple Versions** — lib.meta.lowPrio/highPrio без конфликтов
 * Добавлено: **Performance** — 30-40% regression на синтетических бенчмарках, в реальном мире минимально (pylint scan: 5.5%)
+
+## Примеры
+* **nix develop** — вход в изолированную среду с нужными зависимостями: `nix develop github:nixos/nixpkgs#python3`
+* **nix build .#hello-world** — сборка из local flake: `nix build -v --show-build-log --accept-flake-config --refresh .#hello-world`
+* **nix shell nixpkgs#python3** — временный доступ к Python в текущей сессии без установки: `nix shell nixpkgs#python3; python3 --version`
+* **NixOS module integration** — использование flake-зависимостей в NixOS конфигурации через `imports = [ (import ./flake.nix) ]`
+
