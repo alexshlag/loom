@@ -67,7 +67,7 @@ $ nix-shell -p python3 --command "python -m venv .venv --copies"
 4. Все способы позволяют работать как в локальной среде (`nix-shell`), так и на системном уровне (`environment.systemPackages`)
 
 ## Связи
-* [Python Development Environments on NixOS](../../concepts/python-nixos-development.md) — исходная концепция
+* [Python Development Environments on NixOS](concepts/python-nixos-development.md) — исходная концепция
 * [NixOS Wiki - Home Manager](/wiki/Home_Manager) — FHS-обёртка для pixi через Home Manager
 * [Nixpkgs Manual - Contributing Guidelines](https://nixos.org/nixpkgs/manual/#contributing-guidelines)
 

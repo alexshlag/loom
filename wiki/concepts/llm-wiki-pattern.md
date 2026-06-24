@@ -52,7 +52,7 @@ related: []
 ## Связи:
 * [Entity: Andrej Karpathy](entities/andrej-karpathy.md) — автор паттерна
 * [Pi Coding Agent](entities/pi-coding-agent.md) — harness для работы с wiki
-* [Synthesis: RAG vs LLM Wiki Pattern](../../syntheses/rag-vs-llm-wiki-pattern.md) *(создать)*
+* [Synthesis: RAG vs LLM Wiki Pattern](syntheses/rag-vs-llm-wiki-pattern.md) *(создать)*
 
 ## Источники:
 * `raw/llm-wiki.md` — оригинальная идея файла (оригинал)
