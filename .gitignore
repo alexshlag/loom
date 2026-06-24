@@ -1,0 +1,15 @@
+# Auto-generated metadata (rebuilt by scripts/rebuild-meta.sh)
+meta/**
+
+# Raw sources — immutable, never tracked in git
+raw/**
+
+# Obsidian local workspace settings (machine-specific)
+.obsidian/
+
+# OS/editor artifacts
+.DS_Store
+*.swp
+*~
+*.pyc
+__pycache__/

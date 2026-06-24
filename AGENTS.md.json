@@ -1,0 +1,239 @@
+{
+  "module": "wiki_schema_guardrails",
+  "description": "\"description\": \"Schema document for wiki structure, workflows, and guardrails. Co-evolves between human and LLM (original Karpathy concept). Markdown version at AGENTS.md; JSON version here defines execution rules.\"",
+  "guardrails_raw_sources": {
+    "rule": "raw/** — immutable, только чтение",
+    "execution": [
+      {
+        "name": "validate_path_before_write",
+        "command": "./scripts/validate-path.sh ${FILE_PATH}",
+        "evaluation": [
+          {
+            "exit_code": 0,
+            "action": "PROCEED_WRITE"
+          },
+          {
+            "exit_code": 1,
+            "stdout_contains": "BLOCKED",
+            "action": "HALT_AND_REPORT"
+          }
+        ]
+      }
+    ],
+    "flow_capture": {
+      "steps": [
+        {
+          "step": "create_package_dir",
+          "command": "mkdir -p raw/sources/SRC-YYYY-MM-DD-NNN/"
+        },
+        {
+          "step": "copy_original",
+          "command": "cp ${SOURCE_PATH} raw/sources/SRC-YYYY-MM-DD-NNN/original/"
+        },
+        {
+          "step": "extract_markdown",
+          "action_code": "generate extracted.md from source"
+        },
+        {
+          "step": "generate_manifest",
+          "command": "cat > raw/sources/SRC-YYYY-MM-DD-NNN/manifest.json << 'EOF'\n{\"source\": \"${SOURCE_PATH}\", \"date\": \"$(date +%Y-%m-%d)\", \"type\": \"${SOURCE_TYPE}\"}\nEOF"
+        }
+      ],
+      "rule": "Все действия после capture — только чтение по ссылкам на пакет"
+    }
+  },
+  "guardrails_metadata": {
+    "rule": "meta/** — auto-generated, never edit manually",
+    "protected_files": [
+      "registry.json",
+      "backlinks.json",
+      "index"
+    ],
+    "execution": {
+      "action_on_attempt": "HALT_AND_REPORT",
+      "message": "Метаданные пересобираются автоматически. Любая ручная правка meta/ запрещена."
+    }
+  },
+  "wiki_write_hooks": {
+    "rule": "После любого write в wiki/ автоматически вызывай wiki_rebuild_meta",
+    "trigger": "after_any_wiki_write",
+    "actions": [
+      {
+        "action": "wiki_rebuild_meta",
+        "description": "Пересобирает registry.json, backlinks.json, index.md, log.md"
+      },
+      {
+        "condition": "rebuild_success",
+        "action": "PROCEED_TO_NEXT_STEP"
+      },
+      {
+        "condition": "rebuild_failure",
+        "action": "LOG_WARNING_AND_PROCEED"
+      }
+    ],
+    "applies_to": [
+      "process-ingest.md.json steps 3a/3b",
+      "process-query.md.json step 3",
+      "any manual write to wiki/"
+    ]
+  },
+  "wiki_structure": {
+    "directories": [
+      {
+        "path": "wiki/entities/",
+        "type": "specific_objects"
+      },
+      {
+        "path": "wiki/concepts/",
+        "type": "abstract_ideas"
+      },
+      {
+        "path": "wiki/comparisons/",
+        "type": "comparative_analysis"
+      },
+      {
+        "path": "wiki/synthesis/",
+        "type": "deep_analysis"
+      },
+      {
+        "path": "wiki/overviews/",
+        "type": "brief_overviews"
+      },
+      {
+        "path": "wiki/notes/",
+        "type": "personal_notes"
+      },
+      {
+        "path": "wiki/meetings/",
+        "type": "meetings_with_decisions"
+      },
+      {
+        "path": "wiki/projects/",
+        "type": "projects_with_status"
+      },
+      {
+        "path": "wiki/bibliography/",
+        "type": "books_articles_research"
+      },
+      {
+        "path": "wiki/resources/",
+        "type": "tools_plugins_libraries"
+      }
+    ],
+    "core_files": [
+      {
+        "file": "wiki/index.md",
+        "purpose": "catalog_and_map"
+      },
+      {
+        "file": "wiki/log.md",
+        "purpose": "chronological_journal"
+      },
+      {
+        "file": "wiki/overview.md",
+        "purpose": "high_level_synthesis"
+      },
+      {
+        "file": "wiki/timeline.md",
+        "purpose": "single_page_chronology"
+      }
+    ]
+  },
+  "entity_vs_concept_criteria": {
+    "entity": {
+      "type": "concrete_identifiable_object",
+      "examples": [
+        "company",
+        "person",
+        "technology",
+        "book"
+      ]
+    },
+    "concept": {
+      "type": "abstract_idea_principle_methodology",
+      "examples": [
+        "theory",
+        "method",
+        "approach"
+      ]
+    }
+  },
+  "document_templates": {
+    "entity_page": [
+      "# [Название]",
+      "Краткое определение (1-2 предложения)",
+      "## Ключевые характеристики: [список]",
+      "## Связи: [список ссылок]",
+      "## Источники: [ссылки на raw/]",
+      "## Обновлено [дата] — новое уточнение (если обновлялось)"
+    ],
+    "concept_page": [
+      "# [Название концепции]",
+      "## Определение: [формальное определение]",
+      "## Принципы: [описание логики работы]",
+      "## Контекст и применение",
+      "## Примеры",
+      "## Обновлено [дата] — новое уточнение"
+    ],
+    "comparison_page": [
+      "# Сравнение: [Объект A] vs [Объект B]",
+      "Таблица сравнения",
+      "Детальный анализ"
+    ],
+    "synthesis_page": [
+      "# [Название синтеза]",
+      "## Контекст",
+      "## Анализ",
+      "## Выводы",
+      "## Связи"
+    ],
+    "overview_page": [
+      "# [Название]",
+      "## Введение",
+      "## Ключевые идеи (3-5)",
+      "## Связи"
+    ],
+    "notes_page": [
+      "# [Название]",
+      "Дата: [YYYY-MM-DD или в YAML]",
+      "Текст: свободная форма",
+      "## Связи"
+    ],
+    "meeting_page": [
+      "# [Название встречи] — [дата]",
+      "## Участники: [список]",
+      "## Повестка",
+      "## Решения",
+      "## Action Items",
+      "## Связи"
+    ],
+    "project_page": [
+      "# [Название проекта]",
+      "Статус: active/completed/on-hold",
+      "## Цель",
+      "## Дедлайн (если есть)",
+      "## Этапы/Вехи",
+      "## Результаты",
+      "## Связи"
+    ],
+    "bibliography_page": [
+      "# [Название] — [Автор], [год]",
+      "Тип: Книга/Статья/Исследование",
+      "## Ключевые идеи",
+      "## Цитаты",
+      "## Применение",
+      "## Связи"
+    ],
+    "resources_page": [
+      "# [Название подборки]",
+      "## Описание",
+      "### Ресурсы: [список с описаниями]",
+      "## Связи"
+    ]
+  },
+  "yaml_frontmatter_template": "---\ntags: [концепция, rag]\ndate: YYYY-MM-DD\nsources: [source-file.md]\nrelated: [wiki/entities/example.md]\n---",
+  "index_format_template": "## Сущности\\n* [Название](путь) — Описание.\\n## Концепции\\n* [Название](путь) — Описание.",
+  "log_ingest_format": "## [YYYY-MM-DD] ingest | Название источника",
+  "log_query_format": "## [YYYY-MM-DD] query | Вопрос — тема",
+  "log_lint_format": "## [YYYY-MM-DD] lint | Аудит: X противоречий, Y сирот"
+}

@@ -1,0 +1,92 @@
+{
+  "module": "process_lint",
+  "description": "Техническое обслуживание wiki — автоматические проверки и исправления",
+
+  "trigger_conditions": [
+    {"condition": "wiki_stagnation_detected", "threshold": "no_new_pages_3_days", "action": "START_LINT"},
+    {"condition": "contradications_found", "threshold": "any_conflict_in_facts", "action": "START_LINT"},
+    {"condition": "orphan_pages_detected", "threshold": "page_with_zero_backlinks", "action": "START_LINT"}
+  ],
+
+  "lint_checks": [
+    {
+      "check_id": "1",
+      "name": "contradictions_between_pages",
+      "description": "Ищи страницы, где старые утверждения уже не актуальны",
+      "actions": [
+        {"action": "read_all_wiki_pages_by_category"},
+        {"action": "compare_facts_from_different_sources"},
+        {"action": "identify_conflicts"}
+      ],
+      "resolution_flow": {
+        "steps": [
+          {"step": "add_update_section_to_old_page", "format": "## Обновлено [date] — новое уточнение"},
+          {"step": "update_text_in_place", "old_statement": "[старое утверждение]", "new_format": "**Обновлено [date]:** [новая информация]"},
+          {"action": "log_both_sources_as_evidence"}
+        ]
+      }
+    },
+
+    {
+      "check_id": "2",
+      "name": "orphan_pages_detection",
+      "description": "Найди страницы без входящих ссылок из других wiki-страниц",
+      "actions": [
+        {"action": "iterate_all_files_and_check_backlinks"},
+        {"condition": "page_is_orphan", "suggestion": "propose_adding_backlink_from_related_entity_concept"}
+      ]
+    },
+
+    {
+      "check_id": "3",
+      "name": "knowledge_gaps_detection",
+      "description": "Определи важные темы или идеи, которые упоминаются на разных страницах wiki, но не имеют собственной страницы",
+      "actions": [
+        {"action": "search_mentions_of_entity_concept_in_texts"},
+        {"condition": "mention_found_but_no_index_entry", "action": "create_page_or_flag_for_ingest"}
+      ]
+    },
+
+    {
+      "check_id": "4",
+      "name": "new_topics_proposal",
+      "description": "Предложи новые темы или источники для поиска, опираясь на контекст диалога, связи из index.md и доступ к интернету",
+      "inputs": ["context_of_conversation", "links_from_index_md", "available_external_sources"]
+    },
+
+    {
+      "check_id": "5",
+      "name": "mechanical_linting",
+      "checks": [
+        {"check": "orphaned_pages", "rule": "has_at_least_one_backlink"},
+        {"check": "broken_links", "rule": "all_relative_paths_resolve_from_wiki_root_directory"},
+        {"check": "duplicate_titles", "rule": "no_duplicate_frontmatter_title_within_same_category_folder"},
+        {"check": "missing_frontmatter", "rule": "required_fields: [tags, date, sources]; optional: related"},
+        {"check": "coverage_gaps", "rule": "which_index_categories_are_empty"}
+      ]
+    },
+
+    {
+      "check_id": "6",
+      "name": "date_consistency_check",
+      "description": "Проверь, что год в date: совпадает с годом в секциях обновления (Обновлено YYYY-MM-DD), и что даты не старше 1 года",
+      "actions": [
+        {"action": "extract_date_from_frontmatter"},
+        {"action": "extract_dates_from_update_sections"},
+        {"condition": "year_mismatch", "suggestion": "flag_for_correction_and_propose_fix"}
+      ]
+    }
+  ],
+
+  "log_format": {
+    "standard": "## [YYYY-MM-DD] lint | Аудит wiki: X противоречий, Y сирот, Z пробелов знаний"
+  },
+
+  "lint_script_path": "scripts/run-lint.sh",
+  "frontmatter_schema": {
+    "required": ["tags", "date", "sources"],
+    "optional": ["related"]
+  },
+  "git_conventions_reference": "AGENTS.md#git-конвенции",
+  "templates_reference": "AGENTS.md#шаблоны"
+}
