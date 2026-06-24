@@ -54,3 +54,10 @@
 ## [2026-06-24] concept | AI Factory vs Pi — Category Distinction
 * Создан concept: wiki/concepts/ai-factory-vs-pi.md
 * Уточнено: AI Factory = workflow schema (запускается на любом harness), Pi = harness runtime
+
+## [2026-06-24] schema | AGENTS.md v4 — добавлено правило Date Convention Rule
+* Issue #3 (date consistency): root cause identified — agent confused source capture dates with page creation dates
+* Fix: added `📅 Date Convention Rule` to AGENTS.md specifying `system_current_date_only` for frontmatter dates
+* JSON schema added to prevent future drift: `never_derive_from: [source_filename, raw_timestamps]`
+* Schema version bumped from 3 → 4
+
