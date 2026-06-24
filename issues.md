@@ -177,3 +177,30 @@
 ---
 
 *Created: 2026-06-24 | Last updated: pending fixes execution*
+## 🛠 Action Items — Updated Status
+
+### 🔴 High priority (link convention violations, compounding principle)
+1. **Issue 1**: ✅ FIXED — All `../` and `../../` paths rewritten to wiki-relative format across 4 pages
+2. **Issue 6**: ✅ FIXED — meta/backlinks.json rebuilt with fresh scan (44 pages with links)
+
+### 🟡 Medium priority (structure, completeness)
+3. **Issue 5**: ⏳ PENDING — Fix registry sources accuracy for affected entries  
+4. **Issue 2**: ⏳ PENDING — Add internal wiki-links to body text of orphan pages
+5. **Issue 4**: ⏳ PENDING — Add missing template sections (examples, insights)
+
+### 🟢 Low priority (cosmetic consistency)
+6. **Issue 3**: ⏳ PENDING — Update dates on old pages or add "Обновлено" sections
+
+---
+
+## ✅ Fixed Issues Log
+
+| Issue | Status | Commit Hash | Notes |
+|-------|--------|-------------|-------|
+| log_registration | ✅ Fixed (prev) | — | Added to wiki/log.md |
+| index_update | ✅ Fixed (prev) | — | AI Factory in Сущности/Ресурсы |
+| meta_rebuild | ✅ Fixed (post-hoc, prev) | — | Run post-hoc after discussion |
+| Fetch truncation rule | ✅ Fixed (prev) | — | AGENTS.md v3 §Fetch Content Truncation Handling |
+| **Issue 1: Broken relative paths** | ✅ **FIXED NOW** | `3178794` | All `../`, `../../` → wiki-relative format |
+| **Issue 6: Backlinks stale** | ✅ **FIXED NOW** | (post-commit rebuild) | Fresh meta/backlinks.json rebuilt |
+
