@@ -389,9 +389,35 @@ Priority order:
     "marp": {"purpose": "markdown-based slide decks from wiki content"},
     "dataview": {"purpose": "Obsidian plugin for queries over page frontmatter"}
   }
-}
-```
 
 ---
 
-*Schema Version: 3 | Last Updated: 2026-06-24 | Author Pattern: Andrej Karpathy (LLM Wiki)*
+## 📅 Date Convention Rule
+
+```json
+{
+  "date_rules": {
+    "page_frontmatter_date_source": "system_current_date_only",
+    "never_derive_from": ["source_filename", "raw_timestamps", "git_commit_dates"],
+    "format": "YYYY-MM-DD for frontmatter, ISO-8601 (YYYY-MM-DDTHH:MM:SS) for verbose logs",
+    "example": {
+      "correct": "date: 2026-06-24 (current system date)",
+      "wrong": "date: 2025-06-24 (derived from source filename SRC-2025-06-24)"
+    },
+    "log_entry_format": {
+      "markdown_header": "## [YYYY-MM-DD] action | description",
+      "json_timestamp_for_verbose": "ISO-8601: YYYY-MM-DDTHH:MM:SS+TZ",
+      "reasoning": "system date is authoritative; source filenames encode capture time, NOT page creation time"
+    }
+  }
+}
+```
+
+### Why This Matters
+- `raw/sources/SRC-2025-06-24-001/file.md` означает что исходник был захвачен **24 июня 2025**
+- Дата создания страницы в wiki должна быть **текущим системным временем** (например, 2026-06-24)
+- Использование дат из имён файлов источников создаёт исторический дрейф и путает temporal reasoning
+
+---
+
+*Schema Version: 4 | Last Updated: 2026-06-24 | Author Pattern: Andrej Karpathy (LLM Wiki)*
