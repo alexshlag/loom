@@ -150,15 +150,11 @@
 
 ### ⚠️ Требует твоего решения (сложные архитектурные вопросы)
 
-#### Issue A: Canonical Contradiction Resolution Flow
-**Конфликт**: Query имеет расширенную версию resolution flow (6 типов конфликтов, post_verification, history tracking), AGENTS.md — только 3 базовых приоритета.
-
-**Вопрос**: Что должно быть canonical?
-1. **Развернутая версия в AGENTS.md** — тогда process-query.json ссылается на неё, а не дублирует. Это добавляет ~80 строк в AGENTS.md.
-2. **Оставить Query как authoritative source** — но это нарушает принцип "Schema = единственный источник истины".
-3. **Каноническая базовая версия в AGENTS.md + расширенная в Query** — AGENTS.md содержит приоритеты (authoritative > temporal > user_review), process-query.json добавляет типы конфликтов и post_verification как extension.
-
-**Рекомендация**: Вариант 3. Базовые правила в AGENTS.md, детали — в Query. Но тогда Query должен явно сказать `extends: AGENTS.md#contradiction_resolution` вместо дублирования.
+#### Issue A ✅ RESOLVED
+**Решение**: Вся логика разрешения конфликтов перенесена в AGENTS.md как canonical source (`AGENTS.md#contradiction_resolution`).
+- **Что сделано**: `process-query.json` больше не содержит `contradiction_resolution_flow`. Теперь он ссылается на `schema_ref: AGENTS.md#contradiction_resolution`.
+- **Проверка**: AGENTS.md содержит полный flow (priority, actions, strategy, post_verification, history_tracking).
+- **Принцип**: Schema = canonical. Process = trigger-specific logic only.
 
 ---
 

@@ -1,12 +1,15 @@
 {
   "module": "process_query",
   "description": "Ответы на вопросы с использованием wiki как базы знаний",
-
-  "context": { "wiki_dir": "{WIKI_DIR}/wiki/", "always_loaded": true },
-
+  "context": {
+    "wiki_dir": "{WIKI_DIR}/wiki/",
+    "always_loaded": true
+  },
   "trigger_condition": "user_asks_question",
-  "not_for": ["ingest_processing", "wiki_validation"],
-
+  "not_for": [
+    "ingest_processing",
+    "wiki_validation"
+  ],
   "steps": [
     {
       "step_id": "1",
@@ -49,7 +52,6 @@
         "stop_if_any_results": false
       }
     },
-
     {
       "step_id": "1.5",
       "name": "knowledge_gap_handling",
@@ -71,7 +73,6 @@
         }
       ]
     },
-
     {
       "step_id": "2",
       "name": "synthesis",
@@ -129,121 +130,28 @@
           "rule": "Если ответ:\n            - синтезирует из 2+ страниц, ИЛИ\n            - содержит новые факты об existing entity/concept (дополняющие), ИЛИ\n            - разрешает противоречие → flag for fixation"
         }
       ],
-      "contradiction_resolution_flow": {
-        "description": "Алгоритм разрешения противоречий после их обнаружения",
-        "detection_output": {
-          "format": "Если найдены противоречия — добавить раздел \"## ⚠ Противоречия\" в ответ перед основным контентом",
-          "include_in_answer_if_contradiction_found": true,
-          "log_entry": "## [date] query | Вопрос -> обнаружено X противоречий, Y сопоставлений"
-        },
-        "resolution_priority": [
-          {
-            "priority": 1,
-            "strategy": "authoritative_source",
-            "condition": "source_conflict_with_authoritative_source",
-            "rule": "Официальный источник всегда приоритетнее даты обновления",
-            "description": "Приоритет: official docs > community wiki > personal notes"
-          },
-          {
-            "priority": 2,
-            "strategy": "temporal_conflict",
-            "condition": "temporal_conflict_detected",
-            "rule": "Использовать информацию из страницы с более поздней датой обновления",
-            "description": "Если нет authoritative source — новее лучше"
-          },
-          {
-            "priority": 3,
-            "strategy": "user_review",
-            "condition": "fact_conflict_no_date_info OR contextual_conflict",
-            "rule": "Отметить противоречие в ответе и предложить пользователю выбрать приоритетный источник",
-            "description": "Если неясно — спросить пользователя"
-          }
-        ],
-        "resolution_actions": [
-          {
-            "applies_to": "Страница с устаревшей информацией",
-            "format": "## Обновлено [date] — новое уточнение\n[новая информация]",
-            "name": "add_update_section_to_old_page"
-          },
-          {
-            "condition": "contradiction_requires_explanation_for_user",
-            "description": "Если противоречие сложное и требует детального анализа — создать сравнительную страницу",
-            "destination_template": "wiki/comparisons/[entity-a]-vs-[entity-b].md",
-            "name": "create_comparison_page"
-          },
-          {
-            "applies_to": "Ответ пользователю",
-            "format": "## ⚠ Противоречия в источниках:\n* [Страница А] vs [Страница Б]: [описание конфликта]\n* Рекомендовано: [какая версия использовать]",
-            "name": "note_in_answer"
-          }
-        ],
-        "resolution_strategy": [
-          {
-            "action": "PREFER_AUTHORITATIVE_OVER_NEWER",
-            "condition": "authoritative_source_conflict_with_newer_page",
-            "rule": "Официальный документ всегда приоритетнее даты обновления. Если official docs говорит X, а новая страница — Y, верить official docs.",
-            "priority": 1
-          },
-          {
-            "action": "PREFER_NEWER_VERSION",
-            "condition": "temporal_conflict_detected AND no_authoritative_source",
-            "rule": "Использовать информацию из страницы с более поздней датой обновления",
-            "priority": 2
-          },
-          {
-            "action": "FLAG_CONTRADICTION_FOR_USER_REVIEW",
-            "condition": "fact_conflict_no_date_info OR contextual_conflict OR scope_conflict",
-            "rule": "Отметить противоречие в ответе и предложить пользователю выбрать приоритетный источник",
-            "priority": 3
-          },
-          {
-            "action": "RESOLVE_BY_AUTHORITATIVE_SOURCE",
-            "condition": "source_conflict_with_authoritative_source",
-            "rule": "Приоритет: official docs > community wiki > personal notes. Если authoritative source найден — использовать его, игнорируя дату.",
-            "priority": 1
-          }
-        ],
-        "post_resolution_verification": {
-          "description": "Проверить, что противоречие действительно разрешено",
-          "actions": [
-            {
-              "action": "re-read_updated_pages",
-              "purpose": "verify_consistency",
-              "condition": "always"
-            },
-            {
-              "action": "optional_web_search",
-              "description": "Для важных фактов — проверить во внешних источниках",
-              "condition": "high_stakes_fact OR user_requested_verification"
-            }
-          ]
-        },
-        "history_tracking": {
-          "description": "Сохранять историю изменений при разрешении противоречий",
-          "format": "### История изменений:\n- **YYYY-MM-DD**: Обновлено с [старое значение] → [новое значение] (разрешение противоречия со Страницей X)\n  - Причина: [тип конфликта]\n  - Источник решения: [страница/источник]",
-          "append_to": "## Обновлено [date] — новое уточнение"
-        }
-      },
       "output_formats": [
         "markdown_page",
         "comparison_table",
         "mermaid_diagram",
         "other"
-      ]
+      ],
+      "schema_ref": "AGENTS.md#contradiction_resolution",
+      "note": "Canonical resolution flow defined in AGENTS.md. Do not duplicate.",
+      "search_strategy_schema_ref": "AGENTS.md#search_priority_schema"
     },
-
     {
       "step_id": "2.5",
       "name": "duplicate_check_before_fixation",
       "description": "Проверь наличие похожих страниц перед созданием новой — предотвращает дублирование wiki",
       "actions": [
-        { "action": "generate_search_query", "source": "${QUESTION_SUMMARY}" },
         {
-          "action": "search_wiki_for_similar_content",
-          "target": "wiki/**/${PAGE_TYPE}/**"
+          "action": "read_backlinks_json",
+          "path": "meta/backlinks.json",
+          "purpose": "Find pages that link to proposed page"
         },
         {
-          "condition": "similar_page_found",
+          "condition": "similar_page_found_in_backlinks",
           "action": "UPDATE_EXISTING_PAGE",
           "details": {
             "action_type": "update_existing",
@@ -256,7 +164,7 @@
           }
         },
         {
-          "condition": "no_similar_page_found",
+          "condition": "no_similar_page_in_backlinks",
           "action": "PROCEED_TO_CREATE_NEW_PAGE"
         }
       ],
@@ -276,7 +184,6 @@
         "fallback": "Если поиск не нашёл страниц → proceed to create_new_page"
       }
     },
-
     {
       "step_id": "2.6",
       "name": "compounding_decision",
@@ -287,8 +194,14 @@
           "criteria": "answer_requires_synthesis_from_2_or_more_pages",
           "score": 1
         },
-        { "criteria": "compounding_flagged_in_step_2", "score": 1 },
-        { "criteria": "contradiction_resolution_found", "score": 1 }
+        {
+          "criteria": "compounding_flagged_in_step_2",
+          "score": 1
+        },
+        {
+          "criteria": "contradiction_resolution_found",
+          "score": 1
+        }
       ],
       "decision_logic": [
         {
@@ -303,7 +216,6 @@
         }
       ]
     },
-
     {
       "step_id": "3",
       "name": "result_fixation",
@@ -333,7 +245,9 @@
             "include_source_link": true
           }
         },
-        { "condition": "user_explicitly_requests_save" }
+        {
+          "condition": "user_explicitly_requests_save"
+        }
       ],
       "actions": [
         {
@@ -343,7 +257,12 @@
         },
         {
           "action": "fill_all_sections",
-          "sections": ["description", "key_facts", "connections", "sources"]
+          "sections": [
+            "description",
+            "key_facts",
+            "connections",
+            "sources"
+          ]
         },
         {
           "action": "add_source_citations",
@@ -363,7 +282,9 @@
             "action": "search_all_wiki_pages_for_mentions",
             "term": "${NEW_ENTITY_CONCEPT_NAME}"
           },
-          { "action": "add_backlinks_to_each_mentioning_page" },
+          {
+            "action": "add_backlinks_to_each_mentioning_page"
+          },
           {
             "condition": "no_mentions_found",
             "action": "mark_orphan_if_no_mentions_found"
@@ -372,13 +293,17 @@
       }
     }
   ],
-
   "log_format": {
     "query_record": "## [YYYY-MM-DD] query | Вопрос о RAG vs классических БД"
   },
-
   "schema_ref": "AGENTS.md",
-  "inherits_from": ["guardrails", "search_priority", "contradiction_resolution", "logging_templates", "date_convention"],
+  "inherits_from": [
+    "guardrails",
+    "search_priority",
+    "contradiction_resolution",
+    "logging_templates",
+    "date_convention"
+  ],
   "references": {
     "page_templates_and_metadata": "AGENTS.md",
     "link_types_reference": "AGENTS.md#git-конвенции"
