@@ -239,6 +239,36 @@ This way explorations compound in the knowledge base just like ingested sources 
 
 ---
 
+## 🔗 Link Conventions & Auto-Fix
+
+### Path Resolution
+All internal wiki links are **wiki-relative** — resolved from the `wiki/` root, not filesystem-relative:
+```markdown
+[Pi Coding Agent](entities/pi-coding-agent.md)
+[LLM Wiki Pattern](concepts/llm-wiki-pattern.md)
+```
+Never use `./`, `../`, or absolute `/wiki/...` paths. Always write from wiki root perspective.
+
+### Auto-Fix Protocol
+When creating or updating any page:
+1. **Validate all internal links** — check `[text](path)` and YAML frontmatter `related:` fields resolve from `wiki/`
+2. **Auto-correct**: if link uses filesystem-relative path (`../` or `../../`), rewrite to wiki-relative
+3. **Fallback message**: if a link targets a non-existent page → flag it:
+   ```
+   [!] Broken link: `[text](path/to/page)` — target does not exist.
+       Proposed fix: create page or remove link.
+   ```
+4. **After write, auto-run** `scripts/rebuild-meta.sh` to refresh registry + backlinks
+
+### Link Format Standards
+| Context | Format |
+|---------|--------|
+| Markdown body text | `[link text](wiki-relative-path.md)` |
+| YAML frontmatter `sources:` | `[raw/path/to/file]` (square brackets) |
+| YAML frontmatter `related:` | `[wiki/entities/example.md]` (path from wiki root) |
+
+---
+
 ## 📈 Schema Evolution Guidelines
 
 Over time, we'll discover what works best for your domain:

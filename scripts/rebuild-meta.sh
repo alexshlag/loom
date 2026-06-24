@@ -74,17 +74,23 @@ with open(meta_path, 'w') as f:
 print(f'Registry updated: {len(pages)} pages')
 " 2>&1 || echo "Warning: registry generation had issues"
 
-# ─── 2. backlinks.json (parse [[wikilinks]] from all wiki pages) ──────
+# ─── 2. backlinks.json (parse [text](path) markdown links from all wiki pages) ──────
 python3 -c "
 import os, re, json
+from urllib.parse import unquote
 
 wiki_dir = '$WIKI_DIR'
 meta_path = '$META_DIR/backlinks.json'
 
 backlinks = {}
 
-def get_page_id(path):
-    return os.path.relpath(path, wiki_dir).replace('/', '-').replace('.', '-')
+def resolve_target(path):
+    \"\"\"Resolve wiki-relative path to target page id.\"\"\"
+    # Remove leading ./ or ../ and normalize
+    cleaned = path.lstrip('/').lstrip('./') if not path.startswith('../') else path
+    if '/' in cleaned:
+        return cleaned.replace('/', '-').replace('.', '-')
+    return cleaned.replace(' ', '').replace('-', '_').title()
 
 for root, dirs, files in os.walk(wiki_dir):
     for fname in files:
@@ -96,14 +102,14 @@ for root, dirs, files in os.walk(wiki_dir):
         with open(fpath, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        # Find [[wikilinks]] in content
-        links = re.findall(r'\[\[(.*?)\]\]', content)
+        # Find [text](path) markdown links
+        links = re.findall(r'\[([^\]]+)\]\(([^#)]+)(?:#[^)]+)?\)', content)
         if links:
-            for link in links:
-                target_id = link.replace('/', '-').replace('.', '-')
+            for text, path in links:
+                target_id = resolve_target(path.rstrip('/'))
                 backlinks.setdefault(target_id, []).append({
                     'from': rel,
-                    'context': f'wikilink to {fname}'
+                    'context': f'[text]({path}) from {fname}'
                 })
 
 with open(meta_path, 'w') as f:

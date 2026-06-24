@@ -19,7 +19,7 @@ AI Researcher, автор LLM Wiki pattern (LLM-powered personal knowledge base)
 
 ## Связи:
 * [LLM Wiki Pattern](concepts/llm-wiki-pattern.md) — методика построения wiki через LLM
-* [Synthesis: Python NixOS Development Environments](syntheses/python-nixos-development-environments.md) — пример синтеза
+* [Synthesis: Python NixOS Dev Environments](../syntheses/python-nixos-development-environments.md) — пример синтеза
 
 ## Источники:
 * `raw/llm-wiki.md` — идея файла для передачи LLM-агенту (оригинал)

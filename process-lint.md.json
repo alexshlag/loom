@@ -75,6 +75,22 @@
         {"action": "extract_dates_from_update_sections"},
         {"condition": "year_mismatch", "suggestion": "flag_for_correction_and_propose_fix"}
       ]
+    },
+
+    {
+      "check_id": "7",
+      "name": "link_validation_with_auto_fix",
+      "description": "Валидируй все внутренние ссылки, исправляй автоматически, флаги брейкнутые",
+      "actions": [
+        {"action": "extract_all_wiki_links_from_pages", "patterns": ["[text](path)", "[[wikilink]]"]},
+        {"condition": "link_path_is_filesystem_relative", "auto_fix": "rewrite_to_wiki_relative_from_wiki_root"},
+        {"condition": "target_page_does_not_exist",
+          "fallback_message": "[!] Broken link: [text](path) — target does not exist. Proposed fix: create page or remove link.",
+          "action": "flag_broken_link_for_review"
+        },
+        {"condition": "link_path_resolves_correctly", "status": "VALID"}
+      ],
+      "reference": "AGENTS.md#link-conventions--auto-fix"
     }
   ],
 
