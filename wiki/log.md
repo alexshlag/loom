@@ -62,8 +62,4 @@
 * Schema version bumped from 3 → 4
 
 
-## [2026-06-24] lint | Cleanup — Home_Manager artifact removed, @process-lint.md.json improvement noted
-* Удалён `wiki/Home_Manager.md` (снимок jpg, не markdown) — артефакт захвата без frontmatter и категории
-* Задача для future: улучшить @process-lint.md.json чтобы детектить untracked image artifacts
-* Wiki структура чистая: 8 content pages + meta files, все ссылки работают
-
+## [2026-06-24] ingest | Nvidia\n* Создана сущность: wiki/entities/nvidia.md\n* Источник: web_search\n* Синтез: лидерство в GPU и AI-ускорителях.

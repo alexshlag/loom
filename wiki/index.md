@@ -1,10 +1,6 @@
 # Wiki Index
 
-## Сущности
-* [AI Factory](entities/ai-factory.md) — Stack-agnostic CLI tool и skill system для AI-powered development.
-* [Pi Coding Agent](entities/pi-coding-agent.md) — Минимальный терминальный код-агент, расширяемый через TypeScript-расширения, skills и темы.
-* [Andrej Karpathy](entities/andrej-karpathy.md) — AI Researcher, автор LLM Wiki Pattern.
-
+* [Nvidia](entities/nvidia.md) — Лидер в производстве GPU и ускорителей для искусственного интеллекта (AI).
 
 ## Концепции
 * [AI Factory vs Pi — Category Distinction](concepts/ai-factory-vs-pi.md) — Различение категорий: AI Factory = workflow schema, Pi = harness runtime.

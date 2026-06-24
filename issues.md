@@ -4,19 +4,19 @@
 
 ---
 
-## 📊 Lint Health Score: **10/10** — Все проблемы исправлены ✅
+## 🤖 Agent Reasoning & Workflow Issues (Audit 2026-06-24)
 
-| Проверка | Статус | Детали |
-|----------|--------|--------|
-| Frontmatter presence | ✅ PASS | 8/8 content pages have tags, date, sources |
-| Orphan pages | ✅ PASS | All pages ≥2 backlinks |
-| Duplicate titles | ✅ PASS | 0 duplicates in any category |
-| Link convention violation | ✅ FIXED | Issue #1 — все `../`, `../../` → wiki-relative |
-| Compounding principle | ✅ FIXED | Issue #2 — all pages have internal body-links |
-| Date consistency | ✅ FIXED | Issue #3 — all dates updated to 2026-06-24 |
-| Template compliance | ✅ FIXED | Issue #4 — examples/insights added to all missing sections |
-| Registry sources accuracy | ✅ FIXED | Issue #5 — null entries repaired manually |
-| Backlinks freshness | ✅ FIXED | Issue #6 — meta files rebuilt post-fixes |
+| Проблема | Описание | Рекомендуемое решение |
+|----------|----------|-----------------------|
+| Search Sufficiency | `grep_recursive_fallback` может генерировать шум | Установить критерий "достаточности" данных из `index.md` перед переходом к grep |
+| Knowledge Hierarchy | Отсутствие четкой иерархии типов страниц при синтезе | Добавить обязательную идентификацию уровня (Основная концепция -> Методы -> Нюансы) |
+| Novelty Threshold | Предложение новых страниц может привести к дублированию | Ввести проверку "Novelty": предлагать новую страницу только если ответ не покрыт текущим синтезом на >90% |
+| Source Weighting | Отсутствие оценки авторитетности источников | Добавить приоритеты: Official Docs > Community Wiki > Notes > Personal Blogs |
+| Inline Citations | Технические инструкции в ответах не всегда имеют прямые ссылки | Сделать inline-цитирование обязательным для каждой команды/факта в ответе (например: `nix-shell -p python3 [source]`) |
+
+---
+
+## 📊 Lint Health Score: **10/10** — Все проблемы исправлены ✅
 
 ---
 
