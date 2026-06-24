@@ -124,6 +124,12 @@
           "condition": "exit_code_1_from_above",
           "action": "set_working_memory_marker",
           "details": "new_sources_pending: true"
+        },
+        {
+          "condition": "exit_code_not_1 (0 or 2)",
+          "action": "clear_working_memory_field",
+          "field": "new_sources_pending",
+          "note": "Сбросить pending-флаг, если новых источников нет — не показывать устаревшее уведомление"
         }
       ],
       "post_task_notification": {

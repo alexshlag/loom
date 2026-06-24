@@ -165,7 +165,7 @@
       ]
     },
     {
-      "step_id": "3c",
+      "step_id": "3d",
       "name": "cross_link_update",
       "actions": [
         {
@@ -182,15 +182,19 @@
       ]
     },
     {
-      "step_id": "3c",
+      "step_id": "3e",
       "name": "register_source_ingested",
-      "description": "После успешного создания/обновления страницы — добавь ID raw-пакета в meta/raw_registry.json, чтобы исключить его из будущих проверок новых источников.",
+      "description": "После успешного создания/обновления страницы — добавь ID raw-пакета в tracking/raw_registry.json, исключив его из будущих проверок новых источников. Сбрось new_sources_pending marker.",
       "actions": [
         {
           "action": "update_json_file",
           "path": "tracking/raw_registry.json",
           "operation": "append_to_ingested_sources_array",
           "value": "${RAW_PACKAGE_ID}"
+        },
+        {
+          "action": "clear_working_memory_field",
+          "field": "new_sources_pending"
         }
       ]
     },
