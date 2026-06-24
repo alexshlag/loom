@@ -150,15 +150,17 @@
 
 ### ⚠️ Требует твоего решения (сложные архитектурные вопросы)
 
-#### Issue A ✅ RESOLVED
-**Решение**: Вся логика разрешения конфликтов перенесена в AGENTS.md как canonical source (`AGENTS.md#contradiction_resolution`).
-- **Что сделано**: `process-query.json` больше не содержит `contradiction_resolution_flow`. Теперь он ссылается на `schema_ref: AGENTS.md#contradiction_resolution`.
-- **Проверка**: AGENTS.md содержит полный flow (priority, actions, strategy, post_verification, history_tracking).
-- **Принцип**: Schema = canonical. Process = trigger-specific logic only.
+#### Issue A ✅ RESOLVED → REVERTED
+**Решение**: Contradiction Resolution Flow возвращается в process-query.json как canonical source.
+- **Что сделано**: AGENTS.md содержит только `schema_ref: AGENTS.md#contradiction_resolution` (reference). Полный flow — в [process-query.json](../out/process-query.json) step 2.
+- **Принцип**: CRF — query-specific logic, не общее правило Schema.
 
 ---
 
-#### Issue B: Search Priority Details
+#### Issue B ✅ RESOLVED
+**Решение**: Search Priority Details перенесены в `process-query.json` (`context.search_priority_details`). AGENTS.md содержит только reference.
+- **Что сделано**: process-query.json хранит критерии остановки (`>= 2 совпадения из index`, `>= 3 recall`). AGENTS.md ссылается на него через `schema_ref`.
+- **Принцип**: Query-specific logic → process-query.json. General priority chain (index→semantic→grep) → Schema reference.
 **Конфликт**: В AGENTS.md search priority описан упрощённо (index → semantic → grep). В process-query.json — полная цепочка fallback с точными критериями остановки (`>= 2 совпадения из index`, `>= 3 из recall`), stop_if_any_results=false.
 
 **Вопрос**: Где должна жить логика достаточности поиска?
@@ -170,7 +172,10 @@
 
 ---
 
-#### Issue C: Compounding Workflow Location
+#### Issue C ✅ RESOLVED
+**Решение**: Compounding Principles → AGENTS.md (general workflow), Compounding Decision Logic → process-query.json (scoring/evaluation).
+- **Что сделано**: AGENTS.md содержит только reference к `compounding_workflow`. Полный scoring logic — в `process-query.json` context.compounding_decision_logic.
+- **Принцип**: Principles = Schema, Scoring/Decision Logic = Query-specific.
 **Конфликт**: В AGENTS.md есть секция `Compounding Knowledge Base` с workflow и save_conditions. Это общие правила компандирования. Но process-query.json имеет свой собственный блок compounding_decision (step 2.6) с scoring logic.
 
 **Вопрос**: Compounding — это Schema-правило или Query-specific flow?
@@ -181,7 +186,10 @@
 
 ---
 
-#### Issue D: Duplicate Check Before Fixation (Lint vs Query)
+#### Issue D ✅ RESOLVED
+**Решение**: Query использует `meta/backlinks.json` вместо grep_recursive для duplicate check.
+- **Что сделано**: Step 2.5 читает backlinks из meta/ (построен линтом). Если similar_page_found → update_existing; else → create_new.
+- **Принцип**: Lint = owner of duplicate detection (periodic scan + backlinks.json). Query = consumer who uses pre-built data. (Lint vs Query)
 **Конфликт**: process-query.json step 2.5 содержит `duplicate_check_before_fixation` с grep_recursive поиском по wiki. Но это Lint Check 5 (`mechanical_linting → duplicate_titles`). Query не должен искать дубликаты — линт уже нашёл и предупредил.
 
 **Вопрос**: Кто должен проверять на дубликаты перед созданием страницы?

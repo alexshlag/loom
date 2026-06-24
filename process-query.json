@@ -3,7 +3,58 @@
   "description": "Ответы на вопросы с использованием wiki как базы знаний",
   "context": {
     "wiki_dir": "{WIKI_DIR}/wiki/",
-    "always_loaded": true
+    "always_loaded": true,
+    "search_priority_details": {
+      "description": "Критерии достаточности поиска по wiki",
+      "fallback_chain": [
+        {
+          "method": "index_lookup",
+          "condition": ">= 2 совпадений из index.md",
+          "action": "STOP"
+        },
+        {
+          "method": "wiki_recall",
+          "condition": ">= 3 совпадений из semantic search",
+          "action": "STOP"
+        },
+        {
+          "method": "grep_recursive",
+          "limit": 10,
+          "action": "FALLBACK"
+        }
+      ],
+      "stop_if_any_results": false
+    },
+    "compounding_decision_logic": {
+      "description": "Когда ответ компандится как новая страница wiki",
+      "evaluation_criteria": [
+        {
+          "criteria": "answer_requires_synthesis_from_2_or_more_pages",
+          "score": 1
+        },
+        {
+          "criteria": "compounding_flagged_in_step_2",
+          "score": 1
+        },
+        {
+          "criteria": "contradiction_resolution_found",
+          "score": 1
+        }
+      ],
+      "decision_logic": [
+        {
+          "sum_score_ge_2": true,
+          "action": "PROPOSE_SAVE_TO_USER",
+          "message": "Answer contains novel synthesis — save as new page?"
+        },
+        {
+          "sum_score_eq_0": true,
+          "action": "SKIP_SAVE",
+          "message": "No compounding value detected"
+        }
+      ],
+      "save_conditions_schema_ref": "AGENTS.md#compounding_workflow"
+    }
   },
   "trigger_condition": "user_asks_question",
   "not_for": [
@@ -136,9 +187,51 @@
         "mermaid_diagram",
         "other"
       ],
-      "schema_ref": "AGENTS.md#contradiction_resolution",
-      "note": "Canonical resolution flow defined in AGENTS.md. Do not duplicate.",
-      "search_strategy_schema_ref": "AGENTS.md#search_priority_schema"
+      "search_strategy_schema_ref": "AGENTS.md#search_priority_schema",
+      "contradiction_resolution_flow": {
+        "description": "Алгоритм разрешения противоречий после их обнаружения",
+        "detection_output": {
+          "format": "Если найдены противоречия — добавить раздел '## ⚠ Противоречия' в ответ перед основным контентом",
+          "include_in_answer_if_contradiction_found": true,
+          "log_entry": "## [date] query | Вопрос -> обнаружено X противоречий, Y сопоставлений"
+        },
+        "resolution_priority": [
+          {
+            "priority": 1,
+            "strategy": "authoritative_source",
+            "condition": "source_conflict_with_authoritative_source"
+          },
+          {
+            "priority": 2,
+            "strategy": "temporal_conflict",
+            "condition": "temporal_conflict_detected"
+          },
+          {
+            "priority": 3,
+            "strategy": "user_review",
+            "condition": "fact_conflict_no_date_info OR contextual_conflict"
+          }
+        ],
+        "resolution_actions": [
+          {
+            "action": "add_update_section_to_old_page"
+          },
+          {
+            "action": "create_comparison_page_for_complex_conflicts"
+          },
+          {
+            "action": "note_in_answer"
+          }
+        ],
+        "post_resolution_verification": {
+          "re_read_updated_pages": true,
+          "optional_web_search_if_high_stakes": true
+        },
+        "history_tracking": {
+          "append_to": "## Обновлено [date] — новое уточнение",
+          "format": "- **YYYY-MM-DD**: Обновлено с [старое] → [новое]"
+        }
+      }
     },
     {
       "step_id": "2.5",
