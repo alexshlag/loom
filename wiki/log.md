@@ -25,7 +25,7 @@
   - Web search предоставил дополнительные факты (биография, карьера)
   - Применён исправленный flow: обновление existing страницы с сохранением истории
 
-## [2026-06-24] schema | Исправлена инструкция разрешения противоречий process-query.md.json
+## [2026-06-24] schema | Исправлена инструкция разрешения противоречий process-query.json
 * Добавлена иерархия приоритетов стратегий:
   1. authoritative_source (official docs > community wiki > personal notes)
   2. temporal_conflict (новее лучше)
@@ -43,7 +43,7 @@
 * Replaces rigid JSON-only approach with flexible evolving schema
 
 ## [2026-06-24] query | Andrej Karpathy — обновление entity страницы с новой информацией
-* Обнаружена проблема: инструкция process-query.md.json не имела явного правила для дополняющей информации (new facts without contradiction)
+* Обнаружена проблема: инструкция process-query.json не имела явного правила для дополняющей информации (new facts without contradiction)
 * Исправлено:
   - Добавлен критерий `new_facts_for_existing_entity` в save_conditions (step 3)
   - Уточнен rule в assess_compounding_value: теперь учитывает новые факты об existing entity
@@ -51,7 +51,7 @@
 
 ## [2026-06-24] lint | Первый полный lint-аудит wiki
 * Создан issues.md — отчёт о проблемах (5 категорий: frontmatter, broken_links, date_inconsistency, orphan_pages, process_improvements)
-* Обновлён process-lint.md.json:
+* Обновлён process-lint.json:
   - Добавлены thresholds для trigger conditions
   - check_id=6: date_consistency_check
   - Уточнены правила missing_frontmatter (required vs optional fields)
@@ -69,7 +69,7 @@
 * Переключение: "давай проверим" / "verbose mode" / "покажи шаги"
 * Авто-возврат к silent после 3 verbose-ответов
 * В AGENTS.md добавлен раздел `## ⚙️ Execution Modes` с примером JSON для process_query
-* В process-lint.md.json добавлён execution_mode (default: silent, trigger for verbose)
+* В process-lint.json добавлён execution_mode (default: silent, trigger for verbose)
 * Логирование в verbose зависит от процесса: [✓] success, [✗] issue, [!] warning
 
 ## [2026-06-24] concept | AI Factory vs Pi — Category Distinction

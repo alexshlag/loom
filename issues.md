@@ -41,7 +41,7 @@
 4. Добавлен формат истории изменений при разрешении
 
 **Ссылки**:
-- [process-query.md.json](../out/process-query.md.json) (contradiction_resolution_flow)
+- [process-query.json](../out/process-query.json) (contradiction_resolution_flow)
 - [wiki/log.md](wiki/log.md) (запись о исправлении)
 
 ---
@@ -123,3 +123,102 @@
 *Created: 2026-06-24 | Status: Issues #5, #6 Fixed ✅ | Issue #1-4 Pending discussion | Last commit: ede2d60*
 
 **Next**: Обсудить Issue #4 (Authoritative source criteria) с пользователем
+
+---
+
+## 🔬 Cross-Role Architecture Audit (2026-06-24)
+
+### Глубокий анализ: распределение ролей Ingest / Query / Lint
+
+**Цель аудита**: Проверить, правильно ли функции распределены между тремя процессными файлами и AGENTS.md, нет ли дублирования, есть ли механизмы наследования инструкций.
+
+---
+
+### ✅ Исправлено (автоматически)
+
+| Проблема | Решение |
+|----------|---------|
+| Дубль #2: Meta rebuild path — три разных абсолютных пути | Стандартизировано к `./scripts/rebuild-meta.sh` в AGENTS.md + все process файлы ссылаются на `AGENTS.md#meta_rebuild_path` |
+| Дубль #1: Guardrails дублированы в Ingest | Ingest теперь ссылается на `AGENTS.md#guardrails`, strict_rules — краткая шпаргалка, canonical — AGENTS.md |
+| Дубль #5: Logging Templates переопределены в каждом процессе | Все процессы ссылаются на `AGENTS.md#logging_templates` через `inherits_from` |
+| Дубль #6: Date Convention | Все процессы наследуют из `AGENTS.md#date_convention` через `inherits_from` |
+| Lint Check 1: resolution_flow в зоне Lint (не должен разрешать, только flag) | `resolution_flow = null`, ссылка на `AGENTS.md#contradiction_resolution`, Lint только обнаруживает конфликты |
+
+**Добавлено**: `process_initialization` секция в AGENTS.md — явное наследование правил для каждой роли.
+
+---
+
+### ⚠️ Требует твоего решения (сложные архитектурные вопросы)
+
+#### Issue A: Canonical Contradiction Resolution Flow
+**Конфликт**: Query имеет расширенную версию resolution flow (6 типов конфликтов, post_verification, history tracking), AGENTS.md — только 3 базовых приоритета.
+
+**Вопрос**: Что должно быть canonical?
+1. **Развернутая версия в AGENTS.md** — тогда process-query.json ссылается на неё, а не дублирует. Это добавляет ~80 строк в AGENTS.md.
+2. **Оставить Query как authoritative source** — но это нарушает принцип "Schema = единственный источник истины".
+3. **Каноническая базовая версия в AGENTS.md + расширенная в Query** — AGENTS.md содержит приоритеты (authoritative > temporal > user_review), process-query.json добавляет типы конфликтов и post_verification как extension.
+
+**Рекомендация**: Вариант 3. Базовые правила в AGENTS.md, детали — в Query. Но тогда Query должен явно сказать `extends: AGENTS.md#contradiction_resolution` вместо дублирования.
+
+---
+
+#### Issue B: Search Priority Details
+**Конфликт**: В AGENTS.md search priority описан упрощённо (index → semantic → grep). В process-query.json — полная цепочка fallback с точными критериями остановки (`>= 2 совпадения из index`, `>= 3 из recall`), stop_if_any_results=false.
+
+**Вопрос**: Где должна жить логика достаточности поиска?
+1. **Только в AGENTS.md** — Query ссылается, но тогда AGENTS.md разрастается до полной спецификации fallback chain.
+2. **Только в Query** — каждый процессный файл хранит свою логику. Это дублирование.
+3. **AGENTS.md содержит canonical приоритеты**, process-query.json добавляет критерии остановки и детализацию fallback как `extends` блока.
+
+**Рекомендация**: Вариант 3. Но это требует в AGENTS.md секции `search_priority_schema` с базовыми правилами, а Query — `search_priority_details` с конкретными числами.
+
+---
+
+#### Issue C: Compounding Workflow Location
+**Конфликт**: В AGENTS.md есть секция `Compounding Knowledge Base` с workflow и save_conditions. Это общие правила компандирования. Но process-query.json имеет свой собственный блок compounding_decision (step 2.6) с scoring logic.
+
+**Вопрос**: Compounding — это Schema-правило или Query-specific flow?
+1. **Schema** — если compounding применим ко всем ролям (Ingest тоже компандит, когда создаёт новую страницу).
+2. **Query** — если compounding только при ответах на вопросы.
+
+**Рекомендация**: Compounding Decision Logic (scoring) — Query-specific. Compounding Principles (why this matters, when to save) — Schema. Нужно разделить эти два аспекта.
+
+---
+
+#### Issue D: Duplicate Check Before Fixation (Lint vs Query)
+**Конфликт**: process-query.json step 2.5 содержит `duplicate_check_before_fixation` с grep_recursive поиском по wiki. Но это Lint Check 5 (`mechanical_linting → duplicate_titles`). Query не должен искать дубликаты — линт уже нашёл и предупредил.
+
+**Вопрос**: Кто должен проверять на дубликаты перед созданием страницы?
+1. **Lint** — периодический check, который флажит потенциальные дубликаты.
+2. **Query** — проверка перед каждым созданием новой страницы (guard against user creating duplicates).
+3. **Оба** — Lint делает periodic scan, Query делает pre-write guard.
+
+**Рекомендация**: Оба должны работать. Но Query не должен использовать grep_recursive для поиска дубликатов — он должен использовать `backlinks.json` из meta/ (который уже построен линтом). Это потребует изменения step 2.5 в process-query.json.
+
+---
+
+### 📊 Итоговая карта наследования (после исправлений)
+
+```
+AGENTS.md (Schema — canonical source)
+├── inherits → Ingest: [guardrails, date_convention, logging_templates]
+├── inherits → Query: [guardrails, search_priority, contradiction_resolution, logging_templates, date_convention]
+└── inherits → Lint: [guardrails, logging_templates]
+
+process-ingest.json:
+  schema_ref: AGENTS.md#guardrails
+  inherits_from: [guardrails, date_convention, logging_templates]
+  ↓
+process-query.json:
+  schema_ref: AGENTS.md
+  inherits_from: [guardrails, search_priority, contradiction_resolution, logging_templates, date_convention]
+  ↓
+process-lint.json:
+  schema_ref: AGENTS.md#guardrails
+  inherits_from: [guardrails, logging_templates]
+```
+
+---
+
+*Last audit: 2026-06-24 | Issues A-D require discussion before implementation*
+**Next**: Обсудить Issue #4 (Authoritative source criteria) + Issues A-D (Cross-role architecture)

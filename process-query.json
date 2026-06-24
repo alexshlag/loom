@@ -1,0 +1,386 @@
+{
+  "module": "process_query",
+  "description": "Ответы на вопросы с использованием wiki как базы знаний",
+
+  "context": { "wiki_dir": "{WIKI_DIR}/wiki/", "always_loaded": true },
+
+  "trigger_condition": "user_asks_question",
+  "not_for": ["ingest_processing", "wiki_validation"],
+
+  "steps": [
+    {
+      "step_id": "1",
+      "name": "search",
+      "description": "Сначала обратись к index.md, затем используй wiki_recall для семантического поиска релевантных страниц. Используй критерии уверенности для определения достаточности поиска.",
+      "actions": [
+        {
+          "action": "read_index_categories_matching_topic",
+          "priority": 1
+        },
+        {
+          "action": "find_all_links_to_entities_concepts_syntheses_comparisons_notes_projects_bibliography_resources",
+          "priority": 2
+        }
+      ],
+      "semantic_search_layer": {
+        "action": "wiki_recall(query: \"${USER_QUERY}\", max_results: 5)",
+        "description": "После index.md вызови wiki_recall для семантического поиска по смыслу, а не по ключевым словам. Оцени количество результатов для определения достаточности.",
+        "result_handling": {
+          "if_results_found": "ADD_TO_RELEVANT_PAGES_LIST",
+          "if_no_results": "PROCEED_TO_GREP_FALLBACK"
+        },
+        "trigger": "after_index_read"
+      },
+      "fallback_chain": {
+        "priority_order": [
+          {
+            "description": "Чтение index.md по категориям, релевантным теме. Если найдено >=2 совпадения — результат достаточен.",
+            "method": "index_lookup"
+          },
+          {
+            "description": "wiki_recall(query) — поиск по семантическому сходству. Если найдено >=3 совпадения — результат достаточен.",
+            "method": "semantic_search_wiki_recall"
+          },
+          {
+            "description": "grep -r query wiki/ — fallback, если предыдущие шаги не дали достаточного количества результатов (менее 2 из index или менее 3 из recall). Ограничить выборку первыми 10 кусками.",
+            "method": "grep_recursive"
+          }
+        ],
+        "stop_if_any_results": false
+      }
+    },
+
+    {
+      "step_id": "1.5",
+      "name": "knowledge_gap_handling",
+      "description": "Обработка ситуации, когда в Wiki нет информации по запросу (Knowledge Gap Protocol). Агент проверяет доступность инструментов перед предложением действий.",
+      "trigger_condition": "search_results_empty",
+      "actions": [
+        {
+          "action": "notify_user_no_results",
+          "message": "В нашей базе знаний информации по запросу не найдено."
+        },
+        {
+          "action": "handle_knowledge_gap",
+          "description": "Проверь наличие инструмента 'web_search' в своей системе. Если он доступен, предложи пользователю провести веб-исследование для создания синтеза. Если доступен только ручной ввод, сообщи об этом и предложи вариант Manual Ingest.",
+          "name": "knowledge_gap_logic"
+        },
+        {
+          "action": "offer_manual_ingest",
+          "message": "Или вы можете предоставить источник (ссылку, файл или текст), и я создам страницу на его основе."
+        }
+      ]
+    },
+
+    {
+      "step_id": "2",
+      "name": "synthesis",
+      "description": "Проанализируй найденные страницы и сформируй глубокий ответ с цитатами. Обнаруживай противоречия между страницами и разрешай их по определённому flow. Если синтез из 2+ источников содержит novel insight — пометь для compounding.",
+      "pre_condition": "search_results_not_empty",
+      "actions": [
+        {
+          "action": "read_all_relevant_pages"
+        },
+        {
+          "action": "note_key_facts_from_each_page",
+          "output_format": "fact_list: [{page, fact, source}]"
+        },
+        {
+          "action": "compare_information_across_sources",
+          "comparison_type": "cross_reference_same_topic"
+        },
+        {
+          "action": "identify_matches_or_contradications",
+          "contradiction_types_to_detect": [
+            {
+              "description": "Одно и то же утверждение в разных страницах с разными значениями (например, разные версии ПО)",
+              "example": "Страница A: версия X=1.0; Страница B: версия X=2.0",
+              "type": "fact_conflict"
+            },
+            {
+              "description": "Устаревшая информация на одной странице vs новая на другой (дата обновления не учтена)",
+              "example": "Страница A обновлена 2024, содержит устаревший метод; Страница B от 2025 содержит новый",
+              "type": "temporal_conflict"
+            },
+            {
+              "description": "Разные источники указывают на разные факты о том же объекте/концепции",
+              "example": "wiki/entities/tech.md: технология создана в 2020; wiki/bibliography/book.md: технология создана в 2019",
+              "type": "source_conflict"
+            },
+            {
+              "description": "Противоречие из-за разного уровня абстракции (конкретное vs общее)",
+              "example": "Страница A: 'Python 3.12'; Страница B: 'Python 3.x' — оба верны в своем контексте",
+              "type": "scope_conflict"
+            },
+            {
+              "description": "Разные контексты применения (оба верны в своем контексте)",
+              "example": "Страница A: 'Для Linux — метод X'; Страница B: 'Для Windows — метод Y'",
+              "type": "contextual_conflict"
+            },
+            {
+              "description": "Противоречие между версиями продукта/документации",
+              "example": "Документация v1: API endpoint /v1; Документация v2: API endpoint /v2",
+              "type": "version_conflict"
+            }
+          ]
+        },
+        {
+          "action": "assess_compounding_value",
+          "rule": "Если ответ:\n            - синтезирует из 2+ страниц, ИЛИ\n            - содержит новые факты об existing entity/concept (дополняющие), ИЛИ\n            - разрешает противоречие → flag for fixation"
+        }
+      ],
+      "contradiction_resolution_flow": {
+        "description": "Алгоритм разрешения противоречий после их обнаружения",
+        "detection_output": {
+          "format": "Если найдены противоречия — добавить раздел \"## ⚠ Противоречия\" в ответ перед основным контентом",
+          "include_in_answer_if_contradiction_found": true,
+          "log_entry": "## [date] query | Вопрос -> обнаружено X противоречий, Y сопоставлений"
+        },
+        "resolution_priority": [
+          {
+            "priority": 1,
+            "strategy": "authoritative_source",
+            "condition": "source_conflict_with_authoritative_source",
+            "rule": "Официальный источник всегда приоритетнее даты обновления",
+            "description": "Приоритет: official docs > community wiki > personal notes"
+          },
+          {
+            "priority": 2,
+            "strategy": "temporal_conflict",
+            "condition": "temporal_conflict_detected",
+            "rule": "Использовать информацию из страницы с более поздней датой обновления",
+            "description": "Если нет authoritative source — новее лучше"
+          },
+          {
+            "priority": 3,
+            "strategy": "user_review",
+            "condition": "fact_conflict_no_date_info OR contextual_conflict",
+            "rule": "Отметить противоречие в ответе и предложить пользователю выбрать приоритетный источник",
+            "description": "Если неясно — спросить пользователя"
+          }
+        ],
+        "resolution_actions": [
+          {
+            "applies_to": "Страница с устаревшей информацией",
+            "format": "## Обновлено [date] — новое уточнение\n[новая информация]",
+            "name": "add_update_section_to_old_page"
+          },
+          {
+            "condition": "contradiction_requires_explanation_for_user",
+            "description": "Если противоречие сложное и требует детального анализа — создать сравнительную страницу",
+            "destination_template": "wiki/comparisons/[entity-a]-vs-[entity-b].md",
+            "name": "create_comparison_page"
+          },
+          {
+            "applies_to": "Ответ пользователю",
+            "format": "## ⚠ Противоречия в источниках:\n* [Страница А] vs [Страница Б]: [описание конфликта]\n* Рекомендовано: [какая версия использовать]",
+            "name": "note_in_answer"
+          }
+        ],
+        "resolution_strategy": [
+          {
+            "action": "PREFER_AUTHORITATIVE_OVER_NEWER",
+            "condition": "authoritative_source_conflict_with_newer_page",
+            "rule": "Официальный документ всегда приоритетнее даты обновления. Если official docs говорит X, а новая страница — Y, верить official docs.",
+            "priority": 1
+          },
+          {
+            "action": "PREFER_NEWER_VERSION",
+            "condition": "temporal_conflict_detected AND no_authoritative_source",
+            "rule": "Использовать информацию из страницы с более поздней датой обновления",
+            "priority": 2
+          },
+          {
+            "action": "FLAG_CONTRADICTION_FOR_USER_REVIEW",
+            "condition": "fact_conflict_no_date_info OR contextual_conflict OR scope_conflict",
+            "rule": "Отметить противоречие в ответе и предложить пользователю выбрать приоритетный источник",
+            "priority": 3
+          },
+          {
+            "action": "RESOLVE_BY_AUTHORITATIVE_SOURCE",
+            "condition": "source_conflict_with_authoritative_source",
+            "rule": "Приоритет: official docs > community wiki > personal notes. Если authoritative source найден — использовать его, игнорируя дату.",
+            "priority": 1
+          }
+        ],
+        "post_resolution_verification": {
+          "description": "Проверить, что противоречие действительно разрешено",
+          "actions": [
+            {
+              "action": "re-read_updated_pages",
+              "purpose": "verify_consistency",
+              "condition": "always"
+            },
+            {
+              "action": "optional_web_search",
+              "description": "Для важных фактов — проверить во внешних источниках",
+              "condition": "high_stakes_fact OR user_requested_verification"
+            }
+          ]
+        },
+        "history_tracking": {
+          "description": "Сохранять историю изменений при разрешении противоречий",
+          "format": "### История изменений:\n- **YYYY-MM-DD**: Обновлено с [старое значение] → [новое значение] (разрешение противоречия со Страницей X)\n  - Причина: [тип конфликта]\n  - Источник решения: [страница/источник]",
+          "append_to": "## Обновлено [date] — новое уточнение"
+        }
+      },
+      "output_formats": [
+        "markdown_page",
+        "comparison_table",
+        "mermaid_diagram",
+        "other"
+      ]
+    },
+
+    {
+      "step_id": "2.5",
+      "name": "duplicate_check_before_fixation",
+      "description": "Проверь наличие похожих страниц перед созданием новой — предотвращает дублирование wiki",
+      "actions": [
+        { "action": "generate_search_query", "source": "${QUESTION_SUMMARY}" },
+        {
+          "action": "search_wiki_for_similar_content",
+          "target": "wiki/**/${PAGE_TYPE}/**"
+        },
+        {
+          "condition": "similar_page_found",
+          "action": "UPDATE_EXISTING_PAGE",
+          "details": {
+            "action_type": "update_existing",
+            "read_file": "${EXISTING_PAGE_PATH}",
+            "identify_additions_and_changes": true,
+            "write_update": {
+              "preserve_old_info": true,
+              "append_section_format": "## Обновлено [date] — новое уточнение"
+            }
+          }
+        },
+        {
+          "condition": "no_similar_page_found",
+          "action": "PROCEED_TO_CREATE_NEW_PAGE"
+        }
+      ],
+      "search_strategy": {
+        "priority": [
+          {
+            "method": "grep_recursive",
+            "target": "wiki/**/${PAGE_TYPE}/**",
+            "pattern": "${SEARCH_QUERY}"
+          },
+          {
+            "method": "index_lookup",
+            "target": "wiki/index.md",
+            "category": "${PAGE_TYPE}"
+          }
+        ],
+        "fallback": "Если поиск не нашёл страниц → proceed to create_new_page"
+      }
+    },
+
+    {
+      "step_id": "2.6",
+      "name": "compounding_decision",
+      "description": "Проверь, стоит ли сохранить answer как новую страницу wiki — compounding knowledge base",
+      "trigger_after": "duplicate_check_completed: true",
+      "evaluation_criteria": [
+        {
+          "criteria": "answer_requires_synthesis_from_2_or_more_pages",
+          "score": 1
+        },
+        { "criteria": "compounding_flagged_in_step_2", "score": 1 },
+        { "criteria": "contradiction_resolution_found", "score": 1 }
+      ],
+      "decision_logic": [
+        {
+          "sum_score_ge_2": true,
+          "action": "PROPOSE_SAVE_TO_USER",
+          "message": "Answer contains novel synthesis — save as new page?"
+        },
+        {
+          "sum_score_eq_0": true,
+          "action": "SKIP_SAVE",
+          "message": "No compounding value detected"
+        }
+      ]
+    },
+
+    {
+      "step_id": "3",
+      "name": "result_fixation",
+      "description": "Compounding: Сохраняй answer как новую страницу если содержит novel insight/synthesis из 2+ источников. Добавь ссылку в index.md. После write автоматически вызывай wiki_rebuild_meta.",
+      "pre_condition": "duplicate_check_completed: true, no_similar_page_found: true",
+      "save_conditions": [
+        {
+          "condition": "compounding_flagged: true",
+          "action_if_met": "AUTO_SAVE_NEW_PAGE",
+          "description": "Synthesis of 2+ sources with novel insight → save as new page"
+        },
+        {
+          "condition": "answer_requires_synthesis_from_2_or_more_pages",
+          "auto_save_if_novel_insight": true
+        },
+        {
+          "condition": "contradiction_resolution_completed",
+          "action_if_met": "CREATE_COMPARISON_OR_UPDATE_OLD_PAGE"
+        },
+        {
+          "condition": "new_facts_for_existing_entity",
+          "action_if_met": "UPDATE_EXISTING_PAGE",
+          "description": "Новые факты об existing entity → обновить страницу, сохранив старую информацию в разделе '## Обновлено [date]'",
+          "format": {
+            "preserve_old_info": true,
+            "append_section": "## Обновлено [date] — новое уточнение",
+            "include_source_link": true
+          }
+        },
+        { "condition": "user_explicitly_requests_save" }
+      ],
+      "actions": [
+        {
+          "action_type": "create_page",
+          "template": "${PAGE_TYPE}",
+          "destination": "wiki/${PAGE_PATH}.md"
+        },
+        {
+          "action": "fill_all_sections",
+          "sections": ["description", "key_facts", "connections", "sources"]
+        },
+        {
+          "action": "add_source_citations",
+          "rule": "every_page_must_have_sources_field"
+        }
+      ],
+      "post_check": {
+        "command": "./scripts/rebuild-meta.sh",
+        "schema_ref": "AGENTS.md#meta_rebuild_path",
+        "note": "Canonical path defined in AGENTS.md. Do not hardcode absolute paths.",
+        "action_on_success": "PROCEED_TO_LOG_AND_INDEX_UPDATE",
+        "action_on_failure": "LOG_WARNING_AND_PROCEED"
+      },
+      "cross_link_update": {
+        "actions": [
+          {
+            "action": "search_all_wiki_pages_for_mentions",
+            "term": "${NEW_ENTITY_CONCEPT_NAME}"
+          },
+          { "action": "add_backlinks_to_each_mentioning_page" },
+          {
+            "condition": "no_mentions_found",
+            "action": "mark_orphan_if_no_mentions_found"
+          }
+        ]
+      }
+    }
+  ],
+
+  "log_format": {
+    "query_record": "## [YYYY-MM-DD] query | Вопрос о RAG vs классических БД"
+  },
+
+  "schema_ref": "AGENTS.md",
+  "inherits_from": ["guardrails", "search_priority", "contradiction_resolution", "logging_templates", "date_convention"],
+  "references": {
+    "page_templates_and_metadata": "AGENTS.md",
+    "link_types_reference": "AGENTS.md#git-конвенции"
+  }
+}

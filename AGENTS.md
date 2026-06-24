@@ -389,7 +389,8 @@ Priority order:
     "marp": {"purpose": "markdown-based slide decks from wiki content"},
     "dataview": {"purpose": "Obsidian plugin for queries over page frontmatter"}
   }
-
+}
+```
 ---
 
 ## 📅 Date Convention Rule
@@ -417,6 +418,45 @@ Priority order:
 - `raw/sources/SRC-2025-06-24-001/file.md` означает что исходник был захвачен **24 июня 2025**
 - Дата создания страницы в wiki должна быть **текущим системным временем** (например, 2026-06-24)
 - Использование дат из имён файлов источников создаёт исторический дрейф и путает temporal reasoning
+
+---
+
+## 🔄 Process Initialization & Schema Inheritance
+
+Каждый процессный файл наследует общие правила из AGENTS.md через явные ссылки, а не дублирует их.
+
+```json
+{
+  "process_initialization": {
+    "ingest": {
+      "inherits_from": ["guardrails", "date_convention", "logging_templates"],
+      "schema_ref": "AGENTS.md#guardrails",
+      "note": "Ingest читает guardrails из AGENTS.md, а не копирует их. strict_rules в process-ingest.json — краткая шпаргалка, canonical источник — AGENTS.md"
+    },
+    "query": {
+      "inherits_from": ["guardrails", "search_priority", "contradiction_resolution", "logging_templates", "date_convention"],
+      "schema_ref": "AGENTS.md",
+      "note": "Query ссылается на canonical Search Priority и Contradiction Resolution Flow из AGENTS.md. Если нужно расширить — расширяй в AGENTS.md, а не в process-query"
+    },
+    "lint": {
+      "inherits_from": ["guardrails", "logging_templates"],
+      "schema_ref": "AGENTS.md#guardrails",
+      "note": "Lint обнаруживает проблемы, но не разрешает их. Resolution flow — зона Query/Ingest"
+    }
+  },
+  "canonical_references": {
+    "meta_rebuild_path": "./scripts/rebuild-meta.sh (относительный путь из корня wiki)",
+    "search_priority": "AGENTS.md#search-priority → index_lookup → semantic_search → grep_recursive",
+    "contradiction_resolution_flow": "AGENTS.md#contradiction-resolution → authoritative > temporal > user_review"
+  },
+  "rule": "Никогда не дублировать правила из AGENTS.md в процессных файлах. Всегда добавляй \"schema_ref\" для ссылки на canonical источник."
+}
+```
+
+### Почему это важно
+- **Single Source of Truth**: AGENTS.md — единственный авторитетный источник общих правил
+- **Автоматическая консистентность**: если AGENTS.md изменён — process файлы не требуют обновления (только ссылки)
+- **Прозрачность наследования**: каждый процесс явно объявляет, от кого он получает правила
 
 ---
 
