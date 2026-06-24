@@ -18,7 +18,21 @@
 * Создан synthesis: RAG vs LLM Wiki Pattern
 * Обновлено: overview.md, index.md
 
-## [2026-06-24] query | LLM Wiki Pattern — сравнение реализации с идеей Karpathy
+## [2026-06-24] query | Andrej Karpathy — тестирование процесса обновления wiki
+* Тестовый запрос: "Кто такой Andrej Karpathy?"
+* Проверена логика обработки новой информации:
+  - Найдено: entity страница существовала, но содержала неполную информацию
+  - Web search предоставил дополнительные факты (биография, карьера)
+  - Применён исправленный flow: обновление existing страницы с сохранением истории
+
+## [2026-06-24] schema | Исправлена инструкция разрешения противоречий process-query.md.json
+* Добавлена иерархия приоритетов стратегий:
+  1. authoritative_source (official docs > community wiki > personal notes)
+  2. temporal_conflict (новее лучше)
+  3. user_review (если неясно — спросить пользователя)
+* Расширены типы противоречий: добавлены scope_conflict, contextual_conflict, version_conflict
+* Добавлена пост-проверка разрешения (re-read_updated_pages + optional_web_search)
+* Добавлена история изменений при разрешении противоречий
 * Создан AGENTS.md (markdown schema document по оригинальной идее Karpathy)
 * Добавлен compounding workflow в process-query: step 2.6 compounding_decision, enhanced save_conditions
 * Теперь answers сохраняются как новые страницы при novel insights/synthesis — wiki compounds
@@ -27,6 +41,13 @@
 * Markdown schema document co-evolves between human and LLM
 * Defines structure, workflows (ingest/query/lint), guardrails, page formats
 * Replaces rigid JSON-only approach with flexible evolving schema
+
+## [2026-06-24] query | Andrej Karpathy — обновление entity страницы с новой информацией
+* Обнаружена проблема: инструкция process-query.md.json не имела явного правила для дополняющей информации (new facts without contradiction)
+* Исправлено:
+  - Добавлен критерий `new_facts_for_existing_entity` в save_conditions (step 3)
+  - Уточнен rule в assess_compounding_value: теперь учитывает новые факты об existing entity
+* Обновлена wiki/entities/andrej-karpathy.md с полной биографией (Tesla, OpenAI, Stanford PhD, Eureka Labs, Anthropic)
 
 ## [2026-06-24] lint | Первый полный lint-аудит wiki
 * Создан issues.md — отчёт о проблемах (5 категорий: frontmatter, broken_links, date_inconsistency, orphan_pages, process_improvements)

@@ -6,13 +6,19 @@
 
 ## 🤖 Agent Reasoning & Workflow Issues (Audit 2026-06-24)
 
-| Проблема | Описание | Рекомендуемое решение |
-|----------|----------|-----------------------|
-| Search Sufficiency | `grep_recursive_fallback` может генерировать шум | Установить критерий "достаточности" данных из `index.md` перед переходом к grep |
-| Knowledge Hierarchy | Отсутствие четкой иерархии типов страниц при синтезе | Добавить обязательную идентификацию уровня (Основная концепция -> Методы -> Нюансы) |
-| Novelty Threshold | Предложение новых страниц может привести к дублированию | Ввести проверку "Novelty": предлагать новую страницу только если ответ не покрыт текущим синтезом на >90% |
-| Source Weighting | Отсутствие оценки авторитетности источников | Добавить приоритеты: Official Docs > Community Wiki > Notes > Personal Blogs |
-| Inline Citations | Технические инструкции в ответах не всегда имеют прямые ссылки | Сделать inline-цитирование обязательным для каждой команды/факта в ответе (например: `nix-shell -p python3 [source]`) |
+| Проблема | Описание | Статус |
+|----------|----------|--------|
+| Search Sufficiency | `grep_recursive_fallback` может генерировать шум | 🟡 Требует внимания |
+| Knowledge Hierarchy | Отсутствие четкой иерархии типов страниц при синтезе | 🟡 Требует внимания |
+| Novelty Threshold | Предложение новых страниц может привести к дублированию | 🟡 Требует внимания |
+| Source Weighting | Отсутствие оценки авторитетности источников | 🟡 Требует внимания |
+| Inline Citations | Технические инструкции в ответах не всегда имеют прямые ссылки | 🟡 Требует внимания |
+| Актуальность информации | Инструкция говорит "prefer newer version" при temporal conflict, но не учитывает устаревание фактов на новых страницах. В тесте: информация об Eureka Labs (2024) и Anthropic (2026) есть только в raw, но не интегрирована в wiki. | 🟡 Требует внимания |
+| Правила web_search | Не明确规定 когда можно/нельзя использовать web_search для проверки фактов из wiki. | 🟡 Требует внимания |
+| Критерий novel insight | Инструкция "If answer synthesizes from 2+ sources AND contains novel insight → flag for fixation" субъективна. Что считается insight? Сбор фактов или только новые выводы? | 🟡 Требует внимания |
+| Целостность cross-references | Инструкция требует добавлять backlinks к новым страницам, но не проверяет существующие страницы на сломанные ссылки. В тесте: `wiki/overview.md` упоминает Karpathy, но не проверена рабочая ссылка. | 🟡 Требует внимания |
+| Противоречия в разрешении | Нет четкого приоритета между стратегиями разрешения противоречий. Не покрываются scope_conflict и contextual_conflict. Нет пост-проверки. | ✅ Исправлено (см. ниже) |
+| Авторитетные источники | В инструкции указано `official docs > community wiki > personal notes`, но нет механизма автоматического определения authoritative source. | ⚠️ Требует твоего решения |
 
 ---
 
@@ -20,57 +26,100 @@
 
 ---
 
-## 📋 Resolved Issues Log
+## ✅ Исправления в разрешении противоречий (Issue #6) — 2026-06-24
 
-### Issue 1: Broken relative paths (`../`, `../../`) — ✅ FIXED
-**Commit**: `3178794` | **Severity**: High
-- Rewrote all non-wiki-relative links across 4 pages to wiki-root format
-- Files fixed: entities/andrej-karpathy.md, concepts/llm-wiki-pattern.md, syntheses/* (2 files)
+**Обнаружено**: Инструкция разрешения противоречий имела следующие проблемы:
+1. Нет четкого приоритета между стратегиями (temporal vs authoritative)
+2. Не покрывались типы scope_conflict, contextual_conflict, version_conflict
+3. Отсутствовала пост-проверка после разрешения
+4. Нет истории изменений при разрешении
 
-### Issue 2: Missing body-text internal links — ✅ FIXED
-**Commit**: `ede2d60` | **Severity**: Medium
-- Added wiki-relative links to ai-factory.md, pi-coding-agent.md, ai-factory-vs-pi.md
-- All 8 content pages now have cross-references in body text
+**Исправление**:
+1. Добавлена иерархия приоритетов: authoritative_source > temporal_conflict > user_review
+2. Расширены типы противоречий (scope_conflict, contextual_conflict, version_conflict)
+3. Добавлен шаг post_resolution_verification с re-read и optional web search
+4. Добавлен формат истории изменений при разрешении
 
-### Issue 3: Date consistency split — ✅ FIXED
-**Commit**: `ba2ff56` | **Severity**: Low-Medium
-- Updated dates on 3 old pages (entities/pi-coding-agent, concepts/python-nixos-development, syntheses/*environments) from 2025 to 2026
-
-### Issue 4: Template section mismatches — ✅ FIXED
-**Commit**: `ba2ff56` | **Severity**: Medium
-- Added `## Примеры` to concept pages (llm-wiki-pattern, python-nixos-development)
-- Added `## Инсайты и выводы` to synthesis pages (both)
-
-### Issue 5: Registry null sources — ✅ FIXED
-**Commit**: (manual repair, not tracked in git per .gitignore)
-- Fixed concepts/ai-factory-vs-pi.md and syntheses/python-nixos-development-environments.md entries
-
-### Issue 6: Stale backlinks registry — ✅ FIXED
-**Post-commit action**: rebuild-meta.sh run after all link fixes applied
-- Fresh meta/backlinks.json generated with accurate data
+**Ссылки**:
+- [process-query.md.json](../out/process-query.md.json) (contradiction_resolution_flow)
+- [wiki/log.md](wiki/log.md) (запись о исправлении)
 
 ---
 
-## 📈 Final Lint Health Score
+## 📊 Детали исправления разрешения противоречий
 
-- ✅ Frontmatter presence: **8/8** (100%)
-- ✅ Backlinks per page: **≥2** (no orphans)  
-- ✅ Duplicate titles: **0 found**
-- ✅ Link conventions: **All wiki-relative, no `../` paths**
-- ✅ Compounding principle: **All pages cross-reference each other**
-- ✅ Date consistency: **All 2026-06-24** (or historically marked)
-- ✅ Template compliance: **All required sections present**
-- ✅ Meta integrity: **Registry sources accurate, backlinks fresh**
+### Новая структура resolution_priority:
+
+```
+1. authoritative_source (приоритет 1)
+   └── Если есть official docs → использовать его, игнорируя дату
+   
+2. temporal_conflict (приоритет 2)
+   └── Если нет authoritative source → новее лучше
+   
+3. user_review (приоритет 3)
+   └── Если неясно или contextual conflict → спросить пользователя
+```
+
+### Новые типы противоречий:
+
+| Тип | Описание | Пример | Стратегия разрешения |
+|-----|----------|--------|---------------------|
+| scope_conflict | Разный уровень абстракции | "Python 3.12" vs "Python 3.x" | Предпочитать конкретное, если подтверждено |
+| contextual_conflict | Разные контексты применения | "Для Linux — метод X" vs "Для Windows — метод Y" | Создать сравнительную страницу с условиями применимости |
+| version_conflict | Противоречие между версиями | Документация v1 vs v2 одного проекта | Указывать версию и предлагать актуальную |
+
+### Пример записи истории изменений:
+
+```markdown
+## Обновлено 2026-06-24 — новое уточнение
+
+### История изменений:
+- **2026-06-24**: Обновлено с X=5 → X=10 (разрешение противоречия со Страницей B)
+  - Причина: temporal_conflict
+  - Источник решения: Страница B (2026-01-01, official docs)
+```
 
 ---
 
-## 🔄 Future Maintenance
+## ⚠️ Требует твоего внимания (2026-06-24)
 
-1. **Ingest Flow**: Always run steps 5-7 (log, index, meta_rebuild) in order
-2. **Query Flow**: Follow priority search → synthesis → compounding → save-as-page
-3. **Lint Flow**: Run periodic check for broken links, missing frontmatter, date inconsistencies
-4. **Schema Evolution**: Update workflows based on usage patterns
+### Issue #1: Актуальность информации
+**Проблема**: Новые страницы могут содержать устаревшие факты. Инструкция не проверяет актуальность через внешние источники.
+
+**Вопрос**: Как часто агент должен обновлять wiki из внешних источников? Автоматически при каждом query или по расписанию?
 
 ---
 
-*Created: 2026-06-24 | Status: All issues resolved ✅ | Last commit: ede2d60*
+### Issue #2: Правила web_search
+**Проблема**: Не明确规定 когда можно/нельзя использовать web_search для проверки фактов из wiki.
+
+**Вопрос**: Когда внешние источники важнее внутренних? (См. также Question #4 выше)
+
+---
+
+### Issue #3: Критерий novel insight
+**Проблема**: Инструкция субъективна — что считается "novel insight"?
+
+**Вопрос**: Нужны ли чёткие критерии или агент должен сам определять?
+
+---
+
+### Issue #4: Авторитетные источники (⚠️ Важно!)
+**Проблема**: В инструкции указано `official docs > community wiki > personal notes`, но нет механизма автоматического определения.
+
+**Требует твоего решения**: Какие критерии считать источником authoritative?
+
+**Варианты**:
+1. **По домену**: `github.com`, `*.com` (официальные сайты), `wikipedia.org`
+2. **По метаданным**: frontmatter.source_type = "official" или author = известное лицо/компания
+3. **По авторству**: если author — известный эксперт в области
+4. **Комбинированный**: домен + авторство + наличие official badge
+
+**Предложи свои критерии, и я обновлю инструкцию.**
+
+---
+
+*Created: 2026-06-24 | Status: Issues #5, #6 Fixed ✅ | Issue #1-4 Pending discussion | Last commit: ede2d60*
+
+**Next**: Обсудить Issue #4 (Authoritative source criteria) с пользователем

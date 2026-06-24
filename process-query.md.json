@@ -106,12 +106,27 @@
               "description": "Разные источники указывают на разные факты о том же объекте/концепции",
               "example": "wiki/entities/tech.md: технология создана в 2020; wiki/bibliography/book.md: технология создана в 2019",
               "type": "source_conflict"
+            },
+            {
+              "description": "Противоречие из-за разного уровня абстракции (конкретное vs общее)",
+              "example": "Страница A: 'Python 3.12'; Страница B: 'Python 3.x' — оба верны в своем контексте",
+              "type": "scope_conflict"
+            },
+            {
+              "description": "Разные контексты применения (оба верны в своем контексте)",
+              "example": "Страница A: 'Для Linux — метод X'; Страница B: 'Для Windows — метод Y'",
+              "type": "contextual_conflict"
+            },
+            {
+              "description": "Противоречие между версиями продукта/документации",
+              "example": "Документация v1: API endpoint /v1; Документация v2: API endpoint /v2",
+              "type": "version_conflict"
             }
           ]
         },
         {
           "action": "assess_compounding_value",
-          "rule": "Если ответ синтезирует из 2+ страниц И содержит insight не записанный ранее → flag for fixation"
+          "rule": "Если ответ:\n            - синтезирует из 2+ страниц, ИЛИ\n            - содержит новые факты об existing entity/concept (дополняющие), ИЛИ\n            - разрешает противоречие → flag for fixation"
         }
       ],
       "contradiction_resolution_flow": {
@@ -121,6 +136,29 @@
           "include_in_answer_if_contradiction_found": true,
           "log_entry": "## [date] query | Вопрос -> обнаружено X противоречий, Y сопоставлений"
         },
+        "resolution_priority": [
+          {
+            "priority": 1,
+            "strategy": "authoritative_source",
+            "condition": "source_conflict_with_authoritative_source",
+            "rule": "Официальный источник всегда приоритетнее даты обновления",
+            "description": "Приоритет: official docs > community wiki > personal notes"
+          },
+          {
+            "priority": 2,
+            "strategy": "temporal_conflict",
+            "condition": "temporal_conflict_detected",
+            "rule": "Использовать информацию из страницы с более поздней датой обновления",
+            "description": "Если нет authoritative source — новее лучше"
+          },
+          {
+            "priority": 3,
+            "strategy": "user_review",
+            "condition": "fact_conflict_no_date_info OR contextual_conflict",
+            "rule": "Отметить противоречие в ответе и предложить пользователю выбрать приоритетный источник",
+            "description": "Если неясно — спросить пользователя"
+          }
+        ],
         "resolution_actions": [
           {
             "applies_to": "Страница с устаревшей информацией",
@@ -141,21 +179,50 @@
         ],
         "resolution_strategy": [
           {
+            "action": "PREFER_AUTHORITATIVE_OVER_NEWER",
+            "condition": "authoritative_source_conflict_with_newer_page",
+            "rule": "Официальный документ всегда приоритетнее даты обновления. Если official docs говорит X, а новая страница — Y, верить official docs.",
+            "priority": 1
+          },
+          {
             "action": "PREFER_NEWER_VERSION",
-            "condition": "temporal_conflict_detected",
-            "rule": "Использовать информацию из страницы с более поздней датой обновления"
+            "condition": "temporal_conflict_detected AND no_authoritative_source",
+            "rule": "Использовать информацию из страницы с более поздней датой обновления",
+            "priority": 2
           },
           {
             "action": "FLAG_CONTRADICTION_FOR_USER_REVIEW",
-            "condition": "fact_conflict_no_date_info",
-            "rule": "Отметить противоречие в ответе и предложить пользователю выбрать приоритетный источник"
+            "condition": "fact_conflict_no_date_info OR contextual_conflict OR scope_conflict",
+            "rule": "Отметить противоречие в ответе и предложить пользователю выбрать приоритетный источник",
+            "priority": 3
           },
           {
             "action": "RESOLVE_BY_AUTHORITATIVE_SOURCE",
             "condition": "source_conflict_with_authoritative_source",
-            "rule": "Приоритет: official docs > community wiki > personal notes"
+            "rule": "Приоритет: official docs > community wiki > personal notes. Если authoritative source найден — использовать его, игнорируя дату.",
+            "priority": 1
           }
-        ]
+        ],
+        "post_resolution_verification": {
+          "description": "Проверить, что противоречие действительно разрешено",
+          "actions": [
+            {
+              "action": "re-read_updated_pages",
+              "purpose": "verify_consistency",
+              "condition": "always"
+            },
+            {
+              "action": "optional_web_search",
+              "description": "Для важных фактов — проверить во внешних источниках",
+              "condition": "high_stakes_fact OR user_requested_verification"
+            }
+          ]
+        },
+        "history_tracking": {
+          "description": "Сохранять историю изменений при разрешении противоречий",
+          "format": "### История изменений:\n- **YYYY-MM-DD**: Обновлено с [старое значение] → [новое значение] (разрешение противоречия со Страницей X)\n  - Причина: [тип конфликта]\n  - Источник решения: [страница/источник]",
+          "append_to": "## Обновлено [date] — новое уточнение"
+        }
       },
       "output_formats": [
         "markdown_page",
@@ -255,6 +322,16 @@
         {
           "condition": "contradiction_resolution_completed",
           "action_if_met": "CREATE_COMPARISON_OR_UPDATE_OLD_PAGE"
+        },
+        {
+          "condition": "new_facts_for_existing_entity",
+          "action_if_met": "UPDATE_EXISTING_PAGE",
+          "description": "Новые факты об existing entity → обновить страницу, сохранив старую информацию в разделе '## Обновлено [date]'",
+          "format": {
+            "preserve_old_info": true,
+            "append_section": "## Обновлено [date] — новое уточнение",
+            "include_source_link": true
+          }
         },
         { "condition": "user_explicitly_requests_save" }
       ],
