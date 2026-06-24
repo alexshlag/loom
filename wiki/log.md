@@ -38,6 +38,11 @@
   - Добавлен frontmatter_schema
 * Найдено 3 issues по broken_links, 1 date inconsistency, 2 missing frontmatter
 
+## [2026-06-24] ingest | AI Factory — https://github.com/lee-to/ai-factory
+* Создана entity: AI Factory (wiki/entities/ai-factory.md)
+* Raw sources сохранены в raw/github/lee-to/ai-factory@2.x/
+* Tags: tool, cli, agent-skill-system, stack-agnostic, spec-driven
+
 ## [2026-06-24] schema | Добавлен режим execution_modes в AGENTS.md
 * Глобальный default: silent. По запросу пользователя → verbose (пошаговый trace)
 * Переключение: "давай проверим" / "verbose mode" / "покажи шаги"
@@ -45,3 +50,7 @@
 * В AGENTS.md добавлен раздел `## ⚙️ Execution Modes` с примером JSON для process_query
 * В process-lint.md.json добавлён execution_mode (default: silent, trigger for verbose)
 * Логирование в verbose зависит от процесса: [✓] success, [✗] issue, [!] warning
+
+## [2026-06-24] concept | AI Factory vs Pi — Category Distinction
+* Создан concept: wiki/concepts/ai-factory-vs-pi.md
+* Уточнено: AI Factory = workflow schema (запускается на любом harness), Pi = harness runtime

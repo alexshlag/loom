@@ -1,11 +1,13 @@
 # Wiki Index
 
 ## Сущности
+* [AI Factory](entities/ai-factory.md) — Stack-agnostic CLI tool и skill system для AI-powered development.
 * [Pi Coding Agent](entities/pi-coding-agent.md) — Минимальный терминальный код-агент, расширяемый через TypeScript-расширения, skills и темы.
 * [Andrej Karpathy](entities/andrej-karpathy.md) — AI Researcher, автор LLM Wiki Pattern.
 
 
 ## Концепции
+* [AI Factory vs Pi — Category Distinction](concepts/ai-factory-vs-pi.md) — Различение категорий: AI Factory = workflow schema, Pi = harness runtime.
 * [Python Development on NixOS](concepts/python-nixos-development.md) — Методология создания изолированных сред разработки для Python в NixOS, аналогичная virtualenv или conda.
 * [LLM Wiki Pattern](concepts/llm-wiki-pattern.md) — Incremental knowledge base building через LLM вместо стандартного RAG.
 
@@ -38,9 +40,10 @@
 
 
 ## Ресурсы
+* [AI Factory](entities/ai-factory.md) — CLI tool, stack-agnostic skill system for AI development.
 
 ---
-*Создано: 2026-06-23* | *Последнее обновление: 2026-06-24* | *Всего страниц: 12*
+*Создано: 2026-06-23* | *Последнее обновление: 2026-06-24* | *Всего страниц: 14*
 
 ## Хронология
 | Дата | Событие |
