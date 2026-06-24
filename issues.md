@@ -41,7 +41,7 @@
 4. Добавлен формат истории изменений при разрешении
 
 **Ссылки**:
-- [process-query.json](../out/process-query.json) (contradiction_resolution_flow)
+- [process-query.json](process-query.json) (contradiction_resolution_flow)
 - [wiki/log.md](wiki/log.md) (запись о исправлении)
 
 ---
@@ -152,7 +152,7 @@
 
 #### Issue A ✅ RESOLVED → REVERTED
 **Решение**: Contradiction Resolution Flow возвращается в process-query.json как canonical source.
-- **Что сделано**: AGENTS.md содержит только `schema_ref: AGENTS.md#contradiction_resolution` (reference). Полный flow — в [process-query.json](../out/process-query.json) step 2.
+- **Что сделано**: AGENTS.md содержит только `schema_ref: AGENTS.md#contradiction_resolution` (reference). Полный flow — в [process-query.json](process-query.json) step 2.
 - **Принцип**: CRF — query-specific logic, не общее правило Schema.
 
 ---
