@@ -1,14 +1,27 @@
 {
-  "last_updated": "2026-06-25T10:00:00+03",
+  "last_updated": "2026-06-25T14:30:00+03",
   
-  "current_mode": null,
-  "focus_node": null,
+  "current_mode": "project",
+  "focus_node": "Memory Architecture — working_memory.json интеграция",
   
-  "open_pages": [],
+  "open_pages": [
+    {"path": "wiki/concepts/llm-wiki-pattern.md", "status": "read"},
+    {"path": "wiki/syntheses/rag-vs-llm-wiki-pattern.md", "status": "read"}
+  ],
   
   "dead_ends": [],
   
-  "query_summary": null,
+  "query_summary": {
+    "intent": "Интеграция working_memory.json, CONTEXT_BUBBLE, Grep Contract в процессные файлы",
+    "key_findings": [
+      "working_memory.json = оперативный уровень (мост между сессиями)",
+      "wiki/snapshot.md = информативный уровень (Active Projects)",
+      "AGENT_MUST_WRITE_WM_AFTER_EACH_QUERY — обязательное правило финализации"
+    ]
+  },
   
-  "next_steps_todo": []
+  "next_steps_todo": [
+    {"task": "Запустить практический тест: query → чтение WM → synthesis → запись в WM", "priority": "high"},
+    {"task": "Добавить working_memory.json steps в process-ingest.json и process-lint.json", "priority": "medium"}
+  ]
 }
