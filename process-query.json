@@ -54,6 +54,34 @@
         }
       ],
       "save_conditions_schema_ref": "AGENTS.md#compounding_workflow"
+    },
+
+    "context_bubble": {
+      "description": "Ограничение: не более 3 активных страниц в контексте одновременно",
+      "rule": "AGENT_READS_MAX_3_PAGES_CONCURRENTLY",
+      "action_when_exceeded": "DISMISS_LEAST_IMPORTANT_PAGE_FROM_CONTEXT",
+      "status_tracking": [
+        {"path": "page_path.md", "status": "reading"},
+        {"path": "page_path.md", "status": "updating"},
+        {"path": "page_path.md", "status": "read"}
+      ],
+      "schema_ref": "AGENTS.md#context_bubble"
+    },
+
+    "grep_contract": {
+      "description": "Безопасное чтение файлов через bash — запрет на cat крупных файлов, обязательный -m для grep",
+      "allowed_patterns": [
+        {"command": "grep -E '^# ' file.md", "purpose": "быстрое оглавление"},
+        {"command": "head -n 20 file.md", "purpose": "чтение фронтматера"},
+        {"command": "sed -n 'X,Yp' file.md", "purpose": "диапазон строк"},
+        {"command": "grep -m N pattern wiki/", "purpose": "искать до N совпадений (обязательно)"}
+      ],
+      "forbidden_patterns": [
+        {"command": "cat file.md", "reason": "файл >50 строк — токеновая перегрузка"},
+        {"command": "grep pattern wiki/", "reason": "без -m — может вывести тысячи строк"}
+      ],
+      "rule": "AGENT_MUST_USE_ALLOWED_PATTERNS_FOR_BASH_READING",
+      "schema_ref": "AGENTS.md#grep_contract"
     }
   },
   "trigger_condition": "user_asks_question",
