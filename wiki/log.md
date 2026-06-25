@@ -117,3 +117,8 @@
 * Обновлён дубль секции в entity: andrej-karpathy.md (удалён repeat, добавлены backlinks)
 * Обновлены backlinks во всех связанных страницах (index.md, overview.md)
 * Добавлена секция «Связи с нашим проектом» — mapping элементов проекта к паттерну Karpathy
+
+## [2026-06-25] schema | Added Error Handling Protocol (4-step loop: detect → analyze → resolve → continue)
+* Размещён после Memory Architecture Contract, перед Process Roles
+* Покрытие: local-fix / schema-patch / source-conflict / dead-end
+* Цель: агент не зависает на ошибках — фиксирует, анализирует причину, решает и двигается дальше

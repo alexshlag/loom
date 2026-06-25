@@ -363,6 +363,36 @@ schema | updated AGENTS.md with date convention rule
 
 ---
 
+## 🔧 Error Handling Protocol
+
+При обнаружении любой ошибки, противоречия или dead end — **не зависать**, а следовать шагам:
+
+### 4-step loop
+
+1. **Detect & Log** `[!]` → Записать в `log.md` с типом `[error]`, описанием и контекстом
+2. **Analyze** → Краткий анализ: что пошло не так, почему инструкция сломалась (не просто «ошибка», а корень проблемы)
+3. **Resolve** → Выбрать стратегию:
+   - `local-fix`: проблема локальная (путь, ссылка, логика) → исправить самостоятельно
+   - `schema-patch`: противоречие в Schema/AGENTS.md → предложить патч пользователю на review
+   - `source-conflict`: два источника говорят противоположное → отметить как `CONFLICT` на странице и продолжить
+   - `dead-end`: подход не работает (например, grep дал шум) → документировать причину, сменить стратегию
+4. **Continue** → Двигаться дальше по task, не застревая на сломанной инструкции
+
+### Примеры применения
+
+| Ситуация | Действие |
+|----------|----------|
+| `git add *` заблокирован guardrails | `[!] Log: protected zone blocked` → `local-fix: switch to git add wiki/` |
+| fetch_content вернул обрезанный markdown | `[!] Log: truncation detected` → `local-fix: fallback web_search + get_search_content` |
+| Новая команда несовместима с текущей Schema | `[!] Log: schema conflict` → `schema-patch: предложить патч AGENTS.md` |
+| Grep дал >100 совпадений без смысла | `[!] Log: grep noise` → `dead-end: switch to index.md` |
+
+### Правило
+
+> **Ошибка ≠ стоп.** Каждый error — сигнал к действию, а не причина зависать. Агент фиксирует, анализирует, решает и двигается дальше.
+
+---
+
 ## 🔄 Process Roles
 
 Каждая роль — отдельный процессный файл в корневой директории.
@@ -624,4 +654,4 @@ Priority order:
 
 ---
 
-*Schema Version: 5 | Last Updated: 2026-06-25 | Author Pattern: Andrej Karpathy (LLM Wiki)*
+*Schema Version: 6 | Last Updated: 2026-06-25 | Author Pattern: Andrej Karpathy (LLM Wiki)*
