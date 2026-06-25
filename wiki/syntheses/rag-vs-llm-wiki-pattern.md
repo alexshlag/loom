@@ -37,6 +37,7 @@ related: []
 ## Связи:
 * [LLM Wiki Pattern Concept](concepts/llm-wiki-pattern.md) — compounding knowledge base approach
 * [Entity: Andrej Karpathy](entities/andrej-karpathy.md) — автор LLM Wiki Pattern
+* [Concept: Temporal Decay](concepts/temporal-decay-in-wiki.md) — проблема устаревания знаний, требует maintenance
 
 
 ## Инсайты и выводы

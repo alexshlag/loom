@@ -6,6 +6,7 @@
 * [AI Factory vs Pi — Category Distinction](concepts/ai-factory-vs-pi.md) — Различение категорий: AI Factory = workflow schema, Pi = harness runtime.
 * [Python Development on NixOS](concepts/python-nixos-development.md) — Методология создания изолированных сред разработки для Python в NixOS, аналогичная virtualenv или conda.
 * [LLM Wiki Pattern](concepts/llm-wiki-pattern.md) — Incremental knowledge base building через LLM вместо стандартного RAG.
+* [Temporal Decay in Compounding KB](concepts/temporal-decay-in-wiki.md) — Проблема устаревания знаний в compounding wiki, требует periodic maintenance.
 
 
 ## Источники

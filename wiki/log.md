@@ -82,7 +82,8 @@
 * JSON schema added to prevent future drift: `never_derive_from: [source_filename, raw_timestamps]`
 * Schema version bumped from 3 → 4
 
-## [2026-06-24] ingest | Nvidia
-* Создана сущность: wiki/entities/nvidia.md
-* Источник: web_search
-* Синтез: лидерство в GPU и AI-ускорителях.
+## [2026-06-25] query | Temporal decay problem in compounding wiki
+  * Создана страница: wiki/concepts/temporal-decay-in-wiki.md
+  * Synthesis: LLM Wiki Pattern compounds knowledge но требует maintenance
+  * Добавлены backlinks к llm-wiki-pattern.md + rag-vs-llm-wiki-pattern.md
+  * working_memory.json updated: query_summary + next_steps_todo

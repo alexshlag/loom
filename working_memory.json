@@ -1,27 +1,23 @@
 {
-  "last_updated": "2026-06-25T14:30:00+03",
+  "last_updated": "2026-06-25T14:45:00+03",
   
-  "current_mode": "project",
+  "current_mode": "query",
+  "focus_node": null,
   "focus_node": "Memory Architecture — working_memory.json интеграция",
   
-  "open_pages": [
-    {"path": "wiki/concepts/llm-wiki-pattern.md", "status": "read"},
-    {"path": "wiki/syntheses/rag-vs-llm-wiki-pattern.md", "status": "read"}
-  ],
+  "open_pages": [],
   
   "dead_ends": [],
   
   "query_summary": {
-    "intent": "Интеграция working_memory.json, CONTEXT_BUBBLE, Grep Contract в процессные файлы",
-    "key_findings": [
-      "working_memory.json = оперативный уровень (мост между сессиями)",
-      "wiki/snapshot.md = информативный уровень (Active Projects)",
-      "AGENT_MUST_WRITE_WM_AFTER_EACH_QUERY — обязательное правило финализации"
-    ]
+    "intent": "Temporal decay problem in compounding wiki — как wiki решает устаревание знаний",
+    "pages_read": ["wiki/concepts/llm-wiki-pattern.md", "wiki/syntheses/rag-vs-llm-wiki-pattern.md", "wiki/overview.md"],
+    "new_page_created": "wiki/concepts/temporal-decay-in-wiki.md",
+    "insight": "LLM Wiki Pattern compounds knowledge BUT requires maintenance — temporal decay is a structural weakness unless periodic lint catches outdated pages"
   },
   
   "next_steps_todo": [
-    {"task": "Запустить практический тест: query → чтение WM → synthesis → запись в WM", "priority": "high"},
-    {"task": "Добавить working_memory.json steps в process-ingest.json и process-lint.json", "priority": "medium"}
+    {"task": "Добавить working_memory.json steps в process-ingest.json и process-lint.json", "priority": "medium"},
+    {"task": "Решить Issue #1 из issues.md: как часто обновлять wiki из внешних источников?", "priority": "high"}
   ]
 }
