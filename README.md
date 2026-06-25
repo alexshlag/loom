@@ -170,36 +170,37 @@ exit 0
 
 ---
 
-## Текущее состояние wiki (как пример)
+## Текущее состояние wiki
 
-| Категория | Страниц |
-|-----------|---------|
-| Сущности | Pi Coding Agent, Andrej Karpathy, AI Factory, Nvidia |
-| Концепты | LLM Wiki Pattern, AI Factory vs Pi, Python на NixOS |
-| Синтезы | RAG vs LLM Wiki Pattern, Python Dev Environments |
-| Schema | AGENTS.md (v4), process-ingest.json, process-query.json, process-lint.json |
+| Категория | Страниц | Примеры |
+|-----------|---------|---------|
+| Сущности | 2+ | Symfony, Nvidia |
+| Концепты | ~18 | LLM Wiki Pattern, Service Container, Routing, Events, Security, Doctrine, Flex, Hexagonal, Twig, Testing, AssetMapper, Symfony AI, Messenger, Workflow, Cache, Python NixOS Dev |
+| Синтезы | 2+ | RAG vs LLM Wiki Pattern, Python Dev Environments |
+| Schema | AGENTS.md (v6), process-ingest.json, process-query.json, process-lint.json |
 
-**Итог:** 14 страниц по трём темам. Работает ingest, query, lint. Guardrails валидируют пути. Schema co-evolves.
+**Итог:** ~36 страниц по трём темам: LLM Wiki Pattern / Pi Coding Agent, Python на NixOS, Symfony. Работает ingest, query, lint, Error Handling Protocol. Guardrails валидируют пути.
 
 ---
 
 ## Дальнейшие шаги (Roadmap)
 
-### Управление контекстом и памятью агента
+### ✅ Реализовано
 
-Ключевая проблема: LLM-агент с ограниченным контекстным окном (особенно локальные модели). Без управления памятью — токенольное выгорание при росте wiki. 
+| Компонент | Статус |
+|-----------|--------|
+| `working_memory.json` | ✅ Inline в AGENTS.md, Context Bridge формат |
+| CONTEXT_BUBBLE + Delta-Scoping | ✅ Memory Architecture Contract раздел |
+| Grep-контракт | ✅ Разрешённые/запрещённые паттерны bash чтения |
+| Git JSON policy (v5) | ✅ dual commit formats, protected zones, MANDATORY status check |
+| Error Handling Protocol | ✅ 4-step detect-analyze-resolve-continue loop (Schema v6) |
 
-* **`working_memory.json`** — мост между сессиями. Агент читает при старте, перезаписывает при завершении.
-* **CONTEXT_BUBBLE + Delta-Scoping** — не более 3 активных страниц в контексте одновременно. Чтение через графовое соседство (1-й круг wikilinks).
-* **Grep-контракт в JSON-инструкциях** — запрет на `cat` крупных файлов, обязательный `-m` для grep.
-* **Скриптовая автоматизация** — lint, backlinks-checks, orphan-detection — bash/python задачи. Агент получает готовый сухой остаток.
+### 🔜 Очередь
 
-### Остальные шаги
-
-* [ ] Настроить `working_memory.json` и внедрить CONTEXT_BUBBLE в JSON-инструкции ролей
-* [ ] Добавить bash-скрипт поиска (FTS5) вместо чтения index.md целиком
+* [ ] Добавить bash-скрипт поиска (FTS5 или ripgrep) вместо чтения index.md целиком
 * [ ] Автоматизировать lint через cron/bash — агент получает готовый отчёт
 * [ ] Перейти на MCP-сервер при росте wiki (>100 страниц)
+* [ ] Оптимизация Schema: AGENTS.md растёт, нужна модулизация |
 
 ---
 

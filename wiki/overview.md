@@ -1,27 +1,44 @@
+---
+tags: [overview, wiki-status]
+date: 2026-06-25
+sources: []
+related: []
+---
+
 # Wiki Overview — Текущая картина знаний
 
 ## Статус
-Wiki содержит 10 markdown-файлов: 4 root files (index, log, overview, timeline), 3 entity pages (pi-coding-agent, andrej-karpathy), 2 concept pages (python-nixos-development, llm-wiki), 2 synthesis pages (python-nixos-development-environments, rag-vs-llm-wiki-pattern).
+Wiki содержит **36+ markdown-файлов**: 4 root files (index, log, overview, timeline), 2 entity pages (Symfony, Nvidia), ~18 concept pages, 2 synthesis pages.
 
-## Ключевые тезисы
-* **Pi Coding Agent** — минимальный terminal harness, расширяемый через TypeScript extensions
+## Ключевые области
+
+### LLM Wiki Pattern / AI Agent
 * **LLM Wiki Pattern** — compounding knowledge base вместо стандартного RAG (Andrej Karpathy)
 * **RAG vs LLM Wiki** — основное различие: RAG rediscover on every query, wiki compounds incrementally
-* **Compounding Workflow** — answers сохраняются как новые страницы при novel insights/synthesis из 2+ источников
-* **Schema Evolution** — AGENTS.md (markdown) co-evolves между human и LLM по оригинальной идее Karpathy
+* **Pi Coding Agent** — terminal harness, расширяемый через TypeScript extensions
+* **AI Factory** — CLI tool, stack-agnostic skill system
+* **Temporal Decay** — проблема устаревания знаний в compounding wiki
 
-## Ключевые тезисы
-*暂无*
+### Python на NixOS
+* **Python Development on NixOS** — изолированные среды разработки (virtualenv / conda аналог)
+* **Синтез**: основные способы создания сред разработки Python на NixOS
+
+### Symfony Framework
+* **Symfony Entity** — high-performance PHP web framework, component-based architecture
+* **18 концептов** покрывают ключевые компоненты: Service Container, Routing, Events, Security, Doctrine ORM, Flex, Hexagonal Architecture, Twig, Testing, AssetMapper, Symfony AI, Messenger, Workflow/State Machine, Cache
+
+## Schema
+AGENTS.md (v6) — живая схема с Error Handling Protocol, JSON git policy, dual commit formats. Process файлы: ingest, query, lint.
 
 ## Следующие шаги
 1. ✅ Заполнить index.md по мере роста wiki
-2. Провести первую lint-проверку для проверки здоровья структуры
-3. Добавить backlinks между связанными страницами (andrej-karpathy ↔ llm-wiki)
+2. Провести lint-проверку для проверки здоровья структуры
+3. Добавить backlinks между связанными страницами (Symfony → концепты)
 
 ## Связи:
-* [Pi Coding Agent](entities/pi-coding-agent.md)
-* [Andrej Karpathy](entities/andrej-karpathy.md)
 * [LLM Wiki Pattern](concepts/llm-wiki.md)
+* [Symfony](entities/symfony.md)
+* [Python NixOS Development](concepts/python-nixos-development.md)
 
 ---
-*Создано: 2026-06-23*
+*Создано: 2026-06-23 | Обновлено: 2026-06-25 — полное обновление статуса*
