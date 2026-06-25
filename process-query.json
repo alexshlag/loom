@@ -91,6 +91,22 @@
   ],
   "steps": [
     {
+      "step_id": "0",
+      "name": "context_load_from_working_memory",
+      "description": "При старте чтения working_memory.json — узнать, на чём остановился агент в предыдущей сессии. Если focus_node != null → продолжить работу с этой страницы. Если query_summary не пустой → удерживать тему discussion.",
+      "actions": [
+        {"action": "read_file", "path": "wiki/working_memory.json"},
+        {"action": "check_focus_node_exists",
+         "if_true": "CONTINUE_WITH_SAME_FOCUS",
+         "if_false": "SET_NEW_FOCUS_FROM_QUERY"
+        },
+        {
+          "condition": "current_mode == 'discussion'",
+          "action": "LOAD_ALL_OPEN_PAGES_AND_QUERY_SUMMARY"
+        }
+      ]
+    },
+    {
       "step_id": "1",
       "name": "search",
       "description": "Сначала обратись к index.md, затем используй wiki_recall для семантического поиска релевантных страниц. Используй критерии уверенности для определения достаточности поиска.",
@@ -262,6 +278,23 @@
       }
     },
     {
+      "step_id": "2.3",
+      "name": "context_compaction_and_dismissal",
+      "description": "Сжать прочитанный контекст в структурированное саммари (макс 2K токенов), записать в working_memory.json, выгрузить raw-страницы из активного окна.",
+      "actions": [
+        {"action": "compress_read_pages_to_summary",
+         "max_tokens": 2048,
+         "include": ["key_facts", "contradictions", "sources"]},
+        {
+          "action": "write_to_working_memory",
+          "fields": [
+            {"field": "query_summary", "value": "{intent, pages_read, key_findings}"},
+            {"field": "open_pages", "status": "read -> dismiss_from_context"}
+          ]
+        }
+      ]
+    },
+    {
       "step_id": "2.5",
       "name": "duplicate_check_before_fixation",
       "description": "Проверь наличие похожих страниц перед созданием новой — предотвращает дублирование wiki",
@@ -411,6 +444,21 @@
             "action": "mark_orphan_if_no_mentions_found"
           }
         ]
+      },
+      "finalization": {
+        "description": "Обязательный финальный шаг — записать состояние в working_memory.json перед завершением сессии",
+        "actions": [
+          {"action": "write_to_working_memory",
+           "fields": [
+             {"field": "last_updated", "value": "current_timestamp"},
+             {"field": "focus_node", "value": "completed OR null (if dismissed)"},
+             {"field": "next_steps_todo", "action_if_compounding_flagged": "ADD_TASK: create_page_from_insight"},
+             {"field": "dead_ends", "action_if_grep_failed": "APPEND_APPROACH_AND_REASON"},
+             {"field": "current_mode", "value": "null (after dismissal) OR discussion (if topic continues)"}
+           ]
+          }
+        ],
+        "rule": "AGENT_MUST_WRITE_WM_AFTER_EACH_QUERY"
       }
     }
   ],

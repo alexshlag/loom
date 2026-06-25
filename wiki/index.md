@@ -21,6 +21,7 @@
 
 ## Обзоры
 * [Wiki Overview](overview.md) — обзор структуры и содержания wiki.
+* [Wiki Snapshot](snapshot.md) — перечень активных проектов и связанных wiki-страниц.
 
 
 ## Проекты
