@@ -1,7 +1,7 @@
 # Wiki Overview — Текущая картина знаний
 
 ## Статус
-Wiki содержит 10 markdown-файлов: 4 root files (index, log, overview, timeline), 3 entity pages (pi-coding-agent, andrej-karpathy), 2 concept pages (python-nixos-development, llm-wiki-pattern), 2 synthesis pages (python-nixos-development-environments, rag-vs-llm-wiki-pattern).
+Wiki содержит 10 markdown-файлов: 4 root files (index, log, overview, timeline), 3 entity pages (pi-coding-agent, andrej-karpathy), 2 concept pages (python-nixos-development, llm-wiki), 2 synthesis pages (python-nixos-development-environments, rag-vs-llm-wiki-pattern).
 
 ## Ключевые тезисы
 * **Pi Coding Agent** — минимальный terminal harness, расширяемый через TypeScript extensions
@@ -16,12 +16,12 @@ Wiki содержит 10 markdown-файлов: 4 root files (index, log, overvi
 ## Следующие шаги
 1. ✅ Заполнить index.md по мере роста wiki
 2. Провести первую lint-проверку для проверки здоровья структуры
-3. Добавить backlinks между связанными страницами (andrej-karpathy ↔ llm-wiki-pattern)
+3. Добавить backlinks между связанными страницами (andrej-karpathy ↔ llm-wiki)
 
 ## Связи:
 * [Pi Coding Agent](entities/pi-coding-agent.md)
 * [Andrej Karpathy](entities/andrej-karpathy.md)
-* [LLM Wiki Pattern](concepts/llm-wiki-pattern.md)
+* [LLM Wiki Pattern](concepts/llm-wiki.md)
 
 ---
 *Создано: 2026-06-23*

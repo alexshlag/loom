@@ -21,18 +21,16 @@ AI Researcher, автор LLM Wiki pattern (LLM-powered personal knowledge base)
 * **OpenAI** — Research Scientist, работал над глубоким обучением, компьютерным зрением, генеративными моделями и reinforcement learning
 * **Stanford** — PhD в Computer Science (работал с Fei-Fei Li)
 
-## Ключевая идея: LLM Wiki Pattern
+## Kлючевая идея: LLM Wiki Pattern
 Вместо стандартного RAG, где LLM каждый раз заново извлекает фрагменты документов, Karpathy предлагает **incrementally build and maintain a persistent wiki** — структурированную коллекцию markdown-файлов, которую LLM автоматически обновляет при добавлении новых источников. Знания компилируются один раз и поддерживаются актуальными.
 
 > Источник: [karpathy.ai](https://karpathy.ai/), Wikipedia, LinkedIn
 
-## Ключевая идея: LLM Wiki Pattern
-Вместо стандартного RAG, где LLM каждый раз заново извлекает фрагменты документов, Karpathy предлагает **incrementally build and maintain a persistent wiki** — структурированную коллекцию markdown-файлов, которую LLM автоматически обновляет при добавлении новых источников. Знания компилируются один раз и поддерживаются актуальными.
-
 ## Связи:
-* [LLM Wiki Pattern](concepts/llm-wiki-pattern.md) — методика построения wiki через LLM
-* [Synthesis: Python NixOS Dev Environments](syntheses/python-nixos-development-environments.md) — пример синтеза
+* [Concept: LLM Wiki Pattern](concepts/llm-wiki.md) — методика построения wiki через LLM (компounding knowledge base)
+* [Synthesis: RAG vs LLM Wiki Pattern](syntheses/rag-vs-llm-wiki-pattern.md) — сравнение подхода
+* [Synthesis: Python NixOS Dev Environments](syntheses/python-nixos-development-environments.md) — пример синтеза через wiki
 
 ## Источники:
-* `raw/llm-wiki.md` — идея файла для передачи LLM-агенту (оригинал)
+* `raw/llm-wiki.md` — оригинальный gist Karpathy с описанием паттерна (оригинал)
 

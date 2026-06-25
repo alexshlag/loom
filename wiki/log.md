@@ -85,5 +85,12 @@
 ## [2026-06-25] query | Temporal decay problem in compounding wiki
   * Создана страница: wiki/concepts/temporal-decay-in-wiki.md
   * Synthesis: LLM Wiki Pattern compounds knowledge но требует maintenance
-  * Добавлены backlinks к llm-wiki-pattern.md + rag-vs-llm-wiki-pattern.md
+  * Добавлены backlinks к llm-wiki.md + rag-vs-llm-wiki-pattern.md
   * working_memory.json updated: query_summary + next_steps_todo
+
+## [2026-06-25] schema | Переработана страница LLM Wiki Pattern по оригинальному gist Karpathy
+* Переименована wiki/concepts/llm-wiki-pattern.md → wiki/concepts/llm-wiki.md
+* Добавлены секции: Architecture, Operations (Ingest/Query/Lint), Indexing & Logging, Compounding, Tools, Why it works
+* Обновлён дубль секции в entity: andrej-karpathy.md (удалён repeat, добавлены backlinks)
+* Обновлены backlinks во всех связанных страницах (index.md, overview.md)
+* Добавлена секция «Связи с нашим проектом» — mapping элементов проекта к паттерну Karpathy

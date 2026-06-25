@@ -2,7 +2,7 @@
 tags: [synthesis, rag, llm, knowledge-base, comparison]
 date: 2026-06-24
 sources: [raw/llm-wiki.md]
-related: []
+related: [wiki/concepts/llm-wiki.md]
 ---
 
 # Сравнение: RAG vs LLM Wiki Pattern (Compounding Knowledge Base)
