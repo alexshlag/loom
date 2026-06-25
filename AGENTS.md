@@ -205,22 +205,81 @@ schema | updated AGENTS.md with date convention rule
 **Scope** — файл или модуль, к которому относится (необязательно).
 **Description** — краткое описание действия. Начинается с маленькой буквы.
 
-### Git-операции агента
-| Операция | Правило |
-|----------|---------|
-| `git add <file>` | Агент всегда использует явные имена файлов, а не `git add *`. Это предотвращает случайное добавление системных/временных файлов. |
-| `git rm --cached` | Используется для удаления файлов из индекса без удаления с диска (например, старые process-*.md.json). |
-| `git commit -a` | Не использовать — агент всегда явно `add` → `commit`. |
-| `git status --short` | Обязательный вызов перед каждым коммитом. |
-
-### Правила для защищённых зон
-- `raw/**` и `meta/**` **никогда** не попадают в staged/committed.
-- Если скрипт или hook блокирует commit из protected zones → агент отменяет действие, сообщает пользователю.
-
-### Примеры плохих практик (запрещено)
-❌ `git add *` — добавляет всё подряд (включая .tmp, logs, system files)
-❌ `git commit -m "fix stuff"` — неинформативное сообщение без типа/контекста
-❌ Пропуск `git status --short` перед коммитом
+```json
+{
+  "git_policy": {
+    "allowed_commands": [
+      {
+        "command": "git status --short",
+        "requirement": "MANDATORY",
+        "phase": "pre_action",
+        "description": "Вызывать строго перед формированием индекса и перед коммитом для валидации состояния репозитория."
+      },
+      {
+        "command": "git add wiki/",
+        "requirement": "RECOMMENDED",
+        "phase": "staging",
+        "description": "Использовать для автоматического добавления всех новых, измененных и удаленных файлов внутри директории wiki/. Исключает пропуск файлов."
+      },
+      {
+        "command": "git add <file>",
+        "requirement": "OPTIONAL",
+        "phase": "staging",
+        "description": "Использовать только для точечного добавления конкретных файлов вне директории wiki/."
+      },
+      {
+        "command": "git rm --cached <file>",
+        "requirement": "OPTIONAL",
+        "phase": "staging",
+        "description": "Использовать исключительно для удаления файлов из индекса без их физического удаления с диска."
+      }
+    ],
+    "prohibited_commands": [
+      {
+        "command": "git add *",
+        "reason": "Критическая ошибка. Добавляет системный мусор, временные файлы (.tmp, logs) и игнорирует настройки оболочки."
+      },
+      {
+        "command": "git commit -a",
+        "reason": "Запрещено сквозное индексирование. Агент обязан строго разделять фазы 'git add' и 'git commit'."
+      }
+    ],
+    "protected_zones": {
+      "paths": ["raw/**", "meta/**"],
+      "policy": "NEVER_STAGED_OR_COMMITTED",
+      "error_handling": {
+        "action_on_block": "ABORT_AND_REPORT",
+        "message_to_user": "Критическая ошибка: Зафиксирована попытка изменения или индексации файлов в защищенной зоне (raw/meta). Операция прервана."
+      }
+    },
+    "commit_message_policy": {
+      "formats": [
+        {
+          "name": "pipe-style",
+          "pattern": "<type> | <scope>: <description>",
+          "example": "ingest | added entity pi-coding-agent",
+          "description": "Классический формат: type, scope (необязательно), краткое описание с маленькой буквы."
+        },
+        {
+          "name": "conventional-commits",
+          "pattern": "<type>(<scope>): <short_description>",
+          "example": "feat(wiki): add structured page templates",
+          "description": "Conventional Commits: feat/fix/docs/refactor, scope в скобках."
+        }
+      ],
+      "prohibited_examples": [
+        "fix stuff",
+        "update",
+        "commit"
+      ],
+      "required_fields": {
+        "type": ["feat", "fix", "docs", "refactor"],
+        "scope": "wiki"
+      }
+    }
+  }
+}
+```
 
 ---
 
@@ -565,4 +624,4 @@ Priority order:
 
 ---
 
-*Schema Version: 4 | Last Updated: 2026-06-24 | Author Pattern: Andrej Karpathy (LLM Wiki)*
+*Schema Version: 5 | Last Updated: 2026-06-25 | Author Pattern: Andrej Karpathy (LLM Wiki)*

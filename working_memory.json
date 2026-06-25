@@ -1,23 +1,40 @@
 {
-  "last_updated": "2026-06-25T14:45:00+03",
+  "last_updated": "2026-06-25T14:50:00+03",
 
   "current_mode": "query",
   "focus_node": null,
-  "_note": "focus_node was set to 'Memory Architecture' but cleared — user switched to link_validation topic",
-
+  
   "open_pages": [],
 
   "dead_ends": [],
 
   "query_summary": {
-    "intent": "Temporal decay problem in compounding wiki — как wiki решает устаревание знаний",
-    "pages_read": ["wiki/concepts/llm-wiki.md", "wiki/syntheses/rag-vs-llm-wiki-pattern.md", "wiki/overview.md"],
-    "new_page_created": "wiki/concepts/temporal-decay-in-wiki.md",
-    "insight": "LLM Wiki Pattern compounds knowledge BUT requires maintenance — temporal decay is a structural weakness unless periodic lint catches outdated pages"
+    "intent": "Symfony Framework — comprehensive knowledge base for project work",
+    "pages_created": [
+      "wiki/entities/symfony.md",
+      "wiki/concepts/service-container.md",
+      "wiki/concepts/routing-system.md",
+      "wiki/concepts/event-dispatcher.md",
+      "wiki/concepts/security-system.md",
+      "wiki/concepts/doctrine-orm.md",
+      "wiki/concepts/symfony-flex.md",
+      "wiki/concepts/hexagonal-architecture.md",
+      "wiki/concepts/twig-templating.md",
+      "wiki/concepts/testing-strategy.md",
+      "wiki/concepts/assetmapper.md",
+      "wiki/concepts/symfony-ai.md",
+      "wiki/concepts/messenger-component.md",
+      "wiki/concepts/workflow-state-machine.md",
+      "wiki/concepts/cache-system.md"
+    ],
+    "raw_package": "raw/sources/SRC-2026-06-25-SYMFONY-001/",
+    "index_updated": true,
+    "timeline_updated": true
   },
 
   "next_steps_todo": [
-    {"task": "Исправить broken links после переименования llm-wiki-pattern → llm-wiki", "priority": "high"},
+    {"task": "git commit all new Symfony pages", "priority": "high"},
+    {"task": "Исправить broken links после переименования llm-wiki-pattern → llm-wiki", "priority": "medium"},
     {"task": "Добавить post_operation_link_validation в process-ingest.json и process-lint.json", "priority": "medium"},
     {"task": "Решить Issue #1 из issues.md: как часто обновлять wiki из внешних источников?", "priority": "high"}
   ]

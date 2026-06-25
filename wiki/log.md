@@ -88,6 +88,29 @@
   * Добавлены backlinks к llm-wiki.md + rag-vs-llm-wiki-pattern.md
   * working_memory.json updated: query_summary + next_steps_todo
 
+## [2026-06-25] ingest | Symfony Framework — Comprehensive Knowledge Base
+  * Создан raw пакет: raw/sources/SRC-2026-06-25-SYMFONY-001/
+    - symfony-comprehensive-knowledge.md (основной источник, ~40к символов)
+    - symfony-manifest.json (manifest с метаданными)
+  * Создана entity: [Symfony](wiki/entities/symfony.md) — основной объект
+  * Созданы concept-страницы:
+    - Service Container & DI
+    - Routing System & Controllers
+    - Event Dispatcher
+    - Security System (AuthN & AuthZ)
+    - Doctrine ORM Integration
+    - Symfony Flex & Recipes
+    - Hexagonal Architecture in Symfony
+    - Twig Templating
+    - Testing Strategy
+    - AssetMapper
+    - Symfony AI Component
+    - Messenger Component
+    - Workflow & State Machine
+    - Cache System
+  * Обновлено: wiki/index.md (добавлены все новые страницы)
+  * Обновлено: wiki/timeline.md (запись о Symfony ingest)
+
 ## [2026-06-25] schema | Переработана страница LLM Wiki Pattern по оригинальному gist Karpathy
 * Переименована wiki/concepts/llm-wiki-pattern.md → wiki/concepts/llm-wiki.md
 * Добавлены секции: Architecture, Operations (Ingest/Query/Lint), Indexing & Logging, Compounding, Tools, Why it works
