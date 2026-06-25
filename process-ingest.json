@@ -182,6 +182,19 @@
       ]
     },
     {
+      "step_id": "3c",
+      "name": "register_source_ingested",
+      "description": "После успешного создания/обновления страницы — добавь ID raw-пакета в meta/raw_registry.json, чтобы исключить его из будущих проверок новых источников.",
+      "actions": [
+        {
+          "action": "update_json_file",
+          "path": "tracking/raw_registry.json",
+          "operation": "append_to_ingested_sources_array",
+          "value": "${RAW_PACKAGE_ID}"
+        }
+      ]
+    },
+    {
       "step_id": "4",
       "name": "log_registration",
       "pre_check": {
