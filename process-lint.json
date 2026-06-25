@@ -42,15 +42,11 @@
       "check_id": "2",
       "name": "orphan_pages_detection",
       "description": "Найди страницы без входящих ссылок из других wiki-страниц",
-      "actions": [
-        {
-          "action": "iterate_all_files_and_check_backlinks"
-        },
-        {
-          "condition": "page_is_orphan",
-          "suggestion": "propose_adding_backlink_from_related_entity_concept"
-        }
-      ]
+      "command": "./scripts/orphan-pages.sh wiki/",
+      "output_handling": {
+        "exit_code_0": "no_orphans — proceed to next check",
+        "exit_code_1": "orphans_found — report with suggestion: add backlink from related entity/concept"
+      }
     },
     {
       "check_id": "3",
@@ -79,15 +75,8 @@
     {
       "check_id": "5",
       "name": "mechanical_linting",
+      "description": "Механические проверки: фронтматер, дубли заголовков, пустые категории",
       "checks": [
-        {
-          "check": "orphaned_pages",
-          "rule": "has_at_least_one_backlink"
-        },
-        {
-          "check": "broken_links",
-          "rule": "all_relative_paths_resolve_from_wiki_root_directory"
-        },
         {
           "check": "duplicate_titles",
           "rule": "no_duplicate_frontmatter_title_within_same_category_folder"
@@ -100,78 +89,55 @@
           "check": "coverage_gaps",
           "rule": "which_index_categories_are_empty"
         }
-      ]
+      ],
+      "note": "orphaned_pages и broken_links вынесены в check_id=2 и check_id=7 для глубокой проверки"
     },
     {
       "check_id": "6",
       "name": "date_consistency_check",
       "description": "Проверь, что год в date: совпадает с годом в секциях обновления (Обновлено YYYY-MM-DD), и что даты не старше 1 года",
-      "actions": [
-        {
-          "action": "extract_date_from_frontmatter"
-        },
-        {
-          "action": "extract_dates_from_update_sections"
-        },
-        {
-          "condition": "year_mismatch",
-          "suggestion": "flag_for_correction_and_propose_fix"
-        }
-      ]
+      "command": "./scripts/date-consistency.sh wiki/",
+      "output_handling": {
+        "exit_code_0": "dates_consistent — proceed to next check",
+        "exit_code_1": "inconsistencies_found — report with suggestion: review and correct dates using current system date"
+      }
     },
     {
       "check_id": "7",
       "name": "link_validation_with_auto_fix",
       "description": "Валидируй все внутренние ссылки, исправляй автоматически, флаги брейкнутые",
-      "actions": [
-        {
-          "action": "extract_all_wiki_links_from_pages",
-          "patterns": [
-            "[text](path)",
-            "[[wikilink]]"
-          ]
-        },
-        {
-          "condition": "link_path_is_filesystem_relative",
-          "auto_fix": "rewrite_to_wiki_relative_from_wiki_root"
-        },
-        {
-          "condition": "target_page_does_not_exist",
-          "fallback_message": "[!] Broken link: [text](path) — target does not exist. Proposed fix: create page or remove link.",
-          "action": "flag_broken_link_for_review"
-        },
-        {
-          "condition": "link_path_resolves_correctly",
-          "status": "VALID"
-        }
-      ],
+      "command": "./scripts/broken-links.sh wiki/",
+      "output_handling": {
+        "exit_code_0": "all_links_valid — proceed to next check",
+        "exit_code_1": "broken_links_found — report to user with auto-fixable count"
+      },
       "reference": "AGENTS.md#link-conventions--auto-fix"
     },
     {
       "check_id": "8",
       "name": "file_rename_or_delete_validation",
       "description": "Проверяет, что после rename/move/delete всех файлов в wiki все бэклинки исправлены. Сканит все файлы на старые пути.",
+      "pre_condition": {
+        "command": "git diff --name-only HEAD~1..HEAD | grep wiki/",
+        "if_no_changes_found": "SKIP_LINT"
+      },
       "actions": [
-        {
-          "action": "detect_filesystem_changes_since_last_lint",
-          "command": "git diff --name-only HEAD~1..HEAD | grep wiki/"
-        },
         {
           "condition": "rename_or_move_detected",
           "old_path": "<old_path>",
           "new_path": "<new_path>",
-          "action": "grep -r \"${OLD_PATH}\" wiki/ --include=\"*.md\" -m 100"
+          "command": "./scripts/post-op-link-scan.sh ${OLD_PATH} 100"
         },
         {
           "condition": "delete_detected",
           "deleted_file": "<path>",
-          "action": "grep -r \"${DELETED_FILE}\" wiki/ --include=\"*.md\" -m 100"
-        },
-        {
-          "condition": "broken_links_found",
-          "suggestion": "auto_fix: rewrite_to_new_path_or_remove_link"
+          "command": "./scripts/post-op-link-scan.sh ${DELETED_FILE} 100"
         }
       ],
+      "output_handling": {
+        "exit_code_0": "no_broken_links — proceed",
+        "exit_code_1": "broken_links_found — report with auto-fixable count"
+      },
       "schema_ref": "AGENTS.md#post_operation_link_validation"
     }
   ],

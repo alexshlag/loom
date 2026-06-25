@@ -2,7 +2,7 @@
   "module": "process_query",
   "description": "Ответы на вопросы с использованием wiki как базы знаний",
   "context": {
-    "wiki_dir": "{WIKI_DIR}/wiki/",
+    "wiki_dir": "wiki/",
     "always_loaded": true,
     "search_priority_details": {
       "description": "Критерии достаточности поиска по wiki",
@@ -95,7 +95,7 @@
       "name": "context_load_from_working_memory",
       "description": "При старте чтения working_memory.json — узнать, на чём остановился агент в предыдущей сессии. Если focus_node != null → продолжить работу с этой страницы. Если query_summary не пустой → удерживать тему discussion.",
       "actions": [
-        {"action": "read_file", "path": "wiki/working_memory.json"},
+        {"action": "read_file", "path": "working_memory.json"},
         {"action": "check_focus_node_exists",
          "if_true": "CONTINUE_WITH_SAME_FOCUS",
          "if_false": "SET_NEW_FOCUS_FROM_QUERY"
@@ -298,6 +298,13 @@
       "step_id": "2.5",
       "name": "duplicate_check_before_fixation",
       "description": "Проверь наличие похожих страниц перед созданием новой — предотвращает дублирование wiki",
+      "pre_check": [
+        {
+          "action": "run_guardrails",
+          "command": "./scripts/validate-path.sh ${EXISTING_PAGE_PATH}",
+          "on_failure": "STOP_AND_REPORT: path is within protected zone"
+        }
+      ],
       "actions": [
         {
           "action": "read_backlinks_json",
@@ -374,6 +381,19 @@
       "step_id": "3",
       "name": "result_fixation",
       "description": "Compounding: Сохраняй answer как новую страницу если содержит novel insight/synthesis из 2+ источников. Добавь ссылку в index.md. После write автоматически вызывай wiki_rebuild_meta.",
+      "pre_check": [
+        {
+          "action": "run_guardrails",
+          "command": "./scripts/validate-path.sh wiki/${PAGE_PATH}.md",
+          "on_failure": "STOP_AND_REPORT: path is within protected zone"
+        },
+        {
+          "condition": "existing_page_update",
+          "action": "run_guardrails",
+          "command": "./scripts/validate-path.sh ${EXISTING_PAGE_PATH}",
+          "on_failure": "STOP_AND_REPORT: path is within protected zone"
+        }
+      ],
       "pre_condition": "duplicate_check_completed: true, no_similar_page_found: true",
       "save_conditions": [
         {

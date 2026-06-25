@@ -123,8 +123,8 @@
       "post_operations": [
         {
           "trigger": "page_created",
-          "command": "grep -r \"${OLD_ORIGINAL_NAME}\" wiki/ --include=\"*.md\" -m 50",
-          "note": "Scan for mentions of the same topic that need backlinking. See AGENTS.md#post_operation_link_validation"
+          "command": "./scripts/post-op-link-scan.sh ${OLD_ORIGINAL_NAME} 50",
+          "note": "Scan for cross-references that may need updating. See AGENTS.md#post_operation_link_validation"
         }
       ]
     },
@@ -159,7 +159,7 @@
       "post_operations": [
         {
           "trigger": "page_updated_with_new_facts",
-          "command": "grep -r \"${NEW_CONCEPT_OR_ENTITY}\" wiki/ --include=\"*.md\" -m 50",
+          "command": "./scripts/post-op-link-scan.sh ${NEW_CONCEPT_OR_ENTITY} 50",
           "note": "Scan for cross-references that may need updating. See AGENTS.md#post_operation_link_validation"
         }
       ]
@@ -216,21 +216,21 @@
       "step_id": "6",
       "name": "post_operation_link_validation",
       "condition": "any_path_change_or_new_page_created",
+      "command": "./scripts/post-op-link-scan.sh <old_path_or_pattern> 100",
       "actions": [
         {
-          "action": "scan_all_wiki_files_for_broken_links_to_old_paths",
-          "command": "grep -r \"<old_path>\" wiki/ --include=\"*.md\" -m 100"
+          "action": "apply_auto_fix_to_each_broken_link_by_rewriting_to_new_path"
         },
         {
-          "action": "fix_each_broken_link_by_rewriting_to_new_path"
-        },
-        {
-          "action": "flag_target_does_not_exist",
+          "condition": "target_does_not_exist",
           "fallback_message": "[!] Broken link: [text](path) — target does not exist. Proposed fix: create page or remove link."
         }
       ],
-      "schema_ref": "AGENTS.md#post_operation_link_validation",
-      "note": "Mandatory after any rename, move, delete, or new page creation. Scans ALL wiki files for broken references to old paths. See AGENTS.md canonical rule."
+      "output_handling": {
+        "exit_code_0": "no_broken_links — proceed to next step",
+        "exit_code_1": "broken_links_found — report with auto-fixable count and apply fixes"
+      },
+      "schema_ref": "AGENTS.md#post_operation_link_validation"
     }
   ],
   "schema_ref": "AGENTS.md#guardrails",
