@@ -82,5 +82,7 @@
 * JSON schema added to prevent future drift: `never_derive_from: [source_filename, raw_timestamps]`
 * Schema version bumped from 3 → 4
 
-
-## [2026-06-24] ingest | Nvidia\n* Создана сущность: wiki/entities/nvidia.md\n* Источник: web_search\n* Синтез: лидерство в GPU и AI-ускорителях.
+## [2026-06-24] ingest | Nvidia
+* Создана сущность: wiki/entities/nvidia.md
+* Источник: web_search
+* Синтез: лидерство в GPU и AI-ускорителях.

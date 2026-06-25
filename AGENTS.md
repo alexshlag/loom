@@ -196,6 +196,41 @@ Snapshot.md **не читается каждый раз**. Он подгружа
 
 ---
 
+---
+
+## 🔖 Git Conventions
+
+### Формат коммитов
+```bash
+# <type> | <scope>: <description>
+ingest | added entity pi-coding-agent
+query | synthesis on RAG vs classical DBs
+lint | fixed orphan pages, added backlinks
+schema | updated AGENTS.md with date convention rule
+```
+**Type** — ingest / query / lint / schema / fix / refactor.
+**Scope** — файл или модуль, к которому относится (необязательно).
+**Description** — краткое описание действия. Начинается с маленькой буквы.
+
+### Git-операции агента
+| Операция | Правило |
+|----------|---------|
+| `git add <file>` | Агент всегда использует явные имена файлов, а не `git add *`. Это предотвращает случайное добавление системных/временных файлов. |
+| `git rm --cached` | Используется для удаления файлов из индекса без удаления с диска (например, старые process-*.md.json). |
+| `git commit -a` | Не использовать — агент всегда явно `add` → `commit`. |
+| `git status --short` | Обязательный вызов перед каждым коммитом. |
+
+### Правила для защищённых зон
+- `raw/**` и `meta/**` **никогда** не попадают в staged/committed.
+- Если скрипт или hook блокирует commit из protected zones → агент отменяет действие, сообщает пользователю.
+
+### Примеры плохих практик (запрещено)
+❌ `git add *` — добавляет всё подряд (включая .tmp, logs, system files)
+❌ `git commit -m "fix stuff"` — неинформативное сообщение без типа/контекста
+❌ Пропуск `git status --short` перед коммитом
+
+---
+
 ## 🧠 User Work Modes (Schema-уровень)
 
 Эти режимы определяют, как агент управляет контекстом при различных типах пользовательских запросов.
