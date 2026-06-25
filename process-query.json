@@ -108,27 +108,28 @@
     },
     {
       "step_id": "0.5",
-      "name": "new_sources_check",
-      "description": "Проверь raw/sources на новые пакеты, которые ещё не обработаны. Если есть — установи маркер и предложи пользователю ingest.",
+      "name": "new_sources_quick_check",
+      "description": "Быстрая проверка raw/sources на новые пакеты (--quick). Кэширует timestamp, чтобы не стучать каждый раз. Полную проверку с деталями делает lint.",
       "actions": [
         {
           "action": "run_script",
-          "command": "./scripts/check-new-sources.sh raw/sources/ tracking/raw_registry.json",
+          "command": "./scripts/check-new-sources.sh --quick raw/sources/ tracking/raw_registry.json",
           "exit_code_handling": {
             "0": "no_new_sources — continue to step 1",
-            "1": "new_sources_found — set new_sources_pending=true in working_memory.json, continue to main task"
+            "1": "new_sources_found — set new_sources_pending=true in working_memory.json, notify user after answer",
+            "2": "cached_skip (<1 hour since last check) — skip notification, continue to step 1"
           }
         },
         {
-          "condition": "new_sources_found_from_above",
+          "condition": "exit_code_1_from_above",
           "action": "set_working_memory_marker",
-          "details": "new_sources_pending: true, new_source_count: <count>"
+          "details": "new_sources_pending: true"
         }
       ],
       "post_task_notification": {
         "trigger": "new_sources_detected_in_step_05",
         "timing": "after_main_query_result_delivery",
-        "message_template": "[!] Обнаружены новые материалы в raw/sources/: {list_of_new_packages}. Обработать их и добавить в wiki?"
+        "message_template": "[!] Обнаружены новые материалы в raw/sources/. Обработать и добавить в wiki?"
       }
     },
     {

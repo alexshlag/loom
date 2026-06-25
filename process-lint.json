@@ -63,6 +63,17 @@
       ]
     },
     {
+      "check_id": "3b",
+      "name": "new_sources_available",
+      "description": "Полная проверка raw/sources на новые пакеты, которые не обработаны. Выводит список всех новых пакетов и предлагает запустить ingest.",
+      "command": "./scripts/check-new-sources.sh raw/sources/ tracking/raw_registry.json",
+      "output_handling": {
+        "exit_code_0": "no_new_sources — proceed to next check",
+        "exit_code_1": "new_sources_found — report list of NEW: <package_id> packages, ask user if they want to ingest"
+      },
+      "note": "Детальная проверка — только для lint. Не дублирует quick-check из process-query. Lint detect → User decides → Ingest process handles actual processing."
+    },
+    {
       "check_id": "4",
       "name": "new_topics_proposal",
       "description": "Предложи новые темы или источники для поиска, опираясь на контекст диалога, связи из index.md и доступ к интернету",

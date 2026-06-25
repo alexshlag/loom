@@ -4,6 +4,10 @@ meta/**
 # Raw sources — immutable, never tracked in git
 raw/**
 
+# Tracking state files (only explicit ones are tracked)
+tracking/
+!tracking/raw_registry.json
+
 # Obsidian local workspace settings (machine-specific)
 .obsidian/
 
