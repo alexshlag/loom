@@ -35,7 +35,7 @@ related: [wiki/concepts/llm-wiki.md]
 | **Сложные вопросы** | Требуют 5+ документов каждый раз | Wiki уже синтезировала ответы ранее |
 
 ## Связи:
-* [LLM Wiki Pattern Concept](concepts/llm-wiki-pattern.md) — compounding knowledge base approach
+* [LLM Wiki Pattern Concept](concepts/llm-wiki.md) — compounding knowledge base approach
 * [Entity: Andrej Karpathy](entities/andrej-karpathy.md) — автор LLM Wiki Pattern
 * [Concept: Temporal Decay](concepts/temporal-decay-in-wiki.md) — проблема устаревания знаний, требует maintenance
 

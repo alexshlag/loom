@@ -2,7 +2,7 @@
 tags: [concept, temporal-decay, maintenance, wiki-growth]
 date: 2026-06-25
 sources: [raw/llm-wiki.md, issues.md]
-related: [wiki/syntheses/rag-vs-llm-wiki-pattern.md, wiki/concepts/llm-wiki-pattern.md]
+related: [wiki/syntheses/rag-vs-llm-wiki-pattern.md, wiki/concepts/llm-wiki.md]
 ---
 
 # Temporal Decay in Compounding Knowledge Base
@@ -38,7 +38,7 @@ related: [wiki/syntheses/rag-vs-llm-wiki-pattern.md, wiki/concepts/llm-wiki-patt
 - Topics where consensus doesn't change frequently
 
 ## Связи:
-* [LLM Wiki Pattern Concept](concepts/llm-wiki-pattern.md) — compounding knowledge base approach
+* [LLM Wiki Pattern Concept](concepts/llm-wiki.md) — compounding knowledge base approach
 * [Synthesis: RAG vs LLM Wiki Pattern](syntheses/rag-vs-llm-wiki-pattern.md) — comparison table shows wiki compounds over time
 * [Issues #1](issues.md#issue-1-актуальность-информации) — актуальность информации требует решения
 

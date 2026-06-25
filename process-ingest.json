@@ -117,11 +117,16 @@
       ],
       "post_check": {
         "command": "./scripts/rebuild-meta.sh",
-        "action_on_success": "CONTINUE_TO_3B_OR_4",
-        "action_on_failure": "LOG_WARNING_AND_PROCEED",
-        "schema_ref": "AGENTS.md#meta_rebuild_path",
-        "note": "Canonical path defined in AGENTS.md. Do not hardcode absolute paths."
-      }
+        "action_on_success": "CONTINUE_TO_LINK_VALIDATION",
+        "action_on_failure": "LOG_WARNING_AND_PROCEED"
+      },
+      "post_operations": [
+        {
+          "trigger": "page_created",
+          "command": "grep -r \"${OLD_ORIGINAL_NAME}\" wiki/ --include=\"*.md\" -m 50",
+          "note": "Scan for mentions of the same topic that need backlinking. See AGENTS.md#post_operation_link_validation"
+        }
+      ]
     },
     {
       "step_id": "3b",
@@ -149,10 +154,15 @@
       "post_check": {
         "command": "./scripts/rebuild-meta.sh",
         "action_on_success": "CONTINUE_TO_4",
-        "action_on_failure": "LOG_WARNING_AND_PROCEED",
-        "schema_ref": "AGENTS.md#meta_rebuild_path",
-        "note": "Canonical path defined in AGENTS.md. Do not hardcode absolute paths."
-      }
+        "action_on_failure": "LOG_WARNING_AND_PROCEED"
+      },
+      "post_operations": [
+        {
+          "trigger": "page_updated_with_new_facts",
+          "command": "grep -r \"${NEW_CONCEPT_OR_ENTITY}\" wiki/ --include=\"*.md\" -m 50",
+          "note": "Scan for cross-references that may need updating. See AGENTS.md#post_operation_link_validation"
+        }
+      ]
     },
     {
       "step_id": "3c",
@@ -201,6 +211,26 @@
           "entry_format": "* [Название](путь) — Краткое описание."
         }
       ]
+    },
+    {
+      "step_id": "6",
+      "name": "post_operation_link_validation",
+      "condition": "any_path_change_or_new_page_created",
+      "actions": [
+        {
+          "action": "scan_all_wiki_files_for_broken_links_to_old_paths",
+          "command": "grep -r \"<old_path>\" wiki/ --include=\"*.md\" -m 100"
+        },
+        {
+          "action": "fix_each_broken_link_by_rewriting_to_new_path"
+        },
+        {
+          "action": "flag_target_does_not_exist",
+          "fallback_message": "[!] Broken link: [text](path) — target does not exist. Proposed fix: create page or remove link."
+        }
+      ],
+      "schema_ref": "AGENTS.md#post_operation_link_validation",
+      "note": "Mandatory after any rename, move, delete, or new page creation. Scans ALL wiki files for broken references to old paths. See AGENTS.md canonical rule."
     }
   ],
   "schema_ref": "AGENTS.md#guardrails",

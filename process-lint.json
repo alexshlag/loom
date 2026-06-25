@@ -146,6 +146,33 @@
         }
       ],
       "reference": "AGENTS.md#link-conventions--auto-fix"
+    },
+    {
+      "check_id": "8",
+      "name": "file_rename_or_delete_validation",
+      "description": "Проверяет, что после rename/move/delete всех файлов в wiki все бэклинки исправлены. Сканит все файлы на старые пути.",
+      "actions": [
+        {
+          "action": "detect_filesystem_changes_since_last_lint",
+          "command": "git diff --name-only HEAD~1..HEAD | grep wiki/"
+        },
+        {
+          "condition": "rename_or_move_detected",
+          "old_path": "<old_path>",
+          "new_path": "<new_path>",
+          "action": "grep -r \"${OLD_PATH}\" wiki/ --include=\"*.md\" -m 100"
+        },
+        {
+          "condition": "delete_detected",
+          "deleted_file": "<path>",
+          "action": "grep -r \"${DELETED_FILE}\" wiki/ --include=\"*.md\" -m 100"
+        },
+        {
+          "condition": "broken_links_found",
+          "suggestion": "auto_fix: rewrite_to_new_path_or_remove_link"
+        }
+      ],
+      "schema_ref": "AGENTS.md#post_operation_link_validation"
     }
   ],
   "schema_ref": "AGENTS.md",

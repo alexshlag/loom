@@ -2,7 +2,7 @@
 tags: [entity, hardware, ai, semiconductor]
 date: 2026-06-24
 sources: [web_search]
-related: [wiki/concepts/llm-wiki-pattern.md]
+related: [wiki/concepts/llm-wiki.md]
 ---
 
 # Nvidia
@@ -21,7 +21,7 @@ related: [wiki/concepts/llm-wiki-pattern.md]
     *   *Workstation:* Профессиональные решения для 3D-рендеринга и визуализации.
 
 ## Связи:
-* [LLM Wiki Pattern](wiki/concepts/llm-wiki-pattern.md) — технологии Nvidia являются аппаратным фундаментом для современных паттернов обучения моделей.
+* [LLM Wiki Pattern](concepts/llm-wiki.md) — технологии Nvidia являются аппаратным фундаментом для современных паттернов обучения моделей.
 * [Python Development on NixOS](wiki/concepts/python-nixos-development.md) — библиотеки для работы с CUDA часто требуются в средах разработки Python.
 
 ## Источники:

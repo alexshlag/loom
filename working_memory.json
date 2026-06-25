@@ -1,23 +1,24 @@
 {
   "last_updated": "2026-06-25T14:45:00+03",
-  
+
   "current_mode": "query",
   "focus_node": null,
-  "focus_node": "Memory Architecture — working_memory.json интеграция",
-  
+  "_note": "focus_node was set to 'Memory Architecture' but cleared — user switched to link_validation topic",
+
   "open_pages": [],
-  
+
   "dead_ends": [],
-  
+
   "query_summary": {
     "intent": "Temporal decay problem in compounding wiki — как wiki решает устаревание знаний",
-    "pages_read": ["wiki/concepts/llm-wiki-pattern.md", "wiki/syntheses/rag-vs-llm-wiki-pattern.md", "wiki/overview.md"],
+    "pages_read": ["wiki/concepts/llm-wiki.md", "wiki/syntheses/rag-vs-llm-wiki-pattern.md", "wiki/overview.md"],
     "new_page_created": "wiki/concepts/temporal-decay-in-wiki.md",
     "insight": "LLM Wiki Pattern compounds knowledge BUT requires maintenance — temporal decay is a structural weakness unless periodic lint catches outdated pages"
   },
-  
+
   "next_steps_todo": [
-    {"task": "Добавить working_memory.json steps в process-ingest.json и process-lint.json", "priority": "medium"},
+    {"task": "Исправить broken links после переименования llm-wiki-pattern → llm-wiki", "priority": "high"},
+    {"task": "Добавить post_operation_link_validation в process-ingest.json и process-lint.json", "priority": "medium"},
     {"task": "Решить Issue #1 из issues.md: как часто обновлять wiki из внешних источников?", "priority": "high"}
   ]
 }

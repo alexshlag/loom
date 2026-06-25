@@ -74,5 +74,5 @@ ai-factory init → .ai-factory/config.yaml → DESCRIPTION.md + AGENTS.md + ARC
 * [Pi Coding Agent](entities/pi-coding-agent.md) — конкретная среда (harness), в которой можно запустить AI Factory
 
 
-* [LLM Wiki Pattern](concepts/llm-wiki-pattern.md) — compounding knowledge base подход, аналогичен AI Factory workflow для накопления знаний через LLM
+* [LLM Wiki Pattern](concepts/llm-wiki.md) — compounding knowledge base подход, аналогичен AI Factory workflow для накопления знаний через LLM
 
