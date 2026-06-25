@@ -123,8 +123,8 @@
       "post_operations": [
         {
           "trigger": "page_created",
-          "command": "./scripts/post-op-link-scan.sh ${OLD_ORIGINAL_NAME} 50",
-          "note": "Scan for cross-references that may need updating. See AGENTS.md#post_operation_link_validation"
+          "command": "./scripts/link-validator.sh \"${OLD_ORIGINAL_NAME}\" --max 50",
+          "note": "Scan for cross-references that may need updating. Output is JSON array to stdout, human-readable log to stderr."
         }
       ]
     },
@@ -159,8 +159,8 @@
       "post_operations": [
         {
           "trigger": "page_updated_with_new_facts",
-          "command": "./scripts/post-op-link-scan.sh ${NEW_CONCEPT_OR_ENTITY} 50",
-          "note": "Scan for cross-references that may need updating. See AGENTS.md#post_operation_link_validation"
+          "command": "./scripts/link-validator.sh \"${NEW_CONCEPT_OR_ENTITY}\" --max 50",
+          "note": "Scan for cross-references that may need updating. Output is JSON array to stdout, human-readable log to stderr."
         }
       ]
     },
@@ -233,8 +233,9 @@
       "step_id": "6",
       "name": "post_operation_link_validation",
       "condition": "any_path_change_or_new_page_created",
-      "command": "./scripts/post-op-link-scan.sh <old_path_or_pattern> 100",
+      "command": "./scripts/link-validator.sh <pattern>",
       "actions": [
+        {"action": "parse_json_from_stdout", "format": "[ {file, line, link, target_path} ]"},
         {
           "action": "apply_auto_fix_to_each_broken_link_by_rewriting_to_new_path"
         },
