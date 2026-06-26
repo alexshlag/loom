@@ -589,6 +589,19 @@
           "format_answer_with_source: 'Данные из интернета, ещё нет в wiki.'",
           "ask_user: 'Добавить это в wiki или вопрос одноразовый?'"
         ],
+        "error_handling": {
+          "web_search_timeout_or_error": [
+            {
+              "log": "'[!] web_search failed, falling back to manual access offer'"
+            },
+            {
+              "fallback_to_step_5_if_web_failed": true
+            },
+            {
+              "notify_user": "Web search unavailable at the moment. Can you provide a source URL?"
+            }
+          ]
+        },
         "post_user_response": {
           "user_saves_to_wiki": [
             "execute web_ingest_flow (see below)",
@@ -639,7 +652,38 @@
             "path": "raw/sources/SRC-{date}-{hash}/manifest.json",
             "content": "{ 'source_type': 'web', 'url': '{url}', 'query': '{user_query}', 'date': '{current_date}' }"
           }
-        ]
+        ],
+        "error_handling": {
+          "mkdir_failure": [
+            {
+              "log": "'[!] mkdir failed for raw/sources/SRC-{date}-{hash}/'"
+            },
+            {
+              "report_disk_space_issue": true
+            },
+            {
+              "halt_and_notify": "Cannot create directory — check disk space or permissions."
+            }
+          ],
+          "write_permission_denied": [
+            {
+              "log": "'[!] Write permission denied to raw/sources/.'"
+            },
+            {
+              "action": "HALT_AND_REPORT",
+              "message": "Cannot write to raw/sources/. Check permissions or disk space."
+            }
+          ],
+          "disk_full_or_quota_exceeded": [
+            {
+              "log": "'[!] Disk full — cannot write web content to raw/.'"
+            },
+            {
+              "action": "HALT_AND_REPORT",
+              "message": "Disk space insufficient. Cannot capture source. Please free up space or move sources." 
+            }
+          ]
+        }
       },
       {
         "step": 2,
@@ -677,7 +721,23 @@
           "./scripts/rebuild-meta.sh",
           "./scripts/rebuild-meta.sh --index-only"
         ],
-        "description": "Пересобрать registry.json, backlinks.json и wiki/index.md из всех страниц"
+        "description": "Пересобрать registry.json, backlinks.json и wiki/index.md из всех страниц",
+        "optimization_for_large_wiki": {
+          "skip_rebuild_if_wiki_size_gt_threshold": true,
+          "threshold_pages_count": 100,
+          "check_command": "find wiki/ -name '*.md' | wc -l",
+          "action_on_exceed": [
+            {
+              "log": "'[!] Wiki size exceeds threshold (>100 pages), skipping full rebuild for performance'"
+            },
+            {
+              "run_index_only": true
+            },
+            {
+              "notify_user": "Meta rebuild skipped for performance — will run on next lint" 
+            }
+          ]
+        }
       },
       {
         "step": 5,
