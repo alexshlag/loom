@@ -153,11 +153,16 @@
       }
     }
   ],
-  "schema_ref": "AGENTS.md",
+  "schema_ref": "AGENTS.md#non-blocking-lint",
+  "primary_command": {
+    "description": "Основной entry point для lint — автономный скрипт, не блокирующий agent turn",
+    "command": "./scripts/lint.sh [--quiet] [--skip-checks ID1,ID2] [wiki_dir]",
+    "note": "Не вызывай отдельные скрипты (orphan-pages.sh, link-validator.sh и т.д.) — используй lint.sh как единый entry point"
+  },
   "log_format": {
     "standard": "## [YYYY-MM-DD] lint | Аудит wiki: X противоречий, Y сирот, Z пробелов знаний"
   },
-  "lint_script_path": "scripts/run-lint.sh",
+  "lint_script_path": "scripts/lint.sh",
   "frontmatter_schema": {
     "required": [
       "tags",

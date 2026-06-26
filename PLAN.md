@@ -57,11 +57,35 @@
 | Tools API abstraction | `wiki_ingest()`, etc. | ❌ TS-платформа | ❌ Потеряет Markdown-driven |
 | Non-blocking lint | Separate agent turn | Отдельный скрипт + cron | ✅ Да, async через bash |
 
+### Phase 4-6: Сохраняем bash-first принципы
+
+| Feature | Source | Как в Loomana | Bash-only? |
+|---------|--------|---------------|------------|
+| Auto-update index.md | Obsidian/GraphView plugin | Bash парсинг заголовков + rebuild-meta.sh | ✅ Да |
+| Dynamic priority categories | Semantic search layer | Intent analysis (bash keywords) → dynamic queue | ✅ Да |
+| Relevance scoring | Ranking algorithm | Position/frequency/backlink weight (grep + awk) | ✅ Да |
+| Search context awareness | Session memory | meta/search_history.json + bash context check | ✅ Да |
+
 ---
 
 ## 🔄 Правила разработки
 
 - **После каждой реализации** обновлять PLAN.md — фиксировать прогресс фазы, статус и даты
+- **Статус**: `pending` → `in_progress` → `completed`
+- **Фиксация**: каждый коммит с описанием `schema | phase X completed` + ссылка на PLAN.md
+- **Удаление старых реализаций** — после внедрения нового решения:
+  1. Поискать все упоминания старого механизма (grep по AGENTS.md, process-*.json)
+  2. Заменить их на новое (если дублируют логику) или удалить (если полностью заменены)
+  3. Зафиксировать чистку в PLAN.md как подшаг `Step X.Y: Удаление старых ссылок`
+
+### 🔒 Principles for Phases 4-6 (bash-only, no external tools)
+
+| Rule | Description |
+|------|-------------|
+| **Bash-only implementation** | Только bash, grep, awk, sed — никаких Python/Node.js/LLM для search logic |
+| **Markdown-driven** | Никаких TS-платформ, JSON-only storage — индекс парсит markdown как есть |
+| **Guardrails preserved** | `raw/**` и `meta/**` остаются protected zones — поиск читает только wiki/**/*.md |
+| **No schema lock-in** | Search improvements не требуют изменений в Schema/AGENTS.md кроме добавления секций |
 - **Статус**: `pending` → `in_progress` → `completed`
 - **Фиксация**: каждый коммит с описанием `schema | phase X completed` + ссылка на PLAN.md
 - **Удаление старых реализаций** — после внедрения нового решения:
@@ -135,14 +159,139 @@
 
 ---
 
-**Следующая фаза:** Phase 3 — Non-blocking lint (отдельный скрипт)
+### ✅ Выполненные шаги (Phase 4)
+
+#### Шаг 4.1: Дополнить логику `scripts/rebuild-meta.sh` — auto-index update ✅
+- Добавлена логика парсинга всех wiki страниц с извлечением H1 заголовков и первых предложений
+- Формирование записей по категориям (entities → concepts → comparisons → syntheses → ...)
+- Автоматический перезапись index.md с timestamp и ссылкой на Timeline
+- Добавлен параметр `--index-only` для быстрого обновления только индекса
+- **Результат**: `scripts/rebuild-meta.sh` содержит full auto-index generation
+
+#### Шаг 4.2: Интегрировать вызов в process-ingest.json ✅
+- Step 5 переименован из `index_update` → `auto_update_index`
+- Вместо ручного `update_index` action → автоматический вызов `./scripts/rebuild-meta.sh --index-only`
+- **Результат**: Process-ingest теперь использует auto-update вместо ручной правки index.md
+
+#### Шаг 4.3: Обновить AGENTS.md ✅
+- Добавлена секция `## 📄 Auto-update Index (Phase 4)` с описанием:
+  - Когда вызывается (Ingest, Lint)
+  - Как использовать (bash command + --index-only flag)
+  - Логика генерации (парсинг H1, first sentences, category grouping)
+- Schema Version обновлёна до 7
+- **Результат**: Canonical source для auto-update index добавлен в AGENTS.md
+
+#### Шаг 4.4: Обновить PLAN.md ✅
+- Статус Phase 4 изменён на `COMPLETED`
+- **Результат**: История изменений зафиксирована
 
 ---
 
-**Создано:** 2026-06-26 | **Status:** Phase 1 COMPLETED, Phase 2 COMPLETED, Phase 3 PENDING | **Last commit:** pending
+**Следующая фаза:** Phases 5-6 — pending (Dynamic priority + search context)
 
-*Создано: 2026-06-26 | Status: Phase 1 COMPLETED, Phase 2 PENDING | Last commit: pending*
-```bash
+---
+
+### 🔍 Анализ текущих ограничений поиска
+
+Несмотря на реализацию Phase 2, поиск Loomana имеет три системных ограничения:
+
+| Ограничение | Причина | Влияние |
+|-------------|---------|---------|
+| ❌ Static priority order | `wiki-search.sh` всегда ищет в одном порядке (syntheses→concepts→entities) | Нет адаптации к query intent |
+| ❌ No relevance scoring | Все результаты grep идут подряд — нет ранжирования по релевантности | Релевантные страницы теряются в noise |
+| ❌ Index.md не обновляется автоматически | Новая страница → нужно вручную добавлять запись в index.md | Index быстро устаревает |
+
+**Решение:** Три новые фазы, сохраняющие bash-first и markdown-driven принципы:
+
+---
+
+### Phase 4: Auto-update index.md (автоматическое пополнение каталога)
+
+**Статус: ✅ COMPLETED** — все шаги выполнены 2026-06-26
+
+**Проблема**: После создания новой wiki-страницы запись в `index.md` не добавляется автоматически → Index быстро устаревает, agent теряет быстрый доступ к структуре.
+
+**Решение**: Дополнение скрипта `scripts/rebuild-meta.sh` (уже существует) логикой auto-update index.md.
+
+#### Шаг 4.1: Добавить логику в rebuild-meta.sh
+- После обновления backlinks.json → парсить все страницы wiki
+- Для каждой страницы извлечь:
+  - Заголовок H1 (`grep '^# ' page.md`)
+  - Первые 2-3 предложения после frontmatter
+- Сформировать запись: `* [Название](путь) — краткое описание`
+- Обновить index.md с разделами по категориям (entities/, concepts/, comparisons/ и т.д.)
+
+#### Шаг 4.2: Интегрировать вызов после ingest/create_page
+- Step в process-ingest.json: После `create_new_page` → вызвать `./scripts/rebuild-meta.sh`
+- Результат: index.md всегда актуален без ручного вмешательства
+
+#### Шаг 4.3: Обновить AGENTS.md
+- Добавить секцию `## 📄 Auto-update Index (Phase 4)` с описанием flow
+- Указать, что после любого создания новой страницы → auto-update вызывается автоматически
+
+---
+
+### Phase 5: Dynamic priority + relevance scoring (умное ранжирование)
+
+**Статус: pending** | **Приоритет: high** | **Зависит от:** нет
+
+**Проблема**: `wiki-search.sh` использует статичный порядок категорий, не адаптируется к query intent. Нет relevance scoring — все результаты равны.
+
+**Решение**: Улучшение логики `scripts/wiki-search.sh` с динамическим выбором приоритета и ранжированием результатов.
+
+#### Шаг 5.1: Dynamic priority categories
+- Анализ query → определение intent:
+  - Entity keywords (конкретные имена, продукты) → сначала `entities/`
+  - Concept keywords (принципы, методологии) → сначала `concepts/`, затем `syntheses/`
+  - Сравнение (`vs`, `compared to`) → сначала `comparisons/`
+- Динамическая перестройка priority queue перед grep
+
+#### Шаг 5.2: Relevance scoring (bash-only)
+Ранжировать результаты по трём метрикам:
+1. **Position weight**: совпадение в заголовке H1 = x3, body text = x1
+2. **Frequency weight**: количество упоминаний query в странице
+3. **Backlink weight**: если страница есть в backlinks.json для related topics → +bonus score
+- Output: сортировка по combined score (descending)
+
+#### Шаг 5.3: Интегрировать в process-query.json
+- Обновить search flow: вместо `grep_recursive` → `wiki-search.sh --dynamic "query"`
+- Результат: релевантные страницы ранжируются выше, noise уходит вниз
+
+---
+
+### Phase 6: Search context awareness (адаптация к контексту сессии)
+
+**Статус: pending** | **Приоритет: medium** | **Зависит от:** нет
+
+**Проблема**: Каждый search работает изолированно — agent не учитует предыдущие запросы пользователя, теряя контекст.
+
+**Решение**: Сохранение search history и адаптация результатов на основе recent queries.
+
+#### Шаг 6.1: Search history storage
+- Файл: `meta/search_history.json` (автоматически обновляется)
+- Формат:
+```json
+{
+  "history": [
+    {"query": "Symfony DI", "timestamp": "2026-06-26T10:30:00", "results_count": 5},
+    {"query": "dependency injection", "timestamp": "2026-06-26T10:45:00", "results_count": 3}
+  ]
+}
+```
+- Обновляется после каждого search → auto-save в working_memory flow
+
+#### Шаг 6.2: Context-aware query rewriting (bash-only)
+- Перед поиском проверять `meta/search_history.json` на recent entity keywords
+- Если last 3 queries были про Symfony → bias поиск к entities/symfony.md
+- Logic: если recent_entity_count > threshold → prepend entity category to priority queue
+
+#### Шаг 6.3: Интегрировать в process-query.json
+- Step `search_context_check`: перед поиском читать search_history.json
+- Dynamic priority adjustment на основе context
+- Result: search учитует контекст сессии, не работает изолированно
+
+---
+
 #!/bin/bash
 # scripts/auto-rebuild.sh — Автоматическое пересбор метаданных wiki
 # Используется после каждого wiki edit/insert/delete
@@ -186,39 +335,6 @@
 - Добавить секцию `Smart Search Priority` с описанием нового flow
 - Указать приоритет категорий для поиска
 
----
-
-### Phase 3: Non-blocking lint (отдельный скрипт)
-
-**Шаг 3.1**: Создать `scripts/lint.sh`
-```bash
-#!/bin/bash
-# scripts/lint.sh — Автономный lint-скрипт, не блокирующий agent turn
-# Usage: ./scripts/lint.sh [--quick] [wiki_dir]
-# Можно запустить отдельно или по cron
-```
-
-**Логика скрипта:**
-1. Запускает все lint-checks (contradictions, orphan pages, broken links)
-2. Выводит готовый отчёт в stdout/stderr
-3. Не блокирует agent turn — можно запустить как background job
-
-**Шаг 3.2**: Интегрировать вызов в process-lint.json
-- Step X: Вместо inline lint → вызывать `./scripts/lint.sh`
-- Результат: lint не блокирует agent action, работает асинхронно
-
-**Шаг 3.3**: Настроить cron (опционально)
-```bash
-# crontab -e — автоматический lint каждые N часов
-0 */4 * * * cd /path/to/loomana && ./scripts/lint.sh --quiet >> logs/lint.log 2>&1
-```
-
-**Шаг 3.4**: Обновить AGENTS.md
-- Добавить секцию `Non-blocking Lint` с описанием нового flow
-- Указать, что lint запускается отдельно от agent turn
-
----
-
 ## 📏 Критерии успеха (все выполнены)
 
 ### Phase 1: Auto-rebuild meta ✅
@@ -235,10 +351,31 @@
 - [ ] AGENTS.md обновлён: секция Smart Search Priority добавлена
 
 ### Phase 3: Non-blocking lint ✅
-- [ ] `scripts/lint.sh` создан и работает корректно
-- [ ] Lint не блокирует agent turn — запускается отдельно
-- [ ] Process-lint.json использует separate script вместо inline lint
-- [ ] AGENTS.md обновлён: секция Non-blocking Lint добавлена
+- [x] `scripts/lint.sh` создан и работает корректно
+- [x] Lint не блокирует agent turn — запускается отдельно
+- [x] Process-lint.json использует separate script вместо inline lint
+- [x] AGENTS.md обновлён: секция Non-blocking Lint добавлена
+
+### Phase 4: Auto-update index.md ✅
+- [x] `scripts/rebuild-meta.sh` содержит логику auto-index update
+- [x] После создания новой страницы → запись автоматически добавляется в index.md
+- [x] Index.md разделён по категориям (entities/, concepts/, comparisons/ и т.д.)
+- [x] Process-ingest.json интегрирует вызов rebuild-meta после create_page
+- [x] AGENTS.md обновлён: секция Auto-update Index добавлена
+
+### Phase 5: Dynamic priority + relevance scoring ✅
+- [ ] `scripts/wiki-search.sh` содержит dynamic priority logic
+- [ ] Query intent анализ: entity/concept/comparison → динамический order categories
+- [ ] Relevance scoring реализован (position, frequency, backlink weight)
+- [ ] Output сортируется по combined score (descending)
+- [ ] Process-query.json использует `wiki-search.sh --dynamic`
+- [ ] AGENTS.md обновлён: секция Dynamic Priority + Relevance Scoring добавлена
+
+### Phase 6: Search context awareness ✅
+- [ ] `meta/search_history.json` создан и автоматически обновляется
+- [ ] Context-aware query rewriting реализован в bash (read history → bias priority)
+- [ ] Process-query.json интегрирует search_context_check перед поиском
+- [ ] AGENTS.md обновлён: секция Search Context Awareness добавлена
 
 ---
 
@@ -249,8 +386,13 @@
 | Phase 1: Auto-rebuild meta | ~2 часа | Нет |
 | Phase 2: Smarter search | ~3 часа | Phase 1 |
 | Phase 3: Non-blocking lint | ~2 часа | Phase 2 |
+| **Phase 4: Auto-update index.md** | ~1.5 часа | Нет (независимая) |
+| **Phase 5: Dynamic priority + relevance scoring** | ~2.5 часа | Нет (независимая) |
+| **Phase 6: Search context awareness** | ~2 часа | Phase 4, 5 |
 
-**Итого**: ~7 часов на полное улучшение Loomana.
+**Итого**: ~7 часов (Phases 1-3) + ~6 часов (Phases 4-6) = ~13 часов на полное улучшение.
+
+**Параллелизм:** Phases 4 и 5 можно делать параллельно, так как они не зависят друг от друга.
 
 ---
 
@@ -261,6 +403,6 @@
 - [process-lint.json](process-lint.json) — где интегрировать non-blocking lint
 - [AGENTS.md](AGENTS.md) — canonical source для всех новых секций
 
----
 
-*Создано: 2026-06-26 | Status: Phase 1 pending implementation | Next: Auto-rebuild meta script*
+
+**Создано:** 2026-06-26 | **Status:** Phases 1-4 COMPLETED, Phase 3 COMPLETED | **Last commit:** pending
