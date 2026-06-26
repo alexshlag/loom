@@ -125,6 +125,11 @@
           "trigger": "page_created",
           "command": "./scripts/link-validator.sh \"${OLD_ORIGINAL_NAME}\" --max 50",
           "note": "Scan for cross-references that may need updating. Output is JSON array to stdout, human-readable log to stderr."
+        },
+        {
+          "trigger": "page_created_after_validation",
+          "command": "./scripts/auto-crosslink.sh \"${NEW_PAGE_PATH}\" 2>/dev/null || true",
+          "note": "Find pages that need cross-link updates. Returns JSON array of paths to update."
         }
       ]
     },
@@ -161,6 +166,11 @@
           "trigger": "page_updated_with_new_facts",
           "command": "./scripts/link-validator.sh \"${NEW_CONCEPT_OR_ENTITY}\" --max 50",
           "note": "Scan for cross-references that may need updating. Output is JSON array to stdout, human-readable log to stderr."
+        },
+        {
+          "trigger": "page_updated_after_validation",
+          "command": "./scripts/auto-crosslink.sh \"${NEW_CONCEPT_OR_ENTITY}\" 2>/dev/null || true",
+          "note": "Find pages that need cross-link updates. Returns JSON array of paths to update."
         }
       ]
     },

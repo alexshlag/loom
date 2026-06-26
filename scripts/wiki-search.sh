@@ -189,6 +189,7 @@ score_page() {
 # ─── Main Search Flow ────────────────────────────────
 COUNTER=0
 TEMP_FILE=$(mktemp)
+trap 'rm -f "$TEMP_FILE"' EXIT
 FINAL_CATEGORY_ORDER=""
 
 if [[ "$DYNAMIC" == "true" ]]; then
