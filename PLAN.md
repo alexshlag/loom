@@ -167,6 +167,7 @@
 - Автоматический перезапись index.md с timestamp и ссылкой на Timeline
 - Добавлен параметр `--index-only` для быстрого обновления только индекса
 - **Результат**: `scripts/rebuild-meta.sh` содержит full auto-index generation
+- **Дополнительно**: добавлен флаг `--index-only` для быстрого обновления только index.md (2026-2026-06-26)
 
 #### Шаг 4.2: Интегрировать вызов в process-ingest.json ✅
 - Step 5 переименован из `index_update` → `auto_update_index`

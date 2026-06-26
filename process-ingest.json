@@ -220,14 +220,14 @@
     },
     {
       "step_id": "5",
-      "name": "index_update",
+      "name": "auto_update_index",
+      "command": "./scripts/rebuild-meta.sh --index-only",
       "actions": [
         {
-          "action": "update_index",
-          "category": "${PAGE_TYPE}",
-          "entry_format": "* [Название](путь) — Краткое описание."
+          "action_type": "auto_generate_from_wiki_pages"
         }
-      ]
+      ],
+      "note": "Полностью заменяет ручной update_index. Автоматически перестраивает index.md из всех wiki-страниц по категориям (entities→concepts→comparisons→syntheses→...)."
     },
     {
       "step_id": "6",
@@ -235,7 +235,10 @@
       "condition": "any_path_change_or_new_page_created",
       "command": "./scripts/link-validator.sh <pattern>",
       "actions": [
-        {"action": "parse_json_from_stdout", "format": "[ {file, line, link, target_path} ]"},
+        {
+          "action": "parse_json_from_stdout",
+          "format": "[ {file, line, link, target_path} ]"
+        },
         {
           "action": "apply_auto_fix_to_each_broken_link_by_rewriting_to_new_path"
         },
@@ -259,9 +262,7 @@
   ],
   "note": "Guardrails are defined in AGENTS.md. This file references them rather than duplicating.",
   "strict_rules": {
-    "raw_immutable": "Никогда не редактируй raw/** напрямую. Только capture → integrate.",
-    "capture_first_integrate_second": "Сначала сохрани оригинал в raw/, затем создай/обнови wiki-страницу.",
-    "meta_protected": "Не трогай meta/** — auto-generated files (registry.json, backlinks.json)."
+    "capture_first_integrate_second": "Сначала сохрани оригинал в raw/, затем создай/обнови wiki-страницу."
   },
   "batch_mode": {
     "trigger": "user_specifies_batch_processing",

@@ -1,51 +1,43 @@
 # Wiki Index
 
-# Wiki Index
 
 ## Сущности
-* [Symfony](entities/symfony.md) — High-performance PHP web framework with modular component-based architecture.
-* [Nvidia](entities/nvidia.md) — Лидер в производстве GPU и ускорителей для искусственного интеллекта (AI).
+* [AI Factory](entities/ai-factory.md) — Stack-agnostic CLI tool and skill system for AI-powered development.
+* [Andrej Karpathy](entities/andrej-karpathy.md) — AI Researcher, автор LLM Wiki pattern (LLM-powered personal knowledge base).
+* [Nvidia](entities/nvidia.md) — # Nvidia Американская технологическая корпорация, лидер в области разработки графических процессоров (GPU), аппаратных ускорителей для искусственного 
+* [Pi Coding Agent](entities/pi-coding-agent.md) — Минимальный терминальный код-агент (harness), расширяемый через TypeScript-расширения, skills, prompt templates и темы.
+* [Symfony](entities/symfony.md) — # Symfony Symfony — высокопроизводительный PHP веб-фреймворк с открытым исходным кодом, созданный SensioLabs.
 
 ## Концепции
-* [AI Factory vs Pi — Category Distinction](concepts/ai-factory-vs-pi.md) — Различение категорий: AI Factory = workflow schema, Pi = harness runtime.
-* [Python Development on NixOS](concepts/python-nixos-development.md) — Методология создания изолированных сред разработки для Python в NixOS, аналогичная virtualenv или conda.
-* [LLM Wiki Pattern](concepts/llm-wiki.md) — Incremental knowledge base building через LLM вместо стандартного RAG.
-* [Temporal Decay in Compounding KB](concepts/temporal-decay-in-wiki.md) — Проблема устаревания знаний в compounding wiki, требует periodic maintenance.
-* [Service Container & DI](concepts/service-container.md) — Central mechanism for centralized object construction and dependency resolution via autowiring.
-* [Routing System & Controllers](concepts/routing-system.md) — URL-to-controller mapping with attributes preferred format (YAML/XML/PHP supported).
-* [Event Dispatcher](concepts/event-dispatcher.md) — Decoupled communication between components via events, listeners and subscribers.
-* [Security System (AuthN & AuthZ)](concepts/security-system.md) — Authentication providers, authorization voters, firewalls for web applications.
-* [Doctrine ORM Integration](concepts/doctrine-orm.md) — Object-relational mapper with entity/repository pattern for database operations.
-* [Symfony Flex & Recipes](concepts/symfony-flex.md) — Composer plugin for automatic package configuration via predefined recipes.
-* [Hexagonal Architecture in Symfony](concepts/hexagonal-architecture.md) — Clean Architecture pattern (Domain → Application → Infrastructure layers).
-* [Twig Templating](concepts/twig-templating.md) — Flexible, fast template engine with inheritance and UX components support.
-* [Testing Strategy](concepts/testing-strategy.md) — PHPUnit integration + Zenstruck Foundry for expressive test data generation.
-* [AssetMapper](concepts/assetmapper.md) — Zero-build modern CSS/JS management via ES modules and importmaps.
-* [Symfony AI Component](concepts/symfony-ai.md) — Unified LLM interface with ~35 provider bridges + Store for vector databases (RAG).
-* [Messenger Component](concepts/messenger-component.md) — Message bus with sync/async processing, priority queues, transport adapters.
-* [Workflow & State Machine](concepts/workflow-state-machine.md) — Finite state machines and workflows with places/transitions/markings.
-* [Cache System](concepts/cache-system.md) — PSR-6 caching with tag-based invalidation, multiple adapters (Redis/Memcached/APCu).
-
-
-## Источники
-
+* [AI Factory vs Pi Coding Agent — Category Distinction](concepts/ai-factory-vs-pi.md) — # AI Factory vs Pi Coding Agent — Category Distinction **Это не сравнение сущностей, а различение категорий.
+* [AssetMapper](concepts/assetmapper.md) — # AssetMapper AssetMapper — component for managing modern CSS & JavaScript assets without build pipelines or Node.js dependencies.
+* [Cache System](concepts/cache-system.md) — # Cache System Symfony Cache component provides PSR-6 and PSR-16 compliant caching with advanced features: tag-based invalidation, cache stampede prot
+* [Doctrine ORM Integration](concepts/doctrine-orm.md) — # Doctrine ORM Integration Doctrine ORM — object-relational mapper для PHP, интегрированный в Symfony через DoctrineBridge.
+* [Event Dispatcher](concepts/event-dispatcher.md) — # Event Dispatcher Event Dispatcher — компонент Symfony, который обеспечивает decoupled communication между компонентами системы через события.
+* [Hexagonal Architecture & Clean Patterns in Symfony](concepts/hexagonal-architecture.md) — # Hexagonal Architecture & Clean Patterns in Symfony Hexagonal Architecture (Ports & Adapters) — architectural pattern that keeps business logic separ
+* [LLM Wiki Pattern — Incremental Knowledge Base Building](concepts/llm-wiki.md) — > **Origin:** Andrej Karpathy. [Reference gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
+* [Messenger Component](concepts/messenger-component.md) — # Messenger Component Messenger — component for sending and receiving messages to/from other applications or via message queues.
+* [Python Development Environments on NixOS](concepts/python-nixos-development.md) — # Python Development Environments on NixOS Методология создания изолированных сред разработки для Python в NixOS, аналогичная virtualenv или conda, но
+* [Routing System & Controllers](concepts/routing-system.md) — # Routing System & Controllers Routing System — компонент Symfony, который маппит incoming URLs к application code (controller actions).
+* [Security System (AuthN & AuthZ)](concepts/security-system.md) — # Security System (AuthN & AuthZ) Symfony Security — comprehensive security system для web applications, включающий аутентификацию (кто пользователь) 
+* [Service Container & Dependency Injection](concepts/service-container.md) — # Service Container & Dependency Injection Service Container — центральный механизм Symfony, который централизует создание и управление объектами (ser
+* [Symfony AI Component](concepts/symfony-ai.md) — # Symfony AI Component Symfony AI — set of components integrating LLM capabilities into PHP applications.
+* [Symfony Flex & Recipes](concepts/symfony-flex.md) — # Symfony Flex & Recipes Symfony Flex — Composer plugin that intercepts package installation and automatically configures bundles/packages via predefi
+* [Temporal Decay in Compounding Knowledge Base](concepts/temporal-decay-in-wiki.md) — # Temporal Decay in Compounding Knowledge Base **Temporal decay (времянное устаревание)** — проблема в compounding knowledge base, когда страницы wiki
+* [Testing Strategy & Best Practices](concepts/testing-strategy.md) — # Testing Strategy & Best Practices Symfony testing integrates with PHPUnit for comprehensive test coverage.
+* [Twig Templating](concepts/twig-templating.md) — # Twig Templating Twig — flexible, fast, secure PHP template engine used by Symfony.
+* [Workflow & State Machine](concepts/workflow-state-machine.md) — # Workflow & State Machine Workflow component provides tools for managing business processes as finite state machines.
 
 ## Сравнения
-* [LLM Wiki Implementations: Loomana vs pi-llm-wiki](comparisons/llm-wiki-implementations.md) — Markdown-driven wiki vs TypeScript платформа с tools API и background runtime.
-
+* [Сравнение: Loomana (Markdown-driven wiki) vs pi-llm-wiki/ (TypeScript platform)](comparisons/llm-wiki-implementations.md) — # Сравнение: Loomana (Markdown-driven wiki) vs pi-llm-wiki/ (TypeScript platform) Оба проекта реализуют **LLM Wiki Pattern** (Andrej Karpathy), но на 
 
 ## Синтезы
-* [Python NixOS Development Environments](syntheses/python-nixos-development-environments.md) — Основные способы создания сред разработки Python на NixOS.
-* [RAG vs LLM Wiki Pattern](syntheses/rag-vs-llm-wiki-pattern.md) — Сравнение стандартного RAG с compounding knowledge base.
-
+* [Основные способы создания сред разработки Python на NixOS](syntheses/python-nixos-development-environments.md) — # Основные способы создания сред разработки Python на NixOS Вопрос: какие основные подходы к созданию изолированных сред разработки для Python существ
+* [Сравнение: RAG vs LLM Wiki Pattern (Compounding Knowledge Base)](syntheses/rag-vs-llm-wiki-pattern.md) — # Сравнение: RAG vs LLM Wiki Pattern (Compounding Knowledge Base) Стандартный RAG и большинство систем работы с файлами (NotebookLM, ChatGPT file uplo
 
 ## Обзоры
-* [Wiki Overview](overview.md) — обзор структуры и содержания wiki.
-* [Wiki Snapshot](snapshot.md) — перечень активных проектов и связанных wiki-страниц
-
-
-## Проекты
-
+* [Wiki Overview — Текущая картина знаний](overview.md) — # Wiki Overview — Текущая картина знаний Wiki содержит **36+ markdown-файлов**: 4 root files (index, log, overview, timeline), 2 entity pages (Symfony
+* [Wiki Snapshot — Активные проекты](snapshot.md) — ### Управление памятью и контекстом ИИ-агента (Memory Architecture) ### Сравнение реализаций: Loomana vs pi-llm-wiki --- *Last updated: 2026-06-25*
 
 ## Заметки
 
@@ -53,14 +45,17 @@
 ## Встречи
 
 
+## Проекты
+
+
 ## Библиография
 
 
 ## Ресурсы
-* [AI Factory](entities/ai-factory.md) — CLI tool, stack-agnostic skill system for AI development.
+
 
 ---
-*Создано: 2026-06-23* | *Последнее обновление: 2026-06-24* | *Всего страниц: 14*
+*Created: auto-generated | Last updated: 2026-06-26 17:36*
 
 ## Хронология
 | Дата | Событие |

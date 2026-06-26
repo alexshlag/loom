@@ -130,3 +130,10 @@
 * Интегрирован в process-query.json (search_priority_details + step 1 fallback_chain)
 * Добавлена секция Smart Search Priority в AGENTS.md
 * Обновлён PLAN.md с прогрессом Phase 2
+
+## [2026-06-26] lint | Phase 4 — реализация --index-only в rebuild-meta.sh
+* Добавлен флаг `--index-only` в `scripts/rebuild-meta.sh`: пропускает registry.json и backlinks.json, строит только index.md
+* Обёрнуты блоки registry + backlinks в условие `if [[ "$INDEX_ONLY" == "false" ]]`
+* Проверено: обычный вызов rebuilds всё (registry + backlinks + index), --index-only rebuilds только index
+* Обновлён AGENTS.md: секция Auto-Rebuild Metadata дополнена описанием обоих режимов
+* Обновлён PLAN.md: зафиксирована реализация --index-only в шаге 4.1
