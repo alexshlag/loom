@@ -17,7 +17,9 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/.."
+# Если передан wiki_dir — обрезаем trailing slash для чистоты путей
 WIKI_DIR="${2:-$PROJECT_ROOT/wiki}"
+WIKI_DIR="${WIKI_DIR%/}"
 MAX_RESULTS=15
 QUERY=""
 
