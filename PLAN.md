@@ -73,3 +73,28 @@ See [PLAN_PHASE_6_FUTURE.md](PLAN_PHASE_6_FUTURE.md) for:
 
 
 *Last update: 2026-06-27 | Phases 1-5, 6.1+6.2, 7.1+7.2, 8 done.*
+
+---
+
+## 🧠 Contradiction Resolution Flow (Phase 8 extension)
+
+**Принцип**: Не удалять старое → маркировать противоречие с ссылкой на альтернативный источник.
+
+| Компонент | Статус | Описание |
+|-----------|--------|----------|
+| `detect-contradications.sh` | ✅ Done | Python-based deep scan, returns JSON with resolution_hint |
+| process-query.json#2c | ✅ Done | contradiction_resolution step — append_to_section_or_create |
+| Schema template | ✅ Already in AGENTS.md | `## Обновлено [DATE] — conflicting info` format |
+
+**Алгоритм при обнаружении противоречия**:
+1. Agent читает page с конфликтом из lint output
+2. Проверяет наличие секции `## Обновлено`
+3. Если нет → создаёт её
+4. Если есть → добавляет новый пункт (не перезаписывает!)
+5. Обновляет frontmatter: `has_contradiction: true`
+
+**Дальнейшие шаги**:
+- [ ] Auto-fix flow для contradictions в process-ingest.json
+- [ ] Integration with issue #4 (Authoritative Sources Criteria from LM Studio)
+- [ ] Visual indicator in graph view (conflicting edges)
+

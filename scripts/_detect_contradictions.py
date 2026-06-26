@@ -60,10 +60,21 @@ for group_key, entries in fact_groups.items():
     # Check if contexts differ significantly (potential conflict)
     contexts = [e["context"] for e in entries]
     
+    # Build resolution hint for agent to use
+    first_entry = entries[0]
+    second_entries = entries[1:3]  # Top 2 conflicting sources
+    hints_list = [e["path"] for e in second_entries]
+    
     contradictions.append({
         "type": "version_conflict",
         "group_key": group_key,
-        "entries": [{"path": e["path"], "context": e["context"][:150]} for e in entries]
+        "entries": [{"path": e["path"], "context": e["context"][:150]} for e in entries],
+        "resolution_hint": {
+            "action": "add_updated_section",
+            "target_page": first_entry["path"],
+            "references": hints_list,
+            "template": "## Updated [DATE] — conflicting info\n- **[CONFLICTING_SOURCE]**: [brief].\n- **Source:** `[PATH]`.\n- **Conflicts with:** `TARGET_PAGE`, [OLD_DATE] (old statement)."
+        }
     })
 
 # Output JSON on stdout

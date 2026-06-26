@@ -324,8 +324,8 @@
         }
       },
       "pre_check": {
-        "command": "./scripts/wiki-search.sh --dynamic \"\" 2>/dev/null || true",
-        "note": "Phase 6: Context awareness — reads meta/search_history.json, detects intent + topic continuity"
+        "command": "./scripts/lint.sh --skip-checks 1,3,4,5,6,7,8 --quiet",
+        "note": "Phase 8: Quick contradiction scan before deep synthesis"
       }
     },
     {
