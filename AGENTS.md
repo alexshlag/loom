@@ -438,4 +438,26 @@ cd /path/to/loomana && ./scripts/lint.sh --skip-checks 3,5
 
 ---
 
-*Schema Version: 7 | Last Updated: 2026-06-26 | Author Pattern: Andrej Karpathy (LLM Wiki)*
+*Schema Version: 8 | Last Updated: 2026-06-26 | Author Pattern: Andrej Karpathy (LLM Wiki)*
+
+---
+
+## 🎯 Dynamic Priority + Relevance Scoring (Phase 5)
+
+`scripts/wiki-search.sh --dynamic "query"` — динамический порядок категорий по query intent.
+
+**Query Intent Analysis**:
+- Entity keywords → `entities/`, `concepts/`, `syntheses/` priority
+- Comparison keywords (`vs`, `compared to`) → `comparisons/`, `syntheses/`, `concept/` priority  
+- Concept keywords → `concepts/`, `syntheses/`, `entities/` priority
+- Fallback: static priority (syntheses→concepts→entities)
+
+**Relevance Scoring**:
+1. Position weight: query in H1 = +3, body = +1 per occurrence
+2. Frequency weight: total occurrences × 1
+3. Backlink weight: mentions in other wiki pages × 5
+4. Category bonus: earlier priority category gets +10×(max_priority - index)
+
+**Usage**: `./scripts/wiki-search.sh --dynamic "query"` — results sorted by combined score descending.
+
+> Full workflow: `AGENTS.md#smart_search_priority` → extended with dynamic intent analysis.

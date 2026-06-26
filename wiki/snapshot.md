@@ -1,8 +1,8 @@
 ---
 tags: [snapshot, active-projects]
-date: 2026-06-25
+date: 2026-06-26
 sources: []
-related: []
+related: [wiki/comparisons/llm-wiki-implementations.md, wiki/concepts/llm-wiki.md]
 ---
 # Wiki Snapshot — Активные проекты
 
@@ -21,6 +21,12 @@ related: []
 - **Связанные wiki-страницы**:
   - `[Comparison: LLm Wiki Implementations](comparisons/llm-wiki-implementations.md)` — детальное сравнение workflow, инструментов, trade-offs
 
+### Loomana — Phase 5: Dynamic Priority + Relevance Scoring
+- **Статус**: active (in progress)
+- **Контекст**: Внедрение динамического порядка категорий wiki по query intent. Референс: PLAN.md Phases 4-6, pi-llm-wiki layered recall.
+- **Связанные wiki-страницы**:
+  - `[Comparison: LLm Wiki Implementations](comparisons/llm-wiki-implementations.md)`
+
 ---
 
-*Last updated: 2026-06-25*
+*Last updated: 2026-06-26*

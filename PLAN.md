@@ -234,7 +234,7 @@
 
 ### Phase 5: Dynamic priority + relevance scoring (умное ранжирование)
 
-**Статус: pending** | **Приоритет: high** | **Зависит от:** нет
+**Статус: ✅ COMPLETED** — реализовано 2026-06-26
 
 **Проблема**: `wiki-search.sh` использует статичный порядок категорий, не адаптируется к query intent. Нет relevance scoring — все результаты равны.
 
@@ -365,11 +365,11 @@
 - [x] AGENTS.md обновлён: секция Auto-update Index добавлена
 
 ### Phase 5: Dynamic priority + relevance scoring ✅
-- [ ] `scripts/wiki-search.sh` содержит dynamic priority logic
-- [ ] Query intent анализ: entity/concept/comparison → динамический order categories
-- [ ] Relevance scoring реализован (position, frequency, backlink weight)
-- [ ] Output сортируется по combined score (descending)
-- [ ] Process-query.json использует `wiki-search.sh --dynamic`
+- [x] `scripts/wiki-search.sh` содержит dynamic priority logic
+- [x] Query intent анализ: entity/concept/comparison → динамический order categories
+- [x] Relevance scoring реализован (position, frequency, backlink weight)
+- [x] Output сортируется по combined score (descending)
+- [x] Process-query.json использует `wiki-search.sh --dynamic`
 - [ ] AGENTS.md обновлён: секция Dynamic Priority + Relevance Scoring добавлена
 
 ### Phase 6: Search context awareness ✅

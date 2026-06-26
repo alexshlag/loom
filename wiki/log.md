@@ -137,3 +137,9 @@
 * Проверено: обычный вызов rebuilds всё (registry + backlinks + index), --index-only rebuilds только index
 * Обновлён AGENTS.md: секция Auto-Rebuild Metadata дополнена описанием обоих режимов
 * Обновлён PLAN.md: зафиксирована реализация --index-only в шаге 4.1
+
+## [2026-06-26] schema | Phase 5 COMPLETED — Dynamic Priority + Relevance Scoring in wiki-search.sh
+- Реализован query intent analysis: entity/concept/comparison keywords → dynamic priority categories
+- Реализован relevance scoring: position weight (H1 = x3), frequency, backlink weight, category bonus
+- Output сортируется по combined score (descending) — релевантные страницы выше
+- Флаг --dynamic для wiki-search.sh

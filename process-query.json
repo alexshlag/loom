@@ -19,7 +19,7 @@
         },
         {
           "method": "wiki_search_script",
-          "command": "./scripts/wiki-search.sh \"${USER_QUERY}\" wiki/ --max 15",
+          "command": "./scripts/wiki-search.sh --dynamic \"${USER_QUERY}\" wiki/ --max 15",
           "description": "Умный grep по приоритетным категориям (syntheses→concepts→entities) с fallback на полный grep. Результат: строки 'path/to/file.md:matched_line'",
           "action": "FALLBACK"
         }
@@ -56,30 +56,55 @@
       ],
       "save_conditions_schema_ref": "AGENTS.md#compounding_workflow"
     },
-
     "context_bubble": {
       "description": "Ограничение: не более 3 активных страниц в контексте одновременно",
       "rule": "AGENT_READS_MAX_3_PAGES_CONCURRENTLY",
       "action_when_exceeded": "DISMISS_LEAST_IMPORTANT_PAGE_FROM_CONTEXT",
       "status_tracking": [
-        {"path": "page_path.md", "status": "reading"},
-        {"path": "page_path.md", "status": "updating"},
-        {"path": "page_path.md", "status": "read"}
+        {
+          "path": "page_path.md",
+          "status": "reading"
+        },
+        {
+          "path": "page_path.md",
+          "status": "updating"
+        },
+        {
+          "path": "page_path.md",
+          "status": "read"
+        }
       ],
       "schema_ref": "AGENTS.md#context_bubble"
     },
-
     "grep_contract": {
       "description": "Безопасное чтение файлов через bash — запрет на cat крупных файлов, обязательный -m для grep",
       "allowed_patterns": [
-        {"command": "grep -E '^# ' file.md", "purpose": "быстрое оглавление"},
-        {"command": "head -n 20 file.md", "purpose": "чтение фронтматера"},
-        {"command": "sed -n 'X,Yp' file.md", "purpose": "диапазон строк"},
-        {"command": "grep -m N pattern wiki/", "purpose": "искать до N совпадений (обязательно)"}
+        {
+          "command": "grep -E '^# ' file.md",
+          "purpose": "быстрое оглавление"
+        },
+        {
+          "command": "head -n 20 file.md",
+          "purpose": "чтение фронтматера"
+        },
+        {
+          "command": "sed -n 'X,Yp' file.md",
+          "purpose": "диапазон строк"
+        },
+        {
+          "command": "grep -m N pattern wiki/",
+          "purpose": "искать до N совпадений (обязательно)"
+        }
       ],
       "forbidden_patterns": [
-        {"command": "cat file.md", "reason": "файл >50 строк — токеновая перегрузка"},
-        {"command": "grep pattern wiki/", "reason": "без -m — может вывести тысячи строк"}
+        {
+          "command": "cat file.md",
+          "reason": "файл >50 строк — токеновая перегрузка"
+        },
+        {
+          "command": "grep pattern wiki/",
+          "reason": "без -m — может вывести тысячи строк"
+        }
       ],
       "rule": "AGENT_MUST_USE_ALLOWED_PATTERNS_FOR_BASH_READING",
       "schema_ref": "AGENTS.md#grep_contract"
@@ -96,10 +121,14 @@
       "name": "context_load_from_working_memory",
       "description": "При старте чтения working_memory.json — узнать, на чём остановился агент в предыдущей сессии. Если focus_node != null → продолжить работу с этой страницы. Если query_summary не пустой → удерживать тему discussion.",
       "actions": [
-        {"action": "read_file", "path": "working_memory.json"},
-        {"action": "check_focus_node_exists",
-         "if_true": "CONTINUE_WITH_SAME_FOCUS",
-         "if_false": "SET_NEW_FOCUS_FROM_QUERY"
+        {
+          "action": "read_file",
+          "path": "working_memory.json"
+        },
+        {
+          "action": "check_focus_node_exists",
+          "if_true": "CONTINUE_WITH_SAME_FOCUS",
+          "if_false": "SET_NEW_FOCUS_FROM_QUERY"
         },
         {
           "condition": "current_mode == 'discussion'",
@@ -315,14 +344,26 @@
       "name": "context_compaction_and_dismissal",
       "description": "Сжать прочитанный контекст в структурированное саммари (макс 2K токенов), записать в working_memory.json, выгрузить raw-страницы из активного окна.",
       "actions": [
-        {"action": "compress_read_pages_to_summary",
-         "max_tokens": 2048,
-         "include": ["key_facts", "contradictions", "sources"]},
+        {
+          "action": "compress_read_pages_to_summary",
+          "max_tokens": 2048,
+          "include": [
+            "key_facts",
+            "contradictions",
+            "sources"
+          ]
+        },
         {
           "action": "write_to_working_memory",
           "fields": [
-            {"field": "query_summary", "value": "{intent, pages_read, key_findings}"},
-            {"field": "open_pages", "status": "read -> dismiss_from_context"}
+            {
+              "field": "query_summary",
+              "value": "{intent, pages_read, key_findings}"
+            },
+            {
+              "field": "open_pages",
+              "status": "read -> dismiss_from_context"
+            }
           ]
         }
       ]
@@ -501,14 +542,30 @@
       "finalization": {
         "description": "Обязательный финальный шаг — записать состояние в working_memory.json перед завершением сессии",
         "actions": [
-          {"action": "write_to_working_memory",
-           "fields": [
-             {"field": "last_updated", "value": "current_timestamp"},
-             {"field": "focus_node", "value": "completed OR null (if dismissed)"},
-             {"field": "next_steps_todo", "action_if_compounding_flagged": "ADD_TASK: create_page_from_insight"},
-             {"field": "dead_ends", "action_if_grep_failed": "APPEND_APPROACH_AND_REASON"},
-             {"field": "current_mode", "value": "null (after dismissal) OR discussion (if topic continues)"}
-           ]
+          {
+            "action": "write_to_working_memory",
+            "fields": [
+              {
+                "field": "last_updated",
+                "value": "current_timestamp"
+              },
+              {
+                "field": "focus_node",
+                "value": "completed OR null (if dismissed)"
+              },
+              {
+                "field": "next_steps_todo",
+                "action_if_compounding_flagged": "ADD_TASK: create_page_from_insight"
+              },
+              {
+                "field": "dead_ends",
+                "action_if_grep_failed": "APPEND_APPROACH_AND_REASON"
+              },
+              {
+                "field": "current_mode",
+                "value": "null (after dismissal) OR discussion (if topic continues)"
+              }
+            ]
           }
         ],
         "rule": "AGENT_MUST_WRITE_WM_AFTER_EACH_QUERY"
