@@ -15,18 +15,20 @@
 
 set -euo pipefail
 
+# PROJECT_ROOT вычисляется из позиции скрипта, но output — чистые относительные пути от wiki_dir
+# PROJECT_ROOT — абсолютный путь к корню проекта
+# WIKI_DIR — относительный от PROJECT_ROOT (для чистого grep output)
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PROJECT_ROOT="$SCRIPT_DIR/.."
-# Если передан wiki_dir — обрезаем trailing slash для чистоты путей
-WIKI_DIR="${2:-$PROJECT_ROOT/wiki}"
-WIKI_DIR="${WIKI_DIR%/}"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$PROJECT_ROOT"
+WIKI_DIR="wiki"
 MAX_RESULTS=15
 QUERY=""
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --max) MAX_RESULTS="$2"; shift 2;;
-        *) QUERY="$1"; shift;;
+        --max|-m) MAX_RESULTS="${2:-$MAX_RESULTS}"; shift 2;;
+        *) QUERY="$1"; break;;
     esac
 done
 
