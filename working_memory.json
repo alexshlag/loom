@@ -1,22 +1,20 @@
 {
-  "last_updated": "2026-06-26T15:54:00+00",
+  "last_updated": "2026-06-26T16:15:00+00",
   "current_mode": "query",
-  "focus_node": "PLAN.md repair and Phase 3 completion",
+  "focus_node": "AGENTS.md reduction complete",
   "open_pages": [],
   "dead_ends": [],
   "query_summary": {
-    "intent": "Ремонт после сбоя на фазе 4",
-    "pages_read": ["PLAN.md", "AGENTS.md", "process-lint.json"],
+    "intent": "Reduce AGENTS.md context load by enforcing rules in scripts",
+    "pages_read": ["AGENTS.md"],
     "key_findings": [
-      "Phase 3 был помечен как PENDING, но скрипт отсутствовал",
-      "PLAN.md содержал дублирующийся старый блок (строки 295-450)",
-      "AGENTS.md не имел секции Non-blocking Lint",
-      "process-lint.json ссылался на несуществующий scripts/run-lint.sh"
+      "-419 lines deleted, +43 added = ~40% reduction (750→447 lines)",
+      "Enforced via scripts: frontmatter schema, git conventions, link formats, search strategy, date convention, auto-rebuild/index/lint",
+      "Removed: Additional Tools (unused), verbose JSON templates, logging arrays, reasoning examples"
     ]
   },
   "next_steps_todo": [
     {"task": "Phase 5: Dynamic priority + relevance scoring в wiki-search.sh", "priority": "high"},
-    {"task": "Phase 6: Search context awareness (meta/search_history.json)", "priority": "medium"},
-    {"task": "Решить issues из lint.sh: 137 total (орфаны, broken links, new sources)"}
+    {"task": "Phase 6: Search context awareness (meta/search_history.json)", "priority": "medium"}
   ]
 }
