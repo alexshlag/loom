@@ -18,8 +18,9 @@
           "action": "STOP"
         },
         {
-          "method": "grep_recursive",
-          "limit": 10,
+          "method": "wiki_search_script",
+          "command": "./scripts/wiki-search.sh \"${USER_QUERY}\" wiki/ --max 15",
+          "description": "Умный grep по приоритетным категориям (syntheses→concepts→entities) с fallback на полный grep. Результат: строки 'path/to/file.md:matched_line'",
           "action": "FALLBACK"
         }
       ],
@@ -172,8 +173,8 @@
             "method": "semantic_search_wiki_recall"
           },
           {
-            "description": "grep -r query wiki/ — fallback, если предыдущие шаги не дали достаточного количества результатов (менее 2 из index или менее 3 из recall). Ограничить выборку первыми 10 кусками.",
-            "method": "grep_recursive"
+            "description": "./scripts/wiki-search.sh query wiki/ — приоритетный grep по категориям (syntheses→concepts→entities), fallback на полный grep. Использовать вместо raw grep -r.",
+            "method": "wiki_search_script"
           }
         ],
         "stop_if_any_results": false
@@ -412,7 +413,7 @@
     {
       "step_id": "3",
       "name": "result_fixation",
-      "description": "Compounding: Сохраняй answer как новую страницу если содержит novel insight/synthesis из 2+ источников. Добавь ссылку в index.md. После write автоматически вызывай wiki_rebuild_meta.",
+      "description": "Compounding: Сохраняй answer как новую страницу если содержит novel insight/synthesis из 2+ источников. Добавь ссылку в index.md. После write автоматически вызывай scripts/rebuild-meta.sh для пересбора метаданных.",
       "pre_check": [
         {
           "action": "run_guardrails",

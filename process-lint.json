@@ -118,7 +118,14 @@
       "name": "link_validation_with_auto_fix",
       "description": "Валидируй все внутренние ссылки, исправляй автоматически, флаги брейкнутые",
       "command": "./scripts/link-validator.sh --full", "output_handling": {"exit_code_0": "all_links_valid — proceed to next check", "exit_code_1": "broken_links_found — parse JSON from stdout, report with auto-fixable count and apply fixes"},
-      "reference": "AGENTS.md#link-conventions--auto-fix"
+      "reference": "AGENTS.md#link-conventions--auto-fix",
+      "post_check": {
+        "command": "./scripts/rebuild-meta.sh",
+        "schema_ref": "AGENTS.md#meta_rebuild_path",
+        "note": "Canonical path defined in AGENTS.md. Do not hardcode absolute paths.",
+        "action_on_success": "CONTINUE_TO_NEXT_CHECK",
+        "action_on_failure": "LOG_WARNING_AND_PROCEED"
+      }
     },
     {
       "check_id": "8",
@@ -136,7 +143,14 @@
         "exit_code_0": "no_broken_links — proceed",
         "exit_code_1": "broken_links_found — parse JSON from stdout, report with auto-fixable count and apply fixes"
       },
-      "schema_ref": "AGENTS.md#auto_fix_protocol"
+      "schema_ref": "AGENTS.md#auto_fix_protocol",
+      "post_check": {
+        "command": "./scripts/rebuild-meta.sh",
+        "schema_ref": "AGENTS.md#meta_rebuild_path",
+        "note": "Canonical path defined in AGENTS.md. Do not hardcode absolute paths.",
+        "action_on_success": "CONTINUE_TO_NEXT_CHECK",
+        "action_on_failure": "LOG_WARNING_AND_PROCEED"
+      }
     }
   ],
   "schema_ref": "AGENTS.md",

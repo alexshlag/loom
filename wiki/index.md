@@ -31,7 +31,7 @@
 
 
 ## Сравнения
-* [LLM Wiki Implementations: out/ vs pi-llm-wiki](comparisons/llm-wiki-implementations.md) — Ручной Markdown-driven workflow vs TypeScript платформа с tools API и background runtime.
+* [LLM Wiki Implementations: Loomana vs pi-llm-wiki](comparisons/llm-wiki-implementations.md) — Markdown-driven wiki vs TypeScript платформа с tools API и background runtime.
 
 
 ## Синтезы

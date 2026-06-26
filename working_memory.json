@@ -1,41 +1,36 @@
 {
-  "last_updated": "2026-06-25T14:50:00+03",
+  "last_updated": "2026-06-26T15:10:00+03",
 
-  "current_mode": "query",
-  "focus_node": null,
-  
-  "open_pages": [],
+  "current_mode": "project",
+  "focus_node": "Phase 2: Smarter search — priority categories + smarter grep",
+
+  "open_pages": [
+    {"path": "PLAN.md", "status": "updating"},
+    {"path": "AGENTS.md#auto-rebuild-metadata", "status": "reading"},
+    {"path": "process-lint.json", "status": "updated"}
+  ],
 
   "dead_ends": [],
 
   "query_summary": {
-    "intent": "Symfony Framework — comprehensive knowledge base for project work",
-    "pages_created": [
-      "wiki/entities/symfony.md",
-      "wiki/concepts/service-container.md",
-      "wiki/concepts/routing-system.md",
-      "wiki/concepts/event-dispatcher.md",
-      "wiki/concepts/security-system.md",
-      "wiki/concepts/doctrine-orm.md",
-      "wiki/concepts/symfony-flex.md",
-      "wiki/concepts/hexagonal-architecture.md",
-      "wiki/concepts/twig-templating.md",
-      "wiki/concepts/testing-strategy.md",
-      "wiki/concepts/assetmapper.md",
-      "wiki/concepts/symfony-ai.md",
-      "wiki/concepts/messenger-component.md",
-      "wiki/concepts/workflow-state-machine.md",
-      "wiki/concepts/cache-system.md"
+    "intent": "Улучшение Loomana — внедрение лучших идей из pi-llm-wiki без TS-lock-in",
+    "phase_1_completed": [
+      "Добавлен auto-rebuild meta в lint-процесс (check_id=7, check_id=8)",
+      "Добавлена секция Auto-Rebuild Metadata в AGENTS.md",
+      "Обновлён PLAN.md с правилом разработки",
+      "Удалены старые ссылки wiki_rebuild_meta → scripts/rebuild-meta.sh"
     ],
-    "raw_package": "raw/sources/SRC-2026-06-25-SYMFONY-001/",
-    "index_updated": true,
-    "timeline_updated": true
+    "phase_2_completed": [
+      "Создан и улучшен scripts/wiki-search.sh (priority categories, fallback)",
+      "Интегрирован в process-query.json (search_priority_details + step 1 fallback_chain)",
+      "Добавлена секция Smart Search Priority в AGENTS.md",
+      "Обновлён PLAN.md с прогрессом Phase 2"
+    ]
   },
 
   "next_steps_todo": [
-    {"task": "git commit all new Symfony pages", "priority": "high"},
-    {"task": "Исправить broken links после переименования llm-wiki-pattern → llm-wiki", "priority": "medium"},
-    {"task": "Добавить post_operation_link_validation в process-ingest.json и process-lint.json", "priority": "medium"},
-    {"task": "Решить Issue #1 из issues.md: как часто обновлять wiki из внешних источников?", "priority": "high"}
+    {"task": "Phase 3: Non-blocking lint — отдельный скрипт scripts/lint.sh", "priority": "high"},
+    {"task": "Интегрировать в process-lint.json вместо inline lint", "priority": "medium"},
+    {"task": "Настроить cron (опционально) для автоматического lint каждые 4 часа", "priority": "low"}
   ]
 }

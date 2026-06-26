@@ -86,7 +86,7 @@ The tedious part of maintaining a knowledge base is not the reading or the think
 * [Synthesis: RAG vs LLM Wiki Pattern](syntheses/rag-vs-llm-wiki-pattern.md) — сравнение подхода
 * [Concept: Temporal Decay](concepts/temporal-decay-in-wiki.md) — проблема устаревания, требует maintenance
 
-### Реализация в нашем проекте (out/)
+### Реализация: Loomana
 | Элемент проекта | Соответствие паттерну |
 |-----------------|----------------------|
 | `raw/**` (immutable sources) | Raw sources layer — immutable collection, read-only via guardrails |

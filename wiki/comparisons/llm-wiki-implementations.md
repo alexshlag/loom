@@ -5,15 +5,15 @@ sources: []
 related: [wiki/concepts/llm-wiki.md, wiki/syntheses/rag-vs-llm-wiki-pattern.md]
 ---
 
-# Сравнение: out/ (Markdown-driven wiki) vs pi-llm-wiki/ (TypeScript platform)
+# Сравнение: Loomana (Markdown-driven wiki) vs pi-llm-wiki/ (TypeScript platform)
 
 ## Введение
 
-Оба проекта реализуют **LLM Wiki Pattern** (Andrej Karpathy), но на разных уровнях абстракции. `out/` — это **база знаний в markdown**, управляемая вручную через Schema и git. `pi-llm-wiki/` — это **TypeScript платформа** с 13+ инструментами, автоматизирующая весь workflow.
+Оба проекта реализуют **LLM Wiki Pattern** (Andrej Karpathy), но на разных уровнях абстракции. **Loomana** — это **база знаний в markdown**, управляемая вручную через Schema и git. `pi-llm-wiki/` — это **TypeScript платформа** с 13+ инструментами, автоматизирующая весь workflow.
 
 ## Таблица сравнения
 
-| Критерий | out/ (Markdown-driven) | pi-llm-wiki/ (TS Platform) |
+| Критерий | Loomana (Markdown-driven) | pi-llm-wiki/ (TS Platform) |
 |----------|----------------------|---------------------------|
 | **Архитектура** | Markdown + Git + JSON Schema | TypeScript extensions + Tool API + Background Runtime |
 | **Ингест** | Агент пишет markdown через `edit`/`write`, обновляет index.md вручную | Вызов `wiki_ingest(source)` → TS инструмент создаёт пакет, генерирует страницу, rebuilds meta автоматически |
@@ -29,7 +29,7 @@ related: [wiki/concepts/llm-wiki.md, wiki/syntheses/rag-vs-llm-wiki-pattern.md]
 
 ### 1. Ингест: Ручной vs Автоматический
 
-**out/** требует агентного действия на каждом шаге:
+**Loomana** требует агентного действия на каждом шаге:
 - Агент читает источник → пишет summary в wiki/ через `edit`/`write`
 - Обновляет index.md, entity/concept pages вручную
 - Git commit после ingest
@@ -40,11 +40,11 @@ wiki_ingest(source="https://example.com" | file="/path/to/doc")
 ```
 → TS инструмент создает пакет в raw/, генерирует markdown, rebuilds meta. Агент не трогает файлы — только вызывает tool.
 
-**Trade-off**: out/ даёт полный контроль и прозрачность (git diff показывает каждый шаг). pi-llm-wiki быстрее при росте wiki, но сложнее дебажить.
+**Trade-off**: Loomana даёт полный контроль и прозрачность (git diff показывает каждый шаг). pi-llm-wiki быстрее при росте wiki, но сложнее дебажить.
 
 ### 2. Поиск: Index.md vs Layered Recall
 
-**out/** читает `index.md` по категориям → находит релевантные страницы → semantic search → grep-fallback. Работает до ~100 страниц, затем index.md становится большим и noisy.
+**Loomana** читает `index.md` по категориям → находит релевантные страницы → semantic search → grep-fallback. Работает до ~100 страниц, затем index.md становится большим и noisy.
 
 **pi-llm-wiki**:
 - `wiki_recall(query)` — layered recall из personal + project vaults одновременно
@@ -53,7 +53,7 @@ wiki_ingest(source="https://example.com" | file="/path/to/doc")
 
 ### 3. Lint: Bash скрипты vs Auto-rebuild
 
-**out/** использует bash-скрипты для lint:
+**Loomana** использует bash-скрипты для lint:
 - `link-validator.sh --full` — сканирование всех wiki на broken links
 - `validate-path.sh` — защита raw/** и meta/** от прямых edit
 - Agent парсит JSON из stdout → применяет auto-fix
@@ -65,18 +65,18 @@ wiki_ingest(source="https://example.com" | file="/path/to/doc")
 
 ### 4. Background Runtime vs Agent Turn
 
-**out/**: все операции синхронны в agent turn. Каждый ingest/query/lint — это новый agent action с полным контекстом.
+**Loomana**: все операции синхронны в agent turn. Каждый ingest/query/lint — это новый agent action с полным контекстом.
 
 **pi-llm-wiki**: background-runtime запускает off-thread LLM work (distilling skills, trajectories). Агент не блокируется — tool возвращает immediate acknowledgment, работа идёт параллельно.
 
 ## Сильные и слабые стороны
 
-### out/ — Плюсы
+### Loomana — Плюсы
 1. **Прозрачность**: каждый шаг виден в git diff, легко debugить
 2. **Не зависит от TS-платформы**: работает автономно, нет runtime зависимостей
 3. **Гибкая Schema**: AGENTS.md co-evolves с пользователем через прямые edits
 
-### out/ — Минусы
+### Loomana — Минусы
 1. **Масштабирование**: при >100 страницах index.md теряет эффективность, grep становится noisy
 2. **Нет auto-rebuild meta**: требуется отдельный lint-шаг для backlinks/registry
 3. **Синхронность**: каждый operation блокирует agent turn
@@ -96,14 +96,14 @@ wiki_ingest(source="https://example.com" | file="/path/to/doc")
 
 | Сценарий | Рекомендация |
 |----------|-------------|
-| Wiki < 50 страниц, полный контроль, прозрачность | out/ (Markdown-driven) — проще debugить, гибче Schema |
+| Wiki < 50 страниц, полный контроль, прозрачность | Loomana (Markdown-driven) — проще debugить, гибче Schema |
 | Wiki > 100 страниц, нужен scalable search, auto-rebuild | pi-llm-wiki (Platform) — layered recall, indexing, background work |
-| Эксперименты с структурой, co-evolution Schema | out/ — прямые edits в AGENTS.md без platform lock-in |
+| Эксперименты с структурой, co-evolution Schema | Loomana — прямые edits в AGENTS.md без platform lock-in |
 | Production-grade wiki с автоматизацией | pi-llm-wiki — tools API, auto-rebuild, off-thread analysis |
 
 ## Связи с нашим проектом
 
-### Текущая реализация (out/)
+### Текущая реализация: Loomana
 * Markdown-driven wiki с Schema v6 (AGENTS.md), Error Handling Protocol, JSON git policy
 * Bash guardrails: validate-path.sh, link-validator.sh, .git/hooks/pre-commit
 * Manual index.md + log.md maintenance

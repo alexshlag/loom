@@ -548,10 +548,36 @@ Priority order:
   "search_priority": [
     {"priority": 1, "method": "index_lookup", "description": "read index.md by categories matching topic"},
     {"priority": 2, "method": "semantic_search", "command": "wiki_recall(query)", "description": "find pages by meaning, not keywords"},
-    {"priority": 3, "method": "grep_recursive", "fallback": true, "command": "grep -r query wiki/"}
+    {"priority": 3, "method": "wiki_search_script", "fallback": true, "command": "./scripts/wiki-search.sh query wiki/ --max 15", "description": "smart priority search (syntheses→concepts→entities), fallback to full grep"}
   ]
 }
 ```
+
+### Smart Search Priority (Phase 2)
+
+```json
+{
+  "wiki_search_script": {
+    "path": "./scripts/wiki-search.sh",
+    "usage": "./scripts/wiki-search.sh \"query\" wiki/ --max N",
+    "priority_categories": ["syntheses", "concepts", "entities", "comparisons", "notes", "meetings", "projects", "bibliography", "resources"],
+    "output_format": "relative/path/to/file.md:matched_line_number:matched_text",
+    "fallback": "full grep по всем wiki/**/*.md если ничего не найдено в priority categories",
+    "rule": "AGENT_MUST_USE_wiki_search_sh_INSTEAD_OF_RAW_GREP_RECURSIVE"
+  }
+}
+```
+
+**Логика приоритета:**
+1. Сначала ищет в syntheses/ → concepts/ → entities/ (наивысшая релевантность)
+2. Затем comparisons/ → notes/ → meetings/ → projects/ → bibliography/ → resources/
+3. Если ничего не найдено — fallback на полный grep
+4. Результаты всегда с относительными путями от wiki_dir
+
+**Почему это важнее raw grep:**
+- `grep -r query wiki/` при >100 страницах даёт noise и irrelevant results
+- Priority categories: syntheses/concepts/entities содержат самую релевантную информацию
+- Fallback на полный grep только если priority не дал результатов
 
 ---
 
@@ -646,6 +672,32 @@ Priority order:
   "rule": "Никогда не дублировать правила из AGENTS.md в процессных файлах. Всегда добавляй \"schema_ref\" для ссылки на canonical источник."
 }
 ```
+
+---
+
+## 🔧 Auto-Rebuild Metadata (Phase 1)
+
+`rebuild-meta.sh` автоматически пересобирает метаданные после каждого wiki edit:
+- **registry.json** — список всех страниц с метаданными (tags, date, sources)
+- **backlinks.json** — граф связей между страницами
+
+### Когда вызывается
+
+| Process | Триггер |
+|---------|----------|
+| **Ingest** | После create_page (step 3a), update_existing (step 3b) |
+| **Query** | После create_new_page (post_check) |
+| **Lint** | После link_validation_with_auto_fix (check_id=7), file_rename_or_delete (check_id=8) |
+
+### Как использовать
+```bash
+# Вызывается автоматически из process-файлов
+cd /path/to/loomana && ./scripts/rebuild-meta.sh
+```
+
+**Output:**
+- Exit 0 = success — метаданные актуальны
+- Exit 1 = failure — warning logged, continue (не блокирует flow)
 
 ### Почему это важно
 - **Single Source of Truth**: AGENTS.md — единственный авторитетный источник общих правил
