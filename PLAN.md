@@ -12,29 +12,15 @@
 | 4 | Auto-update index.md (`--index-only`) | ✅ Done | `f362a2d` |
 | 5 | Dynamic priority + relevance scoring | ✅ Done | `1990a20` |
 | 7.1 | Auto-crosslink script (`auto-crosslink.sh`) | ✅ Done | pending |
+| 7.2 | Integration in process-ingest.json | ✅ Done | pending |
+| 6.1 | Search history + auto-save (`meta/search_history.json`) | ✅ Done | pending |
+| 6.2 | Context-aware search bias (`wiki-search.sh` Phase 6) | ✅ Done | pending |
 
 **Canonical sources**: All scripts in `scripts/`, process files reference them via `schema_ref`.
 
 ---
 
 ## 🟡 Pending Phases (sorted by priority)
-
-### Phase 6: Search Context Awareness — High Priority
-**Цель**: Сохранять search history → adapt priority queue based on recent queries.
-
-| Шаг | Что | Файл |
-|-----|-----|------|
-| 6.1 | `meta/search_history.json` format + auto-save | New file |
-| 6.2 | Context-aware query rewriting (bash: read history → bias priority) | `scripts/wiki-search.sh` |
-| 6.3 | Integrate into process-query.json step before search | `process-query.json#context_bubble` |
-
-### Phase 7: Auto-crosslink — High Priority 🆕
-**Цель**: Автоматизировать cross-linking после создания новой страницы (agent grep вручную → скрипт).
-
-| Шаг | Что | Файл | Приоритет |
-|-----|-----|------|-----------|
-| 7.1 | `scripts/auto-crosslink.sh` — парсит H1, grep по всем wiki на упоминания | ✅ Done (tested) | ✅ Complete |
-| 7.2 | Интегрировать в process-ingest.json post_check (auto-update existing pages) | In progress | Medium |
 
 ### Phase 8: Contradiction Deep Scan — Medium Priority 🆕
 **Цель**: Автоматизировать deep comparison фактов из разных страниц (версии, цифры, даты).
@@ -55,10 +41,16 @@
 
 ## 📋 Next Actions
 
-1. **Phase 7.2: Интеграция в process-ingest.json** — auto-update existing pages после создания новой
-2. **Phase 6 implementation** — pending user approval
-3. **Issue #4** — Authoritative Sources Criteria (see [issues.md](issues.md))
-4. **AGENTS.md Phase 5 section** — missing link in Schema (checked, needs update)
+1. **Phase 8: detect-contradications.sh** — реализация auto-contrast scan
+2. **Issue #4** — Authoritative Sources Criteria (see [issues.md](issues.md))
+3. **AGENTS.md Phase 5 section** — missing link in Schema (checked, needs update)
+
+### 🧠 Future Architecture Discussions (Phase 6 extensions)
+See [PLAN_PHASE_6_FUTURE.md](PLAN_PHASE_6_FUTURE.md) for:
+- Context bubbles (3 active pages strategy)
+- Wiki as swap space for context overflow  
+- Relevance markers + auto-compaction rules
+- Topic reset triggers
 
 ---
 
@@ -69,4 +61,4 @@
 - Live issues tracked in [issues.md](issues.md) — не дублировать здесь
 - **Rule**: new phases sorted by priority (High → Medium → Low)
 
-*Last update: 2026-06-27 | Phase 7.1 done, 7.2 integration in progress.*
+*Last update: 2026-06-27 | Phases 1-5, 6.1+6.2, 7.1+7.2 done; Phase 8 pending.*

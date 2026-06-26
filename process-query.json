@@ -322,6 +322,10 @@
           "append_to": "## Обновлено [date] — новое уточнение",
           "format": "- **YYYY-MM-DD**: Обновлено с [старое] → [новое]"
         }
+      },
+      "pre_check": {
+        "command": "./scripts/wiki-search.sh --dynamic \"\" 2>/dev/null || true",
+        "note": "Phase 6: Context awareness — reads meta/search_history.json, detects intent + topic continuity"
       }
     },
     {
@@ -680,7 +684,7 @@
             },
             {
               "action": "HALT_AND_REPORT",
-              "message": "Disk space insufficient. Cannot capture source. Please free up space or move sources." 
+              "message": "Disk space insufficient. Cannot capture source. Please free up space or move sources."
             }
           ]
         }
@@ -734,7 +738,7 @@
               "run_index_only": true
             },
             {
-              "notify_user": "Meta rebuild skipped for performance — will run on next lint" 
+              "notify_user": "Meta rebuild skipped for performance — will run on next lint"
             }
           ]
         }
