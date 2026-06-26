@@ -1,5 +1,14 @@
 # Wiki Log
 
+## [2026-06-26] query | post_search_flow — исправлен алгоритм действий после пустого wiki-search
+  - raw/sources/ check → web_availability_check → auto-web_search + предложение сохранить / ручной доступ
+  - Добавлен блок `post_search_flow` в process-query.json с 5 шагами
+
+## [2026-06-26] query | web_ingest_flow — добавлен переход от web_search к созданию wiki-страницы
+  - `post_user_response` branching: user_saves → execute web_ingest_flow / one-off → deliver only / decline → exit clean
+  - 6-шаговый flow: capture raw package → validate path → check existing/create new → rebuild meta & index → register tracking → link validation
+  - Интеграция с process-ingest.json#step_3a (создание) и #step_3b (обновление существующей страницы)
+
 ## [2026-06-23] ingest | Инициализация wiki — структура и инструкции восстановлены
 
 ---
