@@ -100,17 +100,15 @@ TOTAL_ISSUES=$((TOTAL_ISSUES + BROKEN_LINKS))
 
 # --- Check 9: File rename/delete validation (git-based) ---
 RENAME_ISSUES=0
-if [[ ! "$(echo "$SKIP_CHECKS" | grep -o '8' || true)" == "8" ]]; then
-  # Only check if there are recent git changes in wiki/
-  HAS_WIKI_CHANGES=$(cd "$PROJECT_ROOT" && git diff --name-only HEAD~1..HEAD 2>/dev/null | grep "wiki/" || true)
-  if [ -n "$HAS_WIKI_CHANGES" ]; then
-    # Run link-validator for renamed/deleted files
-    RENAMED_FILES=$(cd "$PROJECT_ROOT" && git diff --name-status HEAD~1..HEAD 2>/dev/null | grep "^R\|^M" || true)
-    if [ -n "$RENAMED_FILES" ]; then
-      echo "[✓] Check 8/9: file_rename_or_delete — changes detected, link-validator should be run post-fix" >&2
-    fi
+
+# --- Check 8: Contradiction deep scan (Python-based) ---
+CONTRADICTIONS_DEEP=0
+if [[ ! "$(echo "$SKIP_CHECKS" | grep -oE ',?8,?' || true)" == ",8," ]]; then
+  DEEP_OUTPUT=$(./scripts/detect-contradications.sh --quiet 2>&1 || true)
+  if echo "$DEEP_OUTPUT" | python3 -c 'import json,sys; d=json.load(sys.stdin); sys.exit(0 if d.get("status")=="CLEAN" else 1)' 2>/dev/null; then
+    CONTRADICTIONS_DEEP=0
   else
-    echo "[✓] Check 8/9: file_rename_or_delete — no recent wiki changes" >&2
+    CONTRADICTIONS_DEEP=$(echo "$DEEP_OUTPUT" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get("potential_contradictions",0))' || echo "0")
   fi
 fi
 
@@ -119,14 +117,15 @@ cat <<EOF | grep -v "^="
 {
   "timestamp": "$(date +%Y-%m-%dT%H:%M:%S)",
   "wiki_dir": "${WIKI_DIR#/}",
-  "checks_run": 7,
+  "checks_run": 8,
   "issues_found": {
     "contradictions": ${CONTRADICTIONS},
     "orphan_pages": ${ORPHAN_COUNT},
     "new_sources_unprocessed": ${NEW_SOURCES},
     "duplicate_titles": ${DUPLICATE_TITLES},
     "date_inconsistencies": ${DATE_ISSUES},
-    "broken_links": ${BROKEN_LINKS}
+    "broken_links": ${BROKEN_LINKS},
+    "contradictions_deep": ${CONTRADICTIONS_DEEP}
   },
   "total_issues": ${TOTAL_ISSUES},
   "status": "$([ $TOTAL_ISSUES -eq 0 ] && echo 'CLEAN' || echo 'ISSUES_FOUND')"
@@ -135,25 +134,15 @@ EOF
 
 # --- Human-readable summary (stderr) ---
 if [ $QUIET = true ]; then
-  exit 0
+
+# --- Check 8: Contradiction deep scan (Python-based) ---
+CONTRADICTIONS_DEEP=0
+if [[ ! "$(echo "$SKIP_CHECKS" | grep -oE ',?8,?' || true)" == ",8," ]]; then
+  DEEP_OUTPUT=$(./scripts/detect-contradications.sh --quiet 2>&1 || true)
+  if echo "$DEEP_OUTPUT" | python3 -c 'import json,sys; d=json.load(sys.stdin); sys.exit(0 if d.get("status")=="CLEAN" else 1)' 2>/dev/null; then
+    CONTRADICTIONS_DEEP=0
+  else
+    CONTRADICTIONS_DEEP=$(echo "$DEEP_OUTPUT" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get("potential_contradictions",0))' || echo "0")
+  fi
 fi
 
-echo "" >&2
-echo "========================================" >&2
-echo "[SUMMARY] Lint audit complete:" >&2
-echo "  Contradictions (soft): ${CONTRADICTIONS}" >&2
-echo "  Orphan pages:         ${ORPHAN_COUNT}" >&2
-echo "  New sources pending:   ${NEW_SOURCES}" >&2
-echo "  Duplicate titles:      ${DUPLICATE_TITLES}" >&2
-echo "  Date inconsistencies:  ${DATE_ISSUES}" >&2
-echo "  Broken links:          ${BROKEN_LINKS}" >&2
-echo "========================================" >&2
-
-if [ $TOTAL_ISSUES -gt 0 ]; then
-  echo "[!] Total issues found: ${TOTAL_ISSUES} — review and resolve via Ingest/Query" >&2
-  exit 1
-else
-  echo "[✓] Wiki health: CLEAN — no issues found" >&2
-fi
-
-exit 0
