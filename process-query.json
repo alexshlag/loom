@@ -589,7 +589,20 @@
           "format_answer_with_source: 'Данные из интернета, ещё нет в wiki.'",
           "ask_user: 'Добавить это в wiki или вопрос одноразовый?'"
         ],
-        "description": "Автоматический веб-поиск с предложением сохранить в wiki"
+        "post_user_response": {
+          "user_saves_to_wiki": [
+            "execute web_ingest_flow (see below)",
+            "after_fixation: deliver final answer + confirm page created"
+          ],
+          "user_one_off": [
+            "deliver_answer_only",
+            "exit clean — no tracking, no meta updates"
+          ],
+          "user_declines": [
+            "acknowledge_decision",
+            "exit clean"
+          ]
+        }
       },
       {
         "step": 5,
@@ -602,6 +615,102 @@
         "description": "Сообщить о недоступности web + предложить ручной доступ или ответ из своих знаний"
       }
     ]
+  },
+  "web_ingest_flow": {
+    "description": "Переход от web_search к созданию wiki-страницы: capture → integrate через существующие скрипты",
+    "trigger": "user confirms 'save' after web_search answer",
+    "steps": [
+      {
+        "step": 1,
+        "name": "capture_web_as_raw_package",
+        "description": "Создать raw-пакет из web-результатов по аналогии с user-provided sources",
+        "actions": [
+          {
+            "command": "mkdir -p 'raw/sources/SRC-{YYYY-MM-DD}-{hash}/'",
+            "note": "hash = short hash of URL or query"
+          },
+          {
+            "action": "write_content_to_original",
+            "path": "raw/sources/SRC-{date}-{hash}/web-content.md",
+            "source": "web_search_results"
+          },
+          {
+            "action": "create_manifest",
+            "path": "raw/sources/SRC-{date}-{hash}/manifest.json",
+            "content": "{ 'source_type': 'web', 'url': '{url}', 'query': '{user_query}', 'date': '{current_date}' }"
+          }
+        ]
+      },
+      {
+        "step": 2,
+        "name": "validate_path_before_wiki_write",
+        "command": "./scripts/validate-path.sh wiki/{entity|concept}/page-name.md",
+        "expected_exit_code": 0,
+        "on_failure": "HALT_AND_REPORT: path blocked or protected"
+      },
+      {
+        "step": 3,
+        "name": "check_existing_page_or_create_new",
+        "description": "Использовать логику process-ingest step 2 (discussion) и steps 3a/3b",
+        "actions": [
+          {
+            "action": "search_backlinks_json_for_similar_pages",
+            "path": "meta/backlinks.json",
+            "query_term": "{identified_entity_or_concept_from_web_search}"
+          },
+          {
+            "condition": "similar_page_found_in_index",
+            "action": "run_process_ingest_step_3b: update_existing_page",
+            "note": "read existing page → identify additions → write_update with '## Обновлено [date]' section"
+          },
+          {
+            "condition": "no_similar_page",
+            "action": "run_process_ingest_step_3a: create_new_page",
+            "note": "create entity/concept/notes page from web content → fill sections → add connections"
+          }
+        ]
+      },
+      {
+        "step": 4,
+        "name": "rebuild_meta_and_index",
+        "commands": [
+          "./scripts/rebuild-meta.sh",
+          "./scripts/rebuild-meta.sh --index-only"
+        ],
+        "description": "Пересобрать registry.json, backlinks.json и wiki/index.md из всех страниц"
+      },
+      {
+        "step": 5,
+        "name": "register_source_in_tracking",
+        "actions": [
+          {
+            "action": "append_to_raw_registry",
+            "path": "tracking/raw_registry.json",
+            "operation": "add_ingested_id",
+            "value": "SRC-{date}-{hash}"
+          }
+        ]
+      },
+      {
+        "step": 6,
+        "name": "post_operation_link_validation",
+        "command": "./scripts/link-validator.sh <new_page_path>",
+        "actions": [
+          {
+            "action": "parse_json_from_stdout",
+            "format": "{file, line, link, target_path}"
+          },
+          {
+            "condition": "broken_links_found",
+            "action": "apply_auto_fix_to_each_broken_link_by_rewriting_to_new_path"
+          }
+        ]
+      }
+    ],
+    "integration_with_process_ingest": {
+      "description": "web_ingest_flow использует существующие шаги process-ingest (steps 3a/3b), не дублирует логику",
+      "schema_ref": "process-ingest.json#step_3a, process-ingest.json#step_3b"
+    }
   },
   "log_format": {
     "query_record": "## [YYYY-MM-DD] query | Вопрос о RAG vs классических БД"
