@@ -1,36 +1,22 @@
 {
-  "last_updated": "2026-06-26T15:10:00+03",
-
-  "current_mode": "project",
-  "focus_node": "Phase 2: Smarter search — priority categories + smarter grep",
-
-  "open_pages": [
-    {"path": "PLAN.md", "status": "updating"},
-    {"path": "AGENTS.md#auto-rebuild-metadata", "status": "reading"},
-    {"path": "process-lint.json", "status": "updated"}
-  ],
-
+  "last_updated": "2026-06-26T15:54:00+00",
+  "current_mode": "query",
+  "focus_node": "PLAN.md repair and Phase 3 completion",
+  "open_pages": [],
   "dead_ends": [],
-
   "query_summary": {
-    "intent": "Улучшение Loomana — внедрение лучших идей из pi-llm-wiki без TS-lock-in",
-    "phase_1_completed": [
-      "Добавлен auto-rebuild meta в lint-процесс (check_id=7, check_id=8)",
-      "Добавлена секция Auto-Rebuild Metadata в AGENTS.md",
-      "Обновлён PLAN.md с правилом разработки",
-      "Удалены старые ссылки wiki_rebuild_meta → scripts/rebuild-meta.sh"
-    ],
-    "phase_2_completed": [
-      "Создан и улучшен scripts/wiki-search.sh (priority categories, fallback)",
-      "Интегрирован в process-query.json (search_priority_details + step 1 fallback_chain)",
-      "Добавлена секция Smart Search Priority в AGENTS.md",
-      "Обновлён PLAN.md с прогрессом Phase 2"
+    "intent": "Ремонт после сбоя на фазе 4",
+    "pages_read": ["PLAN.md", "AGENTS.md", "process-lint.json"],
+    "key_findings": [
+      "Phase 3 был помечен как PENDING, но скрипт отсутствовал",
+      "PLAN.md содержал дублирующийся старый блок (строки 295-450)",
+      "AGENTS.md не имел секции Non-blocking Lint",
+      "process-lint.json ссылался на несуществующий scripts/run-lint.sh"
     ]
   },
-
   "next_steps_todo": [
-    {"task": "Phase 3: Non-blocking lint — отдельный скрипт scripts/lint.sh", "priority": "high"},
-    {"task": "Интегрировать в process-lint.json вместо inline lint", "priority": "medium"},
-    {"task": "Настроить cron (опционально) для автоматического lint каждые 4 часа", "priority": "low"}
+    {"task": "Phase 5: Dynamic priority + relevance scoring в wiki-search.sh", "priority": "high"},
+    {"task": "Phase 6: Search context awareness (meta/search_history.json)", "priority": "medium"},
+    {"task": "Решить issues из lint.sh: 137 total (орфаны, broken links, new sources)"}
   ]
 }
