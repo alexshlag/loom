@@ -122,3 +122,11 @@
 * Размещён после Memory Architecture Contract, перед Process Roles
 * Покрытие: local-fix / schema-patch / source-conflict / dead-end
 * Цель: агент не зависает на ошибках — фиксирует, анализирует причину, решает и двигается дальше
+
+## [2026-06-26] query | Phase 2 — Smarter search (wiki-search.sh + priority categories)
+* Создан `scripts/wiki-search.sh` с приоритетным поиском по категориям: syntheses → concepts → entities → ...
+* Fallback на полный grep если priority не дал результатов
+* Output с относительными путями от wiki_dir
+* Интегрирован в process-query.json (search_priority_details + step 1 fallback_chain)
+* Добавлена секция Smart Search Priority в AGENTS.md
+* Обновлён PLAN.md с прогрессом Phase 2
