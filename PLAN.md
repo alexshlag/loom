@@ -62,3 +62,14 @@ See [PLAN_PHASE_6_FUTURE.md](PLAN_PHASE_6_FUTURE.md) for:
 - **Rule**: new phases sorted by priority (High → Medium → Low)
 
 *Last update: 2026-06-27 | Phases 1-5, 6.1+6.2, 7.1+7.2 done; Phase 8 pending.*
+
+### Phase 8: Contradiction Deep Scan — Medium Priority ✅ Done 🆕
+**Цель**: Автоматизировать deep comparison фактов из разных страниц (версии, цифры, даты).
+
+| Шаг | Что | Файл | Приоритет |
+|-----|-----|------|-----------|
+| 8.1 | `scripts/detect-contradications.sh` — Python-based deep scan | ✅ Done | ✅ Complete |
+| 8.2 | Интегрировать в lint.sh (check_id=8) | ✅ Done in lint.sh | ✅ Complete |
+
+
+*Last update: 2026-06-27 | Phases 1-5, 6.1+6.2, 7.1+7.2, 8 done.*

@@ -167,3 +167,5 @@
 - Реализован relevance scoring: position weight (H1 = x3), frequency, backlink weight, category bonus
 - Output сортируется по combined score (descending) — релевантные страницы выше
 - Флаг --dynamic для wiki-search.sh
+
+## [2026-06-27] lint | Phase 8 implemented: detect-contradications.sh (Python-based deep scan) — integrated into lint.sh check_id=8. Found 1 contradiction_deep (date:2025-06-24 across multiple pages).
