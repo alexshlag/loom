@@ -8,6 +8,12 @@
 
 ## [2026-06-24] ingest | Pi Coding Agent — https://pi.dev/docs/latest
 
+## [2026-06-26] schema | Fixed Issues #1-3 (External Sources Update Policy, web_search priority, Novelty Threshold)
+  - Issue #1: Два режима обновления — user-requested + cron. Агент не делает web_search без запроса.
+  - Issue #2: web_search из того же источника, но данные изменились → внешние приоритетны. Разные источники → Issue #4.
+  - Issue #3: Novelty insight = новый логический вывод (не сбор фактов). Чёткие критерии вместо субъективного определения.
+  - Обновлена AGENTS.md с секцией "External Sources Update Policy"
+
 ## [2026-06-26] lint-fix | wiki-search.sh — все 7 багов исправлены (critical + medium)
   - Fix #1: comp_count теперь sum(1 for ...) вместо max(0, 1) — корректно считает "vs" запросы
   - Fix #2: escape_for_grep() + sed — regex meta-characters больше не ломают grep
