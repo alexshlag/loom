@@ -274,3 +274,46 @@ Source: `scripts/wiki-search.sh` audit
 | 7 | 68 | `$history_file` в Python-коде | ✅ ENV var HISTORY_FILE |
 
 **Done**: Обновить wiki/log.md, git commit.
+
+---
+
+## 🔍 Search Algorithm Audit — Failure Points & Error Handling (2026-06-26)
+
+Source: `process-query.json` audit + `issues_tmp.md`
+
+### ⚠️ Potential failure points identified
+
+| # | Scenario | Risk | Status |
+|---|----------|------|--------|
+| 1 | **web_search timeout/API error** | 🔴 High | ✅ Fixed — added error_handling in post_search_flow[4] |
+| 2 | **raw/sources/ doesn't exist** | 🟡 Medium | ✅ Already protected by check-new-sources.sh `ls || true` |
+| 3 | **rebuild-meta.sh >10s on large wiki** (>100 pages) | 🟡 Medium | ✅ Fixed — added optimization_for_large_wiki: skip full rebuild, fallback to --index-only |
+| 4 | **link-validator.sh >20s on large wiki** | 🟡 Medium | ⚠️ Deferred (non-blocking, can be async in next cycle) |
+| 5 | **Write permission denied / disk full** in capture step | 🔴 High | ✅ Fixed — added error_handling in web_ingest_flow[1] with HALT_AND_REPORT |
+
+### 🛡 Fixes applied to process-query.json
+
+**Fix #1 — web_search error handling (post_search_flow → step 4)**
+- Added `error_handling` block:
+  - `web_search_timeout_or_error`: log fallback → notify user → fallback_to_step_5_if_web_failed
+  - Agent no longer hangs on API errors or timeouts
+
+**Fix #2 — rebuild-meta optimization (web_ingest_flow → step 4)**
+- Added `optimization_for_large_wiki`:
+  - Check wiki page count: `find wiki/ -name '*.md' | wc -l`
+  - If >100 pages → skip full rebuild, run only `--index-only`
+  - Notify user: "Meta rebuild skipped for performance — will run on next lint"
+
+**Fix #3 — Write error handling (web_ingest_flow → step 1)**
+- Added `error_handling` block:
+  - `mkdir_failure`: report disk space issue, halt and notify
+  - `write_permission_denied`: HALT_AND_REPORT with clear message
+  - `disk_full_or_quota_exceeded`: immediate stop + user notification
+
+**Deferred**: link-validator.sh >20s — medium risk, non-blocking. Can be improved with async execution in next cycle.
+
+---
+
+*Created: 2026-06-24 | Status: Issues #1-3 Fixed ✅ (2026-06-26), Issue #4 Pending discussion | Last commit: 6cc0791*
+
+**Next**: Обсудить Issue #4 (Authoritative source criteria) + Issues A-D (Cross-role architecture)
