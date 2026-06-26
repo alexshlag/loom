@@ -8,6 +8,15 @@
 
 ## [2026-06-24] ingest | Pi Coding Agent — https://pi.dev/docs/latest
 
+## [2026-06-26] lint-fix | wiki-search.sh — все 7 багов исправлены (critical + medium)
+  - Fix #1: comp_count теперь sum(1 for ...) вместо max(0, 1) — корректно считает "vs" запросы
+  - Fix #2: escape_for_grep() + sed — regex meta-characters больше не ломают grep
+  - Fix #3: grep '^# .*' вместо head -1 — поиск по H1 заголовку работает корректно
+  - Fix #4: -gt после COUNTER++ — скрипт останавливается на MAX_RESULTS, а не MAX-1
+  - Fix #5: проверка ${#POSITIONAL_ARGS[@]} перед доступом — no crash on bash < 4.4
+  - Fix #6: find ... -name '*.md' вместо ** glob — рекурсивный fallback без shopt
+  - Fix #7: HISTORY_FILE env var — пути с одинарной кавычкой больше не ломают Python
+
 ## [2026-06-24] ingest | Python Development on NixOS — https://wiki.nixos.org/wiki/Python
 
 ## [2026-06-24] query | Основные способы создания сред разработки Python для NixOS

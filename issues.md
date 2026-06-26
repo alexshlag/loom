@@ -226,3 +226,40 @@ process-lint.json:
 
 *Last audit: 2026-06-24 | Issues A-D require discussion before implementation*
 **Next**: Обсудить Issue #4 (Authoritative source criteria) + Issues A-D (Cross-role architecture)
+
+---
+
+## 🐛 wiki-search.sh Bugs — 2026-06-26
+
+Source: `scripts/wiki-search.sh` audit
+
+### Critical bugs
+
+| # | Line | Problem | Impact | Fix |
+|---|------|---------|--------|-----|
+| 1 | 72 | `max(0, 1) if any(...)` — всегда возвращает `1`, не суммирует | comp_count сломан, bias_comparisons срабатывает по умолчанию | Заменить на `sum(1 for q in history if ...)` |
+| 2 | 46,123-146 | `$QUERY` без экранирования передаётся в grep | regex-мета-символы `()[].*` ломают grep или дают ложные совпадения | Экранировать через `sed 's/[[\.\^\$*+?{()\|/\\&g'` |
+| 3 | 140 | `head -1 "$filepath"` читает первую строку (frontmatter), а не H1 | Поиск по заголовку всегда проваливается | Использовать `grep "^# .*${query}" "$filepath"` |
+| 4 | 206 | `$COUNTER -ge $MAX_RESULTS` до инкремента | Скрипт останавливается на MAX_RESULTS-1 результатах | Перенести проверку после инкремента или использовать `-gt` |
+
+### Medium bugs
+
+| # | Line | Problem | Impact | Fix |
+|---|------|---------|--------|-----|
+| 5 | 39 | `${POSITIONAL_ARGS[@]}` с `set -u`, пустой массив | Crash на bash < 4.4 | Проверка длины массива до обращения по индексу |
+| 6 | 153 | `**` не рекурсивен без `shopt -s globstar` | Fallback backlinks ищет только *.md в wiki/ root | Использовать `find ... -name "*.md"` или включить globstar |
+| 7 | 68 | `$history_file` подставляется напрямую в Python-код | Скрипт ломается, если путь содержит `'` | Передать через env var или аргумент CLI |
+
+**Status**: ✅ Все 7 багов исправлены — `wiki-search.sh` rewritten (2026-06-26)
+
+| # | Line | Problem | Fix applied |
+|---|------|---------|-------------|
+| 1 | 72 | `max(0, 1)` не суммирует | ✅ `sum(1 for q in history if ...)` |
+| 2 | 46,123-146 | `$QUERY` без экранирования в grep | ✅ `escape_for_grep()` + sed |
+| 3 | 140 | `head -1` читает frontmatter, не H1 | ✅ `grep "^# .*"` |
+| 4 | 206 | `-ge до инкремента → MAX-1 | ✅ `-gt после COUNTER++ |
+| 5 | 39 | `${POSITIONAL_ARGS[@]}` crash bash < 4.4 | ✅ Проверка ${#array} перед доступом |
+| 6 | 153 | `**` не рекурсивен без globstar | ✅ `find ... -name "*.md"` |
+| 7 | 68 | `$history_file` в Python-коде | ✅ ENV var HISTORY_FILE |
+
+**Done**: Обновить wiki/log.md, git commit.
