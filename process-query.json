@@ -212,23 +212,8 @@
     {
       "step_id": "1.5",
       "name": "knowledge_gap_handling",
-      "description": "Обработка ситуации, когда в Wiki нет информации по запросу (Knowledge Gap Protocol). Агент проверяет доступность инструментов перед предложением действий.",
-      "trigger_condition": "search_results_empty",
-      "actions": [
-        {
-          "action": "notify_user_no_results",
-          "message": "В нашей базе знаний информации по запросу не найдено."
-        },
-        {
-          "action": "handle_knowledge_gap",
-          "description": "Проверь наличие инструмента 'web_search' в своей системе. Если он доступен, предложи пользователю провести веб-исследование для создания синтеза. Если доступен только ручной ввод, сообщи об этом и предложи вариант Manual Ingest.",
-          "name": "knowledge_gap_logic"
-        },
-        {
-          "action": "offer_manual_ingest",
-          "message": "Или вы можете предоставить источник (ссылку, файл или текст), и я создам страницу на его основе."
-        }
-      ]
+      "description": "Порядок действий после пустого wiki-search: 1) raw/sources/ check; 2) web_availability_check (если доступен → auto-web_search + предложение сохранить); 3) если недоступен → предложить ручной доступ или ответ из собственных знаний.",
+      "trigger_condition": "search_results_empty_after_all_methods"
     },
     {
       "step_id": "2",
@@ -572,6 +557,52 @@
       }
     }
   ],
+  "post_search_flow": {
+    "description": "Последовательность действий после пустого результата wiki-search (до web_search)",
+    "order": [
+      {
+        "step": 1,
+        "name": "check_raw_sources",
+        "action": "run_script: ./scripts/check-new-sources.sh --quick raw/sources/ tracking/raw_registry.json",
+        "description": "Проверить, есть ли новые необработанные пакеты в raw/, релевантные запросу"
+      },
+      {
+        "step": 2,
+        "name": "if_raw_has_relevant_sources",
+        "condition": "new_sources_found && topic_match",
+        "action": "notify_user: 'Обнаружены новые материалы по этой теме в raw/. Добавить в wiki?'",
+        "description": "Предложить пользователю обработать найденные пакеты"
+      },
+      {
+        "step": 3,
+        "name": "web_availability_check",
+        "action": "check if web_search tool is available in system",
+        "output_field": "web_search_available",
+        "description": "Проверить доступность интернет-поиска перед предложением веб-агента"
+      },
+      {
+        "step": 4,
+        "name": "if_web_available",
+        "condition": "web_search_available == true",
+        "actions": [
+          "run web_search(query)",
+          "format_answer_with_source: 'Данные из интернета, ещё нет в wiki.'",
+          "ask_user: 'Добавить это в wiki или вопрос одноразовый?'"
+        ],
+        "description": "Автоматический веб-поиск с предложением сохранить в wiki"
+      },
+      {
+        "step": 5,
+        "name": "if_web_unavailable",
+        "condition": "web_search_available == false",
+        "actions": [
+          "notify: 'В wiki нет ответа. Могу поискать через ваш интернет, если предоставите доступ.'",
+          "optional: 'Могу дать ответ из собственных знаний — но это не данные из wiki, а моя интерпретация. Предупрежу вас об этом.'"
+        ],
+        "description": "Сообщить о недоступности web + предложить ручной доступ или ответ из своих знаний"
+      }
+    ]
+  },
   "log_format": {
     "query_record": "## [YYYY-MM-DD] query | Вопрос о RAG vs классических БД"
   },
