@@ -98,3 +98,44 @@ See [PLAN_PHASE_6_FUTURE.md](PLAN_PHASE_6_FUTURE.md) for:
 - [ ] Integration with issue #4 (Authoritative Sources Criteria from LM Studio)
 - [ ] Visual indicator in graph view (conflicting edges)
 
+---
+
+## 🧠 Теоретические вопросы (Theory Issues)
+
+> *Раздел для хранения вопросов теории, которые нужно закрыть перед реализацией.*
+> *Каждый вопрос — потенциальный баг в алгоритме или архитектурный пробел.*
+
+### T1: L0 vs L1 дублируют Hard Evidence
+**Статус**: 🟡 Pending Discussion  
+**Контекст**: `verification_rules.json` имеет `L0_HARD_Evidence` (priority 1) и `L1_LIVE_STATE_DECAY` (priority 2). Live-state лог/метрика — это тоже Hard Evidence. Два приоритета для одного типа данных → ambiguity.
+**Вопрос**: Должны ли L0 и L1 быть объединены, или Live State должен иметь отдельный подтип?
+
+### T2: Нет чёткого resolve-cascade
+**Статус**: 🟡 Pending Discussion  
+**Контекст**: `decision_matrix` содержит только булевые флаги. Если несколько правил сработали — кто побеждает? Нужен строгий порядок применения.
+**Вопрос**: Как определить cascade order при конфликте приоритетов?
+
+### T3: Domain classification без механизма определения
+**Статус**: 🟡 Pending Discussion  
+**Контекст**: Правила содержат `"context_domains": ["finance", ...]`, но скрипт не знает, в каком домене работает.
+**Вопрос**: Как автоматически определить domain context для источника? Нужен отдельный классификатор или эвристика?
+
+### T4: Полный рефакторинг contradiction_resolution_flow
+**Статус**: 🟡 Pending Discussion  
+**Контекст**: `process-query.json#step 2c` имеет `authoritative_source > temporal_conflict > user_review`. Новый JSON требует `hard_evidence > live_state > code_reality`. Это не дополнение — это замена.
+**Вопрос**: Как совместить старый flow с Evidence-Based Priority без потери совместимости?
+
+### T5: Code Reality vs Live State приоритет
+**Статус**: 🟡 Pending Discussion  
+**Контекст**: В техно-сценарии код > документации, но live-state может быть просто snapshot'ом старой метрики. Нужно правило: `if source_type == code → L0`, иначе `if timestamp < threshold → L1_Live`.
+**Вопрос**: Как формализовать приоритет Code Reality vs Live State?
+
+### T6: Syndication detection (source independence)
+**Статус**: 🟢 Future Phase  
+**Контекст**: Если все источники L4 ссылаются друг на друга — consensus должен понижать weight до L5 или ниже.
+**Вопрос**: Как определить, что источники синдицированы (copy-paste друг друга)?
+
+---
+
+*Last theory update: 2026-06-27 | Issues T1-T6 identified during verification_rules.json analysis.*
+
