@@ -168,7 +168,11 @@
 - Output сортируется по combined score (descending) — релевантные страницы выше
 - Флаг --dynamic для wiki-search.sh
 
-## [2026-06-28] create | Loomana wiki system documentation
+## [2026-06-28] docs | Git workflow documentation + Loomana system docs
+* Созданы документы по работе с git:
+  - `wiki/GIT-WORKFLOW.md` — подробные инструкции по коммитам, protected zones, error handling
+  - `wiki/GIT-TROUBLESHOOTING.md` — руководство по решению типичных проблем git
+  - Обновлён `.gitignore` (добавлен exception для similarity_cache.json)
 * Создана entity страница: wiki/entities/loomana.md — полная документация о системе Loomana
   - Архитектура (три слоя: raw, wiki, schema)
   - Три рабочих процесса: ingest, query, lint
