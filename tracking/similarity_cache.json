@@ -3501,5 +3501,209 @@
     "common_ngrams": 0,
     "total_unique": 109,
     "match_level": "low_similarity"
+  },
+  "Home_Manager.md|loomana.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "llm-wiki-implementations.md|loomana.md|g3": {
+    "similarity": 0.69,
+    "common_ngrams": 10,
+    "total_unique": 1457,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|loomana.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 860,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|loomana.md|g3": {
+    "similarity": 0.21,
+    "common_ngrams": 2,
+    "total_unique": 970,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|loomana.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1066,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|loomana.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1086,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|loomana.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1067,
+    "match_level": "low_similarity"
+  },
+  "event-dispatcher.md|loomana.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 941,
+    "match_level": "low_similarity"
+  },
+  "hexagonal-architecture.md|loomana.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1112,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki.md|loomana.md|g3": {
+    "similarity": 1.58,
+    "common_ngrams": 23,
+    "total_unique": 1455,
+    "match_level": "low_similarity"
+  },
+  "messenger-component.md|loomana.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1041,
+    "match_level": "low_similarity"
+  },
+  "python-nixos-development.md|loomana.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1192,
+    "match_level": "low_similarity"
+  },
+  "routing-system.md|loomana.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1015,
+    "match_level": "low_similarity"
+  },
+  "security-system.md|loomana.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1091,
+    "match_level": "low_similarity"
+  },
+  "service-container.md|loomana.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1025,
+    "match_level": "low_similarity"
+  },
+  "symfony-ai.md|loomana.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1140,
+    "match_level": "low_similarity"
+  },
+  "symfony-flex.md|loomana.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 976,
+    "match_level": "low_similarity"
+  },
+  "temporal-decay-in-wiki.md|loomana.md|g3": {
+    "similarity": 0.4,
+    "common_ngrams": 4,
+    "total_unique": 994,
+    "match_level": "low_similarity"
+  },
+  "testing-strategy.md|loomana.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1047,
+    "match_level": "low_similarity"
+  },
+  "twig-templating.md|loomana.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1030,
+    "match_level": "low_similarity"
+  },
+  "workflow-state-machine.md|loomana.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1059,
+    "match_level": "low_similarity"
+  },
+  "ai-factory.md|loomana.md|g3": {
+    "similarity": 0.27,
+    "common_ngrams": 3,
+    "total_unique": 1129,
+    "match_level": "low_similarity"
+  },
+  "andrej-karpathy.md|loomana.md|g3": {
+    "similarity": 1.69,
+    "common_ngrams": 16,
+    "total_unique": 946,
+    "match_level": "low_similarity"
+  },
+  "loomana.md|nvidia.md|g3": {
+    "similarity": 0.11,
+    "common_ngrams": 1,
+    "total_unique": 921,
+    "match_level": "low_similarity"
+  },
+  "loomana.md|pi-coding-agent.md|g3": {
+    "similarity": 0.27,
+    "common_ngrams": 3,
+    "total_unique": 1107,
+    "match_level": "low_similarity"
+  },
+  "loomana.md|symfony.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1133,
+    "match_level": "low_similarity"
+  },
+  "loomana.md|index.md|g3": {
+    "similarity": 1.17,
+    "common_ngrams": 15,
+    "total_unique": 1278,
+    "match_level": "low_similarity"
+  },
+  "loomana.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 857,
+    "match_level": "low_similarity"
+  },
+  "loomana.md|log.md|g3": {
+    "similarity": 0.79,
+    "common_ngrams": 15,
+    "total_unique": 1888,
+    "match_level": "low_similarity"
+  },
+  "loomana.md|overview.md|g3": {
+    "similarity": 1.65,
+    "common_ngrams": 16,
+    "total_unique": 969,
+    "match_level": "low_similarity"
+  },
+  "loomana.md|snapshot.md|g3": {
+    "similarity": 1.59,
+    "common_ngrams": 15,
+    "total_unique": 943,
+    "match_level": "low_similarity"
+  },
+  "loomana.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.09,
+    "common_ngrams": 1,
+    "total_unique": 1107,
+    "match_level": "low_similarity"
+  },
+  "loomana.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 2.42,
+    "common_ngrams": 25,
+    "total_unique": 1033,
+    "match_level": "low_similarity"
+  },
+  "loomana.md|timeline.md|g3": {
+    "similarity": 0.48,
+    "common_ngrams": 4,
+    "total_unique": 838,
+    "match_level": "low_similarity"
   }
 }
