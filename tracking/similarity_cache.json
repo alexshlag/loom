@@ -1,0 +1,18 @@
+{
+  "file1.md|file2.md": {
+    "mode": "pairwise",
+    "file1": "/tmp/sim-test/file1.md",
+    "file2": "/tmp/sim-test/file2.md",
+    "similarity": 86.96,
+    "common_ngrams": 60,
+    "match_level": "high"
+  },
+  "file1.md|file3.md": {
+    "mode": "pairwise",
+    "file1": "/tmp/sim-test/file1.md",
+    "file2": "/tmp/sim-test/file3.md",
+    "similarity": 2.5,
+    "common_ngrams": 2,
+    "match_level": "low"
+  }
+}

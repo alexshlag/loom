@@ -29,7 +29,15 @@
 
 ## 🟡 Pending Phases (sorted by priority)
 
-### Phase 11: Syndication Detection — Medium Priority
+### Phase 11: Syndication Detection — ✅ Complete
+**Цель**: Detect copy-paste chains и понижать weight dependent sources.
+
+| Шаг | Что | Приоритет |
+|-----|------|----------|
+| **11.1** | `scripts/text-similarity.sh` — n-gram pairwise & scan-all comparison | ✅ Done |
+| **11.2** | Agent prompt для causal chain analysis: "X wrote first, Y copied from X" | Low |
+
+### Phase 12: Contextual Split & Assumption Chain — Future (из сценариев 3-5)
 **Цель**: Detect copy-paste chains и понижать weight dependent sources.
 
 | Шаг | Что | Приоритет |
