@@ -168,4 +168,13 @@
 - Output сортируется по combined score (descending) — релевантные страницы выше
 - Флаг --dynamic для wiki-search.sh
 
-## [2026-06-27] lint | Phase 8 implemented: detect-contradications.sh (Python-based deep scan) — integrated into lint.sh check_id=8. Found 1 contradiction_deep (date:2025-06-24 across multiple pages).
+## [2026-06-28] create | Loomana wiki system documentation
+* Создана entity страница: wiki/entities/loomana.md — полная документация о системе Loomana
+  - Архитектура (три слоя: raw, wiki, schema)
+  - Три рабочих процесса: ingest, query, lint
+  - Guardrails и Error Handling Protocol
+  - Memory Architecture (Context Bridge, Context Bubble)
+  - Schema Co-evolution и Git Conventions
+* Добавлена запись в index.md (entities секция)
+* Пересобраны метаданные: registry.json, backlinks.json, index.md
+* Обновлён timeline.md с записью о создании страницы

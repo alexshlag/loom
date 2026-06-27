@@ -4,6 +4,7 @@
 ## Сущности
 * [AI Factory](entities/ai-factory.md) — Stack-agnostic CLI tool and skill system for AI-powered development.
 * [Andrej Karpathy](entities/andrej-karpathy.md) — AI Researcher, автор LLM Wiki pattern (LLM-powered personal knowledge base).
+* [Loomana — Wiki System Documentation](entities/loomana.md) — ### 1. Raw Sources (`raw/`) — Immutable ### 2.
 * [Nvidia](entities/nvidia.md) — # Nvidia Американская технологическая корпорация, лидер в области разработки графических процессоров (GPU), аппаратных ускорителей для искусственного 
 * [Pi Coding Agent](entities/pi-coding-agent.md) — Минимальный терминальный код-агент (harness), расширяемый через TypeScript-расширения, skills, prompt templates и темы.
 * [Symfony](entities/symfony.md) — # Symfony Symfony — высокопроизводительный PHP веб-фреймворк с открытым исходным кодом, созданный SensioLabs.
@@ -29,6 +30,7 @@
 * [Workflow & State Machine](concepts/workflow-state-machine.md) — # Workflow & State Machine Workflow component provides tools for managing business processes as finite state machines.
 
 ## Сравнения
+* [Symfony UX Initiative — Comparison with AssetMapper](comparisons/symfony-ux-packages.md) — # Symfony UX Initiative — Comparison with AssetMapper Symfony UX packages (Hotwire, Stimulus, Chart.
 * [Сравнение: Loomana (Markdown-driven wiki) vs pi-llm-wiki/ (TypeScript platform)](comparisons/llm-wiki-implementations.md) — # Сравнение: Loomana (Markdown-driven wiki) vs pi-llm-wiki/ (TypeScript platform) Оба проекта реализуют **LLM Wiki Pattern** (Andrej Karpathy), но на 
 
 ## Синтезы
@@ -37,7 +39,7 @@
 
 ## Обзоры
 * [Wiki Overview — Текущая картина знаний](overview.md) — # Wiki Overview — Текущая картина знаний Wiki содержит **36+ markdown-файлов**: 4 root files (index, log, overview, timeline), 2 entity pages (Symfony
-* [Wiki Snapshot — Активные проекты](snapshot.md) — ### Управление памятью и контекстом ИИ-агента (Memory Architecture) ### Сравнение реализаций: Loomana vs pi-llm-wiki --- *Last updated: 2026-06-25*
+* [Wiki Snapshot — Активные проекты](snapshot.md) — ### Управление памятью и контекстом ИИ-агента (Memory Architecture) ### Сравнение реализаций: Loomana vs pi-llm-wiki ### Loomana — Phase 5: Dynamic Pr
 
 ## Заметки
 
@@ -55,7 +57,7 @@
 
 
 ---
-*Created: auto-generated | Last updated: 2026-06-26 17:50*
+*Created: auto-generated | Last updated: 2026-06-28 02:05*
 
 ## Хронология
 | Дата | Событие |
