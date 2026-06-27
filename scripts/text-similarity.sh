@@ -162,68 +162,76 @@ PYEOF
 compute_similarity() {
     local file1="$1"
     local file2="$2"
+    local n="${3:-3}"
     
     python3 << PYEOF
-import json, os, sys
+import json, re, sys
 
 file1 = "$file1"
 file2 = "$file2"
-threshold = $THRESHOLD
-n = 3
+n = $n
+
+def strip_markdown(text):
+    lines = text.split('\n')
+    start_idx = 0
+    if lines and lines[0].strip().startswith('---'):
+        for i in range(1, len(lines)):
+            if lines[i].strip() == '---':
+                start_idx = i + 1
+                break
+    content = '\n'.join(lines[start_idx:])
+    content = re.sub(r'\[.*?\]\(.*?\)', lambda m: m.group(0).split(']')[0].lstrip('['), content)
+    content = re.sub(r'^#+\s+', '', content, flags=re.MULTILINE)
+    content = re.sub(r'\n(-{3,}|\*{3,})\n', '\n\n', content)
+    return content
+
+def normalize(text):
+    text = re.sub(r'[^a-zа-яё0-9\s]', '', text.lower())
+    return text.split()
+
+def get_ngrams(words, n=3):
+    ngrams = set()
+    for i in range(len(words) - n + 1):
+        gram = ' '.join(words[i:i+n])
+        if len(gram.strip()) > 0:
+            ngrams.add(gram)
+    return ngrams
 
 try:
-    # Read files
     with open(file1) as f:
-        text1 = f.read()
+        words1 = normalize(strip_markdown(f.read()))
     with open(file2) as f:
-        text2 = f.read()
+        words2 = normalize(strip_markdown(f.read()))
     
-    # Normalize texts
-    def normalize(text):
-        import re
-        text = re.sub(r'[^a-zа-яё0-9\s]', '', text.lower())
-        return text.split()
-    
-    words1 = normalize(text1)
-    words2 = normalize(text2)
-    
-    # Generate n-grams
-    def get_ngrams(words, n=3):
-        ngrams = set()
-        for i in range(len(words) - n + 1):
-            gram = ' '.join(words[i:i+n])
-            if len(gram.strip()) > 0:
-                ngrams.add(gram)
-        return ngrams
-    
-    ngrams1 = get_ngrams(words1, n)
-    ngrams2 = get_ngrams(words2, n)
-    
-    # Jaccard similarity on n-grams
-    common = ngrams1.intersection(ngrams2)
-    union = ngrams1.union(ngrams2)
-    
-    if len(union) == 0:
-        print(json.dumps({"similarity": 0.0, "common_ngrams": 0, "total_unique": 0, "match_level": "no_match"}))
-        sys.exit(0)
-    
-    similarity = len(common) / len(union)
-    match_level = "no_match"
-    if similarity >= 0.9:
-        match_level = "near_identical"
-    elif similarity >= 0.7:
-        match_level = "high_similarity"
-    elif similarity >= 0.5:
-        match_level = "moderate_similarity"
+    if len(words1) < n or len(words2) < n:
+        result = {"similarity": 0.0, "common_ngrams": 0, "total_unique": 0, "match_level": "no_match"}
     else:
-        match_level = "low_similarity"
-    
-    result = {
-        "similarity": round(similarity * 100, 2),
-        "common_ngrams": len(common),
-        "total_unique": len(union),
-        "match_level": match_level
-    }
+        ngrams1 = get_ngrams(words1, n)
+        ngrams2 = get_ngrams(words2, n)
+        
+        common = ngrams1.intersection(ngrams2)
+        union = ngrams1.union(ngrams2)
+        
+        if len(union) == 0:
+            result = {"similarity": 0.0, "common_ngrams": 0, "total_unique": 0, "match_level": "no_match"}
+        else:
+            similarity = len(common) / len(union)
+            
+            if similarity >= 0.9:
+                match_level = "near_identical"
+            elif similarity >= 0.7:
+                match_level = "high_similarity"
+            elif similarity >= 0.5:
+                match_level = "moderate_similarity"
+            else:
+                match_level = "low_similarity"
+            
+            result = {
+                "similarity": round(similarity * 100, 2),
+                "common_ngrams": len(common),
+                "total_unique": len(union),
+                "match_level": match_level
+            }
     
     print(json.dumps(result))
 
@@ -274,7 +282,7 @@ if [[ "$SCAN_ALL" == "true" ]]; then
     
     # Use Python for efficient pairwise comparison and caching
     python3 << PYEOF
-import json, os, sys
+import json, os, sys, re
 
 wiki_dir = "$WIKI_DIR"
 threshold = $THRESHOLD
@@ -289,9 +297,21 @@ except Exception:
     cache = {}
 
 def normalize(text):
-    import re
     text = re.sub(r'[^a-zа-яё0-9\s]', '', text.lower())
     return text.split()
+
+def strip_md(text):
+    lines = text.split('\n')
+    start_idx = 0
+    if lines and lines[0].strip().startswith('---'):
+        for i in range(1, len(lines)):
+            if lines[i].strip() == '---':
+                start_idx = i + 1
+                break
+    content = '\n'.join(lines[start_idx:])
+    content = re.sub(r'\[.*?\]\(.*?\)', lambda m: m.group(0).split(']')[0].lstrip('['), content)
+    content = re.sub(r'^#+\s+', '', content, flags=re.MULTILINE)
+    return content
 
 def get_ngrams(words, n=3):
     ngrams = set()
@@ -304,24 +324,35 @@ def get_ngrams(words, n=3):
 def compute_similarity(file1, file2, gram_size):
     try:
         with open(file1) as f:
-            text1 = normalize(f.read())
+            text1 = normalize(strip_md(f.read()))
         with open(file2) as f:
-            text2 = normalize(f.read())
+            text2 = normalize(strip_md(f.read()))
         
         ngrams1 = get_ngrams(text1, n=gram_size)
         ngrams2 = get_ngrams(text2, n=gram_size)
         
         if len(ngrams1) == 0 or len(ngrams2) == 0:
-            return {"similarity": 0.0, "common_ngrams": 0, "match_level": "no_match"}
+            return {"similarity": 0.0, "common_ngrams": 0, "total_unique": 0, "match_level": "no_match"}
         
         common = ngrams1.intersection(ngrams2)
         union = ngrams1.union(ngrams2)
         similarity = len(common) / len(union) if len(union) > 0 else 0
+        total_unique = len(union)
+        
+        if similarity >= 0.9:
+            match_level = "near_identical"
+        elif similarity >= 0.7:
+            match_level = "high_similarity"
+        elif similarity >= 0.5:
+            match_level = "moderate_similarity"
+        else:
+            match_level = "low_similarity"
         
         return {
             "similarity": round(similarity * 100, 2),
             "common_ngrams": len(common),
-            "match_level": "high" if similarity >= 0.7 else "moderate" if similarity >= 0.5 else "low"
+            "total_unique": total_unique,
+            "match_level": match_level
         }
     except Exception as e:
         return {"similarity": 0.0, "error": str(e)}
@@ -398,83 +429,34 @@ print(json.dumps({\"mode\": \"pairwise\", \"file1\": \"$FILE1\", \"file2\": \"$F
         exit 0
     fi
     
-    # Compute similarity (pass n and threshold to Python)
-    python3 << PYEOF
-import json, os, sys
-
-file1 = "$FILE1"
-file2 = "$FILE2"
-n = $GRAM_SIZE
-threshold = $THRESHOLD
-cache_file = "$CACHE_FILE"
-gram_size = $GRAM_SIZE
-cache_key = f"{os.path.basename(file1)}|{os.path.basename(file2)}|g{gram_size}"
-
-try:
-    with open(file1) as f:
-        text1 = f.read()
-    with open(file2) as f:
-        text2 = f.read()
-
-    def normalize(text):
-        import re
-        text = re.sub(r'[^a-zа-яё0-9\s]', '', text.lower())
-        return text.split()
-
-    def get_ngrams(words, n=3):
-        ngrams = set()
-        for i in range(len(words) - n + 1):
-            gram = ' '.join(words[i:i+n])
-            if len(gram.strip()) > 0:
-                ngrams.add(gram)
-        return ngrams
-
-    words1 = normalize(text1)
-    words2 = normalize(text2)
+    # Compute similarity via the function
+    result=$(compute_similarity "$FILE1" "$FILE2" "$GRAM_SIZE")
     
-    ngrams1 = get_ngrams(words1, n=int(n))
-    ngrams2 = get_ngrams(words2, n=int(n))
-    
-    if len(ngrams1) == 0 or len(ngrams2) == 0:
-        similarity = 0.0
-        common = 0
-    else:
-        common_set = ngrams1.intersection(ngrams2)
-        union = ngrams1.union(ngrams2)
-        common = len(common_set)
-        similarity = common / len(union) if len(union) > 0 else 0
-    
-    match_level = "high" if similarity >= 0.7 else "moderate" if similarity >= 0.5 else "low"
-    
-    result = {
-        "mode": "pairwise",
-        "file1": file1,
-        "file2": file2,
-        "similarity": round(similarity * 100, 2),
-        "common_ngrams": common,
-        "match_level": match_level
-    }
-    
-    # Update cache
+    # Cache result (skip errors)
+    echo "$result" | python3 -c "
+import json, sys
+d = json.load(sys.stdin)
+if 'similarity' in d and 'error' not in d:
+    cache = {}
     try:
-        with open(cache_file) as f:
+        with open('$CACHE_FILE') as f:
             cache = json.load(f)
     except Exception:
-        cache = {}
-    
-    cache[cache_key] = result
+        pass
+    cache['$CACHE_KEY'] = d
     try:
-        with open(cache_file, 'w') as f:
+        with open('$CACHE_FILE', 'w') as f:
             json.dump(cache, f, indent=2)
     except Exception:
         pass
+" 2>/dev/null || true
     
-    print(json.dumps(result))
-
-except Exception as e:
-    print(json.dumps({"mode": "pairwise", "similarity": 0.0, "error": str(e)}))
-    sys.exit(2)
-PYEOF
+    # Emit result with mode/file metadata
+    echo "$result" | python3 -c "
+import json, sys
+result = json.load(sys.stdin)
+print(json.dumps({'mode': 'pairwise', 'file1': '$FILE1', 'file2': '$FILE2', **result}, indent=2))
+"
 
 fi
 
