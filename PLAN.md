@@ -17,13 +17,13 @@
 
 ## 📋 Phase 10: Evidence-Based Priority System — ✅ Complete
 
-**Цель**: Cascade-based приоритеты (`Code Reality → Live State → Documentation with evidence_grade`)
+**Цель**: Cascade-based приоритеты (`Code Reality → Live State → Documentation with evidence_grade`) + **Arbitration Layer** (objective vs subjective facts).
 
 | Шаг | Что | Статус | Commit |
 |-----|------|--------|--------|
-| 10.2 | Переписать `contradiction_resolution_flow` в `process-query.json` — заменить старый flow на cascade-based | ✅ Done | `258fa2c` |
-| 10.1 + 10.4 | Frontmatter schema: `type: code_reality\|live_state\|documentation`, `evidence_grade` extraction | ✅ Done | `581b115` |
-| 10.3 | Создать `scripts/classify-source.sh` — domain whitelist + known authors, graceful fallback chain | ✅ Done | `a9e4f71` |
+| 10.2 | Переписать `contradiction_resolution_flow` в cascade-based | ✅ Done | `258fa2c` |
+| 10.1 + 10.4 | Frontmatter schema: `type`, `evidence_grade` extraction | ✅ Done | `581b115` |
+| 10.3 | Создать `scripts/classify-source.sh` — domain whitelist, graceful fallback | ✅ Done | `8a77d80` |
 
 ---
 
@@ -64,7 +64,7 @@
 **Решение**: `scripts/classify-source.sh` — domain whitelist + known authors. Fallback chain при ошибках.
 
 ### T4: Полный рефакторинг contradiction_resolution_flow ✅ Resolved
-**Решение**: Полная замена старого flow (`authoritative_source → temporal_conflict → user_review`) на cascade-based логику.
+**Решение**: Полная замена старого flow (`authoritative_source → temporal_conflict → user_review`) на cascade-based логику + **arbitration_layer**.
 
 ### T5: Code Reality vs Live State приоритет ✅ Resolved
 **Решение**: Формализован в `process-query.json` с exception для более свежего live-state.
