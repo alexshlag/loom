@@ -5,9 +5,7 @@ meta/**
 raw/**
 
 # Tracking state files (only explicit ones are tracked)
-tracking/
-!tracking/raw_registry.json
-!tracking/similarity_cache.json  # Useful for debugging performance issues
+tracking/raw_registry.json
 
 # Obsidian local workspace settings (machine-specific)
 .obsidian/
@@ -19,5 +17,8 @@ tracking/
 *.pyc
 __pycache__/
 
-# Logs — tracked explicitly if needed
+# Logs — not tracked
 logs/*.log
+
+# Similarity cache — large file, regenerated automatically
+tracking/similarity_cache.json

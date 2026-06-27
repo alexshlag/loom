@@ -11,11 +11,13 @@
 # Check if file is ignored
 git check-ignore -v <file>
 
-# Force add (use with caution)
+# ⚠️ Force add — используйте ТОЛЬКО с разрешения пользователя
+# Это может нарушить правила проекта (protected zones)
 git add -f <file>
 
-# Remove from ignore temporarily
-# Edit .gitignore and comment out the line
+# Remove from ignore temporarily by editing .gitignore
+# Comment out the line, then:
+git add <file>
 ```
 
 ### Issue 2: "error: commit message is empty"
@@ -24,7 +26,7 @@ git add -f <file>
 
 **Solution**:
 ```bash
-# Always provide a message
+# Always provide a message with proper format
 git commit -m "type | scope: description"
 
 # Or use interactive mode
@@ -49,6 +51,7 @@ git diff --cached --name-only
 - Ensure you're not modifying protected zones (`raw/`, `meta/`)
 - Add required files (AGENTS.md, process-*.json) if changed
 - Fix any validation errors in scripts
+- **Do not bypass guardrails** — they protect the project integrity
 
 ### Issue 4: "Your local changes to the working tree are uncommitted"
 
@@ -56,12 +59,16 @@ git diff --cached --name-only
 
 **Solution**:
 ```bash
-# Commit your changes first
-git add .
-git commit -m "fix | resolved uncommitted changes"
+# Commit your changes first (specify files, don't use git add .)
+git add <specific-files>
+git commit -m "type | scope: description"
 
-# Or stash them (for later)
+# Or stash them for later (safer than committing everything)
 git stash
+
+# If you need to discard changes (use with caution!)
+# Only safe for files NOT in protected zones
+git checkout -- <file>
 ```
 
 ### Issue 5: Conflicting changes after pull
@@ -73,7 +80,7 @@ git stash
 # See what conflicts
 git status
 
-# Resolve conflicts manually, then:
+# Resolve conflicts manually, then commit
 git add <resolved files>
 git commit -m "merge | resolved conflicts"
 ```
@@ -84,11 +91,12 @@ git commit -m "merge | resolved conflicts"
 
 **Solution**:
 ```bash
-# If reflog is available:
+# If reflog is available (recovery attempt)
 git reflog
-git reset HEAD~1  # Undo the last reset
+# Try to restore from previous commit if needed
 
 # Or restore from backup if you have one
+# Note: This may result in data loss — use with caution
 ```
 
 ### Issue 7: Large files in commit (similarity_cache.json)
@@ -101,7 +109,7 @@ git reset HEAD~1  # Undo the last reset
 ls -lh tracking/similarity_cache.json
 
 # If too large (>10MB), consider:
-# 1. Not committing it at all (remove from .gitignore exception)
+# 1. Not committing it at all (it's already in .gitignore)
 # 2. Using git-lfs for large files
 # 3. Compressing before commit
 ```
@@ -110,21 +118,30 @@ ls -lh tracking/similarity_cache.json
 
 ## 🛠 Quick Fixes
 
-### Reset working directory to clean state
+### Reset working directory to clean state ⚠️ DANGEROUS
+
+**WARNING**: These operations can delete files and bypass protected zones!
+
 ```bash
-git reset --hard HEAD
+# ❌ DO NOT USE: Deletes untracked files including potentially important ones
 git clean -fd
+
+# ⚠️ Use with extreme caution: Resets to last commit
+# Only use if you understand what you're doing
+git reset --hard HEAD
 ```
 
-### View all commits (including ignored ones)
-```bash
-git log --all --oneline
-```
+### Safer alternatives:
 
-### See what would be committed
 ```bash
-git diff --cached  # Staged changes only
-git diff          # Unstaged changes
+# Reset only staged changes (safer)
+git reset
+
+# Discard changes in specific file
+git checkout -- <file>
+
+# Restore from backup if available
+cp backup/<file> <file>
 ```
 
 ---
@@ -133,4 +150,4 @@ git diff          # Unstaged changes
 
 - [Git Documentation](https://git-scm.com/doc)
 - [Pro Git Book](https://git-scm.com/book/en/v2)
-- Loomana Wiki: `.git/GIT-WORKFLOW.md`
+- Loomana Wiki: `wiki/GIT-WORKFLOW.md`
