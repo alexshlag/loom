@@ -54,7 +54,11 @@
           ],
           "source_type_classification": {
             "description": "Classify each source for Reality Layer cascade priority",
-            "options": ["code_reality", "live_state", "documentation"],
+            "options": [
+              "code_reality",
+              "live_state",
+              "documentation"
+            ],
             "rules": [
               {
                 "condition": "file_is_code_or_github_issue_or_pr",
@@ -314,5 +318,6 @@
       }
     ],
     "note": "Этот режим экономит время, но требует доверия к автономным решениям агента."
-  }
+  },
+  "decision_rules_schema_ref": "AGENTS.md#decision_rules"
 }

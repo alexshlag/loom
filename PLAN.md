@@ -37,7 +37,7 @@
 | **11.1** | `scripts/text-similarity.sh` — n-gram pairwise & scan-all comparison, configurable --gram-size flag (2-6) | ✅ Done |
 | **11.2** | Agent prompt для causal chain analysis: "X wrote first, Y copied from X" | Low |
 
-### Phase 12: Decision Rules Framework — In Progress
+### Phase 12: Decision Rules Framework — ✅ Complete
 **Цель**: Таблица decision rules для agent при интерпретации сигналов из скриптов/источников. Scripts detect → agent evaluates.
 
 | Шаг | Что | Приоритет |
@@ -46,6 +46,16 @@
 | 12.2 | Agent prompt для auto-extracting assumptions из источников | Future |
 
 ---
+
+## 📋 Integration Fixes (Phase 12 completion)
+
+| Fix | File | Change |
+|-----|------|--------|
+| **IF-1** | `process-query.json` | Added `decision_rules_schema_ref`, DR-2 trigger in agent_prompt |
+| **IF-2** | `process-ingest.json` | Added module-level `decision_rules_schema_ref` |
+
+---
+
 
 ## 🧠 Теоретические вопросы (Theory Issues) — All Resolved ✅
 

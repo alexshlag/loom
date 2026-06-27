@@ -111,7 +111,10 @@
     }
   },
   "trigger_condition": "user_asks_question",
-  "not_for": ["ingest_processing", "wiki_validation"],
+  "not_for": [
+    "ingest_processing",
+    "wiki_validation"
+  ],
   "steps": [
     {
       "step_id": "0",
@@ -283,7 +286,7 @@
           "include_in_answer_if_contradiction_found": true,
           "log_entry": "## [date] query | Вопрос -> обнаружено X противоречий, Y сопоставлений"
         },
-        "agent_prompt": "При разрешении противоречия:\n1. Определите тип факта: objective (математика, код, физические законы) или subjective/ambiguous (мнения, исторические утверждения без доказательств).\n2. Если objective → cascade priority (code > live > docs). User override ЗАПРЕЩЁН.\n3. Если subjective → user override ДОПУСКАЕТСЯ (final say пользователя).\n4. Применяй cascade: priority 1 (code) > priority 2 (live) > priority 3 (docs with evidence_grade).\n5. Для documentation: documented(1) > corroborated(2) > assertion_only(3).\n6. Если agent_confidence < threshold → human_override.\nПример: GitHub issue (live_state, priority 2) > docs (documentation, priority 3).",
+        "agent_prompt": "При разрешении противоречия:\n1. Определите тип факта: objective (математика, код, физические законы) или subjective/ambiguous (мнения, исторические утверждения без доказательств).\n2. Если objective → cascade priority (code > live > docs). User override ЗАПРЕЩЁН.\n3. Если subjective → user override ДОПУСКАЕТСЯ (final say пользователя).\n4. Применяй cascade: priority 1 (code) > priority 2 (live) > priority 3 (docs with evidence_grade).\n5. Для documentation: documented(1) > corroborated(2) > assertion_only(3).\n6. Если agent_confidence < threshold → human_override.\nПример: GitHub issue (live_state, priority 2) > docs (documentation, priority 3).7. Если detected overlap ≥90% между A и B → примени DR из AGENTS.md#decision_rules:\n   - DR-1: script reports raw overlap only — не менять баллы автоматически\n   - DR-2: если B содержит additions/deletions (исправление) + evidence → evaluate correction, B > A на corrected claim\n   - DR-3: если attribution conflict → A wins original; B только reporter\n8. Log: [decision] [DR-N] в log.md после применения правила\n",
         "type_classification": "classify each source as code_reality | live_state | documentation",
         "cascade_order": [
           {
@@ -322,9 +325,18 @@
             "strategy": "evidence_grade_docs",
             "condition": "source_type == documentation && evidence_grade > assertion_only",
             "sub_priority": [
-              { "grade": "documented", "weight": 1 },
-              { "grade": "corroborated", "weight": 2 },
-              { "grade": "assertion_only", "weight": 3 }
+              {
+                "grade": "documented",
+                "weight": 1
+              },
+              {
+                "grade": "corroborated",
+                "weight": 2
+              },
+              {
+                "grade": "assertion_only",
+                "weight": 3
+              }
             ]
           },
           {
@@ -401,7 +413,8 @@
           "append_to": "## Обновлено [date] — новое уточнение",
           "format": "- **YYYY-MM-DD**: Обновлено с [старое] → [новое]"
         }
-      }
+      },
+      "decision_rules_schema_ref": "AGENTS.md#decision_rules"
     },
     {
       "step_id": "2.3",
@@ -411,7 +424,11 @@
         {
           "action": "compress_read_pages_to_summary",
           "max_tokens": 2048,
-          "include": ["key_facts", "contradictions", "sources"]
+          "include": [
+            "key_facts",
+            "contradictions",
+            "sources"
+          ]
         },
         {
           "action": "write_to_working_memory",
@@ -565,7 +582,12 @@
         },
         {
           "action": "fill_all_sections",
-          "sections": ["description", "key_facts", "connections", "sources"]
+          "sections": [
+            "description",
+            "key_facts",
+            "connections",
+            "sources"
+          ]
         },
         {
           "action": "add_source_citations",
@@ -681,7 +703,10 @@
             "deliver_answer_only",
             "exit clean — no tracking, no meta updates"
           ],
-          "user_declines": ["acknowledge_decision", "exit clean"]
+          "user_declines": [
+            "acknowledge_decision",
+            "exit clean"
+          ]
         }
       },
       {
