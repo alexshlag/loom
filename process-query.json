@@ -280,38 +280,88 @@
       ],
       "search_strategy_schema_ref": "AGENTS.md#search_priority_schema",
       "contradiction_resolution_flow": {
-        "description": "Алгоритм разрешения противоречий после их обнаружения",
+        "description": "Cascade-based алгоритм: Code Reality > Live State > Documentation (evidence_grade). Старый flow (authoritative_source → temporal_conflict → user_review) полностью заменён.",
         "detection_output": {
           "format": "Если найдены противоречия — добавить раздел '## ⚠ Противоречия' в ответ перед основным контентом",
           "include_in_answer_if_contradiction_found": true,
           "log_entry": "## [date] query | Вопрос -> обнаружено X противоречий, Y сопоставлений"
         },
-        "resolution_priority": [
+"agent_prompt": "При разрешении противоречия:\n1. Классифицируй каждый источник: code_reality / live_state / documentation\n2. Применяй cascade: priority 1 (code) > priority 2 (live) > priority 3 (docs)\n3. Для documentation используй evidence_grade: documented(1) > corroborated(2) > assertion_only(3)\n4. Если agent_confidence < threshold → human_override\nПример: GitHub issue (live_state, priority 2) > docs (documentation, priority 3).",
+        "type_classification": "classify each source as code_reality | live_state | documentation",
+        "cascade_order": [
           {
             "priority": 1,
-            "strategy": "authoritative_source",
-            "condition": "source_conflict_with_authoritative_source"
+            "source_type": "code_reality",
+            "description": "Code compiles or not — deterministic, machine-verifiable. Always wins.",
+            "example": "GitHub issue shows infinite loop > docs say API works"
           },
           {
             "priority": 2,
-            "strategy": "temporal_conflict",
-            "condition": "temporal_conflict_detected"
+            "source_type": "live_state",
+            "description": "API returns X right now — ephemeral but observable. Wins over documentation.",
+            "example": "curl endpoint returns 401 > docs say it works"
           },
           {
             "priority": 3,
-            "strategy": "user_review",
-            "condition": "fact_conflict_no_date_info OR contextual_conflict"
+            "source_type": "documentation",
+            "strategy": "evidence_grade (documented > corroborated > assertion_only)",
+            "description": "Authoritative docs win only when no code_reality or live_state available.",
+            "note": "This is the ONLY layer where domain authority matters"
+          }
+        ],
+        "resolution_priority": [
+          {
+            "priority": 1,
+            "strategy": "code_reality",
+            "condition": "source_type == code && source exists in repository"
+          },
+          {
+            "priority": 2,
+            "strategy": "live_state",
+            "condition": "timestamp < threshold AND source_type != code"
+          },
+          {
+            "priority": 3,
+            "strategy": "evidence_grade_docs",
+            "condition": "source_type == documentation && evidence_grade > assertion_only",
+            "sub_priority": [
+              {"grade": "documented", "weight": 1},
+              {"grade": "corroborated", "weight": 2},
+              {"grade": "assertion_only", "weight": 3}
+            ]
+          },
+          {
+            "priority": 4,
+            "strategy": "human_override",
+            "condition": "agent_confidence < threshold OR conflicting cascade priorities"
           }
         ],
         "resolution_actions": [
           {
-            "action": "add_update_section_to_old_page"
+            "action": "add_update_section_to_old_page",
+            "when": "contradiction_resolved_via_cascade"
           },
           {
-            "action": "create_comparison_page_for_complex_conflicts"
+            "action": "create_comparison_page_for_complex_conflicts",
+            "when": "conflicting cascade priorities OR multiple live_state sources"
           },
           {
-            "action": "note_in_answer"
+            "action": "note_in_answer",
+            "when": "contradiction_detected_but_not_resolved_(human_override)"
+          }
+        ],
+        "fallback_chain": [
+          {
+            "condition": "multiple_sources_same_priority",
+            "action": "evidence_grade_sub_priority (lower weight wins)"
+          },
+          {
+            "condition": "same_evidence_grade_and_same_priority",
+            "action": "temporal_decay (most recent timestamp wins)"
+          },
+          {
+            "condition": "still_ambiguous_after_temporal_check",
+            "action": "human_override → flag in answer with CONFLICT tag"
           }
         ],
         "post_resolution_verification": {

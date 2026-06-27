@@ -1,20 +1,27 @@
 {
-  "last_updated": "2026-06-26T16:15:00+00",
-  "current_mode": "query",
-  "focus_node": "AGENTS.md reduction complete",
-  "open_pages": [],
+  "last_updated": "2026-06-27T10:30:00+00",
+  "current_mode": "project",
+  "focus_node": "Phase 10 implementation planning — Evidence-Based Priority System",
+  "open_pages": [
+    {"path": "PLAN.md", "status": "updated"},
+    {"path": "dialog.md", "status": "reading"},
+    {"path": "AUTH-SOURCES-criteria.md", "status": "referenced"}
+  ],
   "dead_ends": [],
   "query_summary": {
-    "intent": "Reduce AGENTS.md context load by enforcing rules in scripts",
-    "pages_read": ["AGENTS.md"],
+    "intent": "Resolve T1-T6 theory issues and define implementation plan for Evidence-Based Priority System",
+    "pages_read": ["PLAN.md", "dialog.md", "AUTH-SOURCES-criteria.md", "process-query.json"],
     "key_findings": [
-      "-419 lines deleted, +43 added = ~40% reduction (750→447 lines)",
-      "Enforced via scripts: frontmatter schema, git conventions, link formats, search strategy, date convention, auto-rebuild/index/lint",
-      "Removed: Additional Tools (unused), verbose JSON templates, logging arrays, reasoning examples"
+      "T1-T6 fully resolved via dialog.md discussion chain",
+      "Three-layer architecture defined: scripts (stable core) + agent (evolving intelligence) + human (arbitration)",
+      "Cascade order established: Code Reality > Live State > Documentation with evidence_grade",
+      "New phases 10/11/12 created in PLAN.md for implementation"
     ]
   },
   "next_steps_todo": [
-    {"task": "Phase 5: Dynamic priority + relevance scoring в wiki-search.sh", "priority": "high"},
-    {"task": "Phase 6: Search context awareness (meta/search_history.json)", "priority": "medium"}
+    {"task": "Phase 10.1: Add type classification (code_reality | live_state | documentation) to frontmatter schema", "priority": "high"},
+    {"task": "Phase 10.2: Rewrite contradiction_resolution_flow in process-query.json with cascade-based logic", "priority": "high"},
+    {"task": "Phase 10.3: Create scripts/classify-source.sh for domain whitelist checking", "priority": "medium"},
+    {"task": "Phase 10.4: Add evidence_grade extraction to agent prompt at ingest/query", "priority": "medium"}
   ]
 }
