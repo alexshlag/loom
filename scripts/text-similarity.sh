@@ -264,9 +264,9 @@ if [[ "$SCAN_ALL" == "true" ]]; then
     verbose_log "Scanning all wiki pages (O(n²))..."
     
     # Find all .md files in wiki/
-    local_files=$(find "$WIKI_DIR" -name "*.md" -type f 2>/dev/null || true)
+    wiki_files=$(find "$WIKI_DIR" -name "*.md" -type f 2>/dev/null || true)
     
-    if [[ -z "$(echo "$local_files")" ]]; then
+    if [[ -z "$wiki_files" ]]; then
         verbose_log "No markdown files found in $WIKI_DIR"
         echo '{"mode":"scan_all","threshold":'"$THRESHOLD"',"matches":[],"count":0}'
         exit 0
@@ -327,7 +327,7 @@ def compute_similarity(file1, file2, gram_size):
         return {"similarity": 0.0, "error": str(e)}
 
 # Collect all files
-files = sorted([os.path.join(wiki_dir, f) for f in os.listdir(wiki_dir) if f.endswith('.md')])
+files = sorted([os.path.join(root, f) for root, dirs, files in os.walk(wiki_dir) for f in files if f.endswith('.md')])
 
 matches = []
 for i in range(len(files)):
