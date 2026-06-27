@@ -4,13 +4,23 @@
 # Exit code: 0 = no new sources, 1 = new sources found (printed to stdout), 2 = cached_skip (--quick only)
 #
 # Modes:
-#   default — полный режим: выводит NEW: <package_id> для каждого нового пакета
+#   default — полный режим: выводит NEW: <package_id> для каждого нового пакета (max: 10)
 #   --quick — быстрый режим: только exit_code, без вывода пакетов. Кэширует timestamp (~1h).
+#   --max N — ограничение глубины исследования (default: 10). При превышении — предупреждение.
+
+MAX_SOURCES=10
 
 QUICK=false
-if [[ "$1" == "--quick" ]]; then
-    QUICK=true
-    shift
+MAX_COUNT=""
+while [[ "${1:-}" == --* ]]; do
+    case "$1" in
+        --quick) QUICK=true; shift;;
+        --max) MAX_COUNT="$2"; shift 2;;
+        *) shift;;
+    esac
+done
+if [ -n "$MAX_COUNT" ]; then
+    MAX_SOURCES=$MAX_COUNT
 fi
 RAW_DIR="${1:-raw/sources/}"
 REGISTRY_FILE="${2:-tracking/raw_registry.json}"
@@ -54,12 +64,18 @@ for s in sources:
 
 # Сравниваем
 found_new=false
+NEW_COUNT=0
 while IFS= read -r pkg; do
     pkg_id=$(basename "$pkg")
     
     if ! echo "$ingested_ids" | grep -q "^${pkg_id}$"; then
-        if [ "$QUICK" != true ]; then
+        NEW_COUNT=$((NEW_COUNT + 1))
+        if [ "$QUICK" != true ] && [ "$NEW_COUNT" -le "$MAX_SOURCES" ]; then
             echo "NEW: $pkg_id"
+        elif [ "$NEW_COUNT" -gt "$MAX_SOURCES" ] && [ "$QUICK" = false ]; then
+            # Warn about exceeding limit
+            REMAINING=$((NEW_COUNT - MAX_SOURCES))
+            echo "WARNING: ${REMAINING} more sources available (limit: $MAX_SOURCES)"
         fi
         found_new=true
     fi

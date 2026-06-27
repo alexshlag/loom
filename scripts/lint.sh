@@ -58,9 +58,11 @@ echo "[✓] Check 4/9: knowledge_gaps — skipped (soft check, agent review requ
 # --- Check 4: New sources available ---
 NEW_SOURCES=0
 if [[ ! "$(echo "$SKIP_CHECKS" | grep -o '3' || true)" == "3" ]]; then
-  NEW_SOURCES_OUTPUT=$(./scripts/check-new-sources.sh "${PROJECT_ROOT}/raw/sources" "${PROJECT_ROOT}/tracking/raw_registry.json" 2>&1 || true)
+  # FIX: added --max 10 to prevent infinite source scanning
+NEW_SOURCES_OUTPUT=$(./scripts/check-new-sources.sh --max 10 "${PROJECT_ROOT}/raw/sources" "${PROJECT_ROOT}/tracking/raw_registry.json" 2>&1 || true)
   if echo "$NEW_SOURCES_OUTPUT" | grep -q "^NEW:"; then
-    NEW_SOURCES=$(echo "$NEW_SOURCES_OUTPUT" | grep -oE '[0-9]+' | head -1 || echo "0")
+    # FIX: count lines with 'NEW:' prefix, not first number in output (which was parsing '2025' from SRC-2025)
+    NEW_SOURCES=$(echo "$NEW_SOURCES_OUTPUT" | grep -c '^NEW:' || echo "0")
   fi
 fi
 
@@ -145,3 +147,11 @@ EOF
 # --- Human-readable summary (stderr) ---
 if [ $QUIET = true ]; then
 
+  : # no-op: silent mode — suppress human-readable output
+else
+  echo "[✓] Checks run: 9" >&2
+  echo "[!] Total issues found: ${TOTAL_ISSUES}" >&2
+fi
+
+# --- Exit code: 0 if clean, 1 if issues (but never blocks agent) ---
+exit $([ "$TOTAL_ISSUES" -eq 0 ] && echo 0 || echo 1)
