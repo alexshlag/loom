@@ -111,10 +111,7 @@
     }
   },
   "trigger_condition": "user_asks_question",
-  "not_for": [
-    "ingest_processing",
-    "wiki_validation"
-  ],
+  "not_for": ["ingest_processing", "wiki_validation"],
   "steps": [
     {
       "step_id": "0",
@@ -286,7 +283,7 @@
           "include_in_answer_if_contradiction_found": true,
           "log_entry": "## [date] query | Вопрос -> обнаружено X противоречий, Y сопоставлений"
         },
-"agent_prompt": "При разрешении противоречия:\n1. Классифицируй каждый источник: code_reality / live_state / documentation\n2. Применяй cascade: priority 1 (code) > priority 2 (live) > priority 3 (docs)\n3. Для documentation используй evidence_grade: documented(1) > corroborated(2) > assertion_only(3)\n4. Если agent_confidence < threshold → human_override\nПример: GitHub issue (live_state, priority 2) > docs (documentation, priority 3).",
+        "agent_prompt": "При разрешении противоречия:\n1. Определите тип факта: objective (математика, код, физические законы) или subjective/ambiguous (мнения, исторические утверждения без доказательств).\n2. Если objective → cascade priority (code > live > docs). User override ЗАПРЕЩЁН.\n3. Если subjective → user override ДОПУСКАЕТСЯ (final say пользователя).\n4. Применяй cascade: priority 1 (code) > priority 2 (live) > priority 3 (docs with evidence_grade).\n5. Для documentation: documented(1) > corroborated(2) > assertion_only(3).\n6. Если agent_confidence < threshold → human_override.\nПример: GitHub issue (live_state, priority 2) > docs (documentation, priority 3).",
         "type_classification": "classify each source as code_reality | live_state | documentation",
         "cascade_order": [
           {
@@ -325,9 +322,9 @@
             "strategy": "evidence_grade_docs",
             "condition": "source_type == documentation && evidence_grade > assertion_only",
             "sub_priority": [
-              {"grade": "documented", "weight": 1},
-              {"grade": "corroborated", "weight": 2},
-              {"grade": "assertion_only", "weight": 3}
+              { "grade": "documented", "weight": 1 },
+              { "grade": "corroborated", "weight": 2 },
+              { "grade": "assertion_only", "weight": 3 }
             ]
           },
           {
@@ -364,6 +361,38 @@
             "action": "human_override → flag in answer with CONFLICT tag"
           }
         ],
+        "arbitration_layer": {
+          "description": "Арбитражный слой: objective facts vs subjective claims. User override только для subjective.",
+          "fact_types": [
+            {
+              "type": "objective",
+              "examples": [
+                "2+2=4",
+                "код компилируется/нет",
+                "API returns specific status code",
+                "физические законы"
+              ],
+              "user_override_allowed": false,
+              "rule": "Если факт objective (математика, код, эмпирические факты) → user не может переопределить. Агент мягко рекомендует: 'выспаться, принять душ, выпить кофе'"
+            },
+            {
+              "type": "subjective",
+              "examples": [
+                "мнения экспертов",
+                "исторические утверждения без доказательств",
+                "интерпретации источников"
+              ],
+              "user_override_allowed": true,
+              "rule": "Если факт subjective/ambiguous → user имеет final say (высшая инстанция). Agent принимает решение пользователя."
+            }
+          ],
+          "resolution_logic": {
+            "step_1": "classify conflict as objective or subjective",
+            "step_2_if_objective": "apply cascade priority. User override → REJECTED with gentle recommendation",
+            "step_3_if_subjective": "user_override_accepted → apply user decision to wiki"
+          },
+          "agent_prompt_arbitration": "Определи, является ли противоречие objective (математика, код, физические законы) или subjective (мнения, интерпретации).\n- Если objective: пользователь не может переопределить. Мягко порекомендуй проверить факты.\n- Если subjective: user override принят (высшая инстанция). Применяй решение пользователя к wiki."
+        },
         "post_resolution_verification": {
           "re_read_updated_pages": true,
           "optional_web_search_if_high_stakes": true
@@ -372,10 +401,6 @@
           "append_to": "## Обновлено [date] — новое уточнение",
           "format": "- **YYYY-MM-DD**: Обновлено с [старое] → [новое]"
         }
-      },
-      "pre_check": {
-        "command": "./scripts/lint.sh --skip-checks 1,3,4,5,6,7,8 --quiet",
-        "note": "Phase 8: Quick contradiction scan before deep synthesis"
       }
     },
     {
@@ -386,11 +411,7 @@
         {
           "action": "compress_read_pages_to_summary",
           "max_tokens": 2048,
-          "include": [
-            "key_facts",
-            "contradictions",
-            "sources"
-          ]
+          "include": ["key_facts", "contradictions", "sources"]
         },
         {
           "action": "write_to_working_memory",
@@ -544,12 +565,7 @@
         },
         {
           "action": "fill_all_sections",
-          "sections": [
-            "description",
-            "key_facts",
-            "connections",
-            "sources"
-          ]
+          "sections": ["description", "key_facts", "connections", "sources"]
         },
         {
           "action": "add_source_citations",
@@ -665,10 +681,7 @@
             "deliver_answer_only",
             "exit clean — no tracking, no meta updates"
           ],
-          "user_declines": [
-            "acknowledge_decision",
-            "exit clean"
-          ]
+          "user_declines": ["acknowledge_decision", "exit clean"]
         }
       },
       {
