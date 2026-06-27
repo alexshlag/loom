@@ -295,6 +295,37 @@ evidence_grade: documented | corroborated | assertion_only (optional)
 
 ---
 
+
+## 🧠 Decision Rules (Phase 12)
+
+Система даёт сигналы (`scripts detect`), агент делает logical inference. **Ручные веса через скрипты = запрещены.** Agent evaluates rules from this table.
+
+### Design Principles
+
+| Principle | Rule |
+|-----------|------|
+| **Scripts detect, agent evaluates** | `text-similarity.sh` reports overlap → no automatic penalty/boost. Agent interprets context. |
+| **No authority override without authorship** | Authority source wins only on attribution: «A said X» vs «B said A said Y». If B corrected A with evidence → B > A regardless of authority status. |
+| **Co-evolution via discussion** | New rules added through dialog, not hardcoded. Each rule gets ID (`DR-N`) for traceability. |
+
+### Decision Rules Table
+
+| Rule ID | Scenario | Agent Logic | Outcome |
+|---------|----------|-------------|---------|
+| **DR-1** | Source overlap ≥90% detected by `text-similarity.sh` | Script reports raw overlap only. No automatic weight change. | Neutral — agent evaluates context |
+| **DR-2** | Source B corrected A's error with evidence | B provided fix + proof (code, logs, authoritative source). | B > A on the corrected claim |
+| **DR-3** | Authorship attribution conflict | «A said X» vs «B reported that A said Y». | A wins original claim; B gets credit only for reporting |
+
+### Process
+
+1. **Detect**: Script reports signal (overlap, contradiction, similarity)
+2. **Evaluate**: Agent reads context → applies relevant DR from table above
+3. **Log**: Decision + reasoning in `log.md` under `[decision] [DR-N]`
+4. **Evolve**: New scenarios → discuss → add new rule to table → commit
+
+> Schema ref: `AGENTS.md#decision_rules` — canonical source for agent evaluation logic.
+
+
 ## 🔄 Process Roles
 
 Каждая роль — отдельный процессный файл в корневой директории.
@@ -498,7 +529,7 @@ cd /path/to/loomana && ./scripts/lint.sh --skip-checks 3,5
 
 ---
 
-*Schema Version: 8 | Last Updated: 2026-06-26 | Author Pattern: Andrej Karpathy (LLM Wiki)*
+*Schema Version: 9 | Last Updated: 2026-06-26 | Author Pattern: Andrej Karpathy (LLM Wiki)*
 
 ---
 

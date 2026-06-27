@@ -37,25 +37,12 @@
 | **11.1** | `scripts/text-similarity.sh` — n-gram pairwise & scan-all comparison, configurable --gram-size flag (2-6) | ✅ Done |
 | **11.2** | Agent prompt для causal chain analysis: "X wrote first, Y copied from X" | Low |
 
-| Шаг | Что | Приоритет |
-|-----|------|----------|
-| **11.1** | `scripts/text-similarity.sh` — n-gram pairwise & scan-all comparison | ✅ Done |
-| **11.2** | Agent prompt для causal chain analysis: "X wrote first, Y copied from X" | Low |
-
-### Phase 12: Contextual Split & Assumption Chain — Future (из сценариев 3-5)
-**Цель**: Detect copy-paste chains и понижать weight dependent sources.
+### Phase 12: Decision Rules Framework — In Progress
+**Цель**: Таблица decision rules для agent при интерпретации сигналов из скриптов/источников. Scripts detect → agent evaluates.
 
 | Шаг | Что | Приоритет |
 |-----|------|----------|
-| 11.1 | `scripts/text-similarity.sh` — finds overlapping text (90%+ match) | Medium |
-| 11.2 | Agent prompt для causal chain analysis: "X wrote first, Y copied from X" | Low |
-
-### Phase 12: Contextual Split & Assumption Chain — Future (из сценариев 3-5)
-**Цель**: Поддерживать `context_tags`, `assumptions`, `contradicts_when` в fact-level metadata.
-
-| Шаг | Что | Приоритет |
-|-----|------|----------|
-| 12.1 | Расширить frontmatter schema для `facts[].contexts[]`, `facts[].assumptions[]` | Low |
+| **12.1** | `AGENTS.md#decision_rules` — DR-1 (overlap neutral), DR-2 (correction evidence), DR-3 (authorship) | ✅ Done |
 | 12.2 | Agent prompt для auto-extracting assumptions из источников | Future |
 
 ---
@@ -63,7 +50,7 @@
 ## 🧠 Теоретические вопросы (Theory Issues) — All Resolved ✅
 
 > *Раздел для хранения вопросов теории, которые нужно закрыть перед реализацией.*
-> *Все T1-T6 закрыты через dialog.md цепочку обсуждений.*
+> *Все T1-T6 закрыты через dialog.md цепочку обсуждений. T7 (correction vs blind copy) resolved via DR-2.*
 
 ### T1: L0 vs L1 дублируют Hard Evidence ✅ Resolved
 **Решение**: Не дубликат. Это **два разных типа фактов**, а не два уровня авторитетности одного:
@@ -94,4 +81,4 @@
 - Live issues tracked in [issues.md](issues.md) — не дублировать здесь
 - **Rule**: new phases sorted by priority (High → Medium → Low)
 
-*Last update: 2026-06-27 | Phase 10 complete. T1-T6 resolved.*
+*Last update: 2026-06-27 | Phase 10 complete. T1-T6 resolved. DR framework added.*
