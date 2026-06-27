@@ -36,15 +36,38 @@
 
 👉 **Canonical**: `scripts/lint.sh#check_new_sources_fix`
 
-### Issue #7: Raw Sources — Depth Limit Required ⚠️ User Decision
+### Issue #7: Raw Sources — Depth Limit Required 🐛 FIXED
 **Проблема**: Без ограничения глубины исследования источников агент может «вытянуть весь интернет». Нужен лимит на количество новых sources per check.
 
-**Предложение от пользователя**:
-- `check-new-sources.sh` → добавить `--max N` флаг (default: 10)
-- При превышении — warn и остановиться, не продолжать сканирование
-- Lint должен показывать «3 of 10 max», а не просто «N new sources`
+**Fix applied**:
+- `check-new-sources.sh` → добавлен `--max N` флаг (default: 10)
+- При превышении — предупреждение о remaining packages
+- Lint использует `--max 10` по умолчанию
 
-👉 *Action:* Добавить лимит в check-new-sources.sh.
+👉 **Canonical**: `scripts/check-new-sources.sh`, `scripts/lint.sh`
+
+### Issue #8: syntheses/ Missing Special Handling Rule ⚠️ Pending
+**Проблема**: `syntheses/` — не должен обрабатываться как обычные страницы wiki/. Это аналитические синтезы (deep analysis, new insights from 2+ sources), они требуют особого правила обработки:
+- Не дублировать с concepts/ при shared source
+- Синтезы создаются только если есть **новый логический вывод** (не просто сбор фактов)
+- Auto-crosslink logic должна отличать synthesis от entity/concept при построении backlinks
+
+**Решение**: Добавить правило в AGENTS.md → `syntheses` treated as special category, not processed like regular wiki pages.
+
+👉 *Action:* Update Schema (AGENTS.md) + process-ingest.json to exclude syntheses from normal processing rules.
+
+### Issue #9: Auto-Crosslink Logic Broken at Multiple Levels ⚠️ Pending
+**Проблема**: `auto-crosslink.sh` и `process-ingest.json#step_3d` работают только на **текстовом совпадении имени сущности**. Это не учитывает:
+1. **Document formatting rules**: страницы должны явно указывать связи (related/mentions) в frontmatter и тексте
+2. **Semantic relationships**: одна страница про hexagonal architecture, другая про service container — обе относятся к Symfony, но слово «Symfony» отсутствует → backlink не добавляется
+3. **Shared-source clusters**: pages using same raw source have implicit connections that aren't captured
+
+**Решение (multi-level)**:
+- Level 1: Добавить требование `related:` в frontmatter + explicit mentions в тексте
+- Level 2: Graph-based crosslinks из existing metadata, shared-source analysis
+- Level 3: Score potential links (shared source = +5, related +3, mention +1)
+
+👉 *Action:* Rewrite auto-crosslink.sh для graph-based подхода. Add document rules to process-ingest.json.
 
 ---
 
