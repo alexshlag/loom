@@ -1,8 +1,8 @@
 ---
 tags: [snapshot, active-projects]
-date: 2026-06-26
+date: 2026-06-28
 sources: []
-related: [wiki/comparisons/llm-wiki-implementations.md, wiki/concepts/llm-wiki.md]
+related: [wiki/comparisons/llm-wiki-implementations.md, wiki/concepts/llm-wiki.md, wiki/entities/loomana.md]
 ---
 # Wiki Snapshot — Активные проекты
 
@@ -27,6 +27,16 @@ related: [wiki/comparisons/llm-wiki-implementations.md, wiki/concepts/llm-wiki.m
 - **Связанные wiki-страницы**:
   - `[Comparison: LLm Wiki Implementations](comparisons/llm-wiki-implementations.md)`
 
+### Loomana — Wiki System Documentation
+- **Статус**: completed (2026-06-28)
+- **Контекст**: Создана полная документация системы Loomana в `wiki/entities/loomana.md`
+  - Архитектура трёх слоёв: raw, wiki, schema
+  - Три рабочих процесса: ingest, query, lint
+  - Guardrails и Error Handling Protocol
+  - Memory Architecture (Context Bridge, Context Bubble)
+- **Связанные wiki-страницы**:
+  - `[Entity: Loomana](entities/loomana.md)` — основная документация системы
+
 ---
 
-*Last updated: 2026-06-26*
+*Last updated: 2026-06-28*
