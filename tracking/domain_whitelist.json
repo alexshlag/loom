@@ -1,0 +1,17 @@
+{
+  "description": "Domain whitelist for automatic L1 Official classification",
+  "last_updated": "2026-06-27",
+  "whitelist": [
+    "github.com/microsoft/TypeScript",
+    "docs.microsoft.com",
+    "github.com/openai",
+    "platform.openai.com",
+    "github.com/langchain-ai",
+    "docs.langchain.com",
+    "github.com/huggingface",
+    "huggingface.co",
+    "wikipedia.org",
+    "openai.com"
+  ],
+  "notes": "Add more domains as wiki topics expand. Use wildcard syntax for subdomains."
+}

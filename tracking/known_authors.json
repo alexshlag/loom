@@ -1,0 +1,11 @@
+{
+  "description": "Known experts and companies for L2 Expert classification",
+  "last_updated": "2026-06-27",
+  "authors": [
+    {"name": "Andrej Karpathy", "domain": "karpathy.github.io"},
+    {"name": "OpenAI Research Team", "domain": "openai.com"},
+    {"name": "Hugging Face Team", "domain": "huggingface.co"},
+    {"name": "Microsoft Research", "domain": "microsoft.com"}
+  ],
+  "notes": "Add authors as wiki topics expand. Domain = their primary publishing domain."
+}

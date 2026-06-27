@@ -1,0 +1,11 @@
+2026-06-27T00:31:06Z | domain_not_in_whitelist: docs.openai.com
+2026-06-27T00:31:06Z | domain_not_in_whitelist: hackernoon.com
+2026-06-27T00:31:06Z | domain_not_in_whitelist: not-a-valid-url-at-all
+2026-06-27T00:31:06Z | domain_not_in_whitelist: github.com
+2026-06-27T00:31:41Z | classified: L2_Expert for docs.openai.com (author=OpenAI Research Team)
+2026-06-27T00:31:41Z | classified: L3_Community for hackernoon.com/some-article (no authority match)
+2026-06-27T00:31:41Z | classified: L3_Community for github.com/openai/whisper/issues/1234 (no authority match)
+2026-06-27T00:31:41Z | classified: L3_Community for http://example.com; rm -rf / (no authority match)
+2026-06-27T00:31:47Z | classified: L1_Official for docs.openai.com (whitelist=openai.com)
+2026-06-27T00:31:53Z | classified: L2_Expert for docs.openai.com (author=OpenAI Research Team)
+2026-06-27T00:31:53Z | classified: L3_Community for karpathy.github.io/article (no authority match)
