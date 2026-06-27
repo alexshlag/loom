@@ -51,8 +51,10 @@
 
 | Fix | File | Change |
 |-----|------|--------|
-| **IF-1** | `process-query.json` | Added `decision_rules_schema_ref`, DR-2 trigger in agent_prompt |
-| **IF-2** | `process-ingest.json` | Added module-level `decision_rules_schema_ref` |
+| **IF-1** | `scripts/lint.sh` | Added check_id=9: text similarity scan (--scan-all --threshold 90) |
+| **IF-2** | `process-lint.json` | Added lint_check for check_id=9 with schema_ref → AGENTS.md#decision_rules |
+| **IF-3** | `process-query.json` | Added decision_rules_schema_ref at steps[4], DR-2 trigger in agent_prompt |
+| **IF-4** | `process-ingest.json` | Added module-level decision_rules_schema_ref |
 
 ---
 

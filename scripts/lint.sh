@@ -98,10 +98,7 @@ if [[ ! "$(echo "$SKIP_CHECKS" | grep -o '7' || true)" == "7" ]]; then
 fi
 TOTAL_ISSUES=$((TOTAL_ISSUES + BROKEN_LINKS))
 
-# --- Check 9: File rename/delete validation (git-based) ---
-RENAME_ISSUES=0
-
-# --- Check 8: Contradiction deep scan (Python-based) ---
+# --- Check 10: Contradiction deep scan (Python-based) ---
 CONTRADICTIONS_DEEP=0
 if [[ ! "$(echo "$SKIP_CHECKS" | grep -oE ',?8,?' || true)" == ",8," ]]; then
   DEEP_OUTPUT=$(./scripts/detect-contradications.sh --quiet 2>&1 || true)
@@ -112,12 +109,24 @@ if [[ ! "$(echo "$SKIP_CHECKS" | grep -oE ',?8,?' || true)" == ",8," ]]; then
   fi
 fi
 
+# --- Check 9: Text similarity (n-gram overlap scan) ---
+TEXT_SIMILARITY_MATCHES=0
+if [[ ! "$(echo "$SKIP_CHECKS" | grep -oE ',?9,?' || true)" == ",9," ]]; then
+  SIM_OUTPUT=$(./scripts/text-similarity.sh --scan-all --threshold 90 2>&1 || true)
+  if echo "$SIM_OUTPUT" | python3 -c 'import json,sys; d=json.load(sys.stdin); sys.exit(0 if len(d.get("matches",[]))==0 else 1)' 2>/dev/null; then
+    TEXT_SIMILARITY_MATCHES=0
+  else
+    TEXT_SIMILARITY_MATCHES=$(echo "$SIM_OUTPUT" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(len(d.get("matches",[])))' || echo "0")
+  fi
+fi
+TOTAL_ISSUES=$((TOTAL_ISSUES + TEXT_SIMILARITY_MATCHES))
+
 # --- Summary output (machine-readable JSON to stdout) ---
 cat <<EOF | grep -v "^="
 {
   "timestamp": "$(date +%Y-%m-%dT%H:%M:%S)",
   "wiki_dir": "${WIKI_DIR#/}",
-  "checks_run": 8,
+  "checks_run": 9,
   "issues_found": {
     "contradictions": ${CONTRADICTIONS},
     "orphan_pages": ${ORPHAN_COUNT},
@@ -125,7 +134,8 @@ cat <<EOF | grep -v "^="
     "duplicate_titles": ${DUPLICATE_TITLES},
     "date_inconsistencies": ${DATE_ISSUES},
     "broken_links": ${BROKEN_LINKS},
-    "contradictions_deep": ${CONTRADICTIONS_DEEP}
+    "contradictions_deep": ${CONTRADICTIONS_DEEP},
+    "text_similarity_overlaps": ${TEXT_SIMILARITY_MATCHES}
   },
   "total_issues": ${TOTAL_ISSUES},
   "status": "$([ $TOTAL_ISSUES -eq 0 ] && echo 'CLEAN' || echo 'ISSUES_FOUND')"
@@ -134,15 +144,4 @@ EOF
 
 # --- Human-readable summary (stderr) ---
 if [ $QUIET = true ]; then
-
-# --- Check 8: Contradiction deep scan (Python-based) ---
-CONTRADICTIONS_DEEP=0
-if [[ ! "$(echo "$SKIP_CHECKS" | grep -oE ',?8,?' || true)" == ",8," ]]; then
-  DEEP_OUTPUT=$(./scripts/detect-contradications.sh --quiet 2>&1 || true)
-  if echo "$DEEP_OUTPUT" | python3 -c 'import json,sys; d=json.load(sys.stdin); sys.exit(0 if d.get("status")=="CLEAN" else 1)' 2>/dev/null; then
-    CONTRADICTIONS_DEEP=0
-  else
-    CONTRADICTIONS_DEEP=$(echo "$DEEP_OUTPUT" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get("potential_contradictions",0))' || echo "0")
-  fi
-fi
 

@@ -160,6 +160,30 @@
         "action_on_success": "CONTINUE_TO_NEXT_CHECK",
         "action_on_failure": "LOG_WARNING_AND_PROCEED"
       }
+    },
+    {
+      "check_id": "9",
+      "name": "text_similarity_scan",
+      "description": "Сканит все wiki-страницы на n-gram overlap ≥90%. Detects copy-paste chains. Script: text-similarity.sh --scan-all",
+      "pre_condition": {
+        "command": "./scripts/text-similarity.sh --scan-all --threshold 90",
+        "output_format": "JSON with matches array — each match has similarity_score, file1, file2"
+      },
+      "actions": [
+        {
+          "action": "parse_matches_from_json",
+          "description": "Из JSON output извлечь matches[] → для каждого pair: similarity_score, file1, file2"
+        },
+        {
+          "condition": "matches_count > 0",
+          "note": "Agent review required — apply DR-1/DR-2 из AGENTS.md#decision_rules к каждому overlap"
+        }
+      ],
+      "output_handling": {
+        "exit_code_0": "no_overlaps — proceed",
+        "exit_code_1": "overlaps_found — report count + pairs, agent applies decision rules"
+      },
+      "schema_ref": "AGENTS.md#decision_rules"
     }
   ],
   "schema_ref": "AGENTS.md#non-blocking-lint",
