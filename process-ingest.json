@@ -51,7 +51,33 @@
             "notes",
             "meeting",
             "project"
-          ]
+          ],
+          "source_type_classification": {
+            "description": "Classify each source for Reality Layer cascade priority",
+            "options": ["code_reality", "live_state", "documentation"],
+            "rules": [
+              {
+                "condition": "file_is_code_or_github_issue_or_pr",
+                "result": "code_reality"
+              },
+              {
+                "condition": "file_is_api_response_or_metrics_or_live_log",
+                "result": "live_state"
+              },
+              {
+                "condition": "file_is_documentation_article_or_blog_or_docs_page",
+                "result": "documentation"
+              }
+            ],
+            "default": "documentation",
+            "agent_prompt": "Determine source_type based on file content:\n- If it contains code, GitHub issue/PR → code_reality\n- If it contains live metrics/API responses/logs → live_state\n- Otherwise (docs/articles/blogs) → documentation\nThis determines contradiction cascade priority."
+          }
+        },
+        {
+          "action": "extract_evidence_grade",
+          "description": "Оценивает каждый факт по уровню доказательности для documentation sources",
+          "agent_prompt": "Analyze each claim in the source. Classify as documented/corroborated/assertion_only. Only apply for documentation type sources.",
+          "output": "evidence_grade_for_each_fact"
         },
         {
           "action": "identify_entities_and_concepts",

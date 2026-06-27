@@ -43,7 +43,7 @@
 | 10.1 | Добавить `type: code_reality | live_state | documentation` в frontmatter schema | High |
 | 10.2 | Переписать `contradiction_resolution_flow` в `process-query.json` — заменить старый flow на новый cascade-based | ✅ Done (2026-06-27) |
 | 10.3 | Создать `scripts/classify-source.sh` — парсит URL, проверяет whitelist доменов для docs | Medium |
-| 10.4 | Добавить `evidence_grade` extraction в agent prompt при ingest/query | Medium |
+| 10.4 | Добавить `evidence_grade` extraction в agent prompt при ingest/query | ✅ Done (2026-06-27) |
 
 ### Phase 11: Syndication Detection — Medium Priority (T6)
 **Цель**: Detect copy-paste chains и понижать weight dependent sources.
