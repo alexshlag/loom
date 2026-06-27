@@ -1,18 +1,139 @@
 {
-  "file1.md|file2.md": {
+  "new_file1.md|new_file2.md|g2": {
     "mode": "pairwise",
-    "file1": "/tmp/sim-test/file1.md",
-    "file2": "/tmp/sim-test/file2.md",
-    "similarity": 86.96,
-    "common_ngrams": 60,
+    "file1": "/tmp/sim-test/new_file1.md",
+    "file2": "/tmp/sim-test/new_file2.md",
+    "similarity": 85.42,
+    "common_ngrams": 41,
     "match_level": "high"
   },
-  "file1.md|file3.md": {
+  "new_file1.md|new_file2.md|g3": {
+    "mode": "pairwise",
+    "file1": "/tmp/sim-test/new_file1.md",
+    "file2": "/tmp/sim-test/new_file2.md",
+    "similarity": 81.63,
+    "common_ngrams": 40,
+    "match_level": "high"
+  },
+  "new_file1.md|new_file2.md|g5": {
+    "mode": "pairwise",
+    "file1": "/tmp/sim-test/new_file1.md",
+    "file2": "/tmp/sim-test/new_file2.md",
+    "similarity": 73.47,
+    "common_ngrams": 36,
+    "match_level": "high"
+  },
+  "file1.md|file3.md|g3": {
     "mode": "pairwise",
     "file1": "/tmp/sim-test/file1.md",
     "file2": "/tmp/sim-test/file3.md",
     "similarity": 2.5,
     "common_ngrams": 2,
+    "match_level": "low"
+  },
+  "Home_Manager.md|index.md|g4": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|issues.md|g4": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|log.md|g4": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|overview.md|g4": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|snapshot.md|g4": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|timeline.md|g4": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "match_level": "no_match"
+  },
+  "index.md|issues.md|g4": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "match_level": "low"
+  },
+  "index.md|log.md|g4": {
+    "similarity": 0.56,
+    "common_ngrams": 9,
+    "match_level": "low"
+  },
+  "index.md|overview.md|g4": {
+    "similarity": 3.23,
+    "common_ngrams": 23,
+    "match_level": "low"
+  },
+  "index.md|snapshot.md|g4": {
+    "similarity": 1.22,
+    "common_ngrams": 8,
+    "match_level": "low"
+  },
+  "index.md|timeline.md|g4": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "match_level": "low"
+  },
+  "issues.md|log.md|g4": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "match_level": "low"
+  },
+  "issues.md|overview.md|g4": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "match_level": "low"
+  },
+  "issues.md|snapshot.md|g4": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "match_level": "low"
+  },
+  "issues.md|timeline.md|g4": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "match_level": "low"
+  },
+  "log.md|overview.md|g4": {
+    "similarity": 0.39,
+    "common_ngrams": 5,
+    "match_level": "low"
+  },
+  "log.md|snapshot.md|g4": {
+    "similarity": 0.25,
+    "common_ngrams": 3,
+    "match_level": "low"
+  },
+  "log.md|timeline.md|g4": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "match_level": "low"
+  },
+  "overview.md|snapshot.md|g4": {
+    "similarity": 0.3,
+    "common_ngrams": 1,
+    "match_level": "low"
+  },
+  "overview.md|timeline.md|g4": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "match_level": "low"
+  },
+  "snapshot.md|timeline.md|g4": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
     "match_level": "low"
   }
 }

@@ -16,13 +16,14 @@ mkdir -p "$(dirname "$CACHE_FILE")" 2>/dev/null || true
 
 # ─── Usage ──────────────────────────────────────────────────────────
 usage() {
-    echo "Usage: $0 <file1> <file2> [--threshold N] [--verbose]"
-    echo "   OR:  $0 --scan-all [--threshold N] [--verbose]"
+    echo "Usage: $0 <file1> <file2> [--threshold N] [--gram-size N] [--verbose]"
+    echo "   OR:  $0 --scan-all [--threshold N] [--gram-size N] [--verbose]"
     echo ""
     echo "Arguments:"
     echo "  file1, file2     Two files to compare"
     echo "  --scan-all       Scan all wiki pages pairwise (O(n²) — use cautiously)"
     echo "  --threshold N    Minimum similarity % to report (default: 50)"
+    echo "  --gram-size N    N-gram size for comparison (default: 3, range: 2-6)"
     echo "  --verbose        Print comparison steps to stderr"
     exit 0
 }
@@ -32,6 +33,7 @@ FILE1=""
 FILE2=""
 SCAN_ALL=false
 THRESHOLD=50
+GRAM_SIZE=3
 VERBOSE=false
 POSITIONAL_FILES=()
 
@@ -40,10 +42,16 @@ while [[ $# -gt 0 ]]; do
         --help|-h|usage) usage ;;
         --scan-all) SCAN_ALL=true; shift ;;
         --threshold) THRESHOLD="$2"; shift 2 ;;
+        --gram-size) GRAM_SIZE="$2"; shift 2 ;;
         --verbose) VERBOSE=true; shift ;;
         *) POSITIONAL_FILES+=("$1"); shift ;;
     esac
 done
+
+# Validate gram size range (2-6)
+if [[ "$GRAM_SIZE" -lt 2 ]] || [[ "$GRAM_SIZE" -gt 6 ]]; then
+    GRAM_SIZE=3
+fi
 
 # Extract positional files (first two non-flag args)
 if [[ ${#POSITIONAL_FILES[@]} -gt 0 ]]; then
@@ -270,6 +278,7 @@ import json, os, sys
 
 wiki_dir = "$WIKI_DIR"
 threshold = $THRESHOLD
+GRAM_SIZE_VAR=$GRAM_SIZE
 cache_file = "$CACHE_FILE"
 
 # Load cache
@@ -292,15 +301,15 @@ def get_ngrams(words, n=3):
             ngrams.add(gram)
     return ngrams
 
-def compute_similarity(file1, file2):
+def compute_similarity(file1, file2, gram_size):
     try:
         with open(file1) as f:
             text1 = normalize(f.read())
         with open(file2) as f:
             text2 = normalize(f.read())
         
-        ngrams1 = get_ngrams(text1)
-        ngrams2 = get_ngrams(text2)
+        ngrams1 = get_ngrams(text1, n=gram_size)
+        ngrams2 = get_ngrams(text2, n=gram_size)
         
         if len(ngrams1) == 0 or len(ngrams2) == 0:
             return {"similarity": 0.0, "common_ngrams": 0, "match_level": "no_match"}
@@ -323,13 +332,13 @@ files = sorted([os.path.join(wiki_dir, f) for f in os.listdir(wiki_dir) if f.end
 matches = []
 for i in range(len(files)):
     for j in range(i+1, len(files)):
-        key = f"{os.path.basename(files[i])}|{os.path.basename(files[j])}"
+        key = f"{os.path.basename(files[i])}|{os.path.basename(files[j])}|g{GRAM_SIZE_VAR}"
         
         # Check cache first
         if key in cache:
             result = cache[key]
         else:
-            result = compute_similarity(files[i], files[j])
+            result = compute_similarity(files[i], files[j], int(GRAM_SIZE_VAR))
             cache[key] = result
         
         if result.get("similarity", 0) >= threshold:
@@ -360,8 +369,8 @@ else
         exit 0
     fi
     
-    # Check cache first
-    CACHE_KEY="${FILE1##*/}|${FILE2##*/}"
+    # Check cache first (include gram_size in key)
+    CACHE_KEY="${FILE1##*/}|${FILE2##*/}|g${GRAM_SIZE}"
     
     cached_result="$(python3 -c "
 import json
@@ -395,10 +404,11 @@ import json, os, sys
 
 file1 = "$FILE1"
 file2 = "$FILE2"
-# n defaults to 3 in get_ngrams
+n = $GRAM_SIZE
 threshold = $THRESHOLD
 cache_file = "$CACHE_FILE"
-cache_key = "$CACHE_KEY"
+gram_size = $GRAM_SIZE
+cache_key = f"{os.path.basename(file1)}|{os.path.basename(file2)}|g{gram_size}"
 
 try:
     with open(file1) as f:
@@ -422,8 +432,8 @@ try:
     words1 = normalize(text1)
     words2 = normalize(text2)
     
-    ngrams1 = get_ngrams(words1)
-    ngrams2 = get_ngrams(words2)
+    ngrams1 = get_ngrams(words1, n=int(n))
+    ngrams2 = get_ngrams(words2, n=int(n))
     
     if len(ngrams1) == 0 or len(ngrams2) == 0:
         similarity = 0.0

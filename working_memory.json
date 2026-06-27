@@ -1,21 +1,20 @@
 {
-  "last_updated": "2026-06-27T15:30:00+00",
+  "last_updated": "2026-06-27T15:35:00+00",
   "current_mode": "project",
-  "focus_node": "Phase 11.1 complete: text-similarity.sh with n-gram comparison, caching, and graceful fallback",
+  "focus_node": "Phase 11.1 complete: text-similarity.sh with configurable --gram-size flag (2-6)",
   "open_pages": [
     {"path": "scripts/text-similarity.sh", "status": "completed"},
     {"path": "PLAN.md", "status": "updated"}
   ],
   "dead_ends": [],
   "query_summary": {
-    "intent": "Complete Phase 11.1: text-similarity.sh for syndication detection via n-gram comparison",
+    "intent": "Add --gram-size flag to text-similarity.sh for configurable N-gram comparison (2-6)",
     "pages_read": ["scripts/text-similarity.sh"],
     "key_findings": [
-      "text-similarity.sh supports pairwise and scan-all modes",
-      "Jaccard similarity on 3-grams: high (>70%), moderate (50-70%), low (<50%) thresholds",
-      "Caching in tracking/similarity_cache.json for O(1) lookup after first run",
-      "Graceful fallback on all errors: missing files, empty input, etc.",
-      "All manual tests passed"
+      "--gram-size flag added with range validation (2-6, defaults to 3)",
+      "Cache key now includes gram_size: file1|file2|gN",
+      "Different N values produce different similarity scores: bigram=85%, trigram=82%, pentagram=73%",
+      "Scan-all mode also updated with gram_size-aware caching"
     ]
   },
   "next_steps_todo": [

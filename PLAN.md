@@ -33,6 +33,11 @@
 **Цель**: Detect copy-paste chains и понижать weight dependent sources.
 
 | Шаг | Что | Приоритет |
+|------|------|----------|
+| **11.1** | `scripts/text-similarity.sh` — n-gram pairwise & scan-all comparison, configurable --gram-size flag (2-6) | ✅ Done |
+| **11.2** | Agent prompt для causal chain analysis: "X wrote first, Y copied from X" | Low |
+
+| Шаг | Что | Приоритет |
 |-----|------|----------|
 | **11.1** | `scripts/text-similarity.sh` — n-gram pairwise & scan-all comparison | ✅ Done |
 | **11.2** | Agent prompt для causal chain analysis: "X wrote first, Y copied from X" | Low |
