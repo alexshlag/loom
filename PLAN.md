@@ -59,6 +59,17 @@
 ---
 
 
+
+## 🔄 Pending Integration (Next Step)
+
+| Trigger | File | Spec | Status |
+|---------|------|------|--------|
+| Ingest post-integration scan | `process-ingest.json#step_3c` | [INGEST_TEXT_SIMILARITY_TRIGGER.md](INGEST_TEXT_SIMILARITY_TRIGGER.md) | ⬜ TODO |
+
+**Description**: После создания/обновления страницы — сканировать wiki на overlap ≥90%, agent применяет DR-1/DR-2. Аналогично lint hook (check_id=9), но с immediate feedback для ingest flow.
+
+---
+
 ## 🧠 Теоретические вопросы (Theory Issues) — All Resolved ✅
 
 > *Раздел для хранения вопросов теории, которые нужно закрыть перед реализацией.*
@@ -93,4 +104,4 @@
 - Live issues tracked in [issues.md](issues.md) — не дублировать здесь
 - **Rule**: new phases sorted by priority (High → Medium → Low)
 
-*Last update: 2026-06-27 | Phase 10 complete. T1-T6 resolved. DR framework added.*
+*Last update: 2026-06-27 | Phase 10+12 complete. Lint hook + process refs integrated. Spec: INGEST_TEXT_SIMILARITY_TRIGGER.md*
