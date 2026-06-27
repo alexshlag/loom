@@ -40,12 +40,15 @@ check_file() {
     # Check if this line has markdown links before processing
     if echo "$line" | grep -qE '\[[^]]+\]\([^)]+\)'; then
       while IFS= read -r match; do
-        local target_path=$(echo "$match" | sed 's/^[^(]*(\([^)]*\)).*/\1/')
+        local target_path=$(echo "$match" | grep -oP '(?<=\]\()[^)]+(?=\))' || true)
         
         # Skip external URLs, mailto, empty paths
-        case "$target_path" in https://*|http://*|mailto:*|"") continue ;; esac
+        case "$target_path" in https://*|http://*|mailto:*|raw/*) continue ;; esac
+        # Skip anchor-only targets (issues.md#...) — validate base path without hash
+        local base_target=$(echo "$target_path" | sed 's/#.*//')
+        if [[ -z "$base_target" ]]; then continue; fi
         
-        local full_target="$WIKI_DIR/$target_path"
+        local full_target="$WIKI_DIR/$base_target"
         if [[ ! -f "$full_target" ]]; then
           BROKEN_COUNT=$((BROKEN_COUNT + 1))
           

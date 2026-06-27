@@ -55,5 +55,5 @@ For gradually extracting micro-services from a monolithic Symfony application:
 4. **Worker applications** — HTTP-Less Kernel in 8.x enables CLI/background jobs without HTTP overhead
 
 ## Связи
-- [Symfony Entity](wiki/entities/symfony.md) — Symfony 7+ architecture recommendations align with hexagonal patterns
-- [Service Container](wiki/concepts/service-container.md) — DI container wires domain/application/infrastructure services together
+- [Symfony Entity](entities/symfony.md) — Symfony 7+ architecture recommendations align with hexagonal patterns
+- [Service Container](concepts/service-container.md) — DI container wires domain/application/infrastructure services together

@@ -66,6 +66,6 @@ Multi-level transports for priority-based processing:
 4. **Fault tolerance** — configure retry strategies, dead letter channels for failed messages
 
 ## Связи
-- [Symfony Entity](wiki/entities/symfony.md) — Messenger is core Symfony component
-- [Service Container](wiki/concepts/service-container.md) — Message handlers are services with `#[AsMessageHandler]` auto-tagging
-- [Event Dispatcher](wiki/concepts/event-dispatcher.md) — Both patterns: EventDispatcher for events, Messenger for messages
+- [Symfony Entity](entities/symfony.md) — Messenger is core Symfony component
+- [Service Container](concepts/service-container.md) — Message handlers are services with `#[AsMessageHandler]` auto-tagging
+- [Event Dispatcher](concepts/event-dispatcher.md) — Both patterns: EventDispatcher for events, Messenger for messages

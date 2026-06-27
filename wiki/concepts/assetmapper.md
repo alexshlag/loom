@@ -57,6 +57,6 @@ Symfony official sites (symfony.com, live.symfony.com) migrated from Webpack Enc
 4. **Vendor assets in `assets/vendor/`** — version these files, don't commit to git
 
 ## Связи
-- [Symfony Entity](wiki/entities/symfony.md) — AssetMapper is recommended frontend asset approach for modern Symfony apps
-- [Twig Templating](wiki/concepts/twig-templating.md) — templates include JS/CSS via `importmap()` function from AssetMapper
-- [Symfony UX Initiative](wiki/comparisons/symfony-ux-packages.md) — UX packages leverage AssetMapper for zero-build frontend
+- [Symfony Entity](entities/symfony.md) — AssetMapper is recommended frontend asset approach for modern Symfony apps
+- [Twig Templating](concepts/twig-templating.md) — templates include JS/CSS via `importmap()` function from AssetMapper
+- [Symfony UX Initiative](comparisons/symfony-ux-packages.md) — UX packages leverage AssetMapper for zero-build frontend

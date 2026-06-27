@@ -67,6 +67,6 @@ interface VectorStoreInterface {
 4. **Cache embeddings** — store computed vectors in application cache to avoid re-embedding on repeat queries
 
 ## Связи
-- [Symfony Entity](wiki/entities/symfony.md) — AI component is part of modern Symfony 7+ ecosystem
-- [Service Container](wiki/concepts/service-container.md) — AI services registered and autowired through standard DI container
-- [Hexagonal Architecture](wiki/concepts/hexagonal-architecture.md) — AI providers/DBs are Infrastructure layer adapters; Agent logic belongs in Application layer
+- [Symfony Entity](entities/symfony.md) — AI component is part of modern Symfony 7+ ecosystem
+- [Service Container](concepts/service-container.md) — AI services registered and autowired through standard DI container
+- [Hexagonal Architecture](concepts/hexagonal-architecture.md) — AI providers/DBs are Infrastructure layer adapters; Agent logic belongs in Application layer

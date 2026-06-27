@@ -135,5 +135,3371 @@
     "similarity": 0.0,
     "common_ngrams": 0,
     "match_level": "low"
+  },
+  "ai-factory.md|andrej-karpathy.md|g3": {
+    "similarity": 0.2,
+    "common_ngrams": 1,
+    "total_unique": 511,
+    "match_level": "low_similarity"
+  },
+  "Home_Manager.md|llm-wiki-implementations.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|ai-factory-vs-pi.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|assetmapper.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|cache-system.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|doctrine-orm.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|event-dispatcher.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|hexagonal-architecture.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|llm-wiki.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|messenger-component.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|python-nixos-development.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|routing-system.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|security-system.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|service-container.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|symfony-ai.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|symfony-flex.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|temporal-decay-in-wiki.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|testing-strategy.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|twig-templating.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|workflow-state-machine.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|ai-factory.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|andrej-karpathy.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|nvidia.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|pi-coding-agent.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|symfony.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|index.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|log.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|overview.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|snapshot.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "Home_Manager.md|timeline.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "llm-wiki-implementations.md|ai-factory-vs-pi.md|g3": {
+    "similarity": 0.12,
+    "common_ngrams": 1,
+    "total_unique": 856,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|assetmapper.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 951,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|cache-system.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 971,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|doctrine-orm.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 952,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|event-dispatcher.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 826,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|hexagonal-architecture.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 997,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|llm-wiki.md|g3": {
+    "similarity": 0.37,
+    "common_ngrams": 5,
+    "total_unique": 1358,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|messenger-component.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 926,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|python-nixos-development.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1077,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|routing-system.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 900,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|security-system.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 976,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|service-container.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 910,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|symfony-ai.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1025,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|symfony-flex.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 861,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|temporal-decay-in-wiki.md|g3": {
+    "similarity": 0.11,
+    "common_ngrams": 1,
+    "total_unique": 882,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|testing-strategy.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 932,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|twig-templating.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 915,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|workflow-state-machine.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 944,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|ai-factory.md|g3": {
+    "similarity": 0.1,
+    "common_ngrams": 1,
+    "total_unique": 1016,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|andrej-karpathy.md|g3": {
+    "similarity": 0.12,
+    "common_ngrams": 1,
+    "total_unique": 846,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|nvidia.md|g3": {
+    "similarity": 0.12,
+    "common_ngrams": 1,
+    "total_unique": 806,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|pi-coding-agent.md|g3": {
+    "similarity": 0.1,
+    "common_ngrams": 1,
+    "total_unique": 994,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|symfony.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1018,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|index.md|g3": {
+    "similarity": 1.32,
+    "common_ngrams": 15,
+    "total_unique": 1139,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 742,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|log.md|g3": {
+    "similarity": 0.4,
+    "common_ngrams": 7,
+    "total_unique": 1741,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|overview.md|g3": {
+    "similarity": 0.93,
+    "common_ngrams": 8,
+    "total_unique": 862,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|snapshot.md|g3": {
+    "similarity": 0.38,
+    "common_ngrams": 3,
+    "total_unique": 795,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.1,
+    "common_ngrams": 1,
+    "total_unique": 992,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 0.11,
+    "common_ngrams": 1,
+    "total_unique": 942,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki-implementations.md|timeline.md|g3": {
+    "similarity": 0.14,
+    "common_ngrams": 1,
+    "total_unique": 715,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|assetmapper.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 456,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|cache-system.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 476,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|doctrine-orm.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 457,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|event-dispatcher.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 331,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|hexagonal-architecture.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 502,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|llm-wiki.md|g3": {
+    "similarity": 0.12,
+    "common_ngrams": 1,
+    "total_unique": 867,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|messenger-component.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 431,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|python-nixos-development.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 582,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|routing-system.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 405,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|security-system.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 481,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|service-container.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 415,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|symfony-ai.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 530,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|symfony-flex.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 366,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|temporal-decay-in-wiki.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 388,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|testing-strategy.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 437,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|twig-templating.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 420,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|workflow-state-machine.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 449,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|ai-factory.md|g3": {
+    "similarity": 1.95,
+    "common_ngrams": 10,
+    "total_unique": 512,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|andrej-karpathy.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 352,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|nvidia.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 312,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|pi-coding-agent.md|g3": {
+    "similarity": 1.01,
+    "common_ngrams": 5,
+    "total_unique": 495,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|symfony.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 523,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|index.md|g3": {
+    "similarity": 1.7,
+    "common_ngrams": 11,
+    "total_unique": 648,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 247,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|log.md|g3": {
+    "similarity": 0.4,
+    "common_ngrams": 5,
+    "total_unique": 1248,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|overview.md|g3": {
+    "similarity": 0.54,
+    "common_ngrams": 2,
+    "total_unique": 373,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|snapshot.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 303,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 498,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 448,
+    "match_level": "low_similarity"
+  },
+  "ai-factory-vs-pi.md|timeline.md|g3": {
+    "similarity": 0.45,
+    "common_ngrams": 1,
+    "total_unique": 220,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|cache-system.md|g3": {
+    "similarity": 0.53,
+    "common_ngrams": 3,
+    "total_unique": 567,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|doctrine-orm.md|g3": {
+    "similarity": 0.18,
+    "common_ngrams": 1,
+    "total_unique": 550,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|event-dispatcher.md|g3": {
+    "similarity": 0.24,
+    "common_ngrams": 1,
+    "total_unique": 424,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|hexagonal-architecture.md|g3": {
+    "similarity": 0.17,
+    "common_ngrams": 1,
+    "total_unique": 595,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|llm-wiki.md|g3": {
+    "similarity": 0.1,
+    "common_ngrams": 1,
+    "total_unique": 961,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|messenger-component.md|g3": {
+    "similarity": 0.38,
+    "common_ngrams": 2,
+    "total_unique": 523,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|python-nixos-development.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 676,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|routing-system.md|g3": {
+    "similarity": 0.2,
+    "common_ngrams": 1,
+    "total_unique": 498,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|security-system.md|g3": {
+    "similarity": 0.17,
+    "common_ngrams": 1,
+    "total_unique": 574,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|service-container.md|g3": {
+    "similarity": 0.2,
+    "common_ngrams": 1,
+    "total_unique": 508,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|symfony-ai.md|g3": {
+    "similarity": 0.48,
+    "common_ngrams": 3,
+    "total_unique": 621,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|symfony-flex.md|g3": {
+    "similarity": 0.66,
+    "common_ngrams": 3,
+    "total_unique": 457,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|temporal-decay-in-wiki.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 482,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|testing-strategy.md|g3": {
+    "similarity": 0.38,
+    "common_ngrams": 2,
+    "total_unique": 529,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|twig-templating.md|g3": {
+    "similarity": 0.39,
+    "common_ngrams": 2,
+    "total_unique": 512,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|workflow-state-machine.md|g3": {
+    "similarity": 0.37,
+    "common_ngrams": 2,
+    "total_unique": 541,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|ai-factory.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 616,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|andrej-karpathy.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 446,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|nvidia.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 406,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|pi-coding-agent.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 594,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|symfony.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 617,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|index.md|g3": {
+    "similarity": 1.62,
+    "common_ngrams": 12,
+    "total_unique": 741,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 341,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|log.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1347,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|overview.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 469,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|snapshot.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 397,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 592,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 542,
+    "match_level": "low_similarity"
+  },
+  "assetmapper.md|timeline.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 315,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|doctrine-orm.md|g3": {
+    "similarity": 0.18,
+    "common_ngrams": 1,
+    "total_unique": 570,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|event-dispatcher.md|g3": {
+    "similarity": 0.45,
+    "common_ngrams": 2,
+    "total_unique": 443,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|hexagonal-architecture.md|g3": {
+    "similarity": 0.16,
+    "common_ngrams": 1,
+    "total_unique": 615,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|llm-wiki.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 982,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|messenger-component.md|g3": {
+    "similarity": 0.93,
+    "common_ngrams": 5,
+    "total_unique": 540,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|python-nixos-development.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 696,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|routing-system.md|g3": {
+    "similarity": 0.19,
+    "common_ngrams": 1,
+    "total_unique": 518,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|security-system.md|g3": {
+    "similarity": 0.51,
+    "common_ngrams": 3,
+    "total_unique": 592,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|service-container.md|g3": {
+    "similarity": 0.19,
+    "common_ngrams": 1,
+    "total_unique": 528,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|symfony-ai.md|g3": {
+    "similarity": 0.31,
+    "common_ngrams": 2,
+    "total_unique": 642,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|symfony-flex.md|g3": {
+    "similarity": 0.63,
+    "common_ngrams": 3,
+    "total_unique": 477,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|temporal-decay-in-wiki.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 502,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|testing-strategy.md|g3": {
+    "similarity": 0.36,
+    "common_ngrams": 2,
+    "total_unique": 549,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|twig-templating.md|g3": {
+    "similarity": 0.38,
+    "common_ngrams": 2,
+    "total_unique": 532,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|workflow-state-machine.md|g3": {
+    "similarity": 0.9,
+    "common_ngrams": 5,
+    "total_unique": 558,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|ai-factory.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 636,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|andrej-karpathy.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 466,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|nvidia.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 426,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|pi-coding-agent.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 614,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|symfony.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 637,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|index.md|g3": {
+    "similarity": 1.84,
+    "common_ngrams": 14,
+    "total_unique": 759,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 361,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|log.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1367,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|overview.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 489,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|snapshot.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 417,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 612,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 562,
+    "match_level": "low_similarity"
+  },
+  "cache-system.md|timeline.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 335,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|event-dispatcher.md|g3": {
+    "similarity": 0.47,
+    "common_ngrams": 2,
+    "total_unique": 424,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|hexagonal-architecture.md|g3": {
+    "similarity": 0.51,
+    "common_ngrams": 3,
+    "total_unique": 594,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|llm-wiki.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 963,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|messenger-component.md|g3": {
+    "similarity": 0.19,
+    "common_ngrams": 1,
+    "total_unique": 525,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|python-nixos-development.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 677,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|routing-system.md|g3": {
+    "similarity": 0.4,
+    "common_ngrams": 2,
+    "total_unique": 498,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|security-system.md|g3": {
+    "similarity": 0.35,
+    "common_ngrams": 2,
+    "total_unique": 574,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|service-container.md|g3": {
+    "similarity": 0.39,
+    "common_ngrams": 2,
+    "total_unique": 508,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|symfony-ai.md|g3": {
+    "similarity": 0.16,
+    "common_ngrams": 1,
+    "total_unique": 624,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|symfony-flex.md|g3": {
+    "similarity": 0.22,
+    "common_ngrams": 1,
+    "total_unique": 460,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|temporal-decay-in-wiki.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 483,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|testing-strategy.md|g3": {
+    "similarity": 0.76,
+    "common_ngrams": 4,
+    "total_unique": 528,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|twig-templating.md|g3": {
+    "similarity": 0.19,
+    "common_ngrams": 1,
+    "total_unique": 514,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|workflow-state-machine.md|g3": {
+    "similarity": 0.18,
+    "common_ngrams": 1,
+    "total_unique": 543,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|ai-factory.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 617,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|andrej-karpathy.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 447,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|nvidia.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 407,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|pi-coding-agent.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 595,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|symfony.md|g3": {
+    "similarity": 0.16,
+    "common_ngrams": 1,
+    "total_unique": 617,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|index.md|g3": {
+    "similarity": 1.34,
+    "common_ngrams": 10,
+    "total_unique": 744,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 342,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|log.md|g3": {
+    "similarity": 0.07,
+    "common_ngrams": 1,
+    "total_unique": 1347,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|overview.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 470,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|snapshot.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 398,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 593,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 543,
+    "match_level": "low_similarity"
+  },
+  "doctrine-orm.md|timeline.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 316,
+    "match_level": "low_similarity"
+  },
+  "event-dispatcher.md|hexagonal-architecture.md|g3": {
+    "similarity": 0.43,
+    "common_ngrams": 2,
+    "total_unique": 469,
+    "match_level": "low_similarity"
+  },
+  "event-dispatcher.md|llm-wiki.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 837,
+    "match_level": "low_similarity"
+  },
+  "event-dispatcher.md|messenger-component.md|g3": {
+    "similarity": 0.25,
+    "common_ngrams": 1,
+    "total_unique": 399,
+    "match_level": "low_similarity"
+  },
+  "event-dispatcher.md|python-nixos-development.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 551,
+    "match_level": "low_similarity"
+  },
+  "event-dispatcher.md|routing-system.md|g3": {
+    "similarity": 0.81,
+    "common_ngrams": 3,
+    "total_unique": 371,
+    "match_level": "low_similarity"
+  },
+  "event-dispatcher.md|security-system.md|g3": {
+    "similarity": 0.45,
+    "common_ngrams": 2,
+    "total_unique": 448,
+    "match_level": "low_similarity"
+  },
+  "event-dispatcher.md|service-container.md|g3": {
+    "similarity": 0.52,
+    "common_ngrams": 2,
+    "total_unique": 382,
+    "match_level": "low_similarity"
+  },
+  "event-dispatcher.md|symfony-ai.md|g3": {
+    "similarity": 0.2,
+    "common_ngrams": 1,
+    "total_unique": 498,
+    "match_level": "low_similarity"
+  },
+  "event-dispatcher.md|symfony-flex.md|g3": {
+    "similarity": 0.3,
+    "common_ngrams": 1,
+    "total_unique": 334,
+    "match_level": "low_similarity"
+  },
+  "event-dispatcher.md|temporal-decay-in-wiki.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 357,
+    "match_level": "low_similarity"
+  },
+  "event-dispatcher.md|testing-strategy.md|g3": {
+    "similarity": 0.25,
+    "common_ngrams": 1,
+    "total_unique": 405,
+    "match_level": "low_similarity"
+  },
+  "event-dispatcher.md|twig-templating.md|g3": {
+    "similarity": 0.26,
+    "common_ngrams": 1,
+    "total_unique": 388,
+    "match_level": "low_similarity"
+  },
+  "event-dispatcher.md|workflow-state-machine.md|g3": {
+    "similarity": 0.24,
+    "common_ngrams": 1,
+    "total_unique": 417,
+    "match_level": "low_similarity"
+  },
+  "event-dispatcher.md|ai-factory.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 491,
+    "match_level": "low_similarity"
+  },
+  "event-dispatcher.md|andrej-karpathy.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 321,
+    "match_level": "low_similarity"
+  },
+  "event-dispatcher.md|nvidia.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 281,
+    "match_level": "low_similarity"
+  },
+  "event-dispatcher.md|pi-coding-agent.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 469,
+    "match_level": "low_similarity"
+  },
+  "event-dispatcher.md|symfony.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 492,
+    "match_level": "low_similarity"
+  },
+  "event-dispatcher.md|index.md|g3": {
+    "similarity": 1.78,
+    "common_ngrams": 11,
+    "total_unique": 617,
+    "match_level": "low_similarity"
+  },
+  "event-dispatcher.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 216,
+    "match_level": "low_similarity"
+  },
+  "event-dispatcher.md|log.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1222,
+    "match_level": "low_similarity"
+  },
+  "event-dispatcher.md|overview.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 344,
+    "match_level": "low_similarity"
+  },
+  "event-dispatcher.md|snapshot.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 272,
+    "match_level": "low_similarity"
+  },
+  "event-dispatcher.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 467,
+    "match_level": "low_similarity"
+  },
+  "event-dispatcher.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 417,
+    "match_level": "low_similarity"
+  },
+  "event-dispatcher.md|timeline.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 190,
+    "match_level": "low_similarity"
+  },
+  "hexagonal-architecture.md|llm-wiki.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1008,
+    "match_level": "low_similarity"
+  },
+  "hexagonal-architecture.md|messenger-component.md|g3": {
+    "similarity": 0.18,
+    "common_ngrams": 1,
+    "total_unique": 570,
+    "match_level": "low_similarity"
+  },
+  "hexagonal-architecture.md|python-nixos-development.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 722,
+    "match_level": "low_similarity"
+  },
+  "hexagonal-architecture.md|routing-system.md|g3": {
+    "similarity": 0.37,
+    "common_ngrams": 2,
+    "total_unique": 543,
+    "match_level": "low_similarity"
+  },
+  "hexagonal-architecture.md|security-system.md|g3": {
+    "similarity": 0.32,
+    "common_ngrams": 2,
+    "total_unique": 619,
+    "match_level": "low_similarity"
+  },
+  "hexagonal-architecture.md|service-container.md|g3": {
+    "similarity": 0.36,
+    "common_ngrams": 2,
+    "total_unique": 553,
+    "match_level": "low_similarity"
+  },
+  "hexagonal-architecture.md|symfony-ai.md|g3": {
+    "similarity": 0.15,
+    "common_ngrams": 1,
+    "total_unique": 669,
+    "match_level": "low_similarity"
+  },
+  "hexagonal-architecture.md|symfony-flex.md|g3": {
+    "similarity": 0.2,
+    "common_ngrams": 1,
+    "total_unique": 505,
+    "match_level": "low_similarity"
+  },
+  "hexagonal-architecture.md|temporal-decay-in-wiki.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 528,
+    "match_level": "low_similarity"
+  },
+  "hexagonal-architecture.md|testing-strategy.md|g3": {
+    "similarity": 0.17,
+    "common_ngrams": 1,
+    "total_unique": 576,
+    "match_level": "low_similarity"
+  },
+  "hexagonal-architecture.md|twig-templating.md|g3": {
+    "similarity": 0.18,
+    "common_ngrams": 1,
+    "total_unique": 559,
+    "match_level": "low_similarity"
+  },
+  "hexagonal-architecture.md|workflow-state-machine.md|g3": {
+    "similarity": 0.17,
+    "common_ngrams": 1,
+    "total_unique": 588,
+    "match_level": "low_similarity"
+  },
+  "hexagonal-architecture.md|ai-factory.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 662,
+    "match_level": "low_similarity"
+  },
+  "hexagonal-architecture.md|andrej-karpathy.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 492,
+    "match_level": "low_similarity"
+  },
+  "hexagonal-architecture.md|nvidia.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 452,
+    "match_level": "low_similarity"
+  },
+  "hexagonal-architecture.md|pi-coding-agent.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 640,
+    "match_level": "low_similarity"
+  },
+  "hexagonal-architecture.md|symfony.md|g3": {
+    "similarity": 0.3,
+    "common_ngrams": 2,
+    "total_unique": 661,
+    "match_level": "low_similarity"
+  },
+  "hexagonal-architecture.md|index.md|g3": {
+    "similarity": 1.52,
+    "common_ngrams": 12,
+    "total_unique": 787,
+    "match_level": "low_similarity"
+  },
+  "hexagonal-architecture.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 387,
+    "match_level": "low_similarity"
+  },
+  "hexagonal-architecture.md|log.md|g3": {
+    "similarity": 0.07,
+    "common_ngrams": 1,
+    "total_unique": 1392,
+    "match_level": "low_similarity"
+  },
+  "hexagonal-architecture.md|overview.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 515,
+    "match_level": "low_similarity"
+  },
+  "hexagonal-architecture.md|snapshot.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 443,
+    "match_level": "low_similarity"
+  },
+  "hexagonal-architecture.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 638,
+    "match_level": "low_similarity"
+  },
+  "hexagonal-architecture.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 588,
+    "match_level": "low_similarity"
+  },
+  "hexagonal-architecture.md|timeline.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 361,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki.md|messenger-component.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 937,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki.md|python-nixos-development.md|g3": {
+    "similarity": 0.09,
+    "common_ngrams": 1,
+    "total_unique": 1087,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki.md|routing-system.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 911,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki.md|security-system.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 987,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki.md|service-container.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 921,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki.md|symfony-ai.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1036,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki.md|symfony-flex.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 872,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki.md|temporal-decay-in-wiki.md|g3": {
+    "similarity": 0.79,
+    "common_ngrams": 7,
+    "total_unique": 887,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki.md|testing-strategy.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 943,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki.md|twig-templating.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 926,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki.md|workflow-state-machine.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 955,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki.md|ai-factory.md|g3": {
+    "similarity": 0.19,
+    "common_ngrams": 2,
+    "total_unique": 1026,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki.md|andrej-karpathy.md|g3": {
+    "similarity": 1.54,
+    "common_ngrams": 13,
+    "total_unique": 845,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki.md|nvidia.md|g3": {
+    "similarity": 0.12,
+    "common_ngrams": 1,
+    "total_unique": 817,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki.md|pi-coding-agent.md|g3": {
+    "similarity": 0.2,
+    "common_ngrams": 2,
+    "total_unique": 1004,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki.md|symfony.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1029,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki.md|index.md|g3": {
+    "similarity": 1.13,
+    "common_ngrams": 13,
+    "total_unique": 1152,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 753,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki.md|log.md|g3": {
+    "similarity": 0.46,
+    "common_ngrams": 8,
+    "total_unique": 1751,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki.md|overview.md|g3": {
+    "similarity": 1.03,
+    "common_ngrams": 9,
+    "total_unique": 872,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki.md|snapshot.md|g3": {
+    "similarity": 1.25,
+    "common_ngrams": 10,
+    "total_unique": 799,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1004,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 2.25,
+    "common_ngrams": 21,
+    "total_unique": 933,
+    "match_level": "low_similarity"
+  },
+  "llm-wiki.md|timeline.md|g3": {
+    "similarity": 0.14,
+    "common_ngrams": 1,
+    "total_unique": 726,
+    "match_level": "low_similarity"
+  },
+  "messenger-component.md|python-nixos-development.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 651,
+    "match_level": "low_similarity"
+  },
+  "messenger-component.md|routing-system.md|g3": {
+    "similarity": 0.21,
+    "common_ngrams": 1,
+    "total_unique": 473,
+    "match_level": "low_similarity"
+  },
+  "messenger-component.md|security-system.md|g3": {
+    "similarity": 0.18,
+    "common_ngrams": 1,
+    "total_unique": 549,
+    "match_level": "low_similarity"
+  },
+  "messenger-component.md|service-container.md|g3": {
+    "similarity": 0.21,
+    "common_ngrams": 1,
+    "total_unique": 483,
+    "match_level": "low_similarity"
+  },
+  "messenger-component.md|symfony-ai.md|g3": {
+    "similarity": 0.34,
+    "common_ngrams": 2,
+    "total_unique": 597,
+    "match_level": "low_similarity"
+  },
+  "messenger-component.md|symfony-flex.md|g3": {
+    "similarity": 0.46,
+    "common_ngrams": 2,
+    "total_unique": 433,
+    "match_level": "low_similarity"
+  },
+  "messenger-component.md|temporal-decay-in-wiki.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 457,
+    "match_level": "low_similarity"
+  },
+  "messenger-component.md|testing-strategy.md|g3": {
+    "similarity": 0.4,
+    "common_ngrams": 2,
+    "total_unique": 504,
+    "match_level": "low_similarity"
+  },
+  "messenger-component.md|twig-templating.md|g3": {
+    "similarity": 0.41,
+    "common_ngrams": 2,
+    "total_unique": 487,
+    "match_level": "low_similarity"
+  },
+  "messenger-component.md|workflow-state-machine.md|g3": {
+    "similarity": 0.78,
+    "common_ngrams": 4,
+    "total_unique": 514,
+    "match_level": "low_similarity"
+  },
+  "messenger-component.md|ai-factory.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 591,
+    "match_level": "low_similarity"
+  },
+  "messenger-component.md|andrej-karpathy.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 421,
+    "match_level": "low_similarity"
+  },
+  "messenger-component.md|nvidia.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 381,
+    "match_level": "low_similarity"
+  },
+  "messenger-component.md|pi-coding-agent.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 569,
+    "match_level": "low_similarity"
+  },
+  "messenger-component.md|symfony.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 592,
+    "match_level": "low_similarity"
+  },
+  "messenger-component.md|index.md|g3": {
+    "similarity": 1.82,
+    "common_ngrams": 13,
+    "total_unique": 715,
+    "match_level": "low_similarity"
+  },
+  "messenger-component.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 316,
+    "match_level": "low_similarity"
+  },
+  "messenger-component.md|log.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1322,
+    "match_level": "low_similarity"
+  },
+  "messenger-component.md|overview.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 444,
+    "match_level": "low_similarity"
+  },
+  "messenger-component.md|snapshot.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 372,
+    "match_level": "low_similarity"
+  },
+  "messenger-component.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 567,
+    "match_level": "low_similarity"
+  },
+  "messenger-component.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 517,
+    "match_level": "low_similarity"
+  },
+  "messenger-component.md|timeline.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 290,
+    "match_level": "low_similarity"
+  },
+  "python-nixos-development.md|routing-system.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 625,
+    "match_level": "low_similarity"
+  },
+  "python-nixos-development.md|security-system.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 701,
+    "match_level": "low_similarity"
+  },
+  "python-nixos-development.md|service-container.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 635,
+    "match_level": "low_similarity"
+  },
+  "python-nixos-development.md|symfony-ai.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 750,
+    "match_level": "low_similarity"
+  },
+  "python-nixos-development.md|symfony-flex.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 586,
+    "match_level": "low_similarity"
+  },
+  "python-nixos-development.md|temporal-decay-in-wiki.md|g3": {
+    "similarity": 0.33,
+    "common_ngrams": 2,
+    "total_unique": 606,
+    "match_level": "low_similarity"
+  },
+  "python-nixos-development.md|testing-strategy.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 657,
+    "match_level": "low_similarity"
+  },
+  "python-nixos-development.md|twig-templating.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 640,
+    "match_level": "low_similarity"
+  },
+  "python-nixos-development.md|workflow-state-machine.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 669,
+    "match_level": "low_similarity"
+  },
+  "python-nixos-development.md|ai-factory.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 742,
+    "match_level": "low_similarity"
+  },
+  "python-nixos-development.md|andrej-karpathy.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 572,
+    "match_level": "low_similarity"
+  },
+  "python-nixos-development.md|nvidia.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 532,
+    "match_level": "low_similarity"
+  },
+  "python-nixos-development.md|pi-coding-agent.md|g3": {
+    "similarity": 0.28,
+    "common_ngrams": 2,
+    "total_unique": 718,
+    "match_level": "low_similarity"
+  },
+  "python-nixos-development.md|symfony.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 743,
+    "match_level": "low_similarity"
+  },
+  "python-nixos-development.md|index.md|g3": {
+    "similarity": 1.74,
+    "common_ngrams": 15,
+    "total_unique": 864,
+    "match_level": "low_similarity"
+  },
+  "python-nixos-development.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 467,
+    "match_level": "low_similarity"
+  },
+  "python-nixos-development.md|log.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1473,
+    "match_level": "low_similarity"
+  },
+  "python-nixos-development.md|overview.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 595,
+    "match_level": "low_similarity"
+  },
+  "python-nixos-development.md|snapshot.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 523,
+    "match_level": "low_similarity"
+  },
+  "python-nixos-development.md|python-nixos-development-environments.md|g3": {
+    "similarity": 7.97,
+    "common_ngrams": 53,
+    "total_unique": 665,
+    "match_level": "low_similarity"
+  },
+  "python-nixos-development.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 668,
+    "match_level": "low_similarity"
+  },
+  "python-nixos-development.md|timeline.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 441,
+    "match_level": "low_similarity"
+  },
+  "routing-system.md|security-system.md|g3": {
+    "similarity": 0.38,
+    "common_ngrams": 2,
+    "total_unique": 522,
+    "match_level": "low_similarity"
+  },
+  "routing-system.md|service-container.md|g3": {
+    "similarity": 0.66,
+    "common_ngrams": 3,
+    "total_unique": 455,
+    "match_level": "low_similarity"
+  },
+  "routing-system.md|symfony-ai.md|g3": {
+    "similarity": 0.17,
+    "common_ngrams": 1,
+    "total_unique": 572,
+    "match_level": "low_similarity"
+  },
+  "routing-system.md|symfony-flex.md|g3": {
+    "similarity": 0.25,
+    "common_ngrams": 1,
+    "total_unique": 408,
+    "match_level": "low_similarity"
+  },
+  "routing-system.md|temporal-decay-in-wiki.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 431,
+    "match_level": "low_similarity"
+  },
+  "routing-system.md|testing-strategy.md|g3": {
+    "similarity": 0.21,
+    "common_ngrams": 1,
+    "total_unique": 479,
+    "match_level": "low_similarity"
+  },
+  "routing-system.md|twig-templating.md|g3": {
+    "similarity": 0.22,
+    "common_ngrams": 1,
+    "total_unique": 462,
+    "match_level": "low_similarity"
+  },
+  "routing-system.md|workflow-state-machine.md|g3": {
+    "similarity": 0.2,
+    "common_ngrams": 1,
+    "total_unique": 491,
+    "match_level": "low_similarity"
+  },
+  "routing-system.md|ai-factory.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 565,
+    "match_level": "low_similarity"
+  },
+  "routing-system.md|andrej-karpathy.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 395,
+    "match_level": "low_similarity"
+  },
+  "routing-system.md|nvidia.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 355,
+    "match_level": "low_similarity"
+  },
+  "routing-system.md|pi-coding-agent.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 543,
+    "match_level": "low_similarity"
+  },
+  "routing-system.md|symfony.md|g3": {
+    "similarity": 0.35,
+    "common_ngrams": 2,
+    "total_unique": 564,
+    "match_level": "low_similarity"
+  },
+  "routing-system.md|index.md|g3": {
+    "similarity": 1.74,
+    "common_ngrams": 12,
+    "total_unique": 690,
+    "match_level": "low_similarity"
+  },
+  "routing-system.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 290,
+    "match_level": "low_similarity"
+  },
+  "routing-system.md|log.md|g3": {
+    "similarity": 0.08,
+    "common_ngrams": 1,
+    "total_unique": 1295,
+    "match_level": "low_similarity"
+  },
+  "routing-system.md|overview.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 418,
+    "match_level": "low_similarity"
+  },
+  "routing-system.md|snapshot.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 346,
+    "match_level": "low_similarity"
+  },
+  "routing-system.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 541,
+    "match_level": "low_similarity"
+  },
+  "routing-system.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 491,
+    "match_level": "low_similarity"
+  },
+  "routing-system.md|timeline.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 264,
+    "match_level": "low_similarity"
+  },
+  "security-system.md|service-container.md|g3": {
+    "similarity": 0.38,
+    "common_ngrams": 2,
+    "total_unique": 532,
+    "match_level": "low_similarity"
+  },
+  "security-system.md|symfony-ai.md|g3": {
+    "similarity": 0.15,
+    "common_ngrams": 1,
+    "total_unique": 648,
+    "match_level": "low_similarity"
+  },
+  "security-system.md|symfony-flex.md|g3": {
+    "similarity": 0.21,
+    "common_ngrams": 1,
+    "total_unique": 484,
+    "match_level": "low_similarity"
+  },
+  "security-system.md|temporal-decay-in-wiki.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 507,
+    "match_level": "low_similarity"
+  },
+  "security-system.md|testing-strategy.md|g3": {
+    "similarity": 0.18,
+    "common_ngrams": 1,
+    "total_unique": 555,
+    "match_level": "low_similarity"
+  },
+  "security-system.md|twig-templating.md|g3": {
+    "similarity": 0.37,
+    "common_ngrams": 2,
+    "total_unique": 537,
+    "match_level": "low_similarity"
+  },
+  "security-system.md|workflow-state-machine.md|g3": {
+    "similarity": 0.18,
+    "common_ngrams": 1,
+    "total_unique": 567,
+    "match_level": "low_similarity"
+  },
+  "security-system.md|ai-factory.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 641,
+    "match_level": "low_similarity"
+  },
+  "security-system.md|andrej-karpathy.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 471,
+    "match_level": "low_similarity"
+  },
+  "security-system.md|nvidia.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 431,
+    "match_level": "low_similarity"
+  },
+  "security-system.md|pi-coding-agent.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 619,
+    "match_level": "low_similarity"
+  },
+  "security-system.md|symfony.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 642,
+    "match_level": "low_similarity"
+  },
+  "security-system.md|index.md|g3": {
+    "similarity": 1.57,
+    "common_ngrams": 12,
+    "total_unique": 766,
+    "match_level": "low_similarity"
+  },
+  "security-system.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 366,
+    "match_level": "low_similarity"
+  },
+  "security-system.md|log.md|g3": {
+    "similarity": 0.15,
+    "common_ngrams": 2,
+    "total_unique": 1370,
+    "match_level": "low_similarity"
+  },
+  "security-system.md|overview.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 494,
+    "match_level": "low_similarity"
+  },
+  "security-system.md|snapshot.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 422,
+    "match_level": "low_similarity"
+  },
+  "security-system.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 617,
+    "match_level": "low_similarity"
+  },
+  "security-system.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 567,
+    "match_level": "low_similarity"
+  },
+  "security-system.md|timeline.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 340,
+    "match_level": "low_similarity"
+  },
+  "service-container.md|symfony-ai.md|g3": {
+    "similarity": 0.17,
+    "common_ngrams": 1,
+    "total_unique": 582,
+    "match_level": "low_similarity"
+  },
+  "service-container.md|symfony-flex.md|g3": {
+    "similarity": 0.24,
+    "common_ngrams": 1,
+    "total_unique": 418,
+    "match_level": "low_similarity"
+  },
+  "service-container.md|temporal-decay-in-wiki.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 441,
+    "match_level": "low_similarity"
+  },
+  "service-container.md|testing-strategy.md|g3": {
+    "similarity": 0.2,
+    "common_ngrams": 1,
+    "total_unique": 489,
+    "match_level": "low_similarity"
+  },
+  "service-container.md|twig-templating.md|g3": {
+    "similarity": 0.21,
+    "common_ngrams": 1,
+    "total_unique": 472,
+    "match_level": "low_similarity"
+  },
+  "service-container.md|workflow-state-machine.md|g3": {
+    "similarity": 0.2,
+    "common_ngrams": 1,
+    "total_unique": 501,
+    "match_level": "low_similarity"
+  },
+  "service-container.md|ai-factory.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 575,
+    "match_level": "low_similarity"
+  },
+  "service-container.md|andrej-karpathy.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 405,
+    "match_level": "low_similarity"
+  },
+  "service-container.md|nvidia.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 365,
+    "match_level": "low_similarity"
+  },
+  "service-container.md|pi-coding-agent.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 553,
+    "match_level": "low_similarity"
+  },
+  "service-container.md|symfony.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 576,
+    "match_level": "low_similarity"
+  },
+  "service-container.md|index.md|g3": {
+    "similarity": 1.57,
+    "common_ngrams": 11,
+    "total_unique": 701,
+    "match_level": "low_similarity"
+  },
+  "service-container.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 300,
+    "match_level": "low_similarity"
+  },
+  "service-container.md|log.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1306,
+    "match_level": "low_similarity"
+  },
+  "service-container.md|overview.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 428,
+    "match_level": "low_similarity"
+  },
+  "service-container.md|snapshot.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 356,
+    "match_level": "low_similarity"
+  },
+  "service-container.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.18,
+    "common_ngrams": 1,
+    "total_unique": 550,
+    "match_level": "low_similarity"
+  },
+  "service-container.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 501,
+    "match_level": "low_similarity"
+  },
+  "service-container.md|timeline.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 274,
+    "match_level": "low_similarity"
+  },
+  "symfony-ai.md|symfony-flex.md|g3": {
+    "similarity": 0.56,
+    "common_ngrams": 3,
+    "total_unique": 531,
+    "match_level": "low_similarity"
+  },
+  "symfony-ai.md|temporal-decay-in-wiki.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 556,
+    "match_level": "low_similarity"
+  },
+  "symfony-ai.md|testing-strategy.md|g3": {
+    "similarity": 0.33,
+    "common_ngrams": 2,
+    "total_unique": 603,
+    "match_level": "low_similarity"
+  },
+  "symfony-ai.md|twig-templating.md|g3": {
+    "similarity": 0.34,
+    "common_ngrams": 2,
+    "total_unique": 586,
+    "match_level": "low_similarity"
+  },
+  "symfony-ai.md|workflow-state-machine.md|g3": {
+    "similarity": 0.82,
+    "common_ngrams": 5,
+    "total_unique": 612,
+    "match_level": "low_similarity"
+  },
+  "symfony-ai.md|ai-factory.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 690,
+    "match_level": "low_similarity"
+  },
+  "symfony-ai.md|andrej-karpathy.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 520,
+    "match_level": "low_similarity"
+  },
+  "symfony-ai.md|nvidia.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 480,
+    "match_level": "low_similarity"
+  },
+  "symfony-ai.md|pi-coding-agent.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 668,
+    "match_level": "low_similarity"
+  },
+  "symfony-ai.md|symfony.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 691,
+    "match_level": "low_similarity"
+  },
+  "symfony-ai.md|index.md|g3": {
+    "similarity": 1.22,
+    "common_ngrams": 10,
+    "total_unique": 817,
+    "match_level": "low_similarity"
+  },
+  "symfony-ai.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 415,
+    "match_level": "low_similarity"
+  },
+  "symfony-ai.md|log.md|g3": {
+    "similarity": 0.07,
+    "common_ngrams": 1,
+    "total_unique": 1420,
+    "match_level": "low_similarity"
+  },
+  "symfony-ai.md|overview.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 543,
+    "match_level": "low_similarity"
+  },
+  "symfony-ai.md|snapshot.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 471,
+    "match_level": "low_similarity"
+  },
+  "symfony-ai.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 666,
+    "match_level": "low_similarity"
+  },
+  "symfony-ai.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 616,
+    "match_level": "low_similarity"
+  },
+  "symfony-ai.md|timeline.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 389,
+    "match_level": "low_similarity"
+  },
+  "symfony-flex.md|temporal-decay-in-wiki.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 392,
+    "match_level": "low_similarity"
+  },
+  "symfony-flex.md|testing-strategy.md|g3": {
+    "similarity": 0.46,
+    "common_ngrams": 2,
+    "total_unique": 439,
+    "match_level": "low_similarity"
+  },
+  "symfony-flex.md|twig-templating.md|g3": {
+    "similarity": 0.47,
+    "common_ngrams": 2,
+    "total_unique": 422,
+    "match_level": "low_similarity"
+  },
+  "symfony-flex.md|workflow-state-machine.md|g3": {
+    "similarity": 0.44,
+    "common_ngrams": 2,
+    "total_unique": 451,
+    "match_level": "low_similarity"
+  },
+  "symfony-flex.md|ai-factory.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 526,
+    "match_level": "low_similarity"
+  },
+  "symfony-flex.md|andrej-karpathy.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 356,
+    "match_level": "low_similarity"
+  },
+  "symfony-flex.md|nvidia.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 316,
+    "match_level": "low_similarity"
+  },
+  "symfony-flex.md|pi-coding-agent.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 504,
+    "match_level": "low_similarity"
+  },
+  "symfony-flex.md|symfony.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 527,
+    "match_level": "low_similarity"
+  },
+  "symfony-flex.md|index.md|g3": {
+    "similarity": 1.84,
+    "common_ngrams": 12,
+    "total_unique": 651,
+    "match_level": "low_similarity"
+  },
+  "symfony-flex.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 251,
+    "match_level": "low_similarity"
+  },
+  "symfony-flex.md|log.md|g3": {
+    "similarity": 0.08,
+    "common_ngrams": 1,
+    "total_unique": 1256,
+    "match_level": "low_similarity"
+  },
+  "symfony-flex.md|overview.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 379,
+    "match_level": "low_similarity"
+  },
+  "symfony-flex.md|snapshot.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 307,
+    "match_level": "low_similarity"
+  },
+  "symfony-flex.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 502,
+    "match_level": "low_similarity"
+  },
+  "symfony-flex.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 452,
+    "match_level": "low_similarity"
+  },
+  "symfony-flex.md|timeline.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 225,
+    "match_level": "low_similarity"
+  },
+  "temporal-decay-in-wiki.md|testing-strategy.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 463,
+    "match_level": "low_similarity"
+  },
+  "temporal-decay-in-wiki.md|twig-templating.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 446,
+    "match_level": "low_similarity"
+  },
+  "temporal-decay-in-wiki.md|workflow-state-machine.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 475,
+    "match_level": "low_similarity"
+  },
+  "temporal-decay-in-wiki.md|ai-factory.md|g3": {
+    "similarity": 0.55,
+    "common_ngrams": 3,
+    "total_unique": 545,
+    "match_level": "low_similarity"
+  },
+  "temporal-decay-in-wiki.md|andrej-karpathy.md|g3": {
+    "similarity": 1.07,
+    "common_ngrams": 4,
+    "total_unique": 374,
+    "match_level": "low_similarity"
+  },
+  "temporal-decay-in-wiki.md|nvidia.md|g3": {
+    "similarity": 0.6,
+    "common_ngrams": 2,
+    "total_unique": 336,
+    "match_level": "low_similarity"
+  },
+  "temporal-decay-in-wiki.md|pi-coding-agent.md|g3": {
+    "similarity": 0.19,
+    "common_ngrams": 1,
+    "total_unique": 525,
+    "match_level": "low_similarity"
+  },
+  "temporal-decay-in-wiki.md|symfony.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 549,
+    "match_level": "low_similarity"
+  },
+  "temporal-decay-in-wiki.md|index.md|g3": {
+    "similarity": 2.54,
+    "common_ngrams": 17,
+    "total_unique": 668,
+    "match_level": "low_similarity"
+  },
+  "temporal-decay-in-wiki.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 273,
+    "match_level": "low_similarity"
+  },
+  "temporal-decay-in-wiki.md|log.md|g3": {
+    "similarity": 0.71,
+    "common_ngrams": 9,
+    "total_unique": 1270,
+    "match_level": "low_similarity"
+  },
+  "temporal-decay-in-wiki.md|overview.md|g3": {
+    "similarity": 1.52,
+    "common_ngrams": 6,
+    "total_unique": 395,
+    "match_level": "low_similarity"
+  },
+  "temporal-decay-in-wiki.md|snapshot.md|g3": {
+    "similarity": 1.54,
+    "common_ngrams": 5,
+    "total_unique": 324,
+    "match_level": "low_similarity"
+  },
+  "temporal-decay-in-wiki.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 524,
+    "match_level": "low_similarity"
+  },
+  "temporal-decay-in-wiki.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 2.16,
+    "common_ngrams": 10,
+    "total_unique": 464,
+    "match_level": "low_similarity"
+  },
+  "temporal-decay-in-wiki.md|timeline.md|g3": {
+    "similarity": 0.41,
+    "common_ngrams": 1,
+    "total_unique": 246,
+    "match_level": "low_similarity"
+  },
+  "testing-strategy.md|twig-templating.md|g3": {
+    "similarity": 0.41,
+    "common_ngrams": 2,
+    "total_unique": 493,
+    "match_level": "low_similarity"
+  },
+  "testing-strategy.md|workflow-state-machine.md|g3": {
+    "similarity": 0.38,
+    "common_ngrams": 2,
+    "total_unique": 522,
+    "match_level": "low_similarity"
+  },
+  "testing-strategy.md|ai-factory.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 597,
+    "match_level": "low_similarity"
+  },
+  "testing-strategy.md|andrej-karpathy.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 427,
+    "match_level": "low_similarity"
+  },
+  "testing-strategy.md|nvidia.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 387,
+    "match_level": "low_similarity"
+  },
+  "testing-strategy.md|pi-coding-agent.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 575,
+    "match_level": "low_similarity"
+  },
+  "testing-strategy.md|symfony.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 598,
+    "match_level": "low_similarity"
+  },
+  "testing-strategy.md|index.md|g3": {
+    "similarity": 1.24,
+    "common_ngrams": 9,
+    "total_unique": 725,
+    "match_level": "low_similarity"
+  },
+  "testing-strategy.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 322,
+    "match_level": "low_similarity"
+  },
+  "testing-strategy.md|log.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1328,
+    "match_level": "low_similarity"
+  },
+  "testing-strategy.md|overview.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 450,
+    "match_level": "low_similarity"
+  },
+  "testing-strategy.md|snapshot.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 378,
+    "match_level": "low_similarity"
+  },
+  "testing-strategy.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 573,
+    "match_level": "low_similarity"
+  },
+  "testing-strategy.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 523,
+    "match_level": "low_similarity"
+  },
+  "testing-strategy.md|timeline.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 296,
+    "match_level": "low_similarity"
+  },
+  "twig-templating.md|workflow-state-machine.md|g3": {
+    "similarity": 0.4,
+    "common_ngrams": 2,
+    "total_unique": 505,
+    "match_level": "low_similarity"
+  },
+  "twig-templating.md|ai-factory.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 580,
+    "match_level": "low_similarity"
+  },
+  "twig-templating.md|andrej-karpathy.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 410,
+    "match_level": "low_similarity"
+  },
+  "twig-templating.md|nvidia.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 370,
+    "match_level": "low_similarity"
+  },
+  "twig-templating.md|pi-coding-agent.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 558,
+    "match_level": "low_similarity"
+  },
+  "twig-templating.md|symfony.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 581,
+    "match_level": "low_similarity"
+  },
+  "twig-templating.md|index.md|g3": {
+    "similarity": 1.13,
+    "common_ngrams": 8,
+    "total_unique": 709,
+    "match_level": "low_similarity"
+  },
+  "twig-templating.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 305,
+    "match_level": "low_similarity"
+  },
+  "twig-templating.md|log.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1311,
+    "match_level": "low_similarity"
+  },
+  "twig-templating.md|overview.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 433,
+    "match_level": "low_similarity"
+  },
+  "twig-templating.md|snapshot.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 361,
+    "match_level": "low_similarity"
+  },
+  "twig-templating.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 556,
+    "match_level": "low_similarity"
+  },
+  "twig-templating.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 506,
+    "match_level": "low_similarity"
+  },
+  "twig-templating.md|timeline.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 279,
+    "match_level": "low_similarity"
+  },
+  "workflow-state-machine.md|ai-factory.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 609,
+    "match_level": "low_similarity"
+  },
+  "workflow-state-machine.md|andrej-karpathy.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 439,
+    "match_level": "low_similarity"
+  },
+  "workflow-state-machine.md|nvidia.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 399,
+    "match_level": "low_similarity"
+  },
+  "workflow-state-machine.md|pi-coding-agent.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 587,
+    "match_level": "low_similarity"
+  },
+  "workflow-state-machine.md|symfony.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 610,
+    "match_level": "low_similarity"
+  },
+  "workflow-state-machine.md|index.md|g3": {
+    "similarity": 1.5,
+    "common_ngrams": 11,
+    "total_unique": 735,
+    "match_level": "low_similarity"
+  },
+  "workflow-state-machine.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 334,
+    "match_level": "low_similarity"
+  },
+  "workflow-state-machine.md|log.md|g3": {
+    "similarity": 0.07,
+    "common_ngrams": 1,
+    "total_unique": 1339,
+    "match_level": "low_similarity"
+  },
+  "workflow-state-machine.md|overview.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 462,
+    "match_level": "low_similarity"
+  },
+  "workflow-state-machine.md|snapshot.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 390,
+    "match_level": "low_similarity"
+  },
+  "workflow-state-machine.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 585,
+    "match_level": "low_similarity"
+  },
+  "workflow-state-machine.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 535,
+    "match_level": "low_similarity"
+  },
+  "workflow-state-machine.md|timeline.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 308,
+    "match_level": "low_similarity"
+  },
+  "ai-factory.md|nvidia.md|g3": {
+    "similarity": 0.21,
+    "common_ngrams": 1,
+    "total_unique": 471,
+    "match_level": "low_similarity"
+  },
+  "ai-factory.md|pi-coding-agent.md|g3": {
+    "similarity": 2.8,
+    "common_ngrams": 18,
+    "total_unique": 642,
+    "match_level": "low_similarity"
+  },
+  "ai-factory.md|symfony.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 683,
+    "match_level": "low_similarity"
+  },
+  "ai-factory.md|index.md|g3": {
+    "similarity": 2.12,
+    "common_ngrams": 17,
+    "total_unique": 802,
+    "match_level": "low_similarity"
+  },
+  "ai-factory.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 407,
+    "match_level": "low_similarity"
+  },
+  "ai-factory.md|log.md|g3": {
+    "similarity": 0.64,
+    "common_ngrams": 9,
+    "total_unique": 1404,
+    "match_level": "low_similarity"
+  },
+  "ai-factory.md|overview.md|g3": {
+    "similarity": 0.94,
+    "common_ngrams": 5,
+    "total_unique": 530,
+    "match_level": "low_similarity"
+  },
+  "ai-factory.md|snapshot.md|g3": {
+    "similarity": 0.43,
+    "common_ngrams": 2,
+    "total_unique": 461,
+    "match_level": "low_similarity"
+  },
+  "ai-factory.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 658,
+    "match_level": "low_similarity"
+  },
+  "ai-factory.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 0.66,
+    "common_ngrams": 4,
+    "total_unique": 604,
+    "match_level": "low_similarity"
+  },
+  "ai-factory.md|timeline.md|g3": {
+    "similarity": 0.53,
+    "common_ngrams": 2,
+    "total_unique": 379,
+    "match_level": "low_similarity"
+  },
+  "andrej-karpathy.md|nvidia.md|g3": {
+    "similarity": 0.33,
+    "common_ngrams": 1,
+    "total_unique": 301,
+    "match_level": "low_similarity"
+  },
+  "andrej-karpathy.md|pi-coding-agent.md|g3": {
+    "similarity": 0.41,
+    "common_ngrams": 2,
+    "total_unique": 488,
+    "match_level": "low_similarity"
+  },
+  "andrej-karpathy.md|symfony.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 513,
+    "match_level": "low_similarity"
+  },
+  "andrej-karpathy.md|index.md|g3": {
+    "similarity": 1.88,
+    "common_ngrams": 12,
+    "total_unique": 637,
+    "match_level": "low_similarity"
+  },
+  "andrej-karpathy.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 237,
+    "match_level": "low_similarity"
+  },
+  "andrej-karpathy.md|log.md|g3": {
+    "similarity": 0.4,
+    "common_ngrams": 5,
+    "total_unique": 1238,
+    "match_level": "low_similarity"
+  },
+  "andrej-karpathy.md|overview.md|g3": {
+    "similarity": 1.11,
+    "common_ngrams": 4,
+    "total_unique": 361,
+    "match_level": "low_similarity"
+  },
+  "andrej-karpathy.md|snapshot.md|g3": {
+    "similarity": 2.09,
+    "common_ngrams": 6,
+    "total_unique": 287,
+    "match_level": "low_similarity"
+  },
+  "andrej-karpathy.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 488,
+    "match_level": "low_similarity"
+  },
+  "andrej-karpathy.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 2.58,
+    "common_ngrams": 11,
+    "total_unique": 427,
+    "match_level": "low_similarity"
+  },
+  "andrej-karpathy.md|timeline.md|g3": {
+    "similarity": 0.48,
+    "common_ngrams": 1,
+    "total_unique": 210,
+    "match_level": "low_similarity"
+  },
+  "nvidia.md|pi-coding-agent.md|g3": {
+    "similarity": 0.45,
+    "common_ngrams": 2,
+    "total_unique": 448,
+    "match_level": "low_similarity"
+  },
+  "nvidia.md|symfony.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 473,
+    "match_level": "low_similarity"
+  },
+  "nvidia.md|index.md|g3": {
+    "similarity": 2.18,
+    "common_ngrams": 13,
+    "total_unique": 596,
+    "match_level": "low_similarity"
+  },
+  "nvidia.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 197,
+    "match_level": "low_similarity"
+  },
+  "nvidia.md|log.md|g3": {
+    "similarity": 0.33,
+    "common_ngrams": 4,
+    "total_unique": 1199,
+    "match_level": "low_similarity"
+  },
+  "nvidia.md|overview.md|g3": {
+    "similarity": 1.25,
+    "common_ngrams": 4,
+    "total_unique": 321,
+    "match_level": "low_similarity"
+  },
+  "nvidia.md|snapshot.md|g3": {
+    "similarity": 0.4,
+    "common_ngrams": 1,
+    "total_unique": 252,
+    "match_level": "low_similarity"
+  },
+  "nvidia.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.22,
+    "common_ngrams": 1,
+    "total_unique": 447,
+    "match_level": "low_similarity"
+  },
+  "nvidia.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 0.51,
+    "common_ngrams": 2,
+    "total_unique": 396,
+    "match_level": "low_similarity"
+  },
+  "nvidia.md|timeline.md|g3": {
+    "similarity": 0.59,
+    "common_ngrams": 1,
+    "total_unique": 170,
+    "match_level": "low_similarity"
+  },
+  "pi-coding-agent.md|symfony.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 661,
+    "match_level": "low_similarity"
+  },
+  "pi-coding-agent.md|index.md|g3": {
+    "similarity": 2.18,
+    "common_ngrams": 17,
+    "total_unique": 780,
+    "match_level": "low_similarity"
+  },
+  "pi-coding-agent.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 385,
+    "match_level": "low_similarity"
+  },
+  "pi-coding-agent.md|log.md|g3": {
+    "similarity": 0.65,
+    "common_ngrams": 9,
+    "total_unique": 1382,
+    "match_level": "low_similarity"
+  },
+  "pi-coding-agent.md|overview.md|g3": {
+    "similarity": 0.59,
+    "common_ngrams": 3,
+    "total_unique": 510,
+    "match_level": "low_similarity"
+  },
+  "pi-coding-agent.md|snapshot.md|g3": {
+    "similarity": 0.23,
+    "common_ngrams": 1,
+    "total_unique": 440,
+    "match_level": "low_similarity"
+  },
+  "pi-coding-agent.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 636,
+    "match_level": "low_similarity"
+  },
+  "pi-coding-agent.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 0.69,
+    "common_ngrams": 4,
+    "total_unique": 582,
+    "match_level": "low_similarity"
+  },
+  "pi-coding-agent.md|timeline.md|g3": {
+    "similarity": 0.56,
+    "common_ngrams": 2,
+    "total_unique": 357,
+    "match_level": "low_similarity"
+  },
+  "symfony.md|index.md|g3": {
+    "similarity": 1.11,
+    "common_ngrams": 9,
+    "total_unique": 811,
+    "match_level": "low_similarity"
+  },
+  "symfony.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 408,
+    "match_level": "low_similarity"
+  },
+  "symfony.md|log.md|g3": {
+    "similarity": 0.21,
+    "common_ngrams": 3,
+    "total_unique": 1411,
+    "match_level": "low_similarity"
+  },
+  "symfony.md|overview.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 536,
+    "match_level": "low_similarity"
+  },
+  "symfony.md|snapshot.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 464,
+    "match_level": "low_similarity"
+  },
+  "symfony.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 659,
+    "match_level": "low_similarity"
+  },
+  "symfony.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 609,
+    "match_level": "low_similarity"
+  },
+  "symfony.md|timeline.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 382,
+    "match_level": "low_similarity"
+  },
+  "index.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 544,
+    "match_level": "low_similarity"
+  },
+  "index.md|log.md|g3": {
+    "similarity": 1.31,
+    "common_ngrams": 20,
+    "total_unique": 1530,
+    "match_level": "low_similarity"
+  },
+  "index.md|overview.md|g3": {
+    "similarity": 4.84,
+    "common_ngrams": 31,
+    "total_unique": 641,
+    "match_level": "low_similarity"
+  },
+  "index.md|snapshot.md|g3": {
+    "similarity": 3.81,
+    "common_ngrams": 22,
+    "total_unique": 578,
+    "match_level": "low_similarity"
+  },
+  "index.md|python-nixos-development-environments.md|g3": {
+    "similarity": 2.32,
+    "common_ngrams": 18,
+    "total_unique": 777,
+    "match_level": "low_similarity"
+  },
+  "index.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 2.34,
+    "common_ngrams": 17,
+    "total_unique": 728,
+    "match_level": "low_similarity"
+  },
+  "index.md|timeline.md|g3": {
+    "similarity": 0.39,
+    "common_ngrams": 2,
+    "total_unique": 516,
+    "match_level": "low_similarity"
+  },
+  "issues.md|log.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1138,
+    "match_level": "low_similarity"
+  },
+  "issues.md|overview.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 260,
+    "match_level": "low_similarity"
+  },
+  "issues.md|snapshot.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 188,
+    "match_level": "low_similarity"
+  },
+  "issues.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 383,
+    "match_level": "low_similarity"
+  },
+  "issues.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 333,
+    "match_level": "low_similarity"
+  },
+  "issues.md|timeline.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 106,
+    "match_level": "low_similarity"
+  },
+  "log.md|overview.md|g3": {
+    "similarity": 0.96,
+    "common_ngrams": 12,
+    "total_unique": 1254,
+    "match_level": "low_similarity"
+  },
+  "log.md|snapshot.md|g3": {
+    "similarity": 0.59,
+    "common_ngrams": 7,
+    "total_unique": 1187,
+    "match_level": "low_similarity"
+  },
+  "log.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.36,
+    "common_ngrams": 5,
+    "total_unique": 1384,
+    "match_level": "low_similarity"
+  },
+  "log.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 0.3,
+    "common_ngrams": 4,
+    "total_unique": 1335,
+    "match_level": "low_similarity"
+  },
+  "log.md|timeline.md|g3": {
+    "similarity": 0.18,
+    "common_ngrams": 2,
+    "total_unique": 1110,
+    "match_level": "low_similarity"
+  },
+  "overview.md|snapshot.md|g3": {
+    "similarity": 1.28,
+    "common_ngrams": 4,
+    "total_unique": 312,
+    "match_level": "low_similarity"
+  },
+  "overview.md|python-nixos-development-environments.md|g3": {
+    "similarity": 1.19,
+    "common_ngrams": 6,
+    "total_unique": 505,
+    "match_level": "low_similarity"
+  },
+  "overview.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 2.67,
+    "common_ngrams": 12,
+    "total_unique": 449,
+    "match_level": "low_similarity"
+  },
+  "overview.md|timeline.md|g3": {
+    "similarity": 0.86,
+    "common_ngrams": 2,
+    "total_unique": 232,
+    "match_level": "low_similarity"
+  },
+  "snapshot.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 439,
+    "match_level": "low_similarity"
+  },
+  "snapshot.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 1.04,
+    "common_ngrams": 4,
+    "total_unique": 385,
+    "match_level": "low_similarity"
+  },
+  "snapshot.md|timeline.md|g3": {
+    "similarity": 0.62,
+    "common_ngrams": 1,
+    "total_unique": 161,
+    "match_level": "low_similarity"
+  },
+  "python-nixos-development-environments.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 0.17,
+    "common_ngrams": 1,
+    "total_unique": 583,
+    "match_level": "low_similarity"
+  },
+  "python-nixos-development-environments.md|timeline.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 357,
+    "match_level": "low_similarity"
+  },
+  "rag-vs-llm-wiki-pattern.md|timeline.md|g3": {
+    "similarity": 0.33,
+    "common_ngrams": 1,
+    "total_unique": 306,
+    "match_level": "low_similarity"
+  },
+  "Home_Manager.md|symfony-ux-packages.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 0,
+    "match_level": "no_match"
+  },
+  "llm-wiki-implementations.md|symfony-ux-packages.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 745,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|ai-factory-vs-pi.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 250,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|assetmapper.md|g3": {
+    "similarity": 1.78,
+    "common_ngrams": 6,
+    "total_unique": 338,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|cache-system.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 364,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|doctrine-orm.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 345,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|event-dispatcher.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 219,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|hexagonal-architecture.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 390,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|llm-wiki.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 756,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|messenger-component.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 319,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|python-nixos-development.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 470,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|routing-system.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 293,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|security-system.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 369,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|service-container.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 303,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|symfony-ai.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 418,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|symfony-flex.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 254,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|temporal-decay-in-wiki.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 276,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|testing-strategy.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 325,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|twig-templating.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 308,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|workflow-state-machine.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 337,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|ai-factory.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 410,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|andrej-karpathy.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 240,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|nvidia.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 200,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|pi-coding-agent.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 388,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|symfony.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 411,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|index.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 547,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|issues.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 135,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|log.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 1141,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|overview.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 263,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|snapshot.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 191,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|python-nixos-development-environments.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 386,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|rag-vs-llm-wiki-pattern.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 336,
+    "match_level": "low_similarity"
+  },
+  "symfony-ux-packages.md|timeline.md|g3": {
+    "similarity": 0.0,
+    "common_ngrams": 0,
+    "total_unique": 109,
+    "match_level": "low_similarity"
   }
 }

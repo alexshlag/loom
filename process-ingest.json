@@ -205,6 +205,38 @@
       ]
     },
     {
+      "step_id": "3c",
+      "name": "post_integration_overlap_scan",
+      "description": "Сканит wiki на overlap с новой/обновлённой страницей. Применяет DR-1/DR-2 из AGENTS.md#decision_rules.",
+      "pre_condition": {
+        "condition": "new_page_created OR page_updated",
+        "trigger_after_step": "step_3b"
+      },
+      "actions": [
+        {
+          "action": "run_text_similarity_scan",
+          "command": "./scripts/text-similarity.sh --scan-all --threshold 90 --verbose > /tmp/overlap_result.json",
+          "output_file": "/tmp/overlap_result.json"
+        },
+        {
+          "action": "parse_matches_from_json",
+          "description": "Из JSON output извлечь matches[] → для каждого pair: similarity_score, file1, file2"
+        }
+      ],
+      "evaluation": [
+        {
+          "condition": "matches_count == 0",
+          "action": "PROCEED_TO_CROSS_LINK_UPDATE",
+          "note": "no_overlaps — proceed to step_4 (cross_link_update)"
+        },
+        {
+          "condition": "matches_count > 0",
+          "note": "Agent review required — apply DR-1/DR-2 из AGENTS.md#decision_rules к каждому overlap. Read existing pages from matches[].file1, compare with new page, proceed to cross_link_update after evaluation."
+        }
+      ],
+      "schema_ref": "AGENTS.md#decision_rules"
+    },
+    {
       "step_id": "3d",
       "name": "cross_link_update",
       "actions": [

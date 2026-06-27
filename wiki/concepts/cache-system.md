@@ -66,5 +66,5 @@ framework:
 4. **Separate pools per concern** — different cache namespaces for different data types (e.g., `api_cache`, `template_cache`)
 
 ## Связи
-- [Symfony Entity](wiki/entities/symfony.md) — Cache is core Symfony component, pre-configured in FrameworkBundle
-- [Service Container](wiki/concepts/service-container.md) — Cache pools are autowired services; providers injected via container
+- [Symfony Entity](entities/symfony.md) — Cache is core Symfony component, pre-configured in FrameworkBundle
+- [Service Container](concepts/service-container.md) — Cache pools are autowired services; providers injected via container

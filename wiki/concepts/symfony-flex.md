@@ -42,5 +42,5 @@ No Twig? No problem — `composer require twig` adds it via recipe automatically
 3. **Don't create recipes for bundles** unless they need significant auto-configuration beyond simple bundle registration
 
 ## Связи
-- [Symfony Entity](wiki/entities/symfony.md) — Flex powers the default installation workflow recommended by Symfony docs
-- [Service Container](wiki/concepts/service-container.md) — Recipes often auto-generate services.yaml configurations
+- [Symfony Entity](entities/symfony.md) — Flex powers the default installation workflow recommended by Symfony docs
+- [Service Container](concepts/service-container.md) — Recipes often auto-generate services.yaml configurations

@@ -116,7 +116,7 @@
   * Создан raw пакет: raw/sources/SRC-2026-06-25-SYMFONY-001/
     - symfony-comprehensive-knowledge.md (основной источник, ~40к символов)
     - symfony-manifest.json (manifest с метаданными)
-  * Создана entity: [Symfony](wiki/entities/symfony.md) — основной объект
+  * Создана entity: [Symfony](entities/symfony.md) — основной объект
   * Созданы concept-страницы:
     - Service Container & DI
     - Routing System & Controllers

@@ -36,5 +36,5 @@ class MyListener {
 3. **Понимайте lifecycle events** — kernel.request → controller → response → exception для правильного hooking
 
 ## Связи
-- [Symfony Entity](wiki/entities/symfony.md) — EventDispatcher встроен в HttpKernel и FrameworkBundle
-- [Service Container](wiki/concepts/service-container.md) — listeners/subscribers are services, auto-wired and auto-tagged
+- [Symfony Entity](entities/symfony.md) — EventDispatcher встроен в HttpKernel и FrameworkBundle
+- [Service Container](concepts/service-container.md) — listeners/subscribers are services, auto-wired and auto-tagged

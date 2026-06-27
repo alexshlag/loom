@@ -78,5 +78,5 @@ security:
 4. **CSRF protection** built-in for forms — no extra config needed
 
 ## Связи
-- [Symfony Entity](wiki/entities/symfony.md) — SecurityBundle интегрирован в core фреймворка
-- [Doctrine ORM](wiki/concepts/doctrine-orm.md) — Entity User Provider использует Doctrine entities
+- [Symfony Entity](entities/symfony.md) — SecurityBundle интегрирован в core фреймворка
+- [Doctrine ORM](concepts/doctrine-orm.md) — Entity User Provider использует Doctrine entities

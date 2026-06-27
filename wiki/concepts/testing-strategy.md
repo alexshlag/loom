@@ -68,5 +68,5 @@ $another = ProductFactory::createMany(5); // bulk creation
 4. **PHPUnit 11+ attributes only**: No annotations (`/** @test */`) — use `#[Test]`
 
 ## Связи
-- [Symfony Entity](wiki/entities/symfony.md) — Testing is integral part of Symfony development workflow
-- [Doctrine ORM](wiki/concepts/doctrine-orm.md) — Foundry works with Doctrine entities; replaces fixtures bundle
+- [Symfony Entity](entities/symfony.md) — Testing is integral part of Symfony development workflow
+- [Doctrine ORM](concepts/doctrine-orm.md) — Foundry works with Doctrine entities; replaces fixtures bundle

@@ -58,5 +58,5 @@ class MyCommand { /* auto-registered as CLI command */ }
 5. **Service tagging** — через autoconfigure или вручную (например `twig.extension`)
 
 ## Связи
-- [Symfony Entity](wiki/entities/symfony.md) — container является ядром фреймворка
-- [Testing Strategy](wiki/concepts/testing-strategy.md) — контейнер компилируется и линтится перед деплоем
+- [Symfony Entity](entities/symfony.md) — container является ядром фреймворка
+- [Testing Strategy](concepts/testing-strategy.md) — контейнер компилируется и линтится перед деплоем

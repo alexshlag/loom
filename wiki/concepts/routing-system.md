@@ -49,5 +49,5 @@ class UserController extends AbstractController {
 4. **Service-based controllers**: `#[Route(...)]` + `controller.service_arguments` tag → public + non-lazy service
 
 ## Связи
-- [Symfony Entity](wiki/entities/symfony.md) — routing маппит URLs к контроллерам Symfony
-- [Security System](wiki/concepts/security-system.md) — `#[Security]` attribute на controllers для защиты endpoints
+- [Symfony Entity](entities/symfony.md) — routing маппит URLs к контроллерам Symfony
+- [Security System](concepts/security-system.md) — `#[Security]` attribute на controllers для защиты endpoints

@@ -67,5 +67,5 @@ transitions:
 4. **Audit trail enabled** (`audit_trail.enabled: "%kernel.debug%"`) for production debugging
 
 ## Связи
-- [Symfony Entity](wiki/entities/symfony.md) — Workflow is core Symfony component, used by entities that need state management
-- [Hexagonal Architecture](wiki/concepts/hexagonal-architecture.md) — Workflow logic belongs in Application layer; entity states managed through workflow transitions
+- [Symfony Entity](entities/symfony.md) — Workflow is core Symfony component, used by entities that need state management
+- [Hexagonal Architecture](concepts/hexagonal-architecture.md) — Workflow logic belongs in Application layer; entity states managed through workflow transitions

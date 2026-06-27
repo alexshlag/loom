@@ -54,5 +54,5 @@ class AlertComponent {
 4. **Autoescaping on by default** — never manually disable unless explicitly needed
 
 ## Связи
-- [Symfony Entity](wiki/entities/symfony.md) — TwigBundle is core bundle of Symfony framework
-- [Hexagonal Architecture](wiki/concepts/hexonal-architecture.md) — controllers pass data to templates (view layer in MVC)
+- [Symfony Entity](entities/symfony.md) — TwigBundle is core bundle of Symfony framework
+- [Hexagonal Architecture](concepts/hexagonal-architecture.md) — controllers pass data to templates (view layer in MVC)

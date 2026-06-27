@@ -74,5 +74,5 @@ final class ProductRepository extends EntityRepository {
 4. **Use `make:entity` command** for auto-generating entity classes with Doctrine mapping
 
 ## Связи
-- [Symfony Entity](wiki/entities/symfony.md) — Doctrine ORM является основным ORM для Symfony
-- [Testing Strategy](wiki/concepts/testing-strategy.md) — Zenstruck Foundry replaces DoctrineFixturesBundle for test data generation
+- [Symfony Entity](entities/symfony.md) — Doctrine ORM является основным ORM для Symfony
+- [Testing Strategy](concepts/testing-strategy.md) — Zenstruck Foundry replaces DoctrineFixturesBundle for test data generation

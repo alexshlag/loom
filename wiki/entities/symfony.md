@@ -67,15 +67,15 @@ your_project/
 ## Связи
 
 ### Прямые
-- [Service Container & DI](wiki/concepts/service-container.md) — центральный механизм фреймворка
-- [Routing System](wiki/concepts/routing-system.md) — URL mapping к контроллерам
-- [Event Dispatcher](wiki/concepts/event-dispatcher.md) — система событий
-- [Security System](wiki/concepts/security-system.md) — аутентификация и авторизация
+- [Service Container & DI](concepts/service-container.md) — центральный механизм фреймворка
+- [Routing System](concepts/routing-system.md) — URL mapping к контроллерам
+- [Event Dispatcher](concepts/event-dispatcher.md) — система событий
+- [Security System](concepts/security-system.md) — аутентификация и авторизация
 
 ### Косвенные
-- [Hexagonal Architecture](wiki/concepts/hexagonal-architecture.md) — паттерн организации кода для Symfony 7+
-- [Doctrine ORM Integration](wiki/concepts/doctrine-orm.md) — работа с БД
-- [Symfony Flex](wiki/concepts/symfony-flex.md) — автоматизация установки пакетов
+- [Hexagonal Architecture](concepts/hexagonal-architecture.md) — паттерн организации кода для Symfony 7+
+- [Doctrine ORM Integration](concepts/doctrine-orm.md) — работа с БД
+- [Symfony Flex](concepts/symfony-flex.md) — автоматизация установки пакетов
 
 ### Взаимное влияние
 - Symfony UX → Stimulus + Turbo определяют подход к фронтенду

@@ -22,7 +22,7 @@ related: [wiki/concepts/llm-wiki.md]
 
 ## Связи:
 * [LLM Wiki Pattern](concepts/llm-wiki.md) — технологии Nvidia являются аппаратным фундаментом для современных паттернов обучения моделей.
-* [Python Development on NixOS](wiki/concepts/python-nixos-development.md) — библиотеки для работы с CUDA часто требуются в средах разработки Python.
+* [Python Development on NixOS](concepts/python-nixos-development.md) — библиотеки для работы с CUDA часто требуются в средах разработки Python.
 
 ## Источники:
 * `web_search_results` (синтез на основе веб-поиска)
