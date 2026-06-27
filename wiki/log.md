@@ -168,6 +168,12 @@
 - Output сортируется по combined score (descending) — релевантные страницы выше
 - Флаг --dynamic для wiki-search.sh
 
+## [2026-06-28] fix | corrected Git documentation to prevent rule violations
+* Исправлены инструкции по работе с git:
+  - `wiki/GIT-WORKFLOW.md` — добавлены предупреждения об операциях, нарушающих правила (git add -f, reset --hard, clean)
+  - `wiki/GIT-TROUBLESHOOTING.md` — удалены опасные команды, добавлены предупреждения о безопасности
+  - `.gitignore` — исправлено игнорирование similarity_cache.json
+
 ## [2026-06-28] docs | Git workflow documentation + Loomana system docs
 * Созданы документы по работе с git:
   - `wiki/GIT-WORKFLOW.md` — подробные инструкции по коммитам, protected zones, error handling
