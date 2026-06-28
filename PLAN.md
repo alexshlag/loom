@@ -112,4 +112,4 @@ P12 (logging standard), P13 (trap handlers), P15 (minor fixes).
 
 ---
 
-*Last update: 2026-06-28 | Original roadmap phases 1-5, 8-12 complete. IF-1..IF-4 integrated. Audit P1-P15 resolved. Remaining: P8 (critical), #H3 (low), #H2 (broken links auto-resolve). Deferred: P10, P11, P14.*
+*Last update: 2026-06-28 | Original roadmap phases 1-5, 8-12 complete. IF-1..IF-4 integrated. Audit P1-P15 resolved. **Resolved this session**: P8/#21, #H3, Phase 12.3 D6. Remaining: #H2 (Home_Manager.md manual review), Phase 11.2 (future). Deferred: P10, P11, P14.*

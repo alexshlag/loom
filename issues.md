@@ -4,7 +4,7 @@
 
 ## 🚨 Live Issues (требуют решения)
 
-### Issue #21: Heredoc Injection in wiki-search.sh ✅ RESOLVED
+### Issue #21 / P8: Heredoc Injection in wiki-search.sh ✅ RESOLVED
 **Проблема**: `wiki-search.sh:314,445` — unquoted heredoc (`<< PYEOF`) позволял shell expand `$QUERY` перед передачей Python → command injection.
 **Fix (2026-06-28)**:
 1. ✅ Оба heredoc заменены на `'PYEOF'` (квантованные)
@@ -12,25 +12,11 @@
 3. ✅ `save_query_to_history` также переведён на env var passing (`HISTORY_QUERY`, `HISTORY_RESULTS_COUNT`)
 4. ✅ Добавлен `import os` во second heredoc для чтения env vars
 **Результат**: `$(echo pwned)` не выполняется, выводится как literal string.
-- `scripts/validate-path.sh:1`
-- `.git/hooks/pre-commit:1`
-
-**Fix**: Заменить на `#!/usr/bin/env bash`.
-
-**Severity**: **CRITICAL** — проект не запускается на другой машине.
 
 ### Issue #H3: detect-contradications False Positives ✅ RESOLVED
 **Проблема**: `_detect_contradictions.py` сканировал все `.md` в wiki/, включая system files (`issues.md`, `log.md`) → false positives.
 **Fix (2026-06-28)**: Добавлен `EXCLUDED_FILES` set + проверка `if fname in EXCLUDED_FILES: continue`. Исключены: log.md, issues.md, timeline.md, overview.md, snapshot.md, index.md, GIT-STATUS-LOG.md, working_memory.json.
 **Результат**: Только legitimate contradictions (python-nixos date conflict) возвращаются.
-**Проблема**: RULES.md (п.33) требует `write to .tmp → mv` для безопасной записи, но **ни один скрипт не реализует**:
-- `rebuild-meta.sh` — пишет напрямую в `meta/registry.json`, `meta/backlinks.json`, `wiki/index.md`
-- `check-new-sources.sh` — пишет напрямую в `tracking/last_check.json`
-- `text-similarity.sh` — пишет напрямую в `tracking/ngram_index.json`, `tracking/similarity_cache.json`
-
-**Риск**: При краше mid-write — коррупция мета-файлов.
-
-**Severity**: **CRITICAL**.
 
 ### Issue #16: Broken Unit Tests (CRITICAL) 🆕
 **Проблема**: Единственный тест `tests/text-similarity.bats:6` содержит typo — `$BATS_TEST_DIRTEXT` вместо `$BATS_TEST_DIRNAME`. Все тесты падают.
@@ -115,10 +101,7 @@ ORPHANS_OUTPUT=$(./scripts/orphan-pages.sh ... 2>&1 || true)
 
 **Статус:** ⬜ Deferred — nice-to-have для onboarding
 
-### Issue #21: Insecure Python Heredocs (MEDIUM) 🆕
-**Проблема**: `wiki-search.sh:314` — `<< PYEOF` (unquoted heredoc). `$QUERY` расширяется shell'ом перед передачей Python. Если query содержит `$(...)` — command injection.
 
-**Fix**: Передавать query через env var (как уже сделано на строке 86 для context bias) вместо inline expansion.
 
 ### Issue #22: DEBUG Prints in Production Code (MEDIUM) 🆕
 **Проблема**: `scripts/performance/similarity_index.py:196-198,272` — `# DEBUG: ...` print statements оставлены в production.
@@ -186,4 +169,4 @@ ORPHANS_OUTPUT=$(./scripts/orphan-pages.sh ... 2>&1 || true)
 
 ---
 
-*Last update: 2026-06-28 | Live: #14-26 from full audit. Resolved: #1-4, #6-7, architecture fixes. **Critical**: #14 shebang, #15 atomic writes, #16 broken tests.*
+*Last update: 2026-06-28 | Live: P9-P26 from full audit (P8/#H3 resolved). Resolved: #1-4, #6-7, architecture fixes, P8 (#21), #H3. **Critical**: #15 atomic writes, #16 broken tests, #17 silent errors.*
