@@ -13,6 +13,7 @@
 * [AI Factory vs Pi Coding Agent — Category Distinction](concepts/ai-factory-vs-pi.md) — # AI Factory vs Pi Coding Agent — Category Distinction **Это не сравнение сущностей, а различение категорий.
 * [AssetMapper](concepts/assetmapper.md) — # AssetMapper AssetMapper — component for managing modern CSS & JavaScript assets without build pipelines or Node.js dependencies.
 * [Cache System](concepts/cache-system.md) — # Cache System Symfony Cache component provides PSR-6 and PSR-16 compliant caching with advanced features: tag-based invalidation, cache stampede prot
+* [Dependency Injection в Symfony](concepts/symfony-dependency-injection.md) — # Dependency Injection в Symfony Dependency Injection (DI) — паттерн проектирования, позволяющий внедрять зависимости объекта извне.
 * [Doctrine ORM Integration](concepts/doctrine-orm.md) — # Doctrine ORM Integration Doctrine ORM — object-relational mapper для PHP, интегрированный в Symfony через DoctrineBridge.
 * [Event Dispatcher](concepts/event-dispatcher.md) — # Event Dispatcher Event Dispatcher — компонент Symfony, который обеспечивает decoupled communication между компонентами системы через события.
 * [Hexagonal Architecture & Clean Patterns in Symfony](concepts/hexagonal-architecture.md) — # Hexagonal Architecture & Clean Patterns in Symfony Hexagonal Architecture (Ports & Adapters) — architectural pattern that keeps business logic separ
@@ -57,7 +58,7 @@
 
 
 ---
-*Created: auto-generated | Last updated: 2026-06-28 02:05*
+*Created: auto-generated | Last updated: 2026-06-28 10:24*
 
 ## Хронология
 | Дата | Событие |

@@ -322,6 +322,7 @@ evidence_grade: documented | corroborated | assertion_only (optional)
 | **DR-1** | Source overlap ≥90% detected by `text-similarity.sh` | Script reports raw overlap only. No automatic weight change. | Neutral — agent evaluates context |
 | **DR-2** | Source B corrected A's error with evidence | B provided fix + proof (code, logs, authoritative source). | B > A on the corrected claim |
 | **DR-3** | Authorship attribution conflict | «A said X» vs «B reported that A said Y». | A wins original claim; B gets credit only for reporting |
+| **DR-4** | Syntheses category handling | `syntheses/` treated as special category — not processed like regular wiki pages. Auto-crosslink distinguishes synthesis from entity/concept via scoring (shared_source + conceptual_match). Only create new synthesis if there's a **new logical inference** (not just fact collection). | Special handling: syntheses require explicit fixation flag, never auto-created |
 
 ### Process
 
@@ -398,6 +399,9 @@ AGENTS.md содержит только описание ролей и ссыл�
     "raw/**": {"rule": "immutable", "access": "read-only via links"},
     "meta/**": {"rule": "auto-generated", "files": ["registry.json", "backlinks.json"], "rebuild_command": "./scripts/rebuild-meta.sh"}
   },
+  "system_files_excluded_from_search": {
+    "rule": "wiki system files (log.md, issues.md, timeline.md, overview.md, snapshot.md, index.md, GIT-* etc) are NOT part of normal semantic search"
+  },
   "never_do": [
     "directly_edit_protected_zones",
     "skip_capture_flow_for_raw_sources",
@@ -410,7 +414,9 @@ AGENTS.md содержит только описание ролей и ссыл�
 
 ## 🔍 Search Strategy
 
-> Canonical flow: `index_lookup → semantic_search → wiki-search.sh` — полный алгоритм в `process-query.json#search_priority_details`.
+> Canonical flow: `index_lookup → semantic_search → wiki-search.sh` — полный алгоритм в `process-query.json#search_priority_details`. 
+**Fallback**: `meta/search-index.json` — structured index with keywords/tags/first-sentences for fast lookup.
+**System files excluded**: log.md, issues.md, timeline.md, overview.md, snapshot.md, index.md, GIT-* are NOT part of normal search. They appear in index.md but should not be returned as semantic matches.
 
 ---
 

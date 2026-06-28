@@ -17,13 +17,13 @@ ORPHANS=()
 while IFS= read -r file; do
   REL_PATH="${file#$WIKI_DIR/}"
 
-  # Ищем все страницы, которые ссылаются на эту
-  BACKLINK_COUNT=$(grep -rl "(\[$REL_PATH\)" "$WIKI_DIR/" --include="*.md" 2>/dev/null | wc -l || true)
+  # REL_PATH содержит .md — ищем [text](path/to/file.md) в других файлах
+  BACKLINK_COUNT=$(grep -rl "\]($REL_PATH)" "$WIKI_DIR/" --include="*.md" 2>/dev/null | wc -l || true)
 
   if [ "$BACKLINK_COUNT" -eq 0 ]; then
     ORPHANS+=("$file")
   fi
-done < <(find "$WIKI_DIR" -name "*.md" -type f 2>/dev/null || true)
+done < <(find "$WIKI_DIR" -name "*.md" -type f ! -path "*/meta/*" ! -name "index.md" 2>/dev/null || true)
 
 if [ ${#ORPHANS[@]} -gt 0 ]; then
   echo "[!] Orphan pages found (${#ORPHANS[@]}):" >&2
@@ -32,7 +32,7 @@ if [ ${#ORPHANS[@]} -gt 0 ]; then
     echo "    $REL_PATH (0 backlinks)" >&2
   done >&2
 
-  echo "[*] Suggestion: add backlink from related entity/concept page" >&2
+  echo "[*] Suggestion: add crosslink from related entity/concept page" >&2
   exit 1
 fi
 

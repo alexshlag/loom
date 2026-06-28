@@ -129,6 +129,11 @@
         "expected_exit_code": 0,
         "on_failure": "HALT_AND_REPORT"
       },
+      "syntheses_rule": {
+        "rule": "DR-4: syntheses treated as special category. Only create new synthesis if agent detects **new logical inference** (not just fact collection). Requires explicit fixation flag from user.",
+        "condition": "page_type == 'synthesis'",
+        "action_if_no_novel_inference": "SKIP_SAVE → suggest adding to existing concept/entity page instead"
+      },
       "actions": [
         {
           "action_type": "create_page",
@@ -158,8 +163,15 @@
         },
         {
           "trigger": "page_created_after_validation",
-          "command": "./scripts/auto-crosslink.sh \"${NEW_PAGE_PATH}\" 2>/dev/null || true",
-          "note": "Find pages that need cross-link updates. Returns JSON array of paths to update."
+          "command": "./scripts/auto-crosslink.sh \"${NEW_PAGE_PATH}\" --include-root 2>/dev/null || true",
+          "output_format": "json[{path, score, match_types}]",
+          "note": "Multi-level crosslink discovery: H1 title (+3) → shared sources (+5) → frontmatter related (+4). Results sorted by score."
+        },
+        {
+          "trigger": "auto_add_backlinks_from_crosslink_results",
+          "description": "Parse auto-crosslink JSON output, add backlinks to pages with score >= 5. Low scores (3-4) are informational only — suggest manual review.",
+          "threshold_score": 5,
+          "action_if_high_score_found": "Add [[path]] to related/mentions section in high-score page if not already present"
         }
       ]
     },
@@ -199,8 +211,15 @@
         },
         {
           "trigger": "page_updated_after_validation",
-          "command": "./scripts/auto-crosslink.sh \"${NEW_CONCEPT_OR_ENTITY}\" 2>/dev/null || true",
-          "note": "Find pages that need cross-link updates. Returns JSON array of paths to update."
+          "command": "./scripts/auto-crosslink.sh \"${NEW_CONCEPT_OR_ENTITY}\" --include-root 2>/dev/null || true",
+          "output_format": "json[{path, score, match_types}]",
+          "note": "Multi-level crosslink discovery: H1 title (+3) → shared sources (+5) → frontmatter related (+4). Results sorted by score."
+        },
+        {
+          "trigger": "auto_add_backlinks_from_crosslink_results",
+          "description": "Parse auto-crosslink JSON output, add backlinks to pages with score >= 5. Low scores (3-4) are informational only — suggest manual review.",
+          "threshold_score": 5,
+          "action_if_high_score_found": "Add [[path]] to related/mentions section in high-score page if not already present"
         }
       ]
     },
@@ -241,15 +260,30 @@
       "name": "cross_link_update",
       "actions": [
         {
-          "action": "search_all_wiki_pages_for_mentions",
-          "term": "${NEW_ENTITY_CONCEPT_NAME}"
+          "action": "run_auto_crosslink",
+          "command": "./scripts/auto-crosslink.sh '${NEW_PAGE_PATH}' --include-root 2>/dev/null || true",
+          "output_format": "json_array[{path, score, match_types}]",
+          "description": "Multi-level crosslink discovery: H1 title (+3) → shared sources (+5) → frontmatter related (+4). Sorted by score descending."
         },
         {
-          "action": "add_backlinks_to_each_mentioning_page"
+          "action": "parse_crosslink_results",
+          "threshold_score": 5,
+          "description": "Only add backlinks for pages with score >= 5 (significant match). Lower scores are informational only."
         },
         {
-          "action": "mark_orphan_if_no_mentions_found",
-          "suggestion": "propose_manual_link_creation"
+          "action": "add_backlinks_to_high_score_pages",
+          "condition": "score_ge_5",
+          "format": "Add [[wiki-relative-path]] to related/mentions section if not already present"
+        },
+        {
+          "action": "handle_syntheses_special_case",
+          "rule": "syntheses treated as special category per DR-4. Auto-crosslink distinguishes synthesis from entity/concept via scoring. Never auto-create synthesis without explicit fixation flag.",
+          "condition": "page_type == 'synthesis'"
+        },
+        {
+          "action": "mark_orphan_if_no_high_score_matches",
+          "suggestion": "propose_manual_link_creation_for_low_score_pages",
+          "note": "Low score matches (3-4) may be weak connections — suggest manual review rather than auto-add"
         }
       ]
     },

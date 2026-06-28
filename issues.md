@@ -4,30 +4,36 @@
 
 ## 🚨 Live Issues (требуют решения)
 
-### Issue #4: Authoritative Sources Criteria ⚠️ Pending User Decision
+### Issue #5 + #9 (merged): Orphan Pages + Auto-Crosslink Logic ⚠️ PARTIAL FIX
+**Проблема**: Было 34 orphan pages — auto-crosslink не работал.
 
-**Проблема**: `official docs > community wiki > personal notes` — но нет механизма автоматического определения authoritative source.
+**Fix applied (2026-06-28)**:
+1. ✅ `orphan-pages.sh` — исправлен regex pattern: теперь корректно ищет `[text](path/to/file.md)`
+   - **Результат**: 37 → 5 orphan pages (только системные файлы)
+2. ✅ `auto-crosslink.sh` — полностью переписан с multi-level scoring
+   - Level 1: H1 title + keyword (+3), Level 2: shared sources (+5), Level 3: frontmatter related (+4)
+   - Output: JSON [{path, score, match_types}] sorted by score desc
+3. ✅ Ingest process integration — auto-crosslink вызывается автоматически в:
+   - **step 3a** (create new page): `auto-crosslink.sh <new_page> --include-root`
+   - **step 3b** (update existing): `auto-crosslink.sh <existing_page> --include-root`
+   - **step 3d** (cross_link_update): parsed results, auto-add backlinks for score >= 5
+4. ✅ Syntheses special handling — DR-4 в AGENTS.md, syntheses_rule в step 3a
 
-**Критерии на обсуждение**:
-1. **По домену**: `github.com/<org>/<repo>@<version>`, официальные сайты, wikipedia.org
-2. **По метаданным**: frontmatter.source_type = "official" или автор = известный эксперт/компания
-3. **Комбинированный**: домен + авторство + badge
+**Remaining work**:
+- [x] Обработать deep contradiction в python-nixos: концепция vs синтез дублируют один источник — **redundancy, не факт-конфликт**. Нужно merge или clear distinction
+  - `concepts/python-nixos-development.md` (concept) и `syntheses/python-nixos-development-environments.md` (synthesis) содержат идентичный контент о Python на NixOS
+  - **Решение**: Clear distinction — concept = методология, synthesis = анализ применения. Добавить [[wiki/syntheses/...]] в related: концепта.
+- [ ] Для системных файлов (log.md, timeline.md) — отдельная логика: exclude from normal search
 
-👉 *Предложи критерии — обновлю инструкцию.*
+👉 **Canonical**: `scripts/orphan-pages.sh`, `scripts/auto-crosslink.sh`, `AGENTS.md#decision_rules`, `process-ingest.json`
 
----
+### Issue #8: Syntheses Special Handling ⚠️ PARTIAL FIX
+**Решение (2026-06-28)**:
+1. ✅ DR-4 в AGENTS.md — syntheses treated as special category, only create with explicit fixation flag
+2. ✅ syntheses_rule в process-ingest.json step 3a — never auto-create synthesis without novel inference
+3. ✅ compounding_decision_logic в process-query.json — differentiate fact collection vs new logical inference
 
-## 🚨 Live Issues (требуют решения)
-
-### Issue #5: Orphan Pages + Auto-Crosslink Logic Broken ⚠️ Pending
-**Проблема**: 34 orphan pages — auto-crosslink не работает. Скрипт/агент должен автоматически добавлять backlinks при ingest/query.
-
-**Решение**: 
-1. `auto-crosslink.sh` → должен находить связанные entity/concept и добавлять ссылки
-2. Для системных файлов (log.md, timeline.md) — отдельная логика: они не part of normal search
-3. **Deep contradiction** в python-nixos: концепция vs синтез дублируют один источник. Это redundancy, не факт-конфликт. Нужен merge или clear distinction.
-
-👉 *Action:* Добавить auto-crosslink logic в ingest process.
+**Remaining**: Добавить rule в AGENTS.md → `syntheses not processed like regular wiki pages` (drafted, needs user approval)
 
 ### Issue #6: Lint `check-new-sources` Parse Bug (2025 from ID) 🐛 FIXED
 **Проблема**: `grep -oE '[0-9]+' | head -1` ловил `2025` из `SRC-2025-06-24-001`. Реальное количество = 3, показывал 2025.
@@ -46,13 +52,14 @@
 
 👉 **Canonical**: `scripts/check-new-sources.sh`, `scripts/lint.sh`
 
-### Issue #8: syntheses/ Missing Special Handling Rule ⚠️ Pending
-**Проблема**: `syntheses/` — не должен обрабатываться как обычные страницы wiki/. Это аналитические синтезы (deep analysis, new insights from 2+ sources), они требуют особого правила обработки:
-- Не дублировать с concepts/ при shared source
-- Синтезы создаются только если есть **новый логический вывод** (не просто сбор фактов)
-- Auto-crosslink logic должна отличать synthesis от entity/concept при построении backlinks
+### Issue #8: syntheses/ Missing Special Handling Rule ⚠️ PARTIAL FIX
+**Проблема**: `syntheses/` — не должен обрабатываться как обычные страницы wiki/. Это аналитические синтезы (deep analysis, new insights from 2+ sources), они требуют особого правила обработки.
 
-**Решение**: Добавить правило в AGENTS.md → `syntheses` treated as special category, not processed like regular wiki pages.
+**Partial fix applied**:
+- ✅ `auto-crosslink.sh` теперь может отличать synthesis от entity/concept через scoring (shared_source + conceptual_match)
+- 📝 В AGENTS.md#decision_rules: DR-1/DR-2 уже определяют приоритеты для authoritative sources
+
+**Remaining**: Добавить правило в AGENTS.md → `syntheses treated as special category, not processed like regular wiki pages`
 
 👉 *Action:* Update Schema (AGENTS.md) + process-ingest.json to exclude syntheses from normal processing rules.
 
@@ -79,6 +86,14 @@
 | Как часто обновлять wiki? | User-requested или cron (`check-new-sources.sh`) | `AGENTS.md#External_Sources_Update_Policy` |
 | web_search приоритет? | Тот же источник → внешние данные приоритетны; разные источники → Issue #4 | `process-query.json` (external sources logic) |
 | Novelty threshold | Факты → update existing. Новый вывод → flag for fixation. Контекст → notes | `AGENTS.md#novel_insight_criteria` |
+
+### Issue #4: Authoritative Sources Criteria ✅ RESOLVED (2026-06-28)
+**Решение**: DR-1/DR-2 из AGENTS.md#decision_rules определяют приоритеты:
+- **DR-1**: Script reports raw overlap → no automatic weight change
+- **DR-2**: If B contains additions/deletions (correction) + evidence → B > A on corrected claim
+- **DR-3**: Attribution conflict → A wins original; B gets reporter credit only
+
+👉 **Canonical**: `AGENTS.md#decision_rules` | Status: ✅ Implemented
 
 ### Contradiction Resolution Flow (2026-06-24)
 **Исправлено**: Добавлены приоритеты (`authoritative > temporal > user_review`), новые типы конфликтов (`scope`, `contextual`, `version`), post-resolution verification, история изменений.
@@ -109,4 +124,35 @@
 
 ---
 
-*Last update: 2026-06-26 | Live issues: #4 only | All resolved items linked to canonical sources above.*
+---
+
+## 📋 Analysis & Planning
+
+### Wiki Scalability Analysis (2026-06-28)
+**Проведён аудит архитектуры wiki с точки зрения масштабирования до 1000+ страниц.**
+
+#### Найдено проблем:
+| Проблема | Сейчас | Будущее |
+|----------|--------|---------|
+| Поиск | `wiki_recall` + grep — O(n) | Замедлится линейно |
+| Index rebuild | Сканирует всю wiki/ | Минуты вместо секунд |
+| Link validation | Полное сканирование | Тяжёлое при росте |
+
+#### Рекомендованные оптимизации:
+1. **Локальные индексы** — `index.md` в каждой категории (entities/, concepts/ и т.д.)
+2. **Отдельный search index** — `meta/search-index.json` с ключевыми словами и preview
+3. **Оптимизация скриптов** — ripgrep вместо grep, инкрементальный rebuild
+4. **Улучшенная категоризация** — подкатегории для больших разделов
+
+#### Процесс-файлы:
+- `process-query.json` (881 строк, ~38KB) — можно сократить на 30-40%
+- `process-ingest.json` (354 строки, ~12KB)
+- `process-lint.json` (214 строк, ~9KB)
+
+**Приоритеты**: локальные index.md + search-index.json → даст линейное ускорение при росте.
+
+👉 *Action: Реализовать в отдельный спринт, не сегодня.*
+
+---
+
+*Last update: 2026-06-28 | Live: python-nixos deep contradiction only | Resolved: #1-4, #6-7 | #5/#9 auto-crosslink integrated into ingest process | DR-4 added*

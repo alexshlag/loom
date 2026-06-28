@@ -2,7 +2,7 @@
 tags: [concept, nixos, python, development-environment]
 date: 2026-06-24
 sources: [raw/sources/SRC-2025-06-24-002/nixos-python-wiki.md]
-related: []
+related: [wiki/syntheses/python-nixos-development-environments.md]
 ---
 
 # Python Development Environments on NixOS
@@ -74,8 +74,6 @@ environment.systemPackages = with pkgs; [
 ## Источники:
 * `raw/sources/SRC-2025-06-24-002/nixos-python-wiki.md` — https://wiki.nixos.org/wiki/Python (оригинал)
 
-## Обновлено 2025-06-24 — создана концепция по NixOS Wiki Python
-
 ## Обновлено 2026-06-24 — новое уточнение
 * Добавлено: **R packages в Python через rpy2** — секция про R integration
 * Добавлено: **Nix shell (new command line)** — `nix shell --impure --expr '(import <nixpkgs> {}).python3.withPackages(...)'`
@@ -83,6 +81,8 @@ environment.systemPackages = with pkgs; [
 * Добавлено: **Contribution guidelines** — pkgs/development/python-modules/<name>/default.nix (libraries), all-packages.nix (applications)
 * Добавлено: **Special Modules (GNOME)** — GObject introspection с wrapGAppsHook
 * Добавлено: **Debug Build** — enableDebug = true override для Python-пакетов
+* Добавлено: **Installing Multiple Versions** — lib.meta.lowPrio/highPrio без конфликтов
+* Добавлено: **Performance** — 30-40% regression на синтетических бенчмарках, в реальном мире минимально (pylint scan: 5.5%)
 * Добавлено: **Installing Multiple Versions** — lib.meta.lowPrio/highPrio без конфликтов
 * Добавлено: **Performance** — 30-40% regression на синтетических бенчмарках, в реальном мире минимально (pylint scan: 5.5%)
 

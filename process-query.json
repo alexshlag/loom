@@ -45,8 +45,10 @@
       "decision_logic": [
         {
           "sum_score_ge_2": true,
-          "action": "PROPOSE_SAVE_TO_USER",
-          "message": "Answer contains novel synthesis — save as new page?"
+          "action_if_novel_inference": "PROPOSE_SAVE_TO_USER_NEW_SYNTHESIS_PAGE",
+          "action_if_fact_collection_only": "SUGGEST_UPDATE_EXISTING_OR_CREATE_NOTES",
+          "message_synthesis": "Answer contains novel synthesis — save as new page?",
+          "message_notes": "No new inference detected (fact collection only). Suggest adding to existing page or creating notes instead."
         },
         {
           "sum_score_eq_0": true,
@@ -54,7 +56,12 @@
           "message": "No compounding value detected"
         }
       ],
-      "save_conditions_schema_ref": "AGENTS.md#compounding_workflow"
+      "save_conditions_schema_ref": "AGENTS.md#compounding_workflow",
+      "syntheses_special_handling": {
+        "rule": "DR-4: Never auto-create synthesis without explicit fixation flag. Synthesis = new logical inference (A + B → C), not just fact collection.",
+        "condition": "page_type == 'synthesis'",
+        "agent_prompt": "Evaluate: Does the answer contain a NEW logical inference that wasn't explicitly stated in any source? If yes → propose synthesis page. If no → suggest updating existing entity/concept or creating notes."
+      }
     },
     "context_bubble": {
       "description": "Ограничение: не более 3 активных страниц в контексте одновременно",
@@ -172,10 +179,20 @@
       "step_id": "1",
       "name": "search",
       "description": "Сначала обратись к index.md, затем используй wiki_recall для семантического поиска релевантных страниц. Используй критерии уверенности для определения достаточности поиска.",
+      "system_files_exclusion": {
+        "rule": "exclude system files (log.md, issues.md, timeline.md, overview.md, snapshot.md, index.md, GIT-*) from semantic search results",
+        "action_if_found_in_results": "FILTER_OUT: remove from final matches array before presenting to user"
+      },
       "actions": [
         {
           "action": "read_index_categories_matching_topic",
           "priority": 1
+        },
+        {
+          "action": "keyword_search_via_index_json",
+          "target": "meta/search-index.json",
+          "pattern": "${QUERY_KEYWORDS}",
+          "description": "Search by keywords/tags/first_sentence from search-index.json"
         },
         {
           "action": "find_all_links_to_entities_concepts_syntheses_comparisons_notes_projects_bibliography_resources",
@@ -431,6 +448,12 @@
           ]
         },
         {
+          "action": "auto_crosslink_from_query_results",
+          "command": "./scripts/auto-crosslink.sh '${READ_PAGES}' --include-root 2>/dev/null || true",
+          "description": "After query answer — run auto-crosslink on all pages that were read/referenced. Parse results for score >= 5, suggest adding crosslinks to high-score matches.",
+          "output_format": "json[{path, score, match_types}]"
+        },
+        {
           "action": "write_to_working_memory",
           "fields": [
             {
@@ -482,6 +505,13 @@
       ],
       "search_strategy": {
         "priority": [
+          {
+            "method": "keyword_search_via_index_json",
+            "target": "meta/search-index.json",
+            "pattern": "${SEARCH_QUERY}",
+            "description": "Search by keywords/tags/first_sentence from search-index.json. Fast fallback when wiki-search.sh is unavailable.",
+            "note": "Only used as fallback — prefer grep_recursive/index_lookup/wiki-search.sh"
+          },
           {
             "method": "grep_recursive",
             "target": "wiki/**/${PAGE_TYPE}/**",
@@ -604,15 +634,25 @@
       "cross_link_update": {
         "actions": [
           {
-            "action": "search_all_wiki_pages_for_mentions",
-            "term": "${NEW_ENTITY_CONCEPT_NAME}"
+            "action": "run_auto_crosslink",
+            "command": "./scripts/auto-crosslink.sh '${PAGE_PATH}' --include-root 2>/dev/null || true",
+            "output_format": "json[{path, score, match_types}]",
+            "description": "Multi-level crosslink discovery: H1 title (+3) → shared sources (+5) → frontmatter related (+4). Results sorted by score."
           },
           {
-            "action": "add_backlinks_to_each_mentioning_page"
+            "action": "parse_and_add_backlinks",
+            "threshold_score": 5,
+            "rule": "Only add backlinks for pages with score >= 5 (significant match). Low scores (3-4) are informational only — suggest manual review."
           },
           {
-            "condition": "no_mentions_found",
-            "action": "mark_orphan_if_no_mentions_found"
+            "action": "add_related_to_frontmatter",
+            "description": "For high-score matches, add to related: [paths] in frontmatter if not already present. This creates bidirectional links.",
+            "format": "Update wiki-relative-path.md → related: [...existing..., 'wiki/${PAGE_PATH}.md']"
+          },
+          {
+            "condition": "no_high_score_matches",
+            "action": "mark_orphan_if_no_mentions_found",
+            "note": "Low score matches (3-4) may be weak connections — suggest manual review rather than auto-add"
           }
         ]
       },

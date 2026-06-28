@@ -118,6 +118,20 @@ for root, dirs, files in os.walk(wiki_dir):
                     'from': rel,
                     'context': f'[text]({path}) from {fname}'
                 })
+        
+        # Parse related: [paths] frontmatter arrays
+        import re
+        related_matches = re.findall(r'^related:\s*\[(.*)\]', content, re.MULTILINE)
+        for related_str in related_matches:
+            paths = [p.strip().strip('\"').strip(\"'\") for p in related_str.split(',')]
+            for path in paths:
+                if not path:
+                    continue
+                target_id = resolve_target(path.rstrip('/'))
+                backlinks.setdefault(target_id, []).append({
+                    'from': rel,
+                    'context': f'related:[{path}] from {fname}'
+                })
 
 with open(meta_path, 'w') as f:
     json.dump({'backlinks': backlinks}, f, indent=2, ensure_ascii=False)

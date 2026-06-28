@@ -188,3 +188,11 @@
 * Добавлена запись в index.md (entities секция)
 * Пересобраны метаданные: registry.json, backlinks.json, index.md
 * Обновлён timeline.md с записью о создании страницы
+
+## [2026-06-28] lint | Contradictions review — fixed 3 incorrect "Обновлено" markers (creation pages now use "Создано")
+* **Fixed**: python-nixos-development.md — removed duplicate ## Обновлено section, kept only actual update (2026-06-24)
+* **Fixed**: symfony-dependency-injection.md — changed "## Обновлено 2026-06-28 — создана концепция" → "## Создано"
+* **Fixed**: nvidia.md — changed "## Обновлено" → "## Создано" (creation, not update)
+* **Fixed**: python-nixos-development-environments.md — changed creation marker from "Обновлено" to "Создано"
+* **Remaining**: contradictions_deep=1 (python concept vs synthesis overlap) — soft check, requires manual dedup review
+* **Status**: Contradictions reduced from 5 → 2 (only actual updates remain flagged)
