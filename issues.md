@@ -18,6 +18,37 @@
 
 👉 **Canonical**: `scripts/orphan-pages.sh`, `scripts/auto-crosslink.sh`, `AGENTS.md#decision_rules`, `process-ingest.json`
 
+### Issue #10: Error Logging — Unified Format 🔽 LOW PRIORITY
+**Проблема**: Нет единого формата логирования ошибок между скриптами.
+- Каждый скрипт пишет в свой stderr / отдельный log file
+- Нет `log_error()` функции с timestamp + level + message
+- Python скрипты используют `print` вместо `logging`
+
+**Статус:** ⬜ Deferred — не блокирует работу, но улучшает maintainability
+
+### Issue #11: Trap Handlers для Cleanup 🔽 LOW PRIORITY  
+**Проблема**: Ни один скрипт не использует `trap EXIT/cleanup`.
+- При аварийном выходе временные файлы остаются
+- Нет rollback при ошибке записи JSON в meta/
+
+**Статус:** ⬜ Deferred — nice-to-have для production readiness
+
+### Issue #12: Unit Tests для Скриптов 🔽 LOW PRIORITY
+**Проблема**: Ни один скрипт не покрыт unit/integration тестами.
+- `scripts/test-*.sh` и `test_*.py` отсутствуют
+- Без тестов невозможно regression-proof при будущих изменениях
+
+**Статус:** ⬜ Deferred — backlog, приоритет ниже безопасности
+
+### Issue #13: scripts/README.md 🔽 LOW PRIORITY
+**Проблема**: Нет единой документации по скриптам.
+- Usage examples, architecture overview, known limitations отсутствуют
+- Сложно новичку понять, как работают 15+ скриптов
+
+**Статус:** ⬜ Deferred — nice-to-have для onboarding
+
+---
+
 ### Issue #8: Syntheses Special Handling ⚠️ PARTIAL FIX
 **Проблема**: `syntheses/` — аналитические синтезы, не должны обрабатываться как обычные страницы wiki.
 
