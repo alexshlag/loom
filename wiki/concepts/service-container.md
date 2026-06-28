@@ -2,7 +2,7 @@
 tags: [концепция, dependency-injection, service-container]
 date: 2026-06-25
 sources: [raw/sources/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md]
-related: [wiki/entities/symfony.md]
+related: [wiki/entities/symfony.md, wiki/concepts/symfony-dependency-injection.md]
 ---
 
 # Service Container & Dependency Injection
