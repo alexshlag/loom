@@ -113,4 +113,4 @@
 - Live issues tracked in [issues.md](issues.md) — не дублировать здесь
 - **Rule**: new phases sorted by priority (High → Medium → Low)
 
-*Last update: 2026-06-27 | Phase 10+12 complete. Lint hook + process refs integrated. Spec: INGEST_TEXT_SIMILARITY_TRIGGER.md*
+*Last update: 2026-06-28 | All IF-1..IF-4 completed, step_3c added. Check 9 (text_similarity) operational.*
