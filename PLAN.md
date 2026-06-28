@@ -60,11 +60,20 @@
 
 
 
-## 🔄 Pending Integration (Next Step)
+## ✅ Completed Integration Fixes
 
-| Trigger | File | Spec | Status |
-|---------|------|------|--------|
-| Ingest post-integration scan | `process-ingest.json#step_3c` | [INGEST_TEXT_SIMILARITY_TRIGGER.md](INGEST_TEXT_SIMILARITY_TRIGGER.md) | ⬜ TODO |
+| Fix | File | Change | Status |
+|-----|------|----------|--------|
+| **IF-1** | `scripts/lint.sh` | Added check_id=9: text similarity scan (--scan-all --threshold 90) | ✅ Done |
+| **IF-2** | `process-lint.json` | Added lint_check for check_id=9 with schema_ref → AGENTS.md#decision_rules | ✅ Done |
+| **IF-3** | `process-query.json` | Added decision_rules_schema_ref at steps[4] (step_3 result_fixation), DR-2 trigger in agent_prompt | ✅ Done |
+| **IF-4** | `process-ingest.json` | Added module-level decision_rules_schema_ref + step_3c post_integration_overlap_scan | ✅ Done |
+
+## 🔄 Completed Spec: Ingest Post-Integration Scan
+
+| File | Step | Spec | Status |
+|------|------|------|--------|
+| `process-ingest.json#step_3c` | post_integration_overlap_scan | [INGEST_TEXT_SIMILARITY_TRIGGER.md](INGEST_TEXT_SIMILARITY_TRIGGER.md) | ✅ Done |
 
 **Description**: После создания/обновления страницы — сканировать wiki на overlap ≥90%, agent применяет DR-1/DR-2. Аналогично lint hook (check_id=9), но с immediate feedback для ingest flow.
 

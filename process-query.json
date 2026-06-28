@@ -686,7 +686,8 @@
           }
         ],
         "rule": "AGENT_MUST_WRITE_WM_AFTER_EACH_QUERY"
-      }
+      },
+      "decision_rules_schema_ref": "AGENTS.md#decision_rules"
     }
   ],
   "post_search_flow": {
