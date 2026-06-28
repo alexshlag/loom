@@ -1,15 +1,23 @@
 {
   "last_updated": "2026-06-27T15:35:00+00",
   "current_mode": "project",
-  "focus_node": "Phase 11.1 complete: text-similarity.sh with configurable --gram-size flag (2-6)",
+  "focus_node": "PERFORMANCE_ISSUES.md — Similarity index script fixed & committed",
   "open_pages": [
-    {"path": "scripts/text-similarity.sh", "status": "completed"},
-    {"path": "PLAN.md", "status": "updated"}
+    {
+      "path": "scripts/text-similarity.sh",
+      "status": "completed"
+    },
+    {
+      "path": "PLAN.md",
+      "status": "updated"
+    }
   ],
   "dead_ends": [],
   "query_summary": {
     "intent": "Add --gram-size flag to text-similarity.sh for configurable N-gram comparison (2-6)",
-    "pages_read": ["scripts/text-similarity.sh"],
+    "pages_read": [
+      "scripts/text-similarity.sh"
+    ],
     "key_findings": [
       "--gram-size flag added with range validation (2-6, defaults to 3)",
       "Cache key now includes gram_size: file1|file2|gN",
@@ -18,7 +26,13 @@
     ]
   },
   "next_steps_todo": [
-    {"task": "Phase 11.2: Agent prompt for causal chain analysis (X wrote first, Y copied)", "priority": "low"},
-    {"task": "Consider Phase 12: Contextual split & assumption chain (future)"}
+    {
+      "task": "Запустить search_similarity.py для query-based поиска",
+      "priority": "high"
+    },
+    {
+      "task": "Создать search_similarity.py wrapper для query-based search",
+      "priority": "medium"
+    }
   ]
 }
