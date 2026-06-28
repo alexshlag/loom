@@ -144,6 +144,79 @@
       ]
     },
     {
+      "step_id": "0.75",
+      "name": "broken_link_awareness",
+      "description": "Проверить наличие известных битых ссылок из previous lint/ingest sessions (из working_memory). Не сканирует wiki — использует кэш.",
+      "actions": [
+        {
+          "action": "read_file",
+          "path": "working_memory.json"
+        },
+        {
+          "condition": "last_known_broken_links exists in WM",
+          "action_name": "report_to_user_if_pending",
+          "details": [
+            {
+              "prompt": "В предыдущей сессии обнаружены битые ссылки, требующие ручного решения. Показать?",
+              "options": [
+                "show_details",
+                "defer_to_next_lint"
+              ]
+            }
+          ]
+        },
+        {
+          "condition": "no_broken_links_in_WM",
+          "action_name": "skip"
+        }
+      ],
+      "rules": [
+        {
+          "rule_name": "query_mode_lightweight"
+        },
+        {
+          "rule_name": "broken_link_escalation_rules"
+        },
+        {
+          "rule_name": "external_wiki_pattern",
+          "pattern": "link_text contains 'Wiki' + target .md does not exist",
+          "action": "suggest_external_url"
+        },
+        {
+          "rule_name": "create_page_or_remove",
+          "pattern": "concept exists in wiki but file missing OR link points to never-created page",
+          "action": "offer_options: create new page / remove broken link with note"
+        },
+        {
+          "rule_name": "no_match_found",
+          "pattern": "fuzzy score < 80 AND no obvious external/source pattern",
+          "action": "log_as_todo_and_notify_user"
+        }
+      ],
+      "agent_decision_threshold": {
+        "can_resolve_autonomously": [
+          {
+            "condition": "link references existing wiki page but with wrong case/path",
+            "action": "auto_fix: rewrite to correct path"
+          },
+          {
+            "condition": "link text clearly describes external resource and target .md does not exist",
+            "action": "suggest_external_url"
+          }
+        ],
+        "require_user_confirmation": [
+          {
+            "condition": "fuzzy_match_score < 50 OR ambiguous intent",
+            "action": "report_to_user with options: external URL / create page / remove"
+          },
+          {
+            "condition": "link references protected zone (raw/, meta/) — DO NOT auto-fix, flag for review"
+          }
+        ]
+      },
+      "schema_ref": "AGENTS.md#decision_rules"
+    },
+    {
       "step_id": "0.5",
       "name": "new_sources_quick_check",
       "description": "Быстрая проверка raw/sources на новые пакеты (--quick). Кэширует timestamp, чтобы не стучать каждый раз. Полную проверку с деталями делает lint.",

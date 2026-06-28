@@ -1,1 +1,7 @@
-{"ingested_sources": []}
+{
+    "ingested_sources": [
+        "SRC-2025-06-24-001",
+        "SRC-2025-06-24-002",
+        "SRC-2026-06-25-SYMFONY-001"
+    ]
+}

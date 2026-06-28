@@ -90,6 +90,27 @@
         {
           "action": "check_for_contradications",
           "reference": "existing_wiki_pages"
+        },
+        {
+          "action": "raw_source_link_repair",
+          "description": "При ingest — проверить все markdown ссылки в захваченном raw-источнике. Заменить битые внутренние ссылки на внешние URL.",
+          "rules": [
+            {
+              "pattern": "link_text suggests external wiki (e.g. 'NixOS Wiki - X') + target .md doesn't exist in captured repo",
+              "action": "rewrite: replace ./broken.md with https://wiki.nixos.org/wiki/X or equivalent external URL"
+            },
+            {
+              "pattern": "relative path references upstream file not captured (e.g. '../skills/aif/SKILL.md#section')",
+              "action": "rewrite: convert to GitHub permalink https://github.com/owner/repo/blob/<branch>/path/to/file.md"
+            },
+            {
+              "pattern": "local wiki reference that matches an existing page but with wrong path/case",
+              "action": "auto_fix: rewrite to correct relative path"
+            }
+          ],
+          "agent_prompt": "При capture raw источника:\n1. Scan all markdown links [text](path) in the source file\n2. For each link where target .md doesn't exist locally:\n   a. Check if link text indicates external resource (wiki, docs, etc.) → rewrite to external URL\n   b. Check if it's a relative path that exists in upstream repo → rewrite to GitHub permalink\n3. Log all rewrites in manifest.json under 'link_repairs': [{original, repaired, reason}]\n4. DO NOT auto-fix references to raw/ protected zones or wiki pages — flag for review instead",
+          "output": "manifest_link_repairs_list",
+          "schema_ref": "AGENTS.md#decision_rules"
         }
       ]
     },
@@ -339,24 +360,41 @@
       "step_id": "6",
       "name": "post_operation_link_validation",
       "condition": "any_path_change_or_new_page_created",
-      "command": "./scripts/link-validator.sh <pattern>",
+      "description": "После создания/обновления wiki-страницы — проверить только новые файлы, НЕ сканировать весь wiki. Легковесная проверка.",
       "actions": [
         {
-          "action": "parse_json_from_stdout",
-          "format": "[ {file, line, link, target_path} ]"
+          "action": "run_link_validator_on_new_files_only",
+          "command": "./scripts/link-validator.sh --full <new_page_path>",
+          "description": "Check only the newly created/modified page for broken links, NOT full wiki scan"
         },
         {
-          "action": "apply_auto_fix_to_each_broken_link_by_rewriting_to_new_path"
+          "condition": "broken_links_found AND auto_fixable (case/path mismatch)",
+          "action_name": "auto_fix_broken_links",
+          "note": "Can resolve autonomously: rewrite to correct path"
         },
         {
-          "condition": "target_does_not_exist",
-          "fallback_message": "[!] Broken link: [text](path) — target does not exist. Proposed fix: create page or remove link."
+          "condition": "broken_links_found AND NOT auto_fixable",
+          "action_name": "report_to_user_with_options",
+          "options": [
+            "create_new_page",
+            "remove_broken_link",
+            "mark_as_todo"
+          ],
+          "fallback_message": "[!] Broken link detected in new page. Cannot auto-fix."
         }
       ],
       "output_handling": {
         "exit_code_0": "no_broken_links — proceed to next step",
-        "exit_code_1": "broken_links_found — report with auto-fixable count and apply fixes"
+        "exit_code_1": "broken_links_found — report with options (create/remove/defer)"
       },
+      "rules": [
+        {
+          "rule_name": "do_not_run_full_wiki_scan_in_ingest"
+        },
+        {
+          "rule_name": "only_check_new_file_broken_links"
+        }
+      ],
       "schema_ref": "AGENTS.md#post_operation_link_validation"
     }
   ],

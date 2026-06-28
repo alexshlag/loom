@@ -1,4 +1,4 @@
-#!/etc/profiles/per-user/andrew/bin/bash
+#!/usr/bin/env bash
 # validate-path.sh — Guardrails: блокировка прямых изменений к protected zones
 # Вызывается перед любым edit/write на файлах wiki.
 # Usage: ./scripts/validate-path.sh <path/to/file.md>
@@ -15,7 +15,8 @@ PROTECTED_PATTERNS=("meta/")
 ALLOWED_WRITE_ZONES=("raw/sources/" "wiki/")
 
 for PATTERN in "${PROTECTED_PATTERNS[@]}"; do
-  if [[ "$PATH_TO_CHECK" == *"$PATTERN"* ]]; then
+  # Prefix-only match — prevents bypass via e.g. 'some-meta/file.md'
+  if [[ "$PATH_TO_CHECK" == "$PATTERN"* ]]; then
     echo "⛔ BLOCKED: '$PATH_TO_CHECK' falls within protected zone (matches '$PATTERN')" >&2
     exit 1
   fi

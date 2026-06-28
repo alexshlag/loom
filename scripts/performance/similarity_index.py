@@ -193,9 +193,7 @@ def build_index(wiki_dir, output_dir=None):
     
     if output_dir is None:
         # Default: store in <project_root>/tracking/
-        print(f"[*] DEBUG __file__: {__file__}")
         script_realpath = os.path.realpath(__file__)
-        print(f"[*] DEBUG realpath: {script_realpath}")
         script_dir = os.path.dirname(script_realpath)
         # Go up two levels: performance/ → scripts/ → project root
         project_root = os.path.dirname(os.path.dirname(script_dir))
@@ -269,7 +267,6 @@ def build_index(wiki_dir, output_dir=None):
     
     # Save index to disk for reuse
     import json
-    print(f"[*] DEBUG: output_dir={output_dir}, output_path={output_path}")  # DEBUG
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     with open(str(output_path), 'w') as f:
         json.dump({

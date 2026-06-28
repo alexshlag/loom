@@ -15,6 +15,9 @@ SIMILARITY_LOG="$LOG_DIR/text-similarity.log"
 mkdir -p "$LOG_DIR" 2>/dev/null || true
 mkdir -p "$(dirname "$CACHE_FILE")" 2>/dev/null || true
 
+# Trap cleanup for .tmp files on crash/abort
+trap 'rm -f "$CACHE_FILE.tmp" "$SIMILARITY_CACHE.tmp" 2>/dev/null' EXIT
+
 # ─── Usage ──────────────────────────────────────────────────────────
 usage() {
     echo "Usage: $0 <file1> <file2> [--threshold N] [--gram-size N] [--verbose]"
@@ -401,12 +404,18 @@ for ng, file_indices in ngram_index.items():
 search_time = time.time() - time_search
 print(f"[*] Search completed: {len(matches)} matches in {search_time:.3f}s")
 
-# Save similarity cache
+# Save similarity cache (atomic: write to .tmp then mv)
+tmp_cache = sim_cache_file + '.tmp'
 try:
-    with open(sim_cache_file, 'w') as f:
+    with open(tmp_cache, 'w') as f:
         json.dump(similarity_cache, f, indent=2)
+    import os
+    os.rename(tmp_cache, sim_cache_file)
 except Exception:
-    pass
+    try:
+        os.unlink(tmp_cache)
+    except OSError:
+        pass
 
 print(json.dumps({"mode": "scan_all", "threshold": threshold, "matches": matches, 
                    "count": len(matches), "build_time": build_time}, indent=2))
@@ -467,9 +476,12 @@ if 'similarity' in d and 'error' not in d:
     except Exception:
         pass
     cache['$CACHE_KEY'] = d
+    tmp_f = '$CACHE_FILE' + '.tmp'
     try:
-        with open('$CACHE_FILE', 'w') as f:
+        with open(tmp_f, 'w') as f:
             json.dump(cache, f, indent=2)
+        import os
+        os.rename(tmp_f, '$CACHE_FILE')
     except Exception:
         pass
 " 2>/dev/null || true

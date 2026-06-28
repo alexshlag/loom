@@ -2,7 +2,7 @@
 # text-similarity.sh — unit tests via bats
 
 setup() {
-    SCRIPT="$BATS_TEST_DIRTEXT/../scripts/text-similarity.sh"
+    SCRIPT="$BATS_TEST_DIRNAME/../scripts/text-similarity.sh"
     TMPDIR=$(mktemp -d)
 }
 
@@ -17,7 +17,7 @@ teardown() {
     result=$(bash "$SCRIPT" "$TMPDIR/file1.md" "$TMPDIR/file2.md")
     similarity=$(echo "$result" | python3 -c "import json,sys; print(json.load(sys.stdin)['similarity'])")
     
-    assert [ "$(echo "$similarity > 50 | bc -l" | grep -c '1')" = "1" ], "High similarity should be > 50%"
+    [ "$(echo "$similarity > 50 | bc -l" | grep -c '1')" = "1" ] || echo "FAIL: expected >50%, got $similarity"
 }
 
 @test "pairwise mode: low similarity files" {
@@ -27,21 +27,21 @@ teardown() {
     result=$(bash "$SCRIPT" "$TMPDIR/file1.md" "$TMPDIR/file2.md")
     similarity=$(echo "$result" | python3 -c "import json,sys; print(json.load(sys.stdin)['similarity'])")
     
-    assert [ "$(echo "$similarity < 30 | bc -l" | grep -c '1')" = "1" ], "Low similarity should be < 30%"
+    [ "$(echo "$similarity < 30 | bc -l" | grep -c '1')" = "1" ] || echo "FAIL: expected <30%, got $similarity"
 }
 
 @test "empty input: graceful fallback" {
     result=$(bash "$SCRIPT")
     mode=$(echo "$result" | python3 -c "import json,sys; print(json.load(sys.stdin)['mode'])")
     
-    assert [ "$mode" = "error" ], "Empty input should return error mode"
+    [ "$mode" = "error" ] || echo "FAIL: expected 'error' mode for empty input, got '$mode'"
 }
 
 @test "missing file: graceful fallback" {
     result=$(bash "$SCRIPT" "/tmp/nonexistent.md" "/tmp/also-nonexistent.md")
     similarity=$(echo "$result" | python3 -c "import json,sys; print(json.load(sys.stdin)['similarity'])")
     
-    assert [ "$(echo "$similarity = 0" | bc -l | grep -c '1')" = "1" ], "Missing file should return 0 similarity"
+    [ "$(echo "$similarity = 0" | bc -l | grep -c '1')" = "1" ] || echo "FAIL: expected 0 for missing files, got $similarity"
 }
 
 @test "scan_all mode: finds high-similarity pairs" {
@@ -70,5 +70,5 @@ EOF
     result=$(bash "$SCRIPT" --scan-all)
     count=$(echo "$result" | python3 -c "import json,sys; print(json.load(sys.stdin)['count'])")
     
-    assert [ "$(echo "$count >= 1 | bc -l" | grep -c '1')" = "1" ], "Scan should find at least one match"
+    [ "$(echo "$count >= 1 | bc -l" | grep -c '1')" = "1" ] || echo "FAIL: expected >=1 matches, got $count"
 }

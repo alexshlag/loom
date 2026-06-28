@@ -8,6 +8,7 @@
 #   --quick — быстрый режим: только exit_code, без вывода пакетов. Кэширует timestamp (~1h).
 #   --max N — ограничение глубины исследования (default: 10). При превышении — предупреждение.
 
+source "$(dirname "$0")/lib.sh" || true
 MAX_SOURCES=10
 
 QUICK=false
@@ -26,10 +27,13 @@ RAW_DIR="${1:-raw/sources/}"
 REGISTRY_FILE="${2:-tracking/raw_registry.json}"
 CACHE_FILE="tracking/last_check.json"
 
+# Trap cleanup for .tmp files on crash/abort
+trap 'rm -f "$REGISTRY_FILE.tmp" "$CACHE_FILE.tmp" 2>/dev/null' EXIT
+
 # Создаём registry, если не существует
 mkdir -p "$(dirname "$REGISTRY_FILE")"
 if [ ! -f "$REGISTRY_FILE" ]; then
-    echo '{"ingested_sources": []}' > "$REGISTRY_FILE"
+    atomic_write_content "$REGISTRY_FILE" '{"ingested_sources": []}'
 fi
 
 # --- Quick mode: cache check (skip if checked <1h ago) ---
@@ -47,7 +51,7 @@ packages=$(ls -1d "$RAW_DIR"/SRC-* 2>/dev/null || true)
 if [ -z "$packages" ]; then
     if [ "$QUICK" = true ]; then
         # Обновляем кэш, чтобы не стучать каждый раз
-        echo "{\"last_check\": $(date +%s)}" > "$CACHE_FILE"
+        atomic_write_content "$CACHE_FILE" "{\"last_check\": $(date +%s)}"
     fi
     exit 0
 fi
@@ -84,13 +88,13 @@ done <<< "$packages"
 if [ "$found_new" = true ]; then
     if [ "$QUICK" = true ]; then
         # Обновляем кэш, чтобы не стучать каждый раз
-        echo "{\"last_check\": $(date +%s)}" > "$CACHE_FILE"
+        atomic_write_content "$CACHE_FILE" "{\"last_check\": $(date +%s)}"
     fi
     exit 1
 else
     if [ "$QUICK" = true ]; then
         # Обновляем кэш — новых нет, нет смысла проверять снова
-        echo "{\"last_check\": $(date +%s)}" > "$CACHE_FILE"
+        atomic_write_content "$CACHE_FILE" "{\"last_check\": $(date +%s)}"
     fi
     exit 0
 fi

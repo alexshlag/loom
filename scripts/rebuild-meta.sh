@@ -8,6 +8,9 @@ META_DIR="$PROJECT_ROOT/meta"
 WIKI_DIR="$PROJECT_ROOT/wiki"
 TIMESTAMP_FILE="$PROJECT_ROOT/.meta_update_timestamp"
 
+# Trap cleanup for .tmp files on crash/abort
+trap 'rm -f "${META_DIR}/registry.json.tmp" "${META_DIR}/backlinks.json.tmp" "${WIKI_DIR}/index.md.tmp" 2>/dev/null' EXIT
+
 mkdir -p "$META_DIR"
 
 # ─── Incremental Update Detection (MEDIUM-4 optimization) ──────
@@ -111,12 +114,15 @@ for root, dirs, files in os.walk(wiki_dir):
         if not found:
             pages.append(new_entry)
 
-with open(meta_path, 'w') as f:
+with open(meta_path + '.tmp', 'w') as f:
     json.dump({'pages': pages}, f, indent=2, ensure_ascii=False)
 print(f'Registry updated: {len(pages)} pages' + (' (incremental)' if changed_str != '/all' else ''))
 PYEOF
 if [ $? -ne 0 ]; then
+    rm -f "${meta_path}.tmp"
     echo "Warning: registry generation had issues" >&2
+else
+    mv "${meta_path}.tmp" "$meta_path"
 fi
 
 # ─── 2. backlinks.json (skip if --index-only)
@@ -194,12 +200,15 @@ final_backlinks = {}
 for target, sources in existing_backlinks.items():
     final_backlinks[target] = clean_duplicates(sources)
 
-with open(meta_path, 'w') as f:
+with open(meta_path + '.tmp', 'w') as f:
     json.dump({'backlinks': final_backlinks}, f, indent=2, ensure_ascii=False)
 print(f'Backlinks updated: {len(final_backlinks)} pages with links' + (' (incremental)' if changed_str != '/all' else ''))
 PYEOF2
 if [ $? -ne 0 ]; then
+    rm -f "${meta_path}.tmp"
     echo "Warning: backlinks generation had issues" >&2
+else
+    mv "${meta_path}.tmp" "$meta_path"
 fi
 fi
 
@@ -337,13 +346,16 @@ lines_out.extend([
     '| [Timeline](timeline.md) — полная хронологическая лента всех изменений.'
 ])
 
-with open(index_path, 'w', encoding='utf-8') as f:
+with open(index_path + '.tmp', 'w', encoding='utf-8') as f:
     f.write('\n'.join(lines_out) + '\n')
 
 print('Index updated: ' + str(sum(len(v) for v in category_pages.values())) + ' entries across ' + str(len(category_pages)) + ' categories')
 PYEOF3
 if [ $? -ne 0 ]; then
+    rm -f "${index_path}.tmp"
     echo "Warning: index generation had issues" >&2
+else
+    mv "${index_path}.tmp" "$index_path"
 fi
 
 # ─── Update timestamp for next incremental detection ──────

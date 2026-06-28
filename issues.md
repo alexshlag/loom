@@ -127,6 +127,34 @@ ORPHANS_OUTPUT=$(./scripts/orphan-pages.sh ... 2>&1 || true)
 
 ---
 
+### Issue #27: Broken Link Handling — Agent Escalation Rules 🆕 IN PROGRESS
+**Проблема**: `link-validator.sh --full` обнаруживает broken links, но agent escalation rules отсутствуют:
+1. Нет правила что делать с Home_Manager.md (fuzzy score 45 < threshold 80)
+2. Raw sources содержат битые ссылки на upstream файлы (SKILL.md references) — не исправляются при ingest
+3. Agent не знает когда auto-fix vs escalate to user
+
+**Fix (2026-06-28)**:
+1. ✅ Добавлен step `0.75` в `process-query.json#broken_link_awareness`: lightweight check via working_memory — НЕ запускает full scan, только читает known broken links из previous sessions.
+   - external_wiki_pattern → suggest external URL
+   - create_page_or_remove → offer options to user
+   - no_match_found → log as TODO, notify user
+2. ✅ Agent decision thresholds: autonomously fix case/path mismatches; escalate fuzzy < 50 or ambiguous intent
+3. ✅ Добавлено `raw_source_link_repair` в `process-ingest.json#step_1 source_analysis`: при ingest сканирует markdown ссылки, заменяет битые на external URL / GitHub permlink
+4. ✅ Обновлён step `6 post_operation_link_validation` в `process-ingest.json`: только new files check (не --full)
+5. 🔽 Осталось: применить fix к существующей Home_Manager.md ссылке (replace with https://wiki.nixos.org/wiki/Home_Manager)
+6. 🔽 Осталось: починить SKILL.md references в ai-factory configuration.md при следующем ingest
+
+**Зона ответственности**:
+| Режим | Что делает | Когда сканирует wiki |
+|-------|-----------|----------------------|
+| **query (step 0.75)** | Чтение из WM, lightweight awareness | ❌ НЕ сканирует |
+| **lint** | Полный audit (`--full`) | ✅ Полная проверка |
+| **post-ingest (step 6)** | Check new files only | ✅ Только новые файлы |
+
+**Schema ref**: `process-query.json#broken_link_awareness`, `process-ingest.json#raw_source_link_repair`
+
+---
+
 ### Issue #8: Syntheses Special Handling ⚠️ PARTIAL FIX
 **Проблема**: `syntheses/` — аналитические синтезы, не должны обрабатываться как обычные страницы wiki.
 

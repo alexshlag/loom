@@ -111,20 +111,27 @@
     },
     {
       "check_id": "7",
-      "name": "link_validation_with_auto_fix",
-      "description": "Валидируй все внутренние ссылки, исправляй автоматически, флаги брейкнутые",
-      "command": "./scripts/link-validator.sh --full",
+      "name": "broken_link_auto_resole",
+      "description": "Найди битые ссылки, попробуй auto-fix через fuzzy-match (score>=80%), report agent_review_required для оставшихся",
+      "command": "./scripts/link-validator.sh --auto [wiki_dir] [--max N]",
       "output_handling": {
         "exit_code_0": "all_links_valid — proceed to next check",
-        "exit_code_1": "broken_links_found — parse JSON from stdout, report with auto-fixable count and apply fixes"
+        "exit_code_1": "broken_links_found — parse JSON with auto_fixed flag, report broken_count + auto_repaired + agent_review_required"
+      },
+      "fuzzy_matching": {
+        "strategy": "basename normalization (lowercase, strip spaces/underscores/hyphens), directory match, partial string overlap",
+        "auto_fix_threshold": 80,
+        "actions_when_match_found": ["rewrite markdown link to matched file", "log fix in TMP_FIXED for reporting"]
+      },
+      "agent_escalation": {
+        "trigger": "score < 80 or ambiguous match",
+        "output_field": "agent_review_required count + JSON with auto_fixed:false entries"
       },
       "reference": "AGENTS.md#link-conventions--auto-fix",
       "post_check": {
-        "command": "./scripts/rebuild-meta.sh",
+        "command": "./scripts/rebuild-meta.sh --index-only (if auto_repaired > 0)",
         "schema_ref": "AGENTS.md#meta_rebuild_path",
-        "note": "Canonical path defined in AGENTS.md. Do not hardcode absolute paths.",
-        "action_on_success": "CONTINUE_TO_NEXT_CHECK",
-        "action_on_failure": "LOG_WARNING_AND_PROCEED"
+        "note": "Auto-triggered from lint.sh when AUTO_REPAIRED > 0"
       }
     },
     {

@@ -542,7 +542,7 @@ cd /path/to/loomana && ./scripts/lint.sh --skip-checks 3,5
 
 ---
 
-*Schema Version: 9 | Last Updated: 2026-06-26 | Author Pattern: Andrej Karpathy (LLM Wiki)*
+*Schema Version: 10 | Last Updated: 2026-06-28 | Author Pattern: Andrej Karpathy (LLM Wiki)*
 
 ---
 
@@ -552,7 +552,7 @@ cd /path/to/loomana && ./scripts/lint.sh --skip-checks 3,5
 
 **Query Intent Analysis**:
 - Entity keywords → `entities/`, `concepts/`, `syntheses/` priority
-- Comparison keywords (`vs`, `compared to`) → `comparisons/`, `syntheses/`, `concept/` priority  
+- Comparison keywords (`vs`, `compared to`) → `comparisons/`, `syntheses/`, `concepts/` priority  
 - Concept keywords → `concepts/`, `syntheses/`, `entities/` priority
 - Fallback: static priority (syntheses→concepts→entities)
 
