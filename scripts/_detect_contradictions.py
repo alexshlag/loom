@@ -5,12 +5,19 @@ from datetime import datetime
 wiki_dir = os.environ.get("WIKI_DIR", "wiki")
 quiet_mode = os.environ.get("QUIET") == "true" or "--quiet" in sys.argv
 
+# Exclude system files from contradiction scanning (AGENTS.md: system_files_excluded_from_search)
+EXCLUDED_FILES = {"log.md", "issues.md", "timeline.md", "overview.md", "snapshot.md",
+                  "index.md", "GIT-STATUS-LOG.md", "working_memory.json"}
+
 pages_with_dates = {}
 fact_groups = defaultdict(list)
 
 for root, dirs, files in os.walk(wiki_dir):
     for fname in files:
         if not fname.endswith(".md"):
+            continue
+        # Exclude system files (AGENTS.md: system_files_excluded_from_search)
+        if fname in EXCLUDED_FILES:
             continue
         filepath = os.path.join(root, fname)
         rel_path = os.path.relpath(filepath, wiki_dir)

@@ -307,14 +307,16 @@ IFS=' ' read -ra CAT_ARRAY <<< "$FINAL_CATEGORY_ORDER"
 MAX_PRIORITY=${#CAT_ARRAY[@]}
 
 # ─── Phase 1: H1 Index Fast Lookup (O(k log n)) ──────────────
+# Fix #21: Pass query via env var to prevent heredoc injection
+export SEARCH_QUERY="$QUERY" MAX_RESULTS="$MAX_RESULTS"
 H1_RESULTS=$(
-    python3 << PYEOF
+    python3 << 'PYEOF'
 import json, os, sys, re
 
-wiki_dir = "$WIKI_DIR"
+wiki_dir = os.environ.get("WIKI_DIR", "wiki")
 h1_index_file = "meta/h1-index.json"
-query = "$QUERY".lower()
-max_results = $MAX_RESULTS
+query = os.environ.get("SEARCH_QUERY", "").lower()
+max_results = int(os.environ.get("MAX_RESULTS", "15"))
 
 # Load H1 index
 try:
@@ -440,8 +442,10 @@ save_query_to_history() {
     local results_count="$2"
     local cat_order_str="$3"
     
-    python3 << PYEOF
-import json, datetime, re
+    # Fix: pass query via env vars, not inline expansion (prevents heredoc injection)
+    export HISTORY_QUERY="$QUERY" HISTORY_RESULTS_COUNT="$results_count" CAT_ORDER_STR="$cat_order_str"
+    python3 << 'PYEOF'
+import json, os, datetime, re
 
 def get_topic_tags(q):
     """Extract topic keywords."""
@@ -467,11 +471,11 @@ except Exception:
     data = {"queries": [], "max_entries": 5}
 
 entry = {
-    "query": """$query""",
+    "query": os.environ.get("HISTORY_QUERY", ""),
     "timestamp": datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
-    "results_count": $results_count,
-    "intent": detect_intent("""$query"""),
-    "topic_tags": get_topic_tags("""$query"""),
+    "results_count": int(os.environ.get("HISTORY_RESULTS_COUNT", "0")),
+    "intent": detect_intent(os.environ.get("HISTORY_QUERY", "")),
+    "topic_tags": get_topic_tags(os.environ.get("HISTORY_QUERY", "")),
     "status": "active"
 }
 
@@ -502,8 +506,9 @@ if [[ $COUNTER -gt 0 ]]; then
     RESULTS_COUNT=$COUNTER
     
     # Phase 6: Auto-save search to history (compact, last N entries)
-    CAT_ORDER_STR="$(IFS=' '; echo "${CAT_ARRAY[*]}")"
-    save_query_to_history "$QUERY" "$RESULTS_COUNT" "$CAT_ORDER_STR"
+    cat_order_str="$(IFS=' '; echo "${CAT_ARRAY[*]}")"
+    export HISTORY_QUERY="$QUERY" HISTORY_RESULTS_COUNT="$RESULTS_COUNT" CAT_ORDER_STR
+    save_query_to_history "$QUERY" "$RESULTS_COUNT" "$cat_order_str"
     
     rm -f "$TEMP_FILE"
     exit 0
@@ -511,8 +516,9 @@ else
     echo "[!] No results for: $QUERY" >&2
     
     # Also save empty queries to track what user looked for
-    CAT_ORDER_STR="$(IFS=' '; echo "${CAT_ARRAY[*]}")"
-    save_query_to_history "$QUERY" "0" "$CAT_ORDER_STR"
+    cat_order_str="$(IFS=' '; echo "${CAT_ARRAY[*]}")"
+    export HISTORY_QUERY="$QUERY" HISTORY_RESULTS_COUNT="0" CAT_ORDER_STR
+    save_query_to_history "$QUERY" "0" "$cat_order_str"
     
     rm -f "$TEMP_FILE"
     exit 1

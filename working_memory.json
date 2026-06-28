@@ -1,38 +1,33 @@
 {
-  "last_updated": "2026-06-27T15:35:00+00",
-  "current_mode": "project",
-  "focus_node": "PERFORMANCE_ISSUES.md — Similarity index script fixed & committed",
-  "open_pages": [
-    {
-      "path": "scripts/text-similarity.sh",
-      "status": "completed"
-    },
-    {
-      "path": "PLAN.md",
-      "status": "updated"
-    }
-  ],
+  "last_updated": "2026-06-28T15:30:00+00",
+  "current_mode": null,
+  "focus_node": null,
+  "open_pages": [],
   "dead_ends": [],
   "query_summary": {
-    "intent": "Add --gram-size flag to text-similarity.sh for configurable N-gram comparison (2-6)",
+    "intent": "Phase 12.3 completion + P8/#H3 fixes — audit and continue work from PLAN.md",
     "pages_read": [
-      "scripts/text-similarity.sh"
+      "PLAN.md",
+      "issues.md",
+      "working_memory.json"
     ],
     "key_findings": [
-      "--gram-size flag added with range validation (2-6, defaults to 3)",
-      "Cache key now includes gram_size: file1|file2|gN",
-      "Different N values produce different similarity scores: bigram=85%, trigram=82%, pentagram=73%",
-      "Scan-all mode also updated with gram_size-aware caching"
+      "P8 fixed: wiki-search.sh heredoc injection → env var passing (both locations)",
+      "#H3 fixed: detect-contradications excludes system files via EXCLUDED_FILES set",
+      "Phase 12.3 completed: D6 rebuild-meta auto-trigger added to lint.sh",
+      "link-validator.sh --auto already had fuzzy+agent escalation, only missing D6 trigger"
     ]
   },
   "next_steps_todo": [
     {
-      "task": "Запустить search_similarity.py для query-based поиска",
-      "priority": "high"
+      "task": "Resolve #H2 remaining broken link: Home_Manager.md has no close wiki candidate — decide manually (create page / external URL / remove)",
+      "priority": "medium",
+      "source": "link-validator.sh output"
     },
     {
-      "task": "Создать search_similarity.py wrapper для query-based search",
-      "priority": "medium"
+      "task": "Phase 11.2: Causal Chain Analysis — agent prompt for 'X wrote first, Y copied from X' based on text-similarity data",
+      "priority": "low",
+      "source": "PLAN.md pending phases"
     }
   ]
 }
