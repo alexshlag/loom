@@ -6,7 +6,8 @@ set -uo pipefail  # no errexit — we handle errors ourselves
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/.."
-CACHE_FILE="$PROJECT_ROOT/tracking/similarity_cache.json"
+CACHE_FILE="$PROJECT_ROOT/tracking/ngram_index.json"
+SIMILARITY_CACHE="$PROJECT_ROOT/tracking/similarity_cache.json"
 WIKI_DIR="$PROJECT_ROOT/wiki"
 LOG_DIR="$PROJECT_ROOT/logs"
 SIMILARITY_LOG="$LOG_DIR/text-similarity.log"
@@ -268,37 +269,20 @@ verbose_log "Starting similarity analysis"
 log_msg "started | mode=${SCAN_ALL:+scan_all|pairwise} files=$FILE1,$FILE2"
 
 if [[ "$SCAN_ALL" == "true" ]]; then
-    # Scan all wiki pages pairwise — collect results
-    verbose_log "Scanning all wiki pages (O(n²))..."
+    # Scan all wiki pages using inverted n-gram index (O(n) build + fast search)
+    verbose_log "Scanning with inverted n-gram index..."
     
-    # Find all .md files in wiki/
-    wiki_files=$(find "$WIKI_DIR" -name "*.md" -type f 2>/dev/null || true)
-    
-    if [[ -z "$wiki_files" ]]; then
-        verbose_log "No markdown files found in $WIKI_DIR"
-        echo '{"mode":"scan_all","threshold":'"$THRESHOLD"',"matches":[],"count":0}'
-        exit 0
-    fi
-    
-    # Use Python for efficient pairwise comparison and caching
     python3 << PYEOF
-import json, os, sys, re
+import json, os, sys, re, time
 
 wiki_dir = "$WIKI_DIR"
 threshold = $THRESHOLD
 GRAM_SIZE_VAR=$GRAM_SIZE
 cache_file = "$CACHE_FILE"
+sim_cache_file = "$SIMILARITY_CACHE"
 
-# Load cache
-try:
-    with open(cache_file) as f:
-        cache = json.load(f)
-except Exception:
-    cache = {}
-
-def normalize(text):
-    text = re.sub(r'[^a-zа-яё0-9\s]', '', text.lower())
-    return text.split()
+SYSTEM_FILES_EXCLUDED = {'log.md', 'issues.md', 'timeline.md', 'overview.md', 
+    'snapshot.md', 'index.md', 'GIT-TROUBLESHOOTING.md'}
 
 def strip_md(text):
     lines = text.split('\n')
@@ -313,80 +297,119 @@ def strip_md(text):
     content = re.sub(r'^#+\s+', '', content, flags=re.MULTILINE)
     return content
 
+def normalize(text):
+    text = re.sub(r'[^a-zа-яё0-9\s]', '', text.lower())
+    return text.split()
+
 def get_ngrams(words, n=3):
-    ngrams = set()
-    for i in range(len(words) - n + 1):
-        gram = ' '.join(words[i:i+n])
-        if len(gram.strip()) > 0:
-            ngrams.add(gram)
-    return ngrams
+    return set(' '.join(words[i:i+n]) for i in range(len(words) - n + 1))
 
-def compute_similarity(file1, file2, gram_size):
+# Collect all wiki files (exclude meta/ and system files)
+files = []
+for root, dirs, _ in os.walk(wiki_dir):
+    if 'meta' in dirs:
+        dirs.remove('meta')
+    for f in sorted(os.listdir(root)):
+        if f.endswith('.md') and f not in SYSTEM_FILES_EXCLUDED:
+            files.append(os.path.join(root, f))
+
+print(f"[*] Processing {len(files)} wiki pages...")
+time_start = time.time()
+
+# Build inverted index: ngram -> [file_idx]
+ngram_index = {}
+file_ngrams = {}  # file_path -> set of ngrams
+for idx, fpath in enumerate(files):
     try:
-        with open(file1) as f:
-            text1 = normalize(strip_md(f.read()))
-        with open(file2) as f:
-            text2 = normalize(strip_md(f.read()))
+        with open(fpath) as f:
+            text = normalize(strip_md(f.read()))
+        ngrams = get_ngrams(text, GRAM_SIZE_VAR)
+        file_ngrams[fpath] = ngrams
         
-        ngrams1 = get_ngrams(text1, n=gram_size)
-        ngrams2 = get_ngrams(text2, n=gram_size)
-        
-        if len(ngrams1) == 0 or len(ngrams2) == 0:
-            return {"similarity": 0.0, "common_ngrams": 0, "total_unique": 0, "match_level": "no_match"}
-        
-        common = ngrams1.intersection(ngrams2)
-        union = ngrams1.union(ngrams2)
-        similarity = len(common) / len(union) if len(union) > 0 else 0
-        total_unique = len(union)
-        
-        if similarity >= 0.9:
-            match_level = "near_identical"
-        elif similarity >= 0.7:
-            match_level = "high_similarity"
-        elif similarity >= 0.5:
-            match_level = "moderate_similarity"
-        else:
-            match_level = "low_similarity"
-        
-        return {
-            "similarity": round(similarity * 100, 2),
-            "common_ngrams": len(common),
-            "total_unique": total_unique,
-            "match_level": match_level
-        }
+        for ng in ngrams:
+            if ng not in ngram_index:
+                ngram_index[ng] = []
+            ngram_index[ng].append(idx)
     except Exception as e:
-        return {"similarity": 0.0, "error": str(e)}
+        print(f"[!] Error reading {fpath}: {e}", file=sys.stderr)
 
-# Collect all files
-files = sorted([os.path.join(root, f) for root, dirs, files in os.walk(wiki_dir) for f in files if f.endswith('.md')])
+print(f"[*] Built inverted index: {len(ngram_index)} unique n-grams, {len(files)} files")
+build_time = time.time() - time_start
 
-matches = []
-for i in range(len(files)):
-    for j in range(i+1, len(files)):
-        key = f"{os.path.basename(files[i])}|{os.path.basename(files[j])}|g{GRAM_SIZE_VAR}"
-        
-        # Check cache first
-        if key in cache:
-            result = cache[key]
-        else:
-            result = compute_similarity(files[i], files[j], int(GRAM_SIZE_VAR))
-            cache[key] = result
-        
-        if result.get("similarity", 0) >= threshold:
-            matches.append({
-                "file1": os.path.basename(files[i]),
-                "file2": os.path.basename(files[j]),
-                **result
-            })
-
-# Save updated cache
+# Find similar pairs using shared n-grams (Jaccard similarity)
+time_search = time.time()
+similarity_cache = {}
 try:
-    with open(cache_file, 'w') as f:
-        json.dump(cache, f, indent=2)
+    with open(sim_cache_file) as f:
+        similarity_cache = json.load(f)
 except Exception:
     pass
 
-print(json.dumps({"mode": "scan_all", "threshold": threshold, "matches": matches, "count": len(matches)}, indent=2))
+matches = []
+checked_pairs = set()
+
+for ng, file_indices in ngram_index.items():
+    if len(file_indices) < 2:
+        continue
+    
+    # Check all pairs sharing this n-gram
+    for i in range(len(file_indices)):
+        for j in range(i + 1, len(file_indices)):
+            idx_i = file_indices[i]
+            idx_j = file_indices[j]
+            pair_key = (idx_i, idx_j)
+            
+            if pair_key in checked_pairs:
+                continue
+            checked_pairs.add(pair_key)
+            
+            # Check similarity cache
+            cached_key = f"{files[idx_i].replace('/', '_')}|{files[idx_j].replace('/', '_')}"
+            if cached_key in similarity_cache:
+                result = similarity_cache[cached_key]
+            else:
+                ng_i = file_ngrams[files[idx_i]]
+                ng_j = file_ngrams[files[idx_j]]
+                
+                common = len(ng_i.intersection(ng_j))
+                union_len = len(ng_i.union(ng_j))
+                similarity = common / union_len if union_len > 0 else 0
+                
+                if similarity >= 0.9:
+                    match_level = "near_identical"
+                elif similarity >= 0.7:
+                    match_level = "high_similarity"
+                elif similarity >= 0.5:
+                    match_level = "moderate_similarity"
+                else:
+                    match_level = "low_similarity"
+                
+                result = {
+                    "similarity": round(similarity * 100, 2),
+                    "common_ngrams": common,
+                    "total_unique": union_len,
+                    "match_level": match_level
+                }
+            
+            if result["similarity"] >= threshold:
+                matches.append({
+                    "file1": os.path.relpath(files[idx_i], wiki_dir),
+                    "file2": os.path.relpath(files[idx_j], wiki_dir),
+                    **result
+                })
+        
+search_time = time.time() - time_search
+print(f"[*] Search completed: {len(matches)} matches in {search_time:.3f}s")
+
+# Save similarity cache
+try:
+    with open(sim_cache_file, 'w') as f:
+        json.dump(similarity_cache, f, indent=2)
+except Exception:
+    pass
+
+print(json.dumps({"mode": "scan_all", "threshold": threshold, "matches": matches, 
+                   "count": len(matches), "build_time": build_time}, indent=2))
 PYEOF
 
 else

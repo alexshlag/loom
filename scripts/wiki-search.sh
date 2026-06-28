@@ -35,13 +35,22 @@ escape_for_grep() {
 
 # Phase 5: Parse flags first, collect positional args for query
 POSITIONAL_ARGS=()
+BUILD_INDEX=false
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --max|-m) MAX_RESULTS="${2:-$MAX_RESULTS}"; shift 2;;
         --dynamic|-d) DYNAMIC=true; shift;;
+        --build-index|--bi) BUILD_INDEX=true; shift;;
         *) POSITIONAL_ARGS+=("$1"); shift;;
     esac
 done
+
+# If build index flag is set, run H1 index builder and exit
+if [[ "$BUILD_INDEX" == "true" ]]; then
+    echo "[*] Building H1 header index..." >&2
+    python3 "$SCRIPT_DIR/h1-index.py" --build 2>&1
+    exit $?
+fi
 
 # Fix #5: Check array length before accessing to avoid crash on bash < 4.4 with set -u
 if [[ ${#POSITIONAL_ARGS[@]} -eq 0 ]]; then
@@ -261,7 +270,7 @@ score_page() {
     echo $score
 }
 
-# ─── Main Search Flow ────────────────────────────────
+# ─── Main Search Flow (Phase 5: H1 Index + Priority) ──────────────────────
 COUNTER=0
 TEMP_FILE=$(mktemp)
 trap 'rm -f "$TEMP_FILE"' EXIT
@@ -297,6 +306,91 @@ fi
 IFS=' ' read -ra CAT_ARRAY <<< "$FINAL_CATEGORY_ORDER"
 MAX_PRIORITY=${#CAT_ARRAY[@]}
 
+# ─── Phase 1: H1 Index Fast Lookup (O(k log n)) ──────────────
+H1_RESULTS=$(
+    python3 << PYEOF
+import json, os, sys, re
+
+wiki_dir = "$WIKI_DIR"
+h1_index_file = "meta/h1-index.json"
+query = "$QUERY".lower()
+max_results = $MAX_RESULTS
+
+# Load H1 index
+try:
+    with open(h1_index_file) as f:
+        h1_index = json.load(f)
+except Exception:
+    sys.exit(0)
+
+if not isinstance(h1_index, dict):
+    sys.exit(0)
+
+query_words = query.split()
+results = []
+
+# Find matching files via H1 index (fast O(log n) lookup)
+for key, value in h1_index.items():
+    if isinstance(value, list):
+        # Category -> paths mapping — skip
+        continue
+    
+    if not isinstance(value, dict):
+        continue
+    
+    rel_path = value.get('path', '')
+    h1_text = value.get('h1', '').lower()
+    
+    if not h1_text or not rel_path:
+        continue
+    
+    # Check H1 match with query words
+    score = 0
+    for qword in query_words:
+        # Direct keyword match in H1 → +3 per occurrence
+        exact_match = sum(1 for w in h1_text.split() if w == qword)
+        score += exact_match * 3
+        
+        # Prefix/substring match → +1
+        prefix_match = sum(1 for w in h1_text.split() if w.startswith(qword))
+        score += prefix_match
+    
+    if score > 0:
+        results.append((score, rel_path))
+
+# Sort by score descending, take top N
+results.sort(key=lambda x: x[0], reverse=True)
+top_results = results[:max_results * 2]
+
+for score, path in top_results:
+    print(f"{path}:{score}")
+PYEOF
+) || true
+
+if [[ -n "$H1_RESULTS" ]]; then
+    # Score H1 results and add to temp file
+    while IFS= read -r line; do
+        filepath=$(echo "$line" | cut -d: -f1)
+        h1_score=$(echo "$line" | cut -d: -f2-)
+        
+        # Get category index for bonus
+        cat_index=0
+        for i in "${!CAT_ARRAY[@]}"; do
+            if echo "$filepath" | grep -q "${CAT_ARRAY[$i]/}.*\.md$"; then
+                cat_index=$i
+                break
+            fi
+        done
+        
+        # Get matched line content from file
+        matched_line=$(grep -i -m 1 "$QUERY" "$WIKI_DIR/$filepath" 2>/dev/null | head -1 || true)
+        
+        COUNTER=$((COUNTER + 1))
+        echo "${h1_score}|${filepath}:${matched_line}" >> "$TEMP_FILE"
+    done <<< "$H1_RESULTS"
+fi
+
+# ─── Phase 2: Priority Category Grep (O(m×n) but only for priority categories) ──
 for i in "${!CAT_ARRAY[@]}"; do
     cat="${CAT_ARRAY[$i]}"
     

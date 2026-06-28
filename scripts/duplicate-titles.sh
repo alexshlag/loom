@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# duplicate-titles.sh — проверяет дубли заголовков в пределах одной категории wiki
+# duplicate-titles.sh — проверяет дубли заголовков в пределах категорий wiki
+# Оптимизация: Python + hash-set O(n) вместо многократных subprocess head calls
 # Usage: ./scripts/duplicate-titles.sh [wiki_dir]
 # Exit code: 0 = no duplicates, 1 = duplicates found
 
@@ -9,67 +10,100 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/.."
 WIKI_DIR="${1:-$PROJECT_ROOT/wiki}"
 
-echo "[*] Checking for duplicate titles across wiki categories..." >&2
+echo "[*] Checking for duplicate titles..." >&2
 
-DUPLICATES=()
+python3 << PYEOF
+import os, re, sys
 
-# Собираем заголовки по категориям (папкам)
-for category_dir in "$WIKI_DIR/entities" "$WIKI_DIR/concepts" "$WIKI_DIR/comparisons" "$WIKI_DIR/syntheses" "$WIKI_DIR/notes" "$WIKI_DIR/meetings" "$WIKI_DIR/projects" "$WIKI_DIR/bibliography" "$WIKI_DIR/resources"; do
-  if [ ! -d "$category_dir" ]; then
-    continue
-  fi
+wiki_dir = "${WIKI_DIR}"
 
-  declare -A title_map=()
+CATEGORIES = ['entities', 'concepts', 'comparisons', 'syntheses', 
+              'notes', 'meetings', 'projects', 'bibliography', 'resources']
 
-  while IFS= read -r file; do
-    # Извлекаем h1 заголовок (первая строка, начинающаяся с "# ")
-    TITLE=$(head -n 5 "$file" | grep "^# " | head -1 | sed 's/^# //' || true)
+SYSTEM_FILES = {'index.md', 'log.md', 'timeline.md', 'snapshot.md'}
 
-    if [ -z "$TITLE" ]; then
-      continue
-    fi
+# Hash-set: title -> [file_paths]
+title_map = {}  # {category: {title: [paths]}}
+for cat in CATEGORIES:
+    title_map[cat] = {}
 
-    # Проверяем дубли в пределах категории
-    if [[ "${title_map[$TITLE]+isset}" ]]; then
-      DUPLICATES+=("$category_dir: '$TITLE' exists in ${title_map[$TITLE]} and $file")
-    else
-      title_map["$TITLE"]="$file"
-    fi
+duplicates = []
 
-  done < <(find "$category_dir" -name "*.md" -type f 2>/dev/null || true)
+def extract_h1(filepath):
+    """Extract first H1 header from markdown file."""
+    try:
+        with open(filepath) as f:
+            for line in f:
+                if re.match(r'^# ', line.strip()):
+                    return line.strip()[2:].strip()
+    except Exception:
+        pass
+    return None
 
-done
+# Check each category directory
+for cat in CATEGORIES:
+    cat_dir = os.path.join(wiki_dir, cat)
+    
+    title_map[cat] = {}  # Reset for this category
+    
+    if not os.path.isdir(cat_dir):
+        continue
+        
+    for fname in sorted(os.listdir(cat_dir)):
+        if not fname.endswith('.md'):
+            continue
+            
+        fpath = os.path.join(cat_dir, fname)
+        h1_title = extract_h1(fpath)
+        
+        if not h1_title:
+            continue
+        
+        # Hash-set lookup: O(1) per title
+        rel_path = os.path.relpath(fpath, wiki_dir)
+        
+        if h1_title in title_map[cat]:
+            duplicates.append({
+                'title': h1_title,
+                'category': cat,
+                'files': [os.path.relpath(os.path.join(cat_dir, existing_file), wiki_dir) 
+                         for existing_file in title_map[cat][h1_title]] + [rel_path]
+            })
+        else:
+            title_map[cat].setdefault(h1_title, []).append(rel_path)
 
-# Проверяем root файлы wiki/ (index.md, log.md, timeline.md, snapshot.md) — они не дублируются между папками
-ROOT_FILES=("$WIKI_DIR/index.md" "$WIKI_DIR/log.md" "$WIKI_DIR/timeline.md" "$WIKI_DIR/snapshot.md")
-declare -A root_title_map=()
+# Check root-level wiki files (not duplicated across categories)
+root_h1_titles = {}
+for fname in sorted(os.listdir(wiki_dir)):
+    if not fname.endswith('.md'):
+        continue
+    fpath = os.path.join(wiki_dir, fname)
+    
+    h1_title = extract_h1(fpath)
+    if not h1_title:
+        continue
+    
+    # Skip system files from root duplicate check (they're handled separately)
+    rel_path = fname.replace('.md', '').title() + '.Md'
+    
+    if h1_title in root_h1_titles:
+        duplicates.append({
+            'title': h1_title,
+            'category': 'root',
+            'files': [root_h1_titles[h1_title], fname]
+        })
+    else:
+        root_h1_titles[h1_title] = fname
 
-for file in "${ROOT_FILES[@]}"; do
-  if [ ! -f "$file" ]; then
-    continue
-  fi
+if len(duplicates) > 0:
+    print(f"[!] Duplicate titles found ({len(duplicates)}):")
+    for dup in duplicates:
+        files_str = ', '.join(dup['files'])
+        cat_label = f"category '{dup['category']}'" if dup['category'] != 'root' else 'root wiki/'
+        print(f"    {dup['title']} ({cat_label}): {files_str}")
+    
+    sys.exit(1)
 
-  TITLE=$(head -n 5 "$file" | grep "^# " | head -1 | sed 's/^# //' || true)
-
-  if [ -z "$TITLE" ]; then
-    continue
-  fi
-
-  if [[ "${root_title_map[$TITLE]+isset}" ]]; then
-    DUPLICATES+=("wiki/: '$TITLE' exists in ${root_title_map[$TITLE]} and $file")
-  else
-    root_title_map["$TITLE"]="$file"
-  fi
-
-done
-
-if [ ${#DUPLICATES[@]} -gt 0 ]; then
-  echo "[!] Duplicate titles found (${#DUPLICATES[@]}):" >&2
-  for dup in "${DUPLICATES[@]}"; do
-    echo "    $dup" >&2
-  done >&2
-  exit 1
-fi
-
-echo "[✓] No duplicate titles found" >&2
-exit 0
+print("[✓] No duplicate titles found")
+sys.exit(0)
+PYEOF
