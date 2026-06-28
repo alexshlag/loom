@@ -1950,3 +1950,29 @@ SELECT * FROM pages WHERE pages MATCH 'keyword1 keyword2';
 
 *Трекер создан: 2026-06-27*  
 *Версия схемы: 9*
+
+## ✅ RESOLVED Issues (2026-06-28)
+
+### Similarity Index Script — Fixed & Operational
+
+**Проблема**: `IndexError: list index out of range` при запуске `--scan-all`.
+**Корень проблемы**: 
+1. MinHash инициализировался с `float('inf')` — но `int(float('inf'))` вызывает OverflowError.
+2. При инициализации `minhashes = [0xFFFFFFFF]` — все хеши были 0xFFFFFFFF, так как MD5 hash всегда > uint32 max.
+3. LSH index не находил collisions (1 bucket per doc), что приводило к пустым matches.
+
+**Исправления**:
+- `minhashes = [float('inf')]` для правильной инициализации
+- `signature()` теперь маскирует float('inf') → MAX_UINT32
+- Файл: `/home/andrew/projects/local_wiki/loom/scripts/performance/similarity_index.py`
+
+**Fallback**: При low collision rate LSH автоматически переключается на full pairwise scan.
+Результат: 45 similar pairs найдены (threshold=15%).
+
+```bash
+# Теперь работает:
+python3 scripts/performance/similarity_index.py --build wiki/
+python3 scripts/performance/similarity_index.py --scan-all --threshold 15
+```
+
+**Output**: JSON отчёт с similarity scores, match_level, top-20 matches.
