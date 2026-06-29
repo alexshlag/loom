@@ -121,7 +121,7 @@ score_page() {
     score=$((score + freq))
     
     # S5: Popularity boost from search_analytics.json (soft signal, never filters)
-    # Counts how many times filepath appeared as top result across queries.
+    # Reads topics{} → uses persistent rating DB. Falls back to entries list.
     local popularity_boost=0
     if [[ -f "meta/search_analytics.json" ]]; then
         popularity_boost=$(POPULARITY_FILEPATH="$filepath" ANALYTICS_PATH="meta/search_analytics.json" \
@@ -134,7 +134,10 @@ mb = 30
 try:
     with open(af) as f: data = json.load(f)
 except (FileNotFoundError, json.JSONDecodeError): print(0); exit()
-count = sum(1 for e in data.get("entries", []) if e.get("top_path") and fp.replace("wiki/", "") in e["top_path"])
+topics = data.get("topics", {})
+count = topics.get(fp, {}).get("popularity_score", 0)
+if count == 0:
+    count = sum(1 for e in data.get("entries", []) if e.get("top_path") and fp.replace("wiki/", "") in e["top_path"])
 print(min(count * tpb, mb))
 ' 2>/dev/null) || popularity_boost=0
     fi
@@ -336,22 +339,77 @@ top_path = os.environ.get("ANALYTICS_TOP_PATH", "")
 analytics_file = os.environ.get("ANALYTICS_FILE", "meta/search_analytics.json")
 max_entries = 100
 
-entry = {
-    "query": query,
-    "timestamp": datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
-    "results_count": results_count,
-    "top_path": top_path if top_path else None,
-}
-
+# Read existing data or create new structure
 try:
     with open(analytics_file, "r") as f:
         data = json.load(f)
 except (FileNotFoundError, json.JSONDecodeError):
-    data = {"entries": []}
+    data = {"schema_version": 2, "max_entries": max_entries, "entries": [], "topics": {}}
 
-data["entries"].append(entry)
-data["entries"] = data["entries"][-max_entries:]  # auto-trim
+# Ensure structure exists
+if "schema_version" not in data:
+    data["schema_version"] = 2
+if "max_entries" not in data:
+    data["max_entries"] = max_entries
+if "entries" not in data:
+        data["entries"] = []
+if "topics" not in data:
+    data["topics"] = {}
 
+# Generate next sequential ID from current entries count
+next_id_num = len(data.get("entries", [])) + 1
+query_id = f"q_{next_id_num:04d}"
+
+# Create new entry
+timestamp_str = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+new_entry = {
+    "id": query_id,
+    "timestamp": timestamp_str,
+    "query": query,
+    "results_count": results_count,
+}
+if top_path:
+    new_entry["top_path"] = top_path
+else:
+    new_entry["top_path"] = None
+
+# Append entry
+data["entries"].append(new_entry)
+
+# Trim oldest entries by timestamp (FIFO) if at capacity
+if len(data["entries"]) > data.get("max_entries", max_entries):
+    # Sort by timestamp ascending, keep only newest N
+    data["entries"].sort(key=lambda e: e.get("timestamp", ""))
+    trimmed_count = len(data["entries"]) - data.get("max_entries", max_entries)
+    trimmed_ids = [e["id"] for e in data["entries"][:trimmed_count]]
+    del data["entries"][:trimmed_count]
+    # Clean up topics — remove IDs that no longer exist
+    for topic_id, td in list(data.get("topics", {}).items()):
+        td["first_queries"] = [q for q in td.get("first_queries", []) if q not in trimmed_ids]
+else:
+    trimmed_ids = []  # nothing removed
+
+# Update topics{} by top_path (persistent rating DB)
+if top_path and results_count > 0:
+    topics = data.setdefault("topics", {})
+    td = topics.get(top_path)
+    if td:
+        # Increment counters, update last_seen
+        td["popularity_score"] = td.get("popularity_score", 1) + 1
+        td["last_seen"] = timestamp_str
+        # Add query_id to first_queries (deduplicate)
+        fq = set(td.get("first_queries", []))
+        fq.add(query_id)
+        td["first_queries"] = list(fq)
+    else:
+        # Create new topic entry
+        topics[top_path] = {
+            "popularity_score": 1,
+            "last_seen": timestamp_str,
+            "first_queries": [query_id],
+        }
+
+# Write back atomically via temp-file + rename
 with open(analytics_file + ".tmp", "w") as f:
     json.dump(data, f, indent=2)
 os.rename(analytics_file + ".tmp", analytics_file)  # atomic rename
