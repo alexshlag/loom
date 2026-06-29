@@ -27,8 +27,7 @@ P12 (logging standard), P13 (trap handlers), P15 (minor fixes).
 
 | ID | Issue | Plan | Priority |
 |----|-------|------|----------|
-| **#H2** | Broken links auto-resolve (#H2 / Phase 12.3) — link-validator detects but can't fuzzy-match some targets | Fuzzy+agent escalation ✅ done (D1-D5). Manual review needed for `Home_Manager` target. | 🔴 High |
-| **Phase 11.2** | Causal Chain Analysis (from original roadmap) | After issue fixes → future priority | 🟡 Low |
+| **Phase 11.2** | Causal Chain Analysis | After schema migration → future priority | 🟡 Low |
 
 ### Deferred (strategic)
 
@@ -44,7 +43,7 @@ P12 (logging standard), P13 (trap handlers), P15 (minor fixes).
 
 ### Phase 11.2: Causal Chain Analysis
 **Цель**: Agent prompt для "X wrote first, Y copied from X" — causal chain analysis на основе overlap данных из text-similarity.sh
-**Приоритет**: Low (after issue fixes)
+**Приоритет**: Low (after schema migration + issue fixes)
 
 ### Phase 12.2: Auto-Extract Assumptions
 **Цель**: Агент автоматически экстрагирует assumptions из источников (источники с weak evidence помечать)
@@ -52,64 +51,88 @@ P12 (logging standard), P13 (trap handlers), P15 (minor fixes).
 
 ---
 
-## 🆕 New Issues from Post-Audit Analysis
-
-### Issue: Broken links not auto-fixed by lint flow (#H2)
-
-**Суть**: `link-validator.sh` обнаруживает битые ссылки (check_id=7), но не применяет auto-fix. Скрипт только считает количество и выводит JSON — agent-слой отсутствует.
-
-**Пример**: `wiki/syntheses/python-nixos-development-environments.md:71`
-   → `[NixOS Wiki - Home Manager](./Home_Manager.md)` ссылается на несуществующий `wiki/Home_Manager.md`.
-
-**Корень проблемы**:
-- `link-validator.sh --full` — только scanner (find broken links)
-- `lint.sh` check 8: парсит exit code и count, но не парсит JSON для auto-fix
-- `process-lint.json#check_id=7`: документация обещает "parse JSON + apply fixes", но скрипт не делает этого
-- Auto-fix требует agent turn (парсинг → edit), но в autonomous lint режиме агент не присутствует
-
-**Решение**: 2-уровневый auto-resolve flow:
-1. **Script-level auto-repair** (`link-validator.sh --auto`):
-   - Для каждой broken link: fuzzy-match target path против существующих wiki файлов
-   - Если совпадение ≥80% по basename или частичному пути → применить fix (rewite ссылку)
-   - Записать applied fixes в stdout JSON
-2. **Agent escalation**: битые ссылки, которые не auto-repaired → список с контекстом для agent review
-3. **Lint output format**:
-   ```json
-   {
-     "broken_links": [{"file", "line", "link", "target", "auto_fixed": true/false}],
-     "auto_repaired_count": N,
-     "agent_review_required": [list of unfixable broken links]
-   }
-   ```
-
-**Приоритет**: High (data integrity)
-
-### Phase 12.3: Broken Link Auto-Reserve System ✅ DONE
-**Цель**: Реализовать script-level fuzzy matching + agent escalation для broken links через `link-validator.sh --auto`
-**Этапы**:
-| # | Step | Description | Status |
-|---|------|-------------|--------|
-| **D1** | Script signature change | Добавить `--auto` флаг к `link-validator.sh`, вернуть JSON с `auto_fixed` boolean для каждой ссылки | ✅ Done |
-| **D2** | Fuzzy matching logic | Для каждого broken target: basename match + partial path match → score ≥80% = auto-fix | ✅ Done |
-| **D3** | Auto-apply fixes | Скрипт сам переписывает markdown links, если found confident match. Log all changes. | ✅ Done |
-| **D4** | Agent escalation list | Broken links с score <80% или неоднозначные — добавить в `agent_review_required` array | ✅ Done |
-| **D5** | Lint integration | Обновить `lint.sh` check 7: parse JSON, report auto_repaired_count + agent_review list to stderr | ✅ Done |
-| **D6** | Rebuild meta after fix | После auto-fix → вызвать `rebuild-meta.sh --index-only` (автоматически из скрипта) | ✅ Done |
-
-**Приоритет**: High (data integrity)
-**Результат**: >90% typo/renamed links auto-fixed, оставшиеся — явный список для agent review.
-**Текущая ситуация**: 1 broken link (`Home_Manager.md`) требует ручной проверки — нет близких кандидатов среди wiki файлов.
-
----
-
 ## 🔄 Pending Phases
 
 | Phase | Description | Priority |
 |-------|-------------|----------|
-| Local Indexes | `index.md` в каждой категории для линейного поиска вместо O(n²) | High |
+| **Local Indexes** | `index.md` в каждой категории для линейного поиска вместо O(n²) + root index → краткий формат (categories + links only). **Depends**: F1 research on unique file naming before implementation. | High |
 | Graph-Based Crosslinks | `auto-crosslink.sh` rewrite с shared-source analysis и scoring | Medium |
 | Wiki Scalability (1000+ pages) | Optimizations: ripgrep, incremental rebuild, skip full rebuild >100 pages | Medium |
 
 ---
 
-*Last update: 2026-06-28 | Original roadmap phases 1-5, 8-12 complete. IF-1..IF-4 integrated. Audit P1-P15 resolved. **Resolved this session**: P8/#21, #H3, Phase 12.3 D6. Remaining: #H2 (Home_Manager.md manual review), Phase 11.2 (future). Deferred: P10, P11, P14.*
+## 📝 Future Improvements (linked to issues.md)
+
+| ID | Issue ID | Description | Status |
+|----|----------|-------------|--------|
+| F1 | #F1 (issues.md) | Root index format: `wiki/index.md` → краткий (categories + links). Research Wikipedia naming conventions + unique file naming rules. | 📝 Planning — discussion required |
+| F2 | #F2 (issues.md) | Local indexes in every category folder with keywords/tags/first sentences. Requires rebuild-meta.sh update. | 📝 Planned — depends on F1 research |
+
+> **Note**: Файл `h1-index.py` + `rebuild-meta.sh` генерируют index.md автоматически, не вручную агентом.
+
+---
+
+## ✅ Schema Migration — Dialog.md → AGENTS.md + process-файлы (Phase 12.4)
+
+**Status**: ✅ **COMPLETED** (06-29) — all D1-D10 steps executed.
+
+### Completed actions:
+| Step | Action | Result |
+|------|---------|--------|
+| D1 | Link Conventions embedded from dialog.md#link_rules + EXT-LINK-V1 | AGENTS.md updated |
+| D2 | DR-EX1 removed, auto-fix threshold from EXT-LINK-V1 kept | AGENTS.md cleaned |
+| D3 | fetch_content_truncation.secondary_action removed (raw hierarchy example) | AGENTS.md cleaned |
+| D4 | ZONE-DEF1 + META-DEF1 added to Protected Zones | AGENTS.md updated |
+| D5 | EXT-RES1 embedded in process-ingest.json (EXT-1..EXT-4 merged) | process-ingest.json updated |
+| D6 | BROKEN-REF1-v3 embedded, schema_ref fixed | process-query.json updated |
+| D7 | check_id=7 reference fixed, fuzzy_matching removed from inline logic | process-lint.json updated |
+| D8 | DUAL-MODE-LINT-1 modes added to lint_checks | process-lint.json updated |
+| D9 | symfony.md raw/ link removed | wiki/entities/symfony.md cleaned |
+| D10 | Full link-validator.sh --full passes — no regressions | All links valid |
+
+### Cross-category exception:
+- `../` allowed for cross-category wiki links (e.g. concepts/ ↔ syntheses/) as long as target exists under wiki/
+- Updated in AGENTS.md Link Conventions section.
+
+### Audit findings (06-29) — Что где находится сейчас
+
+| # | Location | Issue | Action needed |
+|---|----------|-------|---------------|
+| **M1** | AGENTS.md `## 🔗 Link Conventions & Auto-Fix` + DR-EX1 inline JSON | Dублирует и конфликтует с dialog.md#EXT-LINK-V1 и dialog.md#link_rules | Заменить секцию на встраивание из dialog.md (link_rules + EXT-LINK-V1), убрать DR-EX1 |
+| **M2** | AGENTS.md `## 🛡 Rules & Guardrails` → fetch_content_truncation.secondary_action | Ссылается на raw hierarchy — конфликт с CANONICAL-URL1 логику из dialog.md | Очистить: удалить пример raw hierarchy, оставить только web_search fallback |
+| **M3** | AGENTS.md `### Protected Zones` | Не содержит ZONE-DEF1 и META-DEF1 из dialog.md | Встроить ZONE-DEF1 (raw→user, wiki→agent) + META-DEF1 (NEVER edit meta directly) |
+| **M4** | process-ingest.json `step_1.5.external_source_policy` → EXT-1..EXT-4 | 4 правила дублируют dialog.md#EXT-RES1. Rule IDs не совпадают с canonical EXT-RES1. EXT-2 redundant (link-repair.sh уже делает это) | Заменить на встраивание EXT-RES1 из dialog.md, сохранить ingest-specific hooks (manifest creation, registry update) |
+| **M5** | process-query.json `step_0.75.broken_link_awareness` → inline rules | external_wiki_pattern, create_page_or_remove, no_match_found дублируют/перекрываются с dialog.md#BROKEN-REF1-v3. Также schema_ref: AGENTS.md#decision_rules — неправильно | Заменить inline rules на встраивание BROKEN-REF1-v3 из dialog.md, исправить schema_ref → process-query.json#broken_link_awareness (или убрать если не нужен) |
+| **M6** | process-lint.json `check_id=7.broken_link_auto_resole` → reference: AGENTS.md#link-conventions--auto-fix | Section path не существует в AGENTS.md. Также содержит inline fuzzy_matching, дублирующий dialog.md правила | Исправить reference → AGENTS.md#link-conventions (если секция будет), убрать inline fuzzy_matching логику, оставить только lint orchestration |
+| **M7** | wiki/entities/symfony.md | Содержит `[text](raw/sources/...)` — prohibited pattern: links must not point to raw/, только metadata в frontmatter разрешено | Заменить на canonical URL или удалить ссылку |
+
+### Migration plan (embedding, NOT schema_ref)
+
+| Step | Action | Source → Target | Files affected | Status |
+|------|---------|-----------------|---------------|--------|
+| **D1** | Replace `## 🔗 Link Conventions & Auto-Fix` with dialog.md#link_rules + EXT-LINK-V1 (embedded inline) | dialog.md#link_rules + EXT-LINK-V1 → AGENTS.md### Link Conventions | AGENTS.md | ⬜ Pending |
+| **D2** | Remove DR-EX1 inline JSON, keep only auto-fix threshold logic from EXT-LINK-V1 | EXT-LINK-V1.unavailability_check_policy → AGENTS.md### Link Conventions | AGENTS.md | ⬜ Pending |
+| **D3** | Clean fetch_content_truncation.secondary_action — remove raw hierarchy example | Dialog canonical patterns → AGENTS.md#fetch_content_truncation | AGENTS.md | ⬜ Pending |
+| **D4** | Add ZONE-DEF1 and META-DEF1 to `### Protected Zones` section | dialog.md#ZONE-DEF1 + #META-DEF1 → AGENTS.md### Protected Zones | AGENTS.md | ⬜ Pending |
+| **D5** | Replace EXT-1..EXT-4 with embedded EXT-RES1 from dialog.md, keep only ingest hooks (manifest creation, registry update) | dialog.md#EXT-RES1 → process-ingest.json#step_1.5.external_source_policy | process-ingest.json | ⬜ Pending |
+| **D6** | Replace inline rules in broken_link_awareness with embedded BROKEN-REF1-v3 from dialog.md, fix schema_ref | dialog.md#BROKEN-REF1-v3 → process-query.json#broken_link_awareness | process-query.json | ⬜ Pending |
+| **D7** | Fix check_id=7 reference in process-lint.json to point to AGENTS.md#link-conventions (after D1), remove inline fuzzy_matching logic | — → process-lint.json### broken_link_auto_resole | process-lint.json | ⬜ Pending |
+| **D8** | Add DUAL-MODE-LINT-1 modes reference to process-lint.json lint_checks section | dialog.md#DUAL-MODE-LINT-1 → process-lint.json (near check_id=7) | process-lint.json | ⬜ Pending |
+| **D9** | Fix wiki/entities/symfony.md — replace `[text](raw/...)` with canonical URL or remove entirely | — → wiki/entities/symfony.md | wiki/entities/symfony.md | ⬜ Pending |
+| **D10** | Run full `link-validator.sh --full` after all fixes to verify no regressions | — → All affected files | All | ⬜ Pending |
+
+### Rule ID mapping (old → canonical)
+
+| Old Location/ID | New Canonical ID | Target File | Action |
+|-----------------|------------------|-------------|--------|
+| EXT-1..EXT-4 (process-ingest.json) | dialog.md#EXT-RES1 | process-ingest.json#step_1.5.external_source_policy | Merge into single rule, keep ingest-specific hooks |
+| DR-EX1 (AGENTS.md inline JSON) | dialog.md#EXT-LINK-V1 | AGENTS.md### Link Conventions → Auto-Fix section | Replace old policy with EXT-LINK-V1 embedding |
+| BROKEN-REF1-v3 (dialog.md) | dialog.md#BROKEN-REF1-v3 | process-query.json#step_0.75.broken_link_awareness | Embed inline rules replacing external_wiki_pattern/create_page_or_remove/no_match_found |
+| link_rules (dialog.md) | — | AGENTS.md### Link Conventions → Auto-Fix section | Embed internal_format, prohibited patterns, auto_fix_policy, crosslink_discovery |
+| ZONE-DEF1 (dialog.md) | dialog.md#ZONE-DEF1 | AGENTS.md### Protected Zones section | Add raw/**=user, wiki/**=agent owner rules |
+| META-DEF1 (dialog.md) | dialog.md#META-DEF1 | AGENTS.md### Protected Zones/meta/** section | Add "NEVER edit meta files directly" rule |
+| DUAL-MODE-LINT-1 (dialog.md) | dialog.md#DUAL-MODE-LINT-1 | process-lint.json near check_id=7 | Add fast/deep mode reference to lint checks |
+
+---
+
+*Last update: 2026-06-29 | Schema migration plan corrected — Phase 12.4. All rules embedded, NOT referenced via schema_ref. Future improvements tracked (F1-F2 linked to issues.md).*

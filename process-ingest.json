@@ -35,6 +35,37 @@
       ]
     },
     {
+      "step_id": "1.5",
+      "name": "external_source_policy",
+      "description": "Canonical external source rules (EXT-RES1) with ingest-specific hooks for manifest creation and registry updates.",
+      "rules": [
+        {
+          "rule_id": "EXT-RES1",
+          "core_rule": "External links → canonical http/https URLs. Never raw/** or ../**.",
+          "exceptions": [
+            {"field": "frontmatter sources[]", "reason": "Metadata only, not clickable"},
+            {"field": "descriptive text", "reason": "raw/** in prose = documentation, not link"}
+          ],
+          "canonical_patterns": {
+            "github_specific_file": "https://github.com/{owner}/{repo}/blob/{branch}/{path}",
+            "doc_site_root": "https://{domain}/en/latest/ or /manual/",
+            "article_page": "https://{domain}/{specific-page}"
+          },
+          "rule": "Use most specific URL matching content granularity. Repo root = only if covering entire project.",
+          "ingest_flow": [
+            {"step": 1, "action": "classify source: external_url or local_only"},
+            {"step": 2, "action": "extract canonical URL → replace raw/ link"}
+          ],
+          "exception_local_only": "Link to raw/ required when no external URL exists",
+          "ingest_hooks": [
+            {"hook": "create_src_id_and_manifest", "path": "tracking/raw_manifests/SRC-{timestamp}-{ID}.json"},
+            {"hook": "add_to_raw_registry", "command": "update tracking/raw_registry.json with ingested_sources array"}
+          ]
+        }
+      ],
+      "schema_ref": "AGENTS.md#link-conventions"
+    },
+    {
       "step_id": "1",
       "name": "source_analysis",
       "actions": [
@@ -93,24 +124,21 @@
         },
         {
           "action": "raw_source_link_repair",
-          "description": "При ingest — проверить все markdown ссылки в захваченном raw-источнике. Заменить битые внутренние ссылки на внешние URL.",
+          "command": "./scripts/raw-link-repair.sh ${SOURCE_PATH} --dry-run",
+          "description": "Автоматически преобразует все относительные markdown-ссылки в raw-источнике на GitHub permalinks.",
           "rules": [
             {
-              "pattern": "link_text suggests external wiki (e.g. 'NixOS Wiki - X') + target .md doesn't exist in captured repo",
-              "action": "rewrite: replace ./broken.md with https://wiki.nixos.org/wiki/X or equivalent external URL"
+              "pattern": "relative paths like ./file.md or ../README.md → https://github.com/owner/repo/blob/<branch>/file.md",
+              "action": "auto_convert: replace all relative .md links with GitHub permalink"
             },
             {
-              "pattern": "relative path references upstream file not captured (e.g. '../skills/aif/SKILL.md#section')",
-              "action": "rewrite: convert to GitHub permalink https://github.com/owner/repo/blob/<branch>/path/to/file.md"
-            },
-            {
-              "pattern": "local wiki reference that matches an existing page but with wrong path/case",
-              "action": "auto_fix: rewrite to correct relative path"
+              "pattern": "subdirectory references like ../docs/config.md → https://github.com/owner/repo/blob/<branch>/docs/config.md",
+              "action": "auto_convert: preserve subdirectory structure in permalink"
             }
           ],
-          "agent_prompt": "При capture raw источника:\n1. Scan all markdown links [text](path) in the source file\n2. For each link where target .md doesn't exist locally:\n   a. Check if link text indicates external resource (wiki, docs, etc.) → rewrite to external URL\n   b. Check if it's a relative path that exists in upstream repo → rewrite to GitHub permalink\n3. Log all rewrites in manifest.json under 'link_repairs': [{original, repaired, reason}]\n4. DO NOT auto-fix references to raw/ protected zones or wiki pages — flag for review instead",
-          "output": "manifest_link_repairs_list",
-          "schema_ref": "AGENTS.md#decision_rules"
+          "post_action": "verify_repairs_by_running_again_without_dry_run",
+          "log_to": "manifest.json under 'link_repairs': [{original, repaired, count}]",
+          "schema_ref": "scripts/raw-link-repair.py"
         }
       ]
     },

@@ -68,7 +68,7 @@ $ nix-shell -p python3 --command "python -m venv .venv --copies"
 
 ## Связи
 * [Python Development Environments on NixOS](concepts/python-nixos-development.md) — исходная концепция
-* [NixOS Wiki - Home Manager](./Home_Manager.md) — FHS-обёртка для pixi через Home Manager
+* [NixOS Wiki - Home Manager](https://wiki.nixos.org/wiki/Home_Manager) — FHS-обёртка для pixi через Home Manager
 * [Nixpkgs Manual - Contributing Guidelines](https://nixos.org/nixpkgs/manual/#contributing-guidelines)
 
 ## Создано 2025-06-24 — синтез по запросу пользователя
@@ -76,4 +76,10 @@ $ nix-shell -p python3 --command "python -m venv .venv --copies"
 * **nix develop** vs **nix shell**:前者 для проекта (зависимости определены в flake.nix),后者 для ad-hoc сессии. Используйте前者 когда есть проект,后者 когда нужно быстро тестировать.
 * **NixOS modules** — единственный правильный способ интеграции flake-зависимостей в NixOS конфигурации (не через `nixpkgs.override`, а через imports).
 * **Build vs shell**: `nix build` компилирует и сохраняет результат в store, `nix shell` временно загружает зависимости только для текущей сессии.
+
+## Reconciliation note (#H2)
+> Эта страница и [concepts/python-nixos-development.md](concepts/python-nixos-development.md) обе используют один источник (SRC-2025-06-24-002). Они охватывают одну тему из разных углов:
+> - **Концепт** — практическое руководство и принципы
+> - **Эта страница** — структурированный анализ способов с выводами
+> Обе страницы согласованы, дублирование намеренное для разных целей чтения.
 

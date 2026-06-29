@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/.."
-WIKI_DIR="${2:-$PROJECT_ROOT/wiki}"
+WIKI_DIR="$PROJECT_ROOT/wiki"
 DEFAULT_MAX=100
 MODE=""
 PATTERN=""
@@ -12,16 +12,27 @@ BROKEN_COUNT=0
 AUTO_MODE=false
 
 # Parse arguments — flexible order: flags can come before/after wiki_dir
+# Usage: link-validator.sh [--full|--auto] [wiki_dir?] [target_file?]
+FILE_TARGET=""
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --full) MODE="full"; shift;;
     --auto|-a) AUTO_MODE=true; MODE="full-auto"; shift;;
     --max) MAX_MATCHES="$2"; shift 2;;
+    --file|-f) FILE_TARGET="$2"; shift 2;;
     *)
-      # Last positional arg is wiki_dir (or pattern in mode=pattern)
-      if [[ "$MODE" == "" ]]; then
-        MODE="full"
+      if [[ -d "$1" ]]; then
+        # Directory arg: treat as wiki_dir override
         WIKI_DIR="$1"
+      elif [[ -n "$FILE_TARGET" && "$MODE" == "full" ]] || [[ -z "$FILE_TARGET" && "$MODE" != "" ]]; then
+        # Second positional arg after mode is always a file target
+        FILE_TARGET="$1"
+      elif [[ "$MODE" == "" ]]; then
+        # First positional arg before any flag: wiki_dir
+        WIKI_DIR="$1"
+        MODE="full"
+      else
+        FILE_TARGET="$1"
       fi
       shift
       ;;
@@ -170,8 +181,15 @@ check_file() {
       while IFS= read -r match; do
         local target_path=$(echo "$match" | grep -oP '(?<=\]\()[^)]+(?=\))' || true)
         
-        # Skip external URLs, mailto, empty paths
-        case "$target_path" in https://*|http://*|mailto:*|raw/*) continue ;; esac
+        # Skip external URLs and mailto; raw/ is internal — must exist on disk
+        case "$target_path" in
+            https://*|http://*|mailto:*) continue ;;
+            raw/*)
+                # Check if raw file exists relative to project root
+                local full_raw="$PROJECT_ROOT/$target_path"
+                [[ ! -f "$full_raw" ]] && BROKEN_COUNT=$((BROKEN_COUNT + 1)) || continue
+                ;;
+        esac
         
         local base_target=$(echo "$target_path" | sed 's/#.*//')
         if [[ -z "$base_target" ]]; then continue; fi
@@ -236,11 +254,20 @@ check_file() {
 # --- Main execution ---
 
 if [[ "$MODE" == "full" || "$MODE" == "full-auto" ]]; then
-  echo "[*] Scanning all wiki files for broken internal links (auto-repair: $([ "$AUTO_MODE" = true ] && echo enabled || echo disabled))" >&2
-  
-  while IFS= read -r file; do
-    check_file "$file"
-  done < <(find "$WIKI_DIR" -name "*.md" -type f 2>/dev/null)
+  if [[ -n "$FILE_TARGET" ]]; then
+    # Single file mode: check only the specified target file
+    local_file="$FILE_TARGET"
+    [[ -f "$local_file" ]] || { echo "[!] File not found: $local_file" >&2; exit 1; }
+    echo "[*] Scanning $local_file for broken internal links (auto-repair: $([ "$AUTO_MODE" = true ] && echo enabled || echo disabled))" >&2
+    check_file "$local_file"
+  else
+    # Full wiki scan mode
+    echo "[*] Scanning all wiki files for broken internal links (auto-repair: $([ "$AUTO_MODE" = true ] && echo enabled || echo disabled))" >&2
+    
+    while IFS= read -r file; do
+      check_file "$file"
+    done < <(find "$WIKI_DIR" -name "*.md" -type f 2>/dev/null)
+  fi
 
 elif [[ "$MODE" == "pattern" ]]; then
   echo "[*] Scanning wiki for references to: $PATTERN (max: $MAX_MATCHES)" >&2

@@ -65,9 +65,9 @@ ai-factory init → .ai-factory/config.yaml → DESCRIPTION.md + AGENTS.md + ARC
 
 - [GitHub: lee-to/ai-factory](https://github.com/lee-to/ai-factory) (967 stars, 89 forks)
 - [Official Site: aif.cutcode.dev](https://aif.cutcode.dev)
-- [Getting Started](raw/github/lee-to/ai-factory@2.x/getting-started.md)
-- [Development Workflow](raw/github/lee-to/ai-factory@2.x/workflow.md)
-- [Core Skills Reference](raw/github/lee-to/ai-factory@2.x/skills.md)
+- [Getting Started](https://github.com/lee-to/ai-factory/blob/2.x/docs/getting-started.md)
+- [Development Workflow](https://github.com/lee-to/ai-factory/blob/2.x/docs/workflow.md)
+- [Core Skills Reference](https://github.com/lee-to/ai-factory/blob/2.x/docs/skills.md)
 
 ## Новые связи (2026-06-24)
 * [AI Factory vs Pi — Category Distinction](concepts/ai-factory-vs-pi.md) — различение категорий: AI Factory = workflow schema, Pi = harness runtime

@@ -1,31 +1,77 @@
 {
-  "last_updated": "2026-06-28T15:30:00+00",
+  "last_updated": "2026-06-29T10:XX:XX+03",
   "current_mode": null,
-  "focus_node": null,
+  "focus_node": "issues.md update + PLAN.md sync for F1-F2 future improvements",
   "open_pages": [],
   "dead_ends": [],
+  "broken_links_resolved": [
+    {
+      "file": "wiki/syntheses/python-nixos-development-environments.md",
+      "original_link": "./Home_Manager.md",
+      "replaced_with": "https://wiki.nixos.org/wiki/Home_Manager",
+      "rule_applied": "DR-EX1 (External Links Standard)",
+      "timestamp": "2026-06-28T17:10:00+00",
+      "notes": "Fixed to correct NixOS Wiki URL per issues.md #27 requirement"
+    },
+    {
+      "tool": "scripts/link-validator.sh (updated raw/* rule)",
+      "file": "wiki/entities/ai-factory.md",
+      "original_links": [
+        "raw/github/lee-to/ai-factory@2.x/getting-started.md",
+        "raw/github/lee-to/ai-factory@2.x/workflow.md",
+        "raw/github/lee-to/ai-factory@2.x/skills.md"
+      ],
+      "replaced_with": [
+        "https://github.com/lee-to/ai-factory/blob/2.x/docs/getting-started.md",
+        "https://github.com/lee-to/ai-factory/blob/2.x/docs/workflow.md",
+        "https://github.com/lee-to/ai-factory/blob/2.x/docs/skills.md"
+      ],
+      "rule_applied": "raw/* links must exist on disk; when missing \u2192 replace with external GitHub permalinks",
+      "timestamp": "2026-06-28T17:XX:XX+00",
+      "notes": "Fixed 3 broken raw-links to official GitHub docs. Also fixed link-validator.sh to check raw/* existence instead of skipping them."
+    },
+    {
+      "tool": "scripts/raw-link-repair.py + raw-link-repair.sh",
+      "scope": "raw/github/lee-to/ai-factory@2.x (13 files)",
+      "repairs_count": 76,
+      "rule_applied": "github/{owner}/{repo}@{branch}/path.md \u2192 https://github.com/owner/repo/blob/<branch>/path.md",
+      "timestamp": "2026-06-28T17:XX:XX+00",
+      "notes": "All relative markdown links in ai-factory repo converted to GitHub permalinks. Process-ingest.json updated to call raw-link-repair.sh at step 1.",
+      "issue_reference": "issues.md #27"
+    }
+  ],
   "query_summary": {
-    "intent": "Phase 12.3 completion + P8/#H3 fixes — audit and continue work from PLAN.md",
+    "intent": "Phase 12.3 completion + P8/#H3 fixes \u2014 audit and continue work from PLAN.md",
     "pages_read": [
       "PLAN.md",
       "issues.md",
       "working_memory.json"
     ],
     "key_findings": [
-      "P8 fixed: wiki-search.sh heredoc injection → env var passing (both locations)",
+      "P8 fixed: wiki-search.sh heredoc injection \u2192 env var passing (both locations)",
       "#H3 fixed: detect-contradications excludes system files via EXCLUDED_FILES set",
       "Phase 12.3 completed: D6 rebuild-meta auto-trigger added to lint.sh",
-      "link-validator.sh --auto already had fuzzy+agent escalation, only missing D6 trigger"
+      "link-validator.sh --auto already had fuzzy+agent escalation, only missing D6 trigger",
+      "raw-link-repair.py + raw-link-repair.sh created \u2014 converts relative markdown links in github/ sources to GitHub permalinks (76 repairs on ai-factory@2.x)",
+      "process-ingest.json updated: step 1 source_analysis now calls raw-link-repair.sh instead of manual agent replacement",
+      "issues.md #27 marked as resolved for ai-factory SKILL.md references"
     ]
   },
   "next_steps_todo": [
     {
-      "task": "Resolve #H2 remaining broken link: Home_Manager.md has no close wiki candidate — decide manually (create page / external URL / remove)",
-      "priority": "medium",
-      "source": "link-validator.sh output"
+      "task": "Run raw-link-repair.sh \u043d\u0430 \u0432\u0441\u0435\u0445 github/ sources \u0432 raw/ \u2014 \u043f\u0440\u043e\u0432\u0435\u0440\u0438\u0442\u044c \u043a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e \u0438 \u043a\u0430\u0447\u0435\u0441\u0442\u0432\u043e repairs \u0434\u043b\u044f \u043a\u0430\u0436\u0434\u043e\u0433\u043e repo",
+      "priority": "high",
+      "status": "DONE for ai-factory (13 files, 76 repairs), PENDING for remaining repos",
+      "source": "issues.md #27 + scripts/raw-link-repair.py"
     },
     {
-      "task": "Phase 11.2: Causal Chain Analysis — agent prompt for 'X wrote first, Y copied from X' based on text-similarity data",
+      "task": "Run ./scripts/link-validator.sh --full \u043d\u0430 \u0432\u0441\u0435\u0439 wiki/ \u2014 \u043d\u0430\u0439\u0442\u0438 \u0432\u0441\u0435 \u0431\u0438\u0442\u044b\u0435 \u0441\u0441\u044b\u043b\u043a\u0438 (raw/* \u0438 wiki-\u043f\u0443\u0442\u044c)",
+      "priority": "high",
+      "status": "PENDING \u2014 \u043b\u0438\u043d\u0442\u0435\u0440 \u0438\u0441\u043f\u0440\u0430\u0432\u043b\u0435\u043d, \u0442\u0435\u043f\u0435\u0440\u044c \u043b\u043e\u0432\u0438\u0442 raw/* \u043d\u0435\u0432\u0430\u043b\u0438\u0434\u043d\u044b\u0435 \u0441\u0441\u044b\u043b\u043a\u0438",
+      "source": "link-validator.sh fix \u2014 raw/* \u0442\u0435\u043f\u0435\u0440\u044c \u043f\u0440\u043e\u0432\u0435\u0440\u044f\u0435\u0442\u0441\u044f \u043d\u0430 \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u043e\u0432\u0430\u043d\u0438\u0435"
+    },
+    {
+      "task": "Phase 11.2: Causal Chain Analysis \u2014 agent prompt \u0434\u043b\u044f 'X wrote first, Y copied from X' \u043d\u0430 \u043e\u0441\u043d\u043e\u0432\u0435 text-similarity \u0434\u0430\u043d\u043d\u044b\u0445",
       "priority": "low",
       "source": "PLAN.md pending phases"
     }

@@ -357,11 +357,34 @@ AGENTS.md содержит только описание ролей и ссыл�
 
 ## 🔗 Link Conventions & Auto-Fix
 
-- **Format**: `[text](wiki-relative-path.md)` (no `../`, no `./`)
-- **Post-operation validation**: after create/rename/delete → call `./scripts/link-validator.sh --full`
-- **Auto-fix flow**: validate → fix broken links → rebuild meta
+- **Internal format**: `[text](wiki-relative-path.md)`
+- **Prohibited patterns**: `./` — never use dot-relative paths
+- **Cross-category exception**: `../` allowed for cross-category links (e.g. from concepts/ to entities/) as long as target exists under wiki/  
+- **Validation trigger**: after create/update/rename/delete → run `./scripts/link-validator.sh --full`
+- **Auto-fix policy**:
+  - High confidence (case/path mismatch): script auto-fix
+  - Medium confidence (fuzzy_score 70–95%): agent fix + create missing page if needed
+  - Low confidence (<70%): user escalation
 
-> Full workflow: `process-ingest.json#post_operation_link_validation`. Broken link JSON output from validator.
+### External Links Standard (EXT-LINK-V1)
+External links must use canonical http/https URLs. Never link to `raw/**` or `../**`.
+
+**Prohibited patterns**: `[text](raw/**)` — never link to raw/. `[text](../**)` — relative paths prohibited.
+
+**Unavailability check policy**:
+- Without internet: skip network probes
+- With internet: log broken URLs (404/timeouts) → inform user, do NOT auto-remove
+
+> Full workflow: `process-ingest.json#step_1.5.external_source_policy`, `process-query.json#broken_link_awareness`.
+
+### Crosslink Discovery
+After step_3a/3b → run `./scripts/auto-crosslink.sh <path>`:
+- H1 match: +3 points
+- Shared sources: +5 points
+- Frontmatter related field: +4 points
+- Auto-threshold for suggestion: score ≥ 5. Scores 3–4 = suggest review only.
+
+> Schema ref: `AGENTS.md#link-conventions` — canonical source for link rules.
 
 ---
 
@@ -382,7 +405,6 @@ AGENTS.md содержит только описание ролей и ссыл�
   "fetch_content_truncation": {
     "condition": "response_markdown_contains '[Content truncated...]' or output is visibly cut off mid-sentence",
     "primary_action": "fallback to web_search(query) + get_search_content(responseId) for complete coverage",
-    "secondary_action": "repair base path when copying raw sources — use hierarchical structure: raw/<source_type>/<owner_or_domain>/<repo_name>@<branch_or_version>/",
     "logging_verbose_template": [
       "[!] Fetch truncation detected in X.md, length ~{N} chars",
       "[✓] Fallback activated: web_search + get_search_content called"
@@ -396,8 +418,23 @@ AGENTS.md содержит только описание ролей и ссыл�
 ```json
 {
   "protected_zones": {
-    "raw/**": {"rule": "immutable", "access": "read-only via links"},
+    "raw/**": {"owner": "user", "access": "read-only via capture flow"},
+    "wiki/**": {"owner": "agent", "access": "full read/write/manage"},
     "meta/**": {"rule": "auto-generated", "files": ["registry.json", "backlinks.json"], "rebuild_command": "./scripts/rebuild-meta.sh"}
+  },
+  "zone_def1": {
+    "rule_id": "ZONE-DEF1",
+    "raw/**": {"owner": "user", "access": "read-only via capture flow"},
+    "wiki/**": {"owner": "agent", "access": "full read/write/manage"},
+    "implications": ["Agent manages all wiki links/structure. User controls raw/."]
+  },
+  "meta_def1": {
+    "rule_id": "META-DEF1",
+    "rules": [
+      "NEVER edit meta files directly",
+      "All operations through scripts only"
+    ],
+    "protected_by": "validate-path.sh blocks direct write to meta/**"
   },
   "system_files_excluded_from_search": {
     "rule": "wiki system files (log.md, issues.md, timeline.md, overview.md, snapshot.md, index.md, GIT-* etc) are NOT part of normal semantic search"

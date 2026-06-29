@@ -82,6 +82,5 @@ your_project/
 - Symfony AI → Platform/Agent/Store компоненты расширяют возможности фреймворка
 
 ## Источники
-- [symfony-comprehensive-knowledge.md](raw/sources/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md) — основной источник данных
 - `https://symfony.com/doc/current/` — официальная документация
 - `https://symfony.com/blog/symfony-the-fast-track-now-for-symfony-8-1` — The Fast Track announcement

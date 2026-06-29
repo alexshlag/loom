@@ -74,6 +74,12 @@ environment.systemPackages = with pkgs; [
 ## Источники:
 * `raw/sources/SRC-2025-06-24-002/nixos-python-wiki.md` — https://wiki.nixos.org/wiki/Python (оригинал)
 
+## Reconciliation note (#H2)
+> Эта страница и [syntheses/python-nixos-development-environments.md](syntheses/python-nixos-development-environments.md) обе используют один источник (SRC-2025-06-24-002). Они охватывают одну тему из разных углов:
+> - **Эта страница** — практическое руководство и принципы
+> - **Синтез** — структурированный анализ способов с выводами
+> Обе страницы согласованы, дублирование намеренное для разных целей чтения.
+
 ## Обновлено 2026-06-24 — новое уточнение
 * Добавлено: **R packages в Python через rpy2** — секция про R integration
 * Добавлено: **Nix shell (new command line)** — `nix shell --impure --expr '(import <nixpkgs> {}).python3.withPackages(...)'`

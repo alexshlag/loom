@@ -172,25 +172,15 @@
       ],
       "rules": [
         {
-          "rule_name": "query_mode_lightweight"
-        },
-        {
-          "rule_name": "broken_link_escalation_rules"
-        },
-        {
-          "rule_name": "external_wiki_pattern",
-          "pattern": "link_text contains 'Wiki' + target .md does not exist",
-          "action": "suggest_external_url"
-        },
-        {
-          "rule_name": "create_page_or_remove",
-          "pattern": "concept exists in wiki but file missing OR link points to never-created page",
-          "action": "offer_options: create new page / remove broken link with note"
-        },
-        {
-          "rule_name": "no_match_found",
-          "pattern": "fuzzy score < 80 AND no obvious external/source pattern",
-          "action": "log_as_todo_and_notify_user"
+          "rule_id": "BROKEN-REF1-v3",
+          "core_rule": "Broken wiki links → restore or remove based on context. Auto-fix typos, escalate ambiguous.",
+          "detection": "link-validator.sh finds broken internal links or reports in any wiki document",
+          "agent_workflow": [
+            {"step": 1, "action": "search wiki for missing target"},
+            {"step": 2, "action": "fix typo if simple spelling error"},
+            {"step": 3, "action": "create referenced page if needed"}
+          ],
+          "decision": "restore or remove — depends on context"
         }
       ],
       "agent_decision_threshold": {
@@ -214,7 +204,7 @@
           }
         ]
       },
-      "schema_ref": "AGENTS.md#decision_rules"
+      "schema_ref": "process-query.json#broken_link_awareness"
     },
     {
       "step_id": "0.5",

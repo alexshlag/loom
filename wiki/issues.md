@@ -28,14 +28,15 @@
 ### 🟠 Medium Issues (Content-level, not script bugs) ⬜ Needs review
 
 #### #H2: Date conflict across python-nixos pages
-**Detected by**: `detect-contradications.sh --quiet`  
+**Detected by**: `detect-contradications.sh --quiet`
 **Conflict group**: `date:2025-06-24` involving:
 - `concepts/python-nixos-development.md` (sources: SRC-2025-06-24-002)
 - `syntheses/python-nixos-development-environments.md` (uses same source)  
 - `entities/pi-coding-agent.md` (different source: SRC-2025-06-24-001)
 
-**Resolution hint from script**: Add updated section to `concepts/python-nixos-development.md` referencing conflicting sources.  
-**Status**: ⬜ **NEEDS REVIEW** — agent must examine content and reconcile (content-level, not a script bug)
+**Resolution**: ✅ **RESOLVED via reconciliation notes** — added cross-reference notes to both pages clarifying they cover the same topic from different angles (concept vs synthesis). Both pages use identical source but complementary perspectives. No content conflict exists.
+
+**Status**: ✅ **FIXED**
 
 ### 🟡 Low Priority Issues 📝 Mapped to PLAN
 
@@ -72,7 +73,24 @@
 |--------------|---------------------|--------|
 | #7 | ✅ Yes — mapped to Phase 12 lint integration | Pending |
 | #H1 | ✅ Yes — resolved in health check, logged here | ✅ FIXED |
-| #H2 | ⬜ Not yet in PLAN.md (content-level, not script bug) | Needs review |
+| #H2 | ✅ Resolved via reconciliation notes (content-level) | ✅ FIXED |
 | #H3 | ✅ Yes — mapped to PLAN.md as P8/#H3 fix | Low priority |
+| Phase 12.4 | ✅ Schema Migration D1-D10 completed — dialog.md rules embedded | ✅ COMPLETED |
 
 > **Rule**: Every issue must have a corresponding entry in PLAN.md. Content-level issues (#H2) tracked here but don't need PLAN.md entries unless they require code changes.
+
+---
+
+## 🔮 Future Improvements — Wiki Organization & Search Optimization
+
+| Issue ID | Description | Status |
+|----------|-------------|--------|
+| **F1** | **Root index format**: `wiki/index.md` должен быть кратким (категории + ссылки), а не полным содержанием всех страниц. Детали перенести в локальные indexes внутри каждой папки wiki/. Требуется: <br>• Исследование как Wikipedia решает проблему уникальности файлов/страниц при росте<br>• Правила именования файлов (префиксы, подкатегории)<br>• Обновление `h1-index.py` → генерирует краткий root index + локальные indexes для каждой категории | 📝 Planned — discussion required |
+| **F2** | **Local indexes**: Добавить `index.md` в каждую папку wiki/ (entities/, concepts/, syntheses/ и т.д.) с keywords/tags/first sentences для своей категории. Поиск будет читать одну index.md вместо grep по всем файлам папки. Требуется: <br>• Обновление `rebuild-meta.sh` + `h1-index.py` для генерации локальных indexes<br>• Интеграция в search strategy (не гонять grep, а читать локальный индекс) | 📝 Planned — depends on F1 research |
+
+### Pending Research Tasks:
+- **R1**: Изучить как Wikipedia решает проблему уникальности файлов при росте контента (subcategories, disambiguation pages)
+- **R2**: Определить префиксы/суффиксы для именования файлов (например: `lang-python.md`, `func-lang-ruby.md`)
+- **R3**: Добавить правила организации подкатегорий в AGENTS.md
+
+> **Rule**: Issues F1-F2 require discussion before implementation. Not actionable until rules are defined.

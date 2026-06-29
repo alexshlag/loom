@@ -196,3 +196,15 @@
 * **Fixed**: python-nixos-development-environments.md — changed creation marker from "Обновлено" to "Создано"
 * **Remaining**: contradictions_deep=1 (python concept vs synthesis overlap) — soft check, requires manual dedup review
 * **Status**: Contradictions reduced from 5 → 2 (only actual updates remain flagged)
+
+## [2026-06-28] fix | raw-link-repair.sh — автоматическое преобразование markdown ссылок в GitHub permalinks
+* **Проблема**: raw/github источники содержали битые относительные ссылки на .md файлы (./file.md, ../README.md), которые не работали при ingest в wiki.
+* **Решение**: 
+  - Создан `scripts/raw-link-repair.py` — скрипт для автоматического преобразования всех markdown ссылок в GitHub permalinks
+  - Создан `scripts/raw-link-repair.sh` — bash wrapper для вызова из process-ingest.json
+  - Работает по шаблону: github/{owner}/{repo}@{branch}/path.md → https://github.com/owner/repo/blob/<branch>/path.md
+* **Результат**: 
+  - Применён к ai-factory@2.x (13 файлов, 76 repairs)
+  - Все относительные ссылки заменены на GitHub permalinks
+  - Обновлён `process-ingest.json#step_1`: теперь вызывает raw-link-repair.sh вместо ручных замен агентом
+* **Результат**: issues.md #27 — SKILL.md references в ai-factory исправлены. Оставшиеся github репо (если есть) требуют обработки при следующем ingest.

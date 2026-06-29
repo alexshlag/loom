@@ -55,7 +55,7 @@ AGENTS.md (v9) — живая схема с Error Handling Protocol, JSON git po
 
 ## Следующие шаги
 1. ✅ Обновлён overview.md — все основные страницы с бэклинками
-2. Реализовать wiki scalability (локальные индексы + search-index.json) → отдельный спринт
+2. **Local Indexes + Search Optimization** (F1-F2) → planned, not yet implemented: <br>   • Root index → краткий формат (categories + links only)<br>   • Local indexes in each category folder with keywords/tags<br>   • Research needed: Wikipedia naming conventions for unique file naming
 3. Периодический lint-аудит через `./scripts/lint.sh`
 4. Проверить auto-crosslink после каждого ingest/query
 
@@ -66,7 +66,7 @@ AGENTS.md (v9) — живая схема с Error Handling Protocol, JSON git po
 * [Dependency Injection](concepts/symfony-dependency-injection.md) — новый concept с 2026-06-28
 
 ---
-*Создано: 2026-06-23 | Обновлено: 2026-06-28 — полный обзор всех областей знаний + авто-кросслинки*
+*Создано: 2026-06-23 | Обновлено: 2026-06-29 — обновлён статус Local Indexes (F1-F2 planned), schema migration completed*
 
 ---
-*Создано: 2026-06-23 | Обновлено: 2026-06-25 — полное обновление статуса*
+*Создано: 2026-06-23 | Обновлено: 2026-06-29 — обновлён статус Local Indexes (F1-F2 planned), schema migration completed*

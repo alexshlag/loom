@@ -316,7 +316,7 @@ for root, dirs, _ in os.walk(wiki_dir):
         if f.endswith('.md') and f not in SYSTEM_FILES_EXCLUDED:
             files.append(os.path.join(root, f))
 
-print(f"[*] Processing {len(files)} wiki pages...")
+print(f"[*] Processing {len(files)} wiki pages...", file=sys.stderr)
 time_start = time.time()
 
 # Build inverted index: ngram -> [file_idx]
@@ -336,7 +336,7 @@ for idx, fpath in enumerate(files):
     except Exception as e:
         print(f"[!] Error reading {fpath}: {e}", file=sys.stderr)
 
-print(f"[*] Built inverted index: {len(ngram_index)} unique n-grams, {len(files)} files")
+print(f"[*] Built inverted index: {len(ngram_index)} unique n-grams, {len(files)} files", file=sys.stderr)
 build_time = time.time() - time_start
 
 # Find similar pairs using shared n-grams (Jaccard similarity)
@@ -402,7 +402,7 @@ for ng, file_indices in ngram_index.items():
                 })
         
 search_time = time.time() - time_search
-print(f"[*] Search completed: {len(matches)} matches in {search_time:.3f}s")
+print(f"[*] Search completed: {len(matches)} matches in {search_time:.3f}s", file=sys.stderr)
 
 # Save similarity cache (atomic: write to .tmp then mv)
 tmp_cache = sim_cache_file + '.tmp'
