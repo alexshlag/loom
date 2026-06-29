@@ -1,5 +1,11 @@
 # Wiki Log
 
+## [2026-06-29] ingest | LOOM vs claude-obsidian comparison
+  - Source: user prompt — comparative analysis of two LLM Wiki Companion projects
+  - Pages created: [[wiki/comparisons/loom-vs-claude-obsidian]]
+  - Pages updated: [[comparisons/symfony-ux-packages]], [[comparisons/llm-wiki-implementations]] (added backlinks)
+  - Key insight: claude-obsidian has breadth (transport detection, methodology modes, canvas, fold) but no depth in knowledge processing. LOOM has depth (evidence grading, contradiction cascade, decision rules) but lacks structural flexibility.
+
 ## [2026-06-26] query | post_search_flow — исправлен алгоритм действий после пустого wiki-search
   - raw/sources/ check → web_availability_check → auto-web_search + предложение сохранить / ручной доступ
   - Добавлен блок `post_search_flow` в process-query.json с 5 шагами

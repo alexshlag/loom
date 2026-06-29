@@ -31,6 +31,7 @@
 * [Workflow & State Machine](concepts/workflow-state-machine.md) — # Workflow & State Machine Workflow component provides tools for managing business processes as finite state machines.
 
 ## Сравнения
+* [LOOM vs claude-obsidian — Сравнение двух реализаций LLM Wiki Companion](comparisons/loom-vs-claude-obsidian.md) — # LOOM vs claude-obsidian — Сравнение двух реализаций LLM Wiki Companion Сравнительный анализ двух проектов, основанных на одной идее — «LLM Wiki Comp
 * [Symfony UX Initiative — Comparison with AssetMapper](comparisons/symfony-ux-packages.md) — # Symfony UX Initiative — Comparison with AssetMapper Symfony UX packages (Hotwire, Stimulus, Chart.
 * [Сравнение: Loomana (Markdown-driven wiki) vs pi-llm-wiki/ (TypeScript platform)](comparisons/llm-wiki-implementations.md) — # Сравнение: Loomana (Markdown-driven wiki) vs pi-llm-wiki/ (TypeScript platform) Оба проекта реализуют **LLM Wiki Pattern** (Andrej Karpathy), но на 
 
@@ -58,7 +59,7 @@
 
 
 ---
-*Created: auto-generated | Last updated: 2026-06-29 03:12*
+*Created: auto-generated | Last updated: 2026-06-29 23:44*
 
 ## Хронология
 | Дата | Событие |

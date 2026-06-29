@@ -3,7 +3,7 @@ tags: [comparison, symfony]
 date: 2026-06-25
 type: documentation
 sources: []
-related: [wiki/entities/symfony.md]
+related: [wiki/entities/symfony.md, wiki/comparisons/loom-vs-claude-obsidian.md]
 ---
 
 # Symfony UX Initiative — Comparison with AssetMapper

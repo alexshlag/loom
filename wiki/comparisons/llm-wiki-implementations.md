@@ -2,7 +2,7 @@
 tags: [comparison, llm-wiki, architecture, platform]
 date: 2026-06-25
 sources: []
-related: [wiki/concepts/llm-wiki.md, wiki/syntheses/rag-vs-llm-wiki-pattern.md]
+related: [wiki/concepts/llm-wiki.md, wiki/syntheses/rag-vs-llm-wiki-pattern.md, wiki/comparisons/loom-vs-claude-obsidian.md]
 ---
 
 # Сравнение: Loomana (Markdown-driven wiki) vs pi-llm-wiki/ (TypeScript platform)
