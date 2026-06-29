@@ -12,6 +12,7 @@
 | 11.1 | Syndication Detection — `text-similarity.sh` | `258fa2c` |
 | 12.1 | Decision Rules Framework — DR-1/DR-2/DR-3 | `c368411` |
 | IF-1..IF-4 | Integration hooks: lint check_id=9, process refs, step_3c ingest scan | `b824a7` |
+| S5 | Search analytics — async query frequency logging (`meta/search_analytics.json`) | `94c4fbe` |
 
 **Resolved from 06-28 audit**: P1 (shebangs), P2 (atomic writes), P3 (tests), P4 (error handling),
 P5 (temp files), P6 (link validator limit), P7 (path guardrails), P9 (debug prints),
@@ -55,6 +56,7 @@ P12 (logging standard), P13 (trap handlers), P15 (minor fixes).
 
 | Phase | Description | Priority |
 |-------|-------------|----------|
+| **S5** | Search analytics → popularity boost in `score_page()`. Read meta/search_analytics.json → add +frequency_boost to pages that appeared in popular queries. Soft signal only — never filters results. | High |
 | **Local Indexes** | `index.md` в каждой категории для линейного поиска вместо O(n²) + root index → краткий формат (categories + links only). **Depends**: F1 research on unique file naming before implementation. | High |
 | Graph-Based Crosslinks | `auto-crosslink.sh` rewrite с shared-source analysis и scoring | Medium |
 | Wiki Scalability (1000+ pages) | Optimizations: ripgrep, incremental rebuild, skip full rebuild >100 pages | Medium |
