@@ -102,7 +102,7 @@ get_dynamic_priority() {
     echo "${DEFAULT_PRIORITY[*]}"
 }
 
-# ─── Relevance Scoring (Phase 5) ──────────────────────
+# ─── Relevance Scoring (Phase 5 + S5 integration) ──────────────────────
 score_page() {
     local filepath="$1"
     local cat_index="${2:-0}"
@@ -119,6 +119,26 @@ score_page() {
     
     local freq=$(grep -ci "${escaped_query}" "$filepath" || true)
     score=$((score + freq))
+    
+    # S5: Popularity boost from search_analytics.json (soft signal, never filters)
+    # Counts how many times filepath appeared as top result across queries.
+    local popularity_boost=0
+    if [[ -f "meta/search_analytics.json" ]]; then
+        popularity_boost=$(POPULARITY_FILEPATH="$filepath" ANALYTICS_PATH="meta/search_analytics.json" \
+            python3 -c '
+import json, os
+fp = os.environ.get("POPULARITY_FILEPATH", "")
+af = os.environ.get("ANALYTICS_PATH", "meta/search_analytics.json")
+tpb = 5
+mb = 30
+try:
+    with open(af) as f: data = json.load(f)
+except (FileNotFoundError, json.JSONDecodeError): print(0); exit()
+count = sum(1 for e in data.get("entries", []) if e.get("top_path") and fp.replace("wiki/", "") in e["top_path"])
+print(min(count * tpb, mb))
+' 2>/dev/null) || popularity_boost=0
+    fi
+    score=$((score + popularity_boost))
     
     local backlinks=0
     if [[ -f "meta/backlinks.json" ]]; then
@@ -293,9 +313,18 @@ if [[ $COUNTER -eq 0 ]]; then
 fi
 
 # ─── Output: Sorted by Score (descending) ──────────
+
+# Capture top result path for analytics (if any)
+TOP_PATH=""
+if [[ $COUNTER -gt 0 ]]; then
+    # Format: score|filepath:matched_line → extract just filepath (before first ':')
+    TOP_PATH=$(sort -t'|' -k1 -rn "$TEMP_FILE" | head -1 | cut -d'|' -f2 | cut -d':' -f1) || true
+fi
+
 save_search_analytics() {
     local query="$1"
     local results_count="$2"  # 0 = no results, >0 = actual count
+    local top_path="${3:-}"   # first result filepath (may be empty)
     local analytics_file="meta/search_analytics.json"
     
     python3 << PYEOF &
@@ -303,6 +332,7 @@ import json, os, datetime
 
 query = os.environ.get("ANALYTICS_QUERY", "")
 results_count = int(os.environ.get("ANALYTICS_RESULTS_COUNT", "0"))
+top_path = os.environ.get("ANALYTICS_TOP_PATH", "")
 analytics_file = os.environ.get("ANALYTICS_FILE", "meta/search_analytics.json")
 max_entries = 100
 
@@ -310,6 +340,7 @@ entry = {
     "query": query,
     "timestamp": datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
     "results_count": results_count,
+    "top_path": top_path if top_path else None,
 }
 
 try:
@@ -330,11 +361,15 @@ PYEOF
 if [[ $COUNTER -gt 0 ]]; then
     sort -t'|' -k1 -rn "$TEMP_FILE" | cut -d'|' -f2-
     ANALYTICS_QUERY="$QUERY" ANALYTICS_RESULTS_COUNT="$COUNTER" \
+        ANALYTICS_TOP_PATH="$TOP_PATH" \
         save_search_analytics "$QUERY" "$COUNTER"
+    rm -f "$TEMP_FILE"
     exit 0
 else
     echo "[!] No results for: $QUERY" >&2
     ANALYTICS_QUERY="$QUERY" ANALYTICS_RESULTS_COUNT="0" \
+        ANALYTICS_TOP_PATH="" \
         save_search_analytics "$QUERY" "0"
+    rm -f "$TEMP_FILE"
     exit 1
 fi
