@@ -154,7 +154,7 @@ if [[ "$DYNAMIC" == "true" ]]; then
     
     FINAL_CATEGORY_ORDER="$CATEGORY_ORDER"
 else
-    
+    CATEGORY_ORDER="${DEFAULT_PRIORITY[*]}"
     FINAL_CATEGORY_ORDER="$CATEGORY_ORDER"
 fi
 
@@ -293,20 +293,9 @@ if [[ $COUNTER -eq 0 ]]; then
 fi
 
 # ─── Output: Sorted by Score (descending) ──────────
-    local query="$1"
 if [[ $COUNTER -gt 0 ]]; then
     sort -t'|' -k1 -rn "$TEMP_FILE" | cut -d'|' -f2-
-    
-    RESULTS_COUNT=$COUNTER
-    
-        
-    rm -f "$TEMP_FILE"
-    exit 0
 else
     echo "[!] No results for: $QUERY" >&2
-    
-    export HISTORY_QUERY="$QUERY" HISTORY_RESULTS_COUNT="0" CAT_ORDER_STR
-        
-    rm -f "$TEMP_FILE"
     exit 1
 fi
