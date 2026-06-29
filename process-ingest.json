@@ -7,7 +7,7 @@
       "action": "START_INGEST"
     },
     {
-      "condition": "source_type_unknown",
+      "condition": "source_layer_unknown",
       "evaluation": [
         {
           "exit_code": 0,
@@ -43,8 +43,14 @@
           "rule_id": "EXT-RES1",
           "core_rule": "External links → canonical http/https URLs. Never raw/** or ../**.",
           "exceptions": [
-            {"field": "frontmatter sources[]", "reason": "Metadata only, not clickable"},
-            {"field": "descriptive text", "reason": "raw/** in prose = documentation, not link"}
+            {
+              "field": "frontmatter sources[]",
+              "reason": "Metadata only, not clickable"
+            },
+            {
+              "field": "descriptive text",
+              "reason": "raw/** in prose = documentation, not link"
+            }
           ],
           "canonical_patterns": {
             "github_specific_file": "https://github.com/{owner}/{repo}/blob/{branch}/{path}",
@@ -53,13 +59,25 @@
           },
           "rule": "Use most specific URL matching content granularity. Repo root = only if covering entire project.",
           "ingest_flow": [
-            {"step": 1, "action": "classify source: external_url or local_only"},
-            {"step": 2, "action": "extract canonical URL → replace raw/ link"}
+            {
+              "step": 1,
+              "action": "classify source: external_url or local_only"
+            },
+            {
+              "step": 2,
+              "action": "extract canonical URL → replace raw/ link"
+            }
           ],
           "exception_local_only": "Link to raw/ required when no external URL exists",
           "ingest_hooks": [
-            {"hook": "create_src_id_and_manifest", "path": "tracking/raw_manifests/SRC-{timestamp}-{ID}.json"},
-            {"hook": "add_to_raw_registry", "command": "update tracking/raw_registry.json with ingested_sources array"}
+            {
+              "hook": "create_src_id_and_manifest",
+              "path": "tracking/raw_manifests/SRC-{timestamp}-{ID}.json"
+            },
+            {
+              "hook": "add_to_raw_registry",
+              "command": "update tracking/raw_registry.json with ingested_sources array"
+            }
           ]
         }
       ],
@@ -83,7 +101,7 @@
             "meeting",
             "project"
           ],
-          "source_type_classification": {
+          "source_layer_classification": {
             "description": "Classify each source for Reality Layer cascade priority",
             "options": [
               "code_reality",
@@ -105,7 +123,7 @@
               }
             ],
             "default": "documentation",
-            "agent_prompt": "Determine source_type based on file content:\n- If it contains code, GitHub issue/PR → code_reality\n- If it contains live metrics/API responses/logs → live_state\n- Otherwise (docs/articles/blogs) → documentation\nThis determines contradiction cascade priority."
+            "agent_prompt": "Determine source_layer based on file content:\n- If it contains code, GitHub issue/PR → code_reality\n- If it contains live metrics/API responses/logs → live_state\n- Otherwise (docs/articles/blogs) → documentation\nThis determines contradiction cascade priority."
           }
         },
         {

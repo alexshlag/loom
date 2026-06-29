@@ -208,3 +208,18 @@
   - Все относительные ссылки заменены на GitHub permalinks
   - Обновлён `process-ingest.json#step_1`: теперь вызывает raw-link-repair.sh вместо ручных замен агентом
 * **Результат**: issues.md #27 — SKILL.md references в ai-factory исправлены. Оставшиеся github репо (если есть) требуют обработки при следующем ingest.
+
+## [2026-06-29] schema | Universal Frontmatter restructured — tags free, type=reality_layer, new category field, evidence_grade auto-computed
+  - `tags`: → свободный массив keyword-тегов (убрано ограничение enum)
+  - `type`: reality layer: documentation | code_reality | live_state (для cascade противоречий)
+  - `category` (новое): раздел wiki entity/concept/synthesis/comparison/note/project/bibliography/resource
+  - `evidence_grade`: auto-computed агентом при ingest (documented/corroborated/assertion_only), не ручное
+  - Обновлены: AGENTS.md, process-query.json (source_type→source_layer), process-ingest.json
+  - Зафиксировано в context.md#Q5
+
+## [2026-06-29] schema | Language Policy added — English-only headers in templates, content follows source language, response translation by agent
+  - Page structure headers: always English in templates (consistent navigation)
+  - Content follows source language (Russian/English/bilingual allowed)
+  - Agent translates headers at response time to match user's question language
+  - Mixed-language pages normal and encouraged for bilingual sources
+  - Fixed в context.md#Q6, added to AGENTS.md#language_policy

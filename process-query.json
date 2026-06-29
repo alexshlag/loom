@@ -1,16 +1,16 @@
 {
   "module": "process_query",
-  "description": "\u041e\u0442\u0432\u0435\u0442\u044b \u043d\u0430 \u0432\u043e\u043f\u0440\u043e\u0441\u044b \u0441 \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u043d\u0438\u0435\u043c wiki \u043a\u0430\u043a \u0431\u0430\u0437\u044b \u0437\u043d\u0430\u043d\u0438\u0439",
+  "description": "Ответы на вопросы с использованием wiki как базы знаний",
   "context": {
     "wiki_dir": "wiki/",
     "always_loaded": true,
     "search_priority_details": {
-      "description": "\u041a\u0440\u0438\u0442\u0435\u0440\u0438\u0438 \u0434\u043e\u0441\u0442\u0430\u0442\u043e\u0447\u043d\u043e\u0441\u0442\u0438 \u043f\u043e\u0438\u0441\u043a\u0430 \u043f\u043e wiki",
+      "description": "Критерии достаточности поиска по wiki",
       "category_priority": [
         {
           "priority": 1,
           "category": "syntheses/",
-          "reason": "FAQ summary pages \u2014 compiled answers from multiple sources"
+          "reason": "FAQ summary pages — compiled answers from multiple sources"
         },
         {
           "priority": 2,
@@ -26,25 +26,25 @@
       "fallback_chain": [
         {
           "method": "index_lookup",
-          "condition": ">= 2 \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0439 \u0438\u0437 index.md",
+          "condition": ">= 2 совпадений из index.md",
           "action": "STOP"
         },
         {
           "method": "wiki_recall",
-          "condition": ">= 3 \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0439 \u0438\u0437 semantic search",
+          "condition": ">= 3 совпадений из semantic search",
           "action": "STOP"
         },
         {
           "method": "wiki_search_script",
           "command": "./scripts/wiki-search.sh --dynamic \"${USER_QUERY}\" wiki/ --max 15",
-          "description": "\u0423\u043c\u043d\u044b\u0439 grep \u043f\u043e \u043f\u0440\u0438\u043e\u0440\u0438\u0442\u0435\u0442\u043d\u044b\u043c \u043a\u0430\u0442\u0435\u0433\u043e\u0440\u0438\u044f\u043c (syntheses\u2192concepts\u2192entities) \u0441 fallback \u043d\u0430 \u043f\u043e\u043b\u043d\u044b\u0439 grep. \u0420\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442: \u0441\u0442\u0440\u043e\u043a\u0438 'path/to/file.md:matched_line'",
+          "description": "Умный grep по приоритетным категориям (syntheses→concepts→entities) с fallback на полный grep. Результат: строки 'path/to/file.md:matched_line'",
           "action": "FALLBACK"
         }
       ],
       "stop_if_any_results": false
     },
     "compounding_decision_logic": {
-      "description": "\u041a\u043e\u0433\u0434\u0430 \u043e\u0442\u0432\u0435\u0442 \u043a\u043e\u043c\u043f\u0430\u043d\u0434\u0438\u0442\u0441\u044f \u043a\u0430\u043a \u043d\u043e\u0432\u0430\u044f \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0430 wiki",
+      "description": "Когда ответ компандится как новая страница wiki",
       "evaluation_criteria": [
         {
           "criteria": "answer_requires_synthesis_from_2_or_more_pages",
@@ -64,7 +64,7 @@
           "sum_score_ge_2": true,
           "action_if_novel_inference": "PROPOSE_SAVE_TO_USER_NEW_SYNTHESIS_PAGE",
           "action_if_fact_collection_only": "SUGGEST_UPDATE_EXISTING_OR_CREATE_NOTES",
-          "message_synthesis": "Answer contains novel synthesis \u2014 save as new page?",
+          "message_synthesis": "Answer contains novel synthesis — save as new page?",
           "message_notes": "No new inference detected (fact collection only). Suggest adding to existing page or creating notes instead."
         },
         {
@@ -75,39 +75,39 @@
       ],
       "save_conditions_schema_ref": "AGENTS.md#compounding_workflow",
       "syntheses_special_handling": {
-        "rule": "DR-4: Never auto-create synthesis without explicit fixation flag. Synthesis = new logical inference (A + B \u2192 C), not just fact collection.",
+        "rule": "DR-4: Never auto-create synthesis without explicit fixation flag. Synthesis = new logical inference (A + B → C), not just fact collection.",
         "condition": "page_type == 'synthesis'",
-        "agent_prompt": "Evaluate: Does the answer contain a NEW logical inference that wasn't explicitly stated in any source? If yes \u2192 propose synthesis page. If no \u2192 suggest updating existing entity/concept or creating notes."
+        "agent_prompt": "Evaluate: Does the answer contain a NEW logical inference that wasn't explicitly stated in any source? If yes → propose synthesis page. If no → suggest updating existing entity/concept or creating notes."
       }
     },
     "grep_contract": {
-      "description": "\u0411\u0435\u0437\u043e\u043f\u0430\u0441\u043d\u043e\u0435 \u0447\u0442\u0435\u043d\u0438\u0435 \u0444\u0430\u0439\u043b\u043e\u0432 \u0447\u0435\u0440\u0435\u0437 bash \u2014 \u0437\u0430\u043f\u0440\u0435\u0442 \u043d\u0430 cat \u043a\u0440\u0443\u043f\u043d\u044b\u0445 \u0444\u0430\u0439\u043b\u043e\u0432, \u043e\u0431\u044f\u0437\u0430\u0442\u0435\u043b\u044c\u043d\u044b\u0439 -m \u0434\u043b\u044f grep",
+      "description": "Безопасное чтение файлов через bash — запрет на cat крупных файлов, обязательный -m для grep",
       "allowed_patterns": [
         {
           "command": "grep -E '^# ' file.md",
-          "purpose": "\u0431\u044b\u0441\u0442\u0440\u043e\u0435 \u043e\u0433\u043b\u0430\u0432\u043b\u0435\u043d\u0438\u0435"
+          "purpose": "быстрое оглавление"
         },
         {
           "command": "head -n 20 file.md",
-          "purpose": "\u0447\u0442\u0435\u043d\u0438\u0435 \u0444\u0440\u043e\u043d\u0442\u043c\u0430\u0442\u0435\u0440\u0430"
+          "purpose": "чтение фронтматера"
         },
         {
           "command": "sed -n 'X,Yp' file.md",
-          "purpose": "\u0434\u0438\u0430\u043f\u0430\u0437\u043e\u043d \u0441\u0442\u0440\u043e\u043a"
+          "purpose": "диапазон строк"
         },
         {
           "command": "grep -m N pattern wiki/",
-          "purpose": "\u0438\u0441\u043a\u0430\u0442\u044c \u0434\u043e N \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0439 (\u043e\u0431\u044f\u0437\u0430\u0442\u0435\u043b\u044c\u043d\u043e)"
+          "purpose": "искать до N совпадений (обязательно)"
         }
       ],
       "forbidden_patterns": [
         {
           "command": "cat file.md",
-          "reason": "\u0444\u0430\u0439\u043b >50 \u0441\u0442\u0440\u043e\u043a \u2014 \u0442\u043e\u043a\u0435\u043d\u043e\u0432\u0430\u044f \u043f\u0435\u0440\u0435\u0433\u0440\u0443\u0437\u043a\u0430"
+          "reason": "файл >50 строк — токеновая перегрузка"
         },
         {
           "command": "grep pattern wiki/",
-          "reason": "\u0431\u0435\u0437 -m \u2014 \u043c\u043e\u0436\u0435\u0442 \u0432\u044b\u0432\u0435\u0441\u0442\u0438 \u0442\u044b\u0441\u044f\u0447\u0438 \u0441\u0442\u0440\u043e\u043a"
+          "reason": "без -m — может вывести тысячи строк"
         }
       ],
       "rule": "AGENT_MUST_USE_ALLOWED_PATTERNS_FOR_BASH_READING",
@@ -123,7 +123,7 @@
     {
       "step_id": "0",
       "name": "context_load_from_working_memory",
-      "description": "\u041f\u0440\u0438 \u0441\u0442\u0430\u0440\u0442\u0435 \u0447\u0442\u0435\u043d\u0438\u044f working_memory.json \u2014 \u0443\u0437\u043d\u0430\u0442\u044c, \u043d\u0430 \u0447\u0451\u043c \u043e\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u043b\u0441\u044f \u0430\u0433\u0435\u043d\u0442 \u0432 \u043f\u0440\u0435\u0434\u044b\u0434\u0443\u0449\u0435\u0439 \u0441\u0435\u0441\u0441\u0438\u0438. \u0415\u0441\u043b\u0438 focus_node != null \u2192 \u043f\u0440\u043e\u0434\u043e\u043b\u0436\u0438\u0442\u044c \u0440\u0430\u0431\u043e\u0442\u0443 \u0441 \u044d\u0442\u043e\u0439 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u044b. \u0415\u0441\u043b\u0438 query_summary \u043d\u0435 \u043f\u0443\u0441\u0442\u043e\u0439 \u2192 \u0443\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0442\u044c \u0442\u0435\u043c\u0443 discussion.",
+      "description": "При старте чтения working_memory.json — узнать, на чём остановился агент в предыдущей сессии. Если focus_node != null → продолжить работу с этой страницы. Если query_summary не пустой → удерживать тему discussion.",
       "actions": [
         {
           "action": "read_file",
@@ -143,7 +143,7 @@
     {
       "step_id": "0.75",
       "name": "broken_link_awareness",
-      "description": "\u041f\u0440\u043e\u0432\u0435\u0440\u0438\u0442\u044c \u043d\u0430\u043b\u0438\u0447\u0438\u0435 \u0438\u0437\u0432\u0435\u0441\u0442\u043d\u044b\u0445 \u0431\u0438\u0442\u044b\u0445 \u0441\u0441\u044b\u043b\u043e\u043a \u0438\u0437 previous lint/ingest sessions (\u0438\u0437 working_memory). \u041d\u0435 \u0441\u043a\u0430\u043d\u0438\u0440\u0443\u0435\u0442 wiki \u2014 \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u0443\u0435\u0442 \u043a\u044d\u0448.",
+      "description": "Проверить наличие известных битых ссылок из previous lint/ingest sessions (из working_memory). Не сканирует wiki — использует кэш.",
       "actions": [
         {
           "action": "read_file",
@@ -154,7 +154,7 @@
           "action_name": "report_to_user_if_pending",
           "details": [
             {
-              "prompt": "\u0412 \u043f\u0440\u0435\u0434\u044b\u0434\u0443\u0449\u0435\u0439 \u0441\u0435\u0441\u0441\u0438\u0438 \u043e\u0431\u043d\u0430\u0440\u0443\u0436\u0435\u043d\u044b \u0431\u0438\u0442\u044b\u0435 \u0441\u0441\u044b\u043b\u043a\u0438, \u0442\u0440\u0435\u0431\u0443\u044e\u0449\u0438\u0435 \u0440\u0443\u0447\u043d\u043e\u0433\u043e \u0440\u0435\u0448\u0435\u043d\u0438\u044f. \u041f\u043e\u043a\u0430\u0437\u0430\u0442\u044c?",
+              "prompt": "В предыдущей сессии обнаружены битые ссылки, требующие ручного решения. Показать?",
               "options": [
                 "show_details",
                 "defer_to_next_lint"
@@ -170,7 +170,7 @@
       "rules": [
         {
           "rule_id": "BROKEN-REF1-v3",
-          "core_rule": "Broken wiki links \u2192 restore or remove based on context. Auto-fix typos, escalate ambiguous.",
+          "core_rule": "Broken wiki links → restore or remove based on context. Auto-fix typos, escalate ambiguous.",
           "detection": "link-validator.sh finds broken internal links or reports in any wiki document",
           "agent_workflow": [
             {
@@ -186,7 +186,7 @@
               "action": "create referenced page if needed"
             }
           ],
-          "decision": "restore or remove \u2014 depends on context"
+          "decision": "restore or remove — depends on context"
         }
       ],
       "agent_decision_threshold": {
@@ -206,7 +206,7 @@
             "action": "report_to_user with options: external URL / create page / remove"
           },
           {
-            "condition": "link references protected zone (raw/, meta/) \u2014 DO NOT auto-fix, flag for review"
+            "condition": "link references protected zone (raw/, meta/) — DO NOT auto-fix, flag for review"
           }
         ]
       },
@@ -215,15 +215,15 @@
     {
       "step_id": "0.5",
       "name": "new_sources_quick_check",
-      "description": "\u0411\u044b\u0441\u0442\u0440\u0430\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0430 raw/sources \u043d\u0430 \u043d\u043e\u0432\u044b\u0435 \u043f\u0430\u043a\u0435\u0442\u044b (--quick). \u041a\u044d\u0448\u0438\u0440\u0443\u0435\u0442 timestamp, \u0447\u0442\u043e\u0431\u044b \u043d\u0435 \u0441\u0442\u0443\u0447\u0430\u0442\u044c \u043a\u0430\u0436\u0434\u044b\u0439 \u0440\u0430\u0437. \u041f\u043e\u043b\u043d\u0443\u044e \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0443 \u0441 \u0434\u0435\u0442\u0430\u043b\u044f\u043c\u0438 \u0434\u0435\u043b\u0430\u0435\u0442 lint.",
+      "description": "Быстрая проверка raw/sources на новые пакеты (--quick). Кэширует timestamp, чтобы не стучать каждый раз. Полную проверку с деталями делает lint.",
       "actions": [
         {
           "action": "run_script",
           "command": "./scripts/check-new-sources.sh --quick raw/sources/ tracking/raw_registry.json",
           "exit_code_handling": {
-            "0": "no_new_sources \u2014 continue to step 1",
-            "1": "new_sources_found \u2014 set new_sources_pending=true in working_memory.json, notify user after answer",
-            "2": "cached_skip (<1 hour since last check) \u2014 skip notification, continue to step 1"
+            "0": "no_new_sources — continue to step 1",
+            "1": "new_sources_found — set new_sources_pending=true in working_memory.json, notify user after answer",
+            "2": "cached_skip (<1 hour since last check) — skip notification, continue to step 1"
           }
         },
         {
@@ -235,19 +235,19 @@
           "condition": "exit_code_not_1 (0 or 2)",
           "action": "clear_working_memory_field",
           "field": "new_sources_pending",
-          "note": "\u0421\u0431\u0440\u043e\u0441\u0438\u0442\u044c pending-\u0444\u043b\u0430\u0433, \u0435\u0441\u043b\u0438 \u043d\u043e\u0432\u044b\u0445 \u0438\u0441\u0442\u043e\u0447\u043d\u0438\u043a\u043e\u0432 \u043d\u0435\u0442 \u2014 \u043d\u0435 \u043f\u043e\u043a\u0430\u0437\u044b\u0432\u0430\u0442\u044c \u0443\u0441\u0442\u0430\u0440\u0435\u0432\u0448\u0435\u0435 \u0443\u0432\u0435\u0434\u043e\u043c\u043b\u0435\u043d\u0438\u0435"
+          "note": "Сбросить pending-флаг, если новых источников нет — не показывать устаревшее уведомление"
         }
       ],
       "post_task_notification": {
         "trigger": "new_sources_detected_in_step_05",
         "timing": "after_main_query_result_delivery",
-        "message_template": "[!] \u041e\u0431\u043d\u0430\u0440\u0443\u0436\u0435\u043d\u044b \u043d\u043e\u0432\u044b\u0435 \u043c\u0430\u0442\u0435\u0440\u0438\u0430\u043b\u044b \u0432 raw/sources/. \u041e\u0431\u0440\u0430\u0431\u043e\u0442\u0430\u0442\u044c \u0438 \u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0432 wiki?"
+        "message_template": "[!] Обнаружены новые материалы в raw/sources/. Обработать и добавить в wiki?"
       }
     },
     {
       "step_id": "1",
       "name": "search",
-      "description": "\u0421\u043d\u0430\u0447\u0430\u043b\u0430 \u043e\u0431\u0440\u0430\u0442\u0438\u0441\u044c \u043a index.md, \u0437\u0430\u0442\u0435\u043c \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u0443\u0439 wiki_recall \u0434\u043b\u044f \u0441\u0435\u043c\u0430\u043d\u0442\u0438\u0447\u0435\u0441\u043a\u043e\u0433\u043e \u043f\u043e\u0438\u0441\u043a\u0430 \u0440\u0435\u043b\u0435\u0432\u0430\u043d\u0442\u043d\u044b\u0445 \u0441\u0442\u0440\u0430\u043d\u0438\u0446. \u0418\u0441\u043f\u043e\u043b\u044c\u0437\u0443\u0439 \u043a\u0440\u0438\u0442\u0435\u0440\u0438\u0438 \u0443\u0432\u0435\u0440\u0435\u043d\u043d\u043e\u0441\u0442\u0438 \u0434\u043b\u044f \u043e\u043f\u0440\u0435\u0434\u0435\u043b\u0435\u043d\u0438\u044f \u0434\u043e\u0441\u0442\u0430\u0442\u043e\u0447\u043d\u043e\u0441\u0442\u0438 \u043f\u043e\u0438\u0441\u043a\u0430.",
+      "description": "Сначала обратись к index.md, затем используй wiki_recall для семантического поиска релевантных страниц. Используй критерии уверенности для определения достаточности поиска.",
       "system_files_exclusion": {
         "rule": "exclude system files (log.md, issues.md, timeline.md, overview.md, snapshot.md, index.md, GIT-*) from semantic search results",
         "action_if_found_in_results": "FILTER_OUT: remove from final matches array before presenting to user"
@@ -270,7 +270,7 @@
       ],
       "semantic_search_layer": {
         "action": "wiki_recall(query: \"${USER_QUERY}\", max_results: 5)",
-        "description": "\u041f\u043e\u0441\u043b\u0435 index.md \u0432\u044b\u0437\u043e\u0432\u0438 wiki_recall \u0434\u043b\u044f \u0441\u0435\u043c\u0430\u043d\u0442\u0438\u0447\u0435\u0441\u043a\u043e\u0433\u043e \u043f\u043e\u0438\u0441\u043a\u0430 \u043f\u043e \u0441\u043c\u044b\u0441\u043b\u0443, \u0430 \u043d\u0435 \u043f\u043e \u043a\u043b\u044e\u0447\u0435\u0432\u044b\u043c \u0441\u043b\u043e\u0432\u0430\u043c. \u041e\u0446\u0435\u043d\u0438 \u043a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442\u043e\u0432 \u0434\u043b\u044f \u043e\u043f\u0440\u0435\u0434\u0435\u043b\u0435\u043d\u0438\u044f \u0434\u043e\u0441\u0442\u0430\u0442\u043e\u0447\u043d\u043e\u0441\u0442\u0438.",
+        "description": "После index.md вызови wiki_recall для семантического поиска по смыслу, а не по ключевым словам. Оцени количество результатов для определения достаточности.",
         "result_handling": {
           "if_results_found": "ADD_TO_RELEVANT_PAGES_LIST",
           "if_no_results": "PROCEED_TO_GREP_FALLBACK"
@@ -280,15 +280,15 @@
       "fallback_chain": {
         "priority_order": [
           {
-            "description": "\u0427\u0442\u0435\u043d\u0438\u0435 index.md \u043f\u043e \u043a\u0430\u0442\u0435\u0433\u043e\u0440\u0438\u044f\u043c, \u0440\u0435\u043b\u0435\u0432\u0430\u043d\u0442\u043d\u044b\u043c \u0442\u0435\u043c\u0435. \u0415\u0441\u043b\u0438 \u043d\u0430\u0439\u0434\u0435\u043d\u043e >=2 \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u044f \u2014 \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442 \u0434\u043e\u0441\u0442\u0430\u0442\u043e\u0447\u0435\u043d.",
+            "description": "Чтение index.md по категориям, релевантным теме. Если найдено >=2 совпадения — результат достаточен.",
             "method": "index_lookup"
           },
           {
-            "description": "wiki_recall(query) \u2014 \u043f\u043e\u0438\u0441\u043a \u043f\u043e \u0441\u0435\u043c\u0430\u043d\u0442\u0438\u0447\u0435\u0441\u043a\u043e\u043c\u0443 \u0441\u0445\u043e\u0434\u0441\u0442\u0432\u0443. \u0415\u0441\u043b\u0438 \u043d\u0430\u0439\u0434\u0435\u043d\u043e >=3 \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u044f \u2014 \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442 \u0434\u043e\u0441\u0442\u0430\u0442\u043e\u0447\u0435\u043d.",
+            "description": "wiki_recall(query) — поиск по семантическому сходству. Если найдено >=3 совпадения — результат достаточен.",
             "method": "semantic_search_wiki_recall"
           },
           {
-            "description": "./scripts/wiki-search.sh query wiki/ \u2014 \u043f\u0440\u0438\u043e\u0440\u0438\u0442\u0435\u0442\u043d\u044b\u0439 grep \u043f\u043e \u043a\u0430\u0442\u0435\u0433\u043e\u0440\u0438\u044f\u043c (syntheses\u2192concepts\u2192entities), fallback \u043d\u0430 \u043f\u043e\u043b\u043d\u044b\u0439 grep. \u0418\u0441\u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u044c \u0432\u043c\u0435\u0441\u0442\u043e raw grep -r.",
+            "description": "./scripts/wiki-search.sh query wiki/ — приоритетный grep по категориям (syntheses→concepts→entities), fallback на полный grep. Использовать вместо raw grep -r.",
             "method": "wiki_search_script"
           }
         ],
@@ -298,13 +298,13 @@
     {
       "step_id": "1.5",
       "name": "knowledge_gap_handling",
-      "description": "\u041f\u043e\u0440\u044f\u0434\u043e\u043a \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0439 \u043f\u043e\u0441\u043b\u0435 \u043f\u0443\u0441\u0442\u043e\u0433\u043e wiki-search: 1) raw/sources/ check; 2) web_availability_check (\u0435\u0441\u043b\u0438 \u0434\u043e\u0441\u0442\u0443\u043f\u0435\u043d \u2192 auto-web_search + \u043f\u0440\u0435\u0434\u043b\u043e\u0436\u0435\u043d\u0438\u0435 \u0441\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c); 3) \u0435\u0441\u043b\u0438 \u043d\u0435\u0434\u043e\u0441\u0442\u0443\u043f\u0435\u043d \u2192 \u043f\u0440\u0435\u0434\u043b\u043e\u0436\u0438\u0442\u044c \u0440\u0443\u0447\u043d\u043e\u0439 \u0434\u043e\u0441\u0442\u0443\u043f \u0438\u043b\u0438 \u043e\u0442\u0432\u0435\u0442 \u0438\u0437 \u0441\u043e\u0431\u0441\u0442\u0432\u0435\u043d\u043d\u044b\u0445 \u0437\u043d\u0430\u043d\u0438\u0439.",
+      "description": "Порядок действий после пустого wiki-search: 1) raw/sources/ check; 2) web_availability_check (если доступен → auto-web_search + предложение сохранить); 3) если недоступен → предложить ручной доступ или ответ из собственных знаний.",
       "trigger_condition": "search_results_empty_after_all_methods"
     },
     {
       "step_id": "2",
       "name": "synthesis",
-      "description": "\u041f\u0440\u043e\u0430\u043d\u0430\u043b\u0438\u0437\u0438\u0440\u0443\u0439 \u043d\u0430\u0439\u0434\u0435\u043d\u043d\u044b\u0435 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u044b \u0438 \u0441\u0444\u043e\u0440\u043c\u0438\u0440\u0443\u0439 \u0433\u043b\u0443\u0431\u043e\u043a\u0438\u0439 \u043e\u0442\u0432\u0435\u0442 \u0441 \u0446\u0438\u0442\u0430\u0442\u0430\u043c\u0438. \u041e\u0431\u043d\u0430\u0440\u0443\u0436\u0438\u0432\u0430\u0439 \u043f\u0440\u043e\u0442\u0438\u0432\u043e\u0440\u0435\u0447\u0438\u044f \u043c\u0435\u0436\u0434\u0443 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0430\u043c\u0438 \u0438 \u0440\u0430\u0437\u0440\u0435\u0448\u0430\u0439 \u0438\u0445 \u043f\u043e \u043e\u043f\u0440\u0435\u0434\u0435\u043b\u0451\u043d\u043d\u043e\u043c\u0443 flow. \u0415\u0441\u043b\u0438 \u0441\u0438\u043d\u0442\u0435\u0437 \u0438\u0437 2+ \u0438\u0441\u0442\u043e\u0447\u043d\u0438\u043a\u043e\u0432 \u0441\u043e\u0434\u0435\u0440\u0436\u0438\u0442 novel insight \u2014 \u043f\u043e\u043c\u0435\u0442\u044c \u0434\u043b\u044f compounding.",
+      "description": "Проанализируй найденные страницы и сформируй глубокий ответ с цитатами. Обнаруживай противоречия между страницами и разрешай их по определённому flow. Если синтез из 2+ источников содержит novel insight — пометь для compounding.",
       "pre_condition": "search_results_not_empty",
       "actions": [
         {
@@ -322,44 +322,44 @@
           "action": "identify_matches_or_contradications",
           "contradiction_types_to_detect": [
             {
-              "description": "\u041e\u0434\u043d\u043e \u0438 \u0442\u043e \u0436\u0435 \u0443\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043d\u0438\u0435 \u0432 \u0440\u0430\u0437\u043d\u044b\u0445 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0430\u0445 \u0441 \u0440\u0430\u0437\u043d\u044b\u043c\u0438 \u0437\u043d\u0430\u0447\u0435\u043d\u0438\u044f\u043c\u0438 (\u043d\u0430\u043f\u0440\u0438\u043c\u0435\u0440, \u0440\u0430\u0437\u043d\u044b\u0435 \u0432\u0435\u0440\u0441\u0438\u0438 \u041f\u041e)",
-              "example": "\u0421\u0442\u0440\u0430\u043d\u0438\u0446\u0430 A: \u0432\u0435\u0440\u0441\u0438\u044f X=1.0; \u0421\u0442\u0440\u0430\u043d\u0438\u0446\u0430 B: \u0432\u0435\u0440\u0441\u0438\u044f X=2.0",
+              "description": "Одно и то же утверждение в разных страницах с разными значениями (например, разные версии ПО)",
+              "example": "Страница A: версия X=1.0; Страница B: версия X=2.0",
               "type": "fact_conflict"
             },
             {
-              "description": "\u0423\u0441\u0442\u0430\u0440\u0435\u0432\u0448\u0430\u044f \u0438\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u044f \u043d\u0430 \u043e\u0434\u043d\u043e\u0439 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0435 vs \u043d\u043e\u0432\u0430\u044f \u043d\u0430 \u0434\u0440\u0443\u0433\u043e\u0439 (\u0434\u0430\u0442\u0430 \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u044f \u043d\u0435 \u0443\u0447\u0442\u0435\u043d\u0430)",
-              "example": "\u0421\u0442\u0440\u0430\u043d\u0438\u0446\u0430 A \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0430 2024, \u0441\u043e\u0434\u0435\u0440\u0436\u0438\u0442 \u0443\u0441\u0442\u0430\u0440\u0435\u0432\u0448\u0438\u0439 \u043c\u0435\u0442\u043e\u0434; \u0421\u0442\u0440\u0430\u043d\u0438\u0446\u0430 B \u043e\u0442 2025 \u0441\u043e\u0434\u0435\u0440\u0436\u0438\u0442 \u043d\u043e\u0432\u044b\u0439",
+              "description": "Устаревшая информация на одной странице vs новая на другой (дата обновления не учтена)",
+              "example": "Страница A обновлена 2024, содержит устаревший метод; Страница B от 2025 содержит новый",
               "type": "temporal_conflict"
             },
             {
-              "description": "\u0420\u0430\u0437\u043d\u044b\u0435 \u0438\u0441\u0442\u043e\u0447\u043d\u0438\u043a\u0438 \u0443\u043a\u0430\u0437\u044b\u0432\u0430\u044e\u0442 \u043d\u0430 \u0440\u0430\u0437\u043d\u044b\u0435 \u0444\u0430\u043a\u0442\u044b \u043e \u0442\u043e\u043c \u0436\u0435 \u043e\u0431\u044a\u0435\u043a\u0442\u0435/\u043a\u043e\u043d\u0446\u0435\u043f\u0446\u0438\u0438",
-              "example": "wiki/entities/tech.md: \u0442\u0435\u0445\u043d\u043e\u043b\u043e\u0433\u0438\u044f \u0441\u043e\u0437\u0434\u0430\u043d\u0430 \u0432 2020; wiki/bibliography/book.md: \u0442\u0435\u0445\u043d\u043e\u043b\u043e\u0433\u0438\u044f \u0441\u043e\u0437\u0434\u0430\u043d\u0430 \u0432 2019",
+              "description": "Разные источники указывают на разные факты о том же объекте/концепции",
+              "example": "wiki/entities/tech.md: технология создана в 2020; wiki/bibliography/book.md: технология создана в 2019",
               "type": "source_conflict"
             },
             {
-              "description": "\u041f\u0440\u043e\u0442\u0438\u0432\u043e\u0440\u0435\u0447\u0438\u0435 \u0438\u0437-\u0437\u0430 \u0440\u0430\u0437\u043d\u043e\u0433\u043e \u0443\u0440\u043e\u0432\u043d\u044f \u0430\u0431\u0441\u0442\u0440\u0430\u043a\u0446\u0438\u0438 (\u043a\u043e\u043d\u043a\u0440\u0435\u0442\u043d\u043e\u0435 vs \u043e\u0431\u0449\u0435\u0435)",
-              "example": "\u0421\u0442\u0440\u0430\u043d\u0438\u0446\u0430 A: 'Python 3.12'; \u0421\u0442\u0440\u0430\u043d\u0438\u0446\u0430 B: 'Python 3.x' \u2014 \u043e\u0431\u0430 \u0432\u0435\u0440\u043d\u044b \u0432 \u0441\u0432\u043e\u0435\u043c \u043a\u043e\u043d\u0442\u0435\u043a\u0441\u0442\u0435",
+              "description": "Противоречие из-за разного уровня абстракции (конкретное vs общее)",
+              "example": "Страница A: 'Python 3.12'; Страница B: 'Python 3.x' — оба верны в своем контексте",
               "type": "scope_conflict"
             },
             {
-              "description": "\u0420\u0430\u0437\u043d\u044b\u0435 \u043a\u043e\u043d\u0442\u0435\u043a\u0441\u0442\u044b \u043f\u0440\u0438\u043c\u0435\u043d\u0435\u043d\u0438\u044f (\u043e\u0431\u0430 \u0432\u0435\u0440\u043d\u044b \u0432 \u0441\u0432\u043e\u0435\u043c \u043a\u043e\u043d\u0442\u0435\u043a\u0441\u0442\u0435)",
-              "example": "\u0421\u0442\u0440\u0430\u043d\u0438\u0446\u0430 A: '\u0414\u043b\u044f Linux \u2014 \u043c\u0435\u0442\u043e\u0434 X'; \u0421\u0442\u0440\u0430\u043d\u0438\u0446\u0430 B: '\u0414\u043b\u044f Windows \u2014 \u043c\u0435\u0442\u043e\u0434 Y'",
+              "description": "Разные контексты применения (оба верны в своем контексте)",
+              "example": "Страница A: 'Для Linux — метод X'; Страница B: 'Для Windows — метод Y'",
               "type": "contextual_conflict"
             },
             {
-              "description": "\u041f\u0440\u043e\u0442\u0438\u0432\u043e\u0440\u0435\u0447\u0438\u0435 \u043c\u0435\u0436\u0434\u0443 \u0432\u0435\u0440\u0441\u0438\u044f\u043c\u0438 \u043f\u0440\u043e\u0434\u0443\u043a\u0442\u0430/\u0434\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u0430\u0446\u0438\u0438",
-              "example": "\u0414\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u0430\u0446\u0438\u044f v1: API endpoint /v1; \u0414\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u0430\u0446\u0438\u044f v2: API endpoint /v2",
+              "description": "Противоречие между версиями продукта/документации",
+              "example": "Документация v1: API endpoint /v1; Документация v2: API endpoint /v2",
               "type": "version_conflict"
             }
           ]
         },
         {
           "action": "assess_compounding_value",
-          "rule": "\u0415\u0441\u043b\u0438 \u043e\u0442\u0432\u0435\u0442:\n            - \u0441\u0438\u043d\u0442\u0435\u0437\u0438\u0440\u0443\u0435\u0442 \u0438\u0437 2+ \u0441\u0442\u0440\u0430\u043d\u0438\u0446, \u0418\u041b\u0418\n            - \u0441\u043e\u0434\u0435\u0440\u0436\u0438\u0442 \u043d\u043e\u0432\u044b\u0435 \u0444\u0430\u043a\u0442\u044b \u043e\u0431 existing entity/concept (\u0434\u043e\u043f\u043e\u043b\u043d\u044f\u044e\u0449\u0438\u0435), \u0418\u041b\u0418\n            - \u0440\u0430\u0437\u0440\u0435\u0448\u0430\u0435\u0442 \u043f\u0440\u043e\u0442\u0438\u0432\u043e\u0440\u0435\u0447\u0438\u0435 \u2192 flag for fixation"
+          "rule": "Если ответ:\n            - синтезирует из 2+ страниц, ИЛИ\n            - содержит новые факты об existing entity/concept (дополняющие), ИЛИ\n            - разрешает противоречие → flag for fixation"
         },
         {
           "action": "summary_page_creation_trigger",
-          "description": "\u0415\u0441\u043b\u0438 \u043e\u0442\u0432\u0435\u0442 \u0430\u0433\u0440\u0435\u0433\u0438\u0440\u0443\u0435\u0442 \u0438\u0437 >=3 wiki \u0441\u0442\u0440\u0430\u043d\u0438\u0446 \u2192 auto-create summary page \u0432 syntheses/. \u042d\u0442\u043e \u043d\u0435 \u0442\u0440\u0435\u0431\u0443\u0435\u0442 explicit fixation flag (DR-4). \u0415\u0441\u043b\u0438 \u0438\u0441\u0442\u043e\u0447\u043d\u0438\u043a\u0438 \u0438\u0437 \u0438\u043d\u0442\u0435\u0440\u043d\u0435\u0442\u0430 \u2192 \u043f\u0440\u0435\u0434\u043b\u043e\u0436\u0438\u0442\u044c \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044e.",
+          "description": "Если ответ агрегирует из >=3 wiki страниц → auto-create summary page в syntheses/. Это не требует explicit fixation flag (DR-4). Если источники из интернета → предложить пользователю.",
           "trigger_condition": "answer_sources_count >= 3 and all from wiki",
           "auto_create_rule": [
             {
@@ -382,50 +382,50 @@
       ],
       "search_strategy_schema_ref": "AGENTS.md#search_priority_schema",
       "contradiction_resolution_flow": {
-        "description": "Cascade-based \u0430\u043b\u0433\u043e\u0440\u0438\u0442\u043c: Code Reality > Live State > Documentation (evidence_grade). \u0421\u0442\u0430\u0440\u044b\u0439 flow (authoritative_source \u2192 temporal_conflict \u2192 user_review) \u043f\u043e\u043b\u043d\u043e\u0441\u0442\u044c\u044e \u0437\u0430\u043c\u0435\u043d\u0451\u043d.",
+        "description": "Cascade-based алгоритм: Code Reality > Live State > Documentation (evidence_grade). Старый flow (authoritative_source → temporal_conflict → user_review) полностью заменён.",
         "detection_output": {
-          "format": "\u0415\u0441\u043b\u0438 \u043d\u0430\u0439\u0434\u0435\u043d\u044b \u043f\u0440\u043e\u0442\u0438\u0432\u043e\u0440\u0435\u0447\u0438\u044f \u2014 \u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0440\u0430\u0437\u0434\u0435\u043b '## \u26a0 \u041f\u0440\u043e\u0442\u0438\u0432\u043e\u0440\u0435\u0447\u0438\u044f' \u0432 \u043e\u0442\u0432\u0435\u0442 \u043f\u0435\u0440\u0435\u0434 \u043e\u0441\u043d\u043e\u0432\u043d\u044b\u043c \u043a\u043e\u043d\u0442\u0435\u043d\u0442\u043e\u043c",
+          "format": "Если найдены противоречия — добавить раздел '## ⚠ Противоречия' в ответ перед основным контентом",
           "include_in_answer_if_contradiction_found": true,
-          "log_entry": "## [date] query | \u0412\u043e\u043f\u0440\u043e\u0441 -> \u043e\u0431\u043d\u0430\u0440\u0443\u0436\u0435\u043d\u043e X \u043f\u0440\u043e\u0442\u0438\u0432\u043e\u0440\u0435\u0447\u0438\u0439, Y \u0441\u043e\u043f\u043e\u0441\u0442\u0430\u0432\u043b\u0435\u043d\u0438\u0439"
+          "log_entry": "## [date] query | Вопрос -> обнаружено X противоречий, Y сопоставлений"
         },
-        "agent_prompt": "\u041f\u0440\u0438 \u0440\u0430\u0437\u0440\u0435\u0448\u0435\u043d\u0438\u0438 \u043f\u0440\u043e\u0442\u0438\u0432\u043e\u0440\u0435\u0447\u0438\u044f:\n1. \u041e\u043f\u0440\u0435\u0434\u0435\u043b\u0438\u0442\u0435 \u0442\u0438\u043f \u0444\u0430\u043a\u0442\u0430: objective (\u043c\u0430\u0442\u0435\u043c\u0430\u0442\u0438\u043a\u0430, \u043a\u043e\u0434, \u0444\u0438\u0437\u0438\u0447\u0435\u0441\u043a\u0438\u0435 \u0437\u0430\u043a\u043e\u043d\u044b) \u0438\u043b\u0438 subjective/ambiguous (\u043c\u043d\u0435\u043d\u0438\u044f, \u0438\u0441\u0442\u043e\u0440\u0438\u0447\u0435\u0441\u043a\u0438\u0435 \u0443\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043d\u0438\u044f \u0431\u0435\u0437 \u0434\u043e\u043a\u0430\u0437\u0430\u0442\u0435\u043b\u044c\u0441\u0442\u0432).\n2. \u0415\u0441\u043b\u0438 objective \u2192 cascade priority (code > live > docs). User override \u0417\u0410\u041f\u0420\u0415\u0429\u0401\u041d.\n3. \u0415\u0441\u043b\u0438 subjective \u2192 user override \u0414\u041e\u041f\u0423\u0421\u041a\u0410\u0415\u0422\u0421\u042f (final say \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f).\n4. \u041f\u0440\u0438\u043c\u0435\u043d\u044f\u0439 cascade: priority 1 (code) > priority 2 (live) > priority 3 (docs with evidence_grade).\n5. \u0414\u043b\u044f documentation: documented(1) > corroborated(2) > assertion_only(3).\n6. \u0415\u0441\u043b\u0438 agent_confidence < threshold \u2192 human_override.\n\u041f\u0440\u0438\u043c\u0435\u0440: GitHub issue (live_state, priority 2) > docs (documentation, priority 3).7. \u0415\u0441\u043b\u0438 detected overlap \u226590% \u043c\u0435\u0436\u0434\u0443 A \u0438 B \u2192 \u043f\u0440\u0438\u043c\u0435\u043d\u0438 DR \u0438\u0437 AGENTS.md#decision_rules:\n   - DR-1: script reports raw overlap only \u2014 \u043d\u0435 \u043c\u0435\u043d\u044f\u0442\u044c \u0431\u0430\u043b\u043b\u044b \u0430\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0447\u0435\u0441\u043a\u0438\n   - DR-2: \u0435\u0441\u043b\u0438 B \u0441\u043e\u0434\u0435\u0440\u0436\u0438\u0442 additions/deletions (\u0438\u0441\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u0435) + evidence \u2192 evaluate correction, B > A \u043d\u0430 corrected claim\n   - DR-3: \u0435\u0441\u043b\u0438 attribution conflict \u2192 A wins original; B \u0442\u043e\u043b\u044c\u043a\u043e reporter\n8. Log: [decision] [DR-N] \u0432 log.md \u043f\u043e\u0441\u043b\u0435 \u043f\u0440\u0438\u043c\u0435\u043d\u0435\u043d\u0438\u044f \u043f\u0440\u0430\u0432\u0438\u043b\u0430\n",
-        "type_classification": "classify each source as code_reality | live_state | documentation",
+        "agent_prompt": "При разрешении противоречия:\n1. Определите тип факта: objective (математика, код, физические законы) или subjective/ambiguous (мнения, исторические утверждения без доказательств).\n2. Если objective → cascade priority (code > live > docs). User override ЗАПРЕЩЁН.\n3. Если subjective → user override ДОПУСКАЕТСЯ (final say пользователя).\n4. Применяй cascade: priority 1 (code) > priority 2 (live) > priority 3 (docs with evidence_grade).\n5. Для documentation: documented(1) > corroborated(2) > assertion_only(3).\n6. Если agent_confidence < threshold → human_override.\nПример: GitHub issue (live_state, priority 2) > docs (documentation, priority 3).7. Если detected overlap ≥90% между A и B → примени DR из AGENTS.md#decision_rules:\n   - DR-1: script reports raw overlap only — не менять баллы автоматически\n   - DR-2: если B содержит additions/deletions (исправление) + evidence → evaluate correction, B > A на corrected claim\n   - DR-3: если attribution conflict → A wins original; B только reporter\n8. Log: [decision] [DR-N] в log.md после применения правила\n",
+        "type_classification": "classify each source as documentation | code_reality | live_state (reality layer)",
         "cascade_order": [
           {
             "priority": 1,
-            "source_type": "code_reality",
-            "description": "Code compiles or not \u2014 deterministic, machine-verifiable. Always wins.",
-            "example": "GitHub issue shows infinite loop > docs say API works"
+            "description": "Code compiles or not — deterministic, machine-verifiable. Always wins.",
+            "example": "GitHub issue shows infinite loop > docs say API works",
+            "source_layer": "code_reality"
           },
           {
             "priority": 2,
-            "source_type": "live_state",
-            "description": "API returns X right now \u2014 ephemeral but observable. Wins over documentation.",
-            "example": "curl endpoint returns 401 > docs say it works"
+            "description": "API returns X right now — ephemeral but observable. Wins over documentation.",
+            "example": "curl endpoint returns 401 > docs say it works",
+            "source_layer": "live_state"
           },
           {
             "priority": 3,
-            "source_type": "documentation",
             "strategy": "evidence_grade (documented > corroborated > assertion_only)",
             "description": "Authoritative docs win only when no code_reality or live_state available.",
-            "note": "This is the ONLY layer where domain authority matters"
+            "note": "This is the ONLY layer where domain authority matters",
+            "source_layer": "documentation"
           }
         ],
         "resolution_priority": [
           {
             "priority": 1,
             "strategy": "code_reality",
-            "condition": "source_type == code && source exists in repository"
+            "condition": "source_layer == code && source exists in repository"
           },
           {
             "priority": 2,
             "strategy": "live_state",
-            "condition": "timestamp < threshold AND source_type != code"
+            "condition": "timestamp < threshold AND source_layer != code"
           },
           {
             "priority": 3,
             "strategy": "evidence_grade_docs",
-            "condition": "source_type == documentation && evidence_grade > assertion_only",
+            "condition": "source_layer == documentation && evidence_grade > assertion_only",
             "sub_priority": [
               {
                 "grade": "documented",
@@ -472,48 +472,48 @@
           },
           {
             "condition": "still_ambiguous_after_temporal_check",
-            "action": "human_override \u2192 flag in answer with CONFLICT tag"
+            "action": "human_override → flag in answer with CONFLICT tag"
           }
         ],
         "arbitration_layer": {
-          "description": "\u0410\u0440\u0431\u0438\u0442\u0440\u0430\u0436\u043d\u044b\u0439 \u0441\u043b\u043e\u0439: objective facts vs subjective claims. User override \u0442\u043e\u043b\u044c\u043a\u043e \u0434\u043b\u044f subjective.",
+          "description": "Арбитражный слой: objective facts vs subjective claims. User override только для subjective.",
           "fact_types": [
             {
               "type": "objective",
               "examples": [
                 "2+2=4",
-                "\u043a\u043e\u0434 \u043a\u043e\u043c\u043f\u0438\u043b\u0438\u0440\u0443\u0435\u0442\u0441\u044f/\u043d\u0435\u0442",
+                "код компилируется/нет",
                 "API returns specific status code",
-                "\u0444\u0438\u0437\u0438\u0447\u0435\u0441\u043a\u0438\u0435 \u0437\u0430\u043a\u043e\u043d\u044b"
+                "физические законы"
               ],
               "user_override_allowed": false,
-              "rule": "\u0415\u0441\u043b\u0438 \u0444\u0430\u043a\u0442 objective (\u043c\u0430\u0442\u0435\u043c\u0430\u0442\u0438\u043a\u0430, \u043a\u043e\u0434, \u044d\u043c\u043f\u0438\u0440\u0438\u0447\u0435\u0441\u043a\u0438\u0435 \u0444\u0430\u043a\u0442\u044b) \u2192 user \u043d\u0435 \u043c\u043e\u0436\u0435\u0442 \u043f\u0435\u0440\u0435\u043e\u043f\u0440\u0435\u0434\u0435\u043b\u0438\u0442\u044c. \u0410\u0433\u0435\u043d\u0442 \u043c\u044f\u0433\u043a\u043e \u0440\u0435\u043a\u043e\u043c\u0435\u043d\u0434\u0443\u0435\u0442: '\u0432\u044b\u0441\u043f\u0430\u0442\u044c\u0441\u044f, \u043f\u0440\u0438\u043d\u044f\u0442\u044c \u0434\u0443\u0448, \u0432\u044b\u043f\u0438\u0442\u044c \u043a\u043e\u0444\u0435'"
+              "rule": "Если факт objective (математика, код, эмпирические факты) → user не может переопределить. Агент мягко рекомендует: 'выспаться, принять душ, выпить кофе'"
             },
             {
               "type": "subjective",
               "examples": [
-                "\u043c\u043d\u0435\u043d\u0438\u044f \u044d\u043a\u0441\u043f\u0435\u0440\u0442\u043e\u0432",
-                "\u0438\u0441\u0442\u043e\u0440\u0438\u0447\u0435\u0441\u043a\u0438\u0435 \u0443\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043d\u0438\u044f \u0431\u0435\u0437 \u0434\u043e\u043a\u0430\u0437\u0430\u0442\u0435\u043b\u044c\u0441\u0442\u0432",
-                "\u0438\u043d\u0442\u0435\u0440\u043f\u0440\u0435\u0442\u0430\u0446\u0438\u0438 \u0438\u0441\u0442\u043e\u0447\u043d\u0438\u043a\u043e\u0432"
+                "мнения экспертов",
+                "исторические утверждения без доказательств",
+                "интерпретации источников"
               ],
               "user_override_allowed": true,
-              "rule": "\u0415\u0441\u043b\u0438 \u0444\u0430\u043a\u0442 subjective/ambiguous \u2192 user \u0438\u043c\u0435\u0435\u0442 final say (\u0432\u044b\u0441\u0448\u0430\u044f \u0438\u043d\u0441\u0442\u0430\u043d\u0446\u0438\u044f). Agent \u043f\u0440\u0438\u043d\u0438\u043c\u0430\u0435\u0442 \u0440\u0435\u0448\u0435\u043d\u0438\u0435 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f."
+              "rule": "Если факт subjective/ambiguous → user имеет final say (высшая инстанция). Agent принимает решение пользователя."
             }
           ],
           "resolution_logic": {
             "step_1": "classify conflict as objective or subjective",
-            "step_2_if_objective": "apply cascade priority. User override \u2192 REJECTED with gentle recommendation",
-            "step_3_if_subjective": "user_override_accepted \u2192 apply user decision to wiki"
+            "step_2_if_objective": "apply cascade priority. User override → REJECTED with gentle recommendation",
+            "step_3_if_subjective": "user_override_accepted → apply user decision to wiki"
           },
-          "agent_prompt_arbitration": "\u041e\u043f\u0440\u0435\u0434\u0435\u043b\u0438, \u044f\u0432\u043b\u044f\u0435\u0442\u0441\u044f \u043b\u0438 \u043f\u0440\u043e\u0442\u0438\u0432\u043e\u0440\u0435\u0447\u0438\u0435 objective (\u043c\u0430\u0442\u0435\u043c\u0430\u0442\u0438\u043a\u0430, \u043a\u043e\u0434, \u0444\u0438\u0437\u0438\u0447\u0435\u0441\u043a\u0438\u0435 \u0437\u0430\u043a\u043e\u043d\u044b) \u0438\u043b\u0438 subjective (\u043c\u043d\u0435\u043d\u0438\u044f, \u0438\u043d\u0442\u0435\u0440\u043f\u0440\u0435\u0442\u0430\u0446\u0438\u0438).\n- \u0415\u0441\u043b\u0438 objective: \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044c \u043d\u0435 \u043c\u043e\u0436\u0435\u0442 \u043f\u0435\u0440\u0435\u043e\u043f\u0440\u0435\u0434\u0435\u043b\u0438\u0442\u044c. \u041c\u044f\u0433\u043a\u043e \u043f\u043e\u0440\u0435\u043a\u043e\u043c\u0435\u043d\u0434\u0443\u0439 \u043f\u0440\u043e\u0432\u0435\u0440\u0438\u0442\u044c \u0444\u0430\u043a\u0442\u044b.\n- \u0415\u0441\u043b\u0438 subjective: user override \u043f\u0440\u0438\u043d\u044f\u0442 (\u0432\u044b\u0441\u0448\u0430\u044f \u0438\u043d\u0441\u0442\u0430\u043d\u0446\u0438\u044f). \u041f\u0440\u0438\u043c\u0435\u043d\u044f\u0439 \u0440\u0435\u0448\u0435\u043d\u0438\u0435 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f \u043a wiki."
+          "agent_prompt_arbitration": "Определи, является ли противоречие objective (математика, код, физические законы) или subjective (мнения, интерпретации).\n- Если objective: пользователь не может переопределить. Мягко порекомендуй проверить факты.\n- Если subjective: user override принят (высшая инстанция). Применяй решение пользователя к wiki."
         },
         "post_resolution_verification": {
           "re_read_updated_pages": true,
           "optional_web_search_if_high_stakes": true
         },
         "history_tracking": {
-          "append_to": "## \u041e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u043e [date] \u2014 \u043d\u043e\u0432\u043e\u0435 \u0443\u0442\u043e\u0447\u043d\u0435\u043d\u0438\u0435",
-          "format": "- **YYYY-MM-DD**: \u041e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u043e \u0441 [\u0441\u0442\u0430\u0440\u043e\u0435] \u2192 [\u043d\u043e\u0432\u043e\u0435]"
+          "append_to": "## Обновлено [date] — новое уточнение",
+          "format": "- **YYYY-MM-DD**: Обновлено с [старое] → [новое]"
         }
       },
       "decision_rules_schema_ref": "AGENTS.md#decision_rules"
@@ -521,7 +521,7 @@
     {
       "step_id": "2.3",
       "name": "context_compaction_and_dismissal",
-      "description": "\u0421\u0436\u0430\u0442\u044c \u043f\u0440\u043e\u0447\u0438\u0442\u0430\u043d\u043d\u044b\u0439 \u043a\u043e\u043d\u0442\u0435\u043a\u0441\u0442 \u0432 \u0441\u0442\u0440\u0443\u043a\u0442\u0443\u0440\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u043e\u0435 \u0441\u0430\u043c\u043c\u0430\u0440\u0438 (\u043c\u0430\u043a\u0441 2K \u0442\u043e\u043a\u0435\u043d\u043e\u0432), \u0437\u0430\u043f\u0438\u0441\u0430\u0442\u044c \u0432 working_memory.json, \u0432\u044b\u0433\u0440\u0443\u0437\u0438\u0442\u044c raw-\u0441\u0442\u0440\u0430\u043d\u0438\u0446\u044b \u0438\u0437 \u0430\u043a\u0442\u0438\u0432\u043d\u043e\u0433\u043e \u043e\u043a\u043d\u0430.",
+      "description": "Сжать прочитанный контекст в структурированное саммари (макс 2K токенов), записать в working_memory.json, выгрузить raw-страницы из активного окна.",
       "actions": [
         {
           "action": "compress_read_pages_to_summary",
@@ -535,7 +535,7 @@
         {
           "action": "auto_crosslink_from_query_results",
           "command": "./scripts/auto-crosslink.sh '${READ_PAGES}' --include-root 2>/dev/null || true",
-          "description": "After query answer \u2014 run auto-crosslink on all pages that were read/referenced. Parse results for score >= 5, suggest adding crosslinks to high-score matches.",
+          "description": "After query answer — run auto-crosslink on all pages that were read/referenced. Parse results for score >= 5, suggest adding crosslinks to high-score matches.",
           "output_format": "json[{path, score, match_types}]"
         },
         {
@@ -556,7 +556,7 @@
     {
       "step_id": "2.5",
       "name": "duplicate_check_before_fixation",
-      "description": "\u041f\u0440\u043e\u0432\u0435\u0440\u044c \u043d\u0430\u043b\u0438\u0447\u0438\u0435 \u043f\u043e\u0445\u043e\u0436\u0438\u0445 \u0441\u0442\u0440\u0430\u043d\u0438\u0446 \u043f\u0435\u0440\u0435\u0434 \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u0435\u043c \u043d\u043e\u0432\u043e\u0439 \u2014 \u043f\u0440\u0435\u0434\u043e\u0442\u0432\u0440\u0430\u0449\u0430\u0435\u0442 \u0434\u0443\u0431\u043b\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435 wiki",
+      "description": "Проверь наличие похожих страниц перед созданием новой — предотвращает дублирование wiki",
       "pre_check": [
         {
           "action": "run_guardrails",
@@ -579,7 +579,7 @@
             "identify_additions_and_changes": true,
             "write_update": {
               "preserve_old_info": true,
-              "append_section_format": "## \u041e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u043e [date] \u2014 \u043d\u043e\u0432\u043e\u0435 \u0443\u0442\u043e\u0447\u043d\u0435\u043d\u0438\u0435"
+              "append_section_format": "## Обновлено [date] — новое уточнение"
             }
           }
         },
@@ -595,7 +595,7 @@
             "target": "meta/search-index.json",
             "pattern": "${SEARCH_QUERY}",
             "description": "Search by keywords/tags/first_sentence from search-index.json. Fast fallback when wiki-search.sh is unavailable.",
-            "note": "Only used as fallback \u2014 prefer grep_recursive/index_lookup/wiki-search.sh"
+            "note": "Only used as fallback — prefer grep_recursive/index_lookup/wiki-search.sh"
           },
           {
             "method": "grep_recursive",
@@ -608,13 +608,13 @@
             "category": "${PAGE_TYPE}"
           }
         ],
-        "fallback": "\u0415\u0441\u043b\u0438 \u043f\u043e\u0438\u0441\u043a \u043d\u0435 \u043d\u0430\u0448\u0451\u043b \u0441\u0442\u0440\u0430\u043d\u0438\u0446 \u2192 proceed to create_new_page"
+        "fallback": "Если поиск не нашёл страниц → proceed to create_new_page"
       }
     },
     {
       "step_id": "2.6",
       "name": "compounding_decision",
-      "description": "\u041f\u0440\u043e\u0432\u0435\u0440\u044c, \u0441\u0442\u043e\u0438\u0442 \u043b\u0438 \u0441\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c answer \u043a\u0430\u043a \u043d\u043e\u0432\u0443\u044e \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0443 wiki \u2014 compounding knowledge base",
+      "description": "Проверь, стоит ли сохранить answer как новую страницу wiki — compounding knowledge base",
       "trigger_after": "duplicate_check_completed: true",
       "evaluation_criteria": [
         {
@@ -634,7 +634,7 @@
         {
           "sum_score_ge_2": true,
           "action": "PROPOSE_SAVE_TO_USER",
-          "message": "Answer contains novel synthesis \u2014 save as new page?"
+          "message": "Answer contains novel synthesis — save as new page?"
         },
         {
           "sum_score_eq_0": true,
@@ -646,7 +646,7 @@
     {
       "step_id": "3",
       "name": "result_fixation",
-      "description": "Compounding: \u0421\u043e\u0445\u0440\u0430\u043d\u044f\u0439 answer \u043a\u0430\u043a \u043d\u043e\u0432\u0443\u044e \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0443 \u0435\u0441\u043b\u0438 \u0441\u043e\u0434\u0435\u0440\u0436\u0438\u0442 novel insight/synthesis \u0438\u0437 2+ \u0438\u0441\u0442\u043e\u0447\u043d\u0438\u043a\u043e\u0432. \u0414\u043e\u0431\u0430\u0432\u044c \u0441\u0441\u044b\u043b\u043a\u0443 \u0432 index.md. \u041f\u043e\u0441\u043b\u0435 write \u0430\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0447\u0435\u0441\u043a\u0438 \u0432\u044b\u0437\u044b\u0432\u0430\u0439 scripts/rebuild-meta.sh \u0434\u043b\u044f \u043f\u0435\u0440\u0435\u0441\u0431\u043e\u0440\u0430 \u043c\u0435\u0442\u0430\u0434\u0430\u043d\u043d\u044b\u0445.",
+      "description": "Compounding: Сохраняй answer как новую страницу если содержит novel insight/synthesis из 2+ источников. Добавь ссылку в index.md. После write автоматически вызывай scripts/rebuild-meta.sh для пересбора метаданных.",
       "pre_check": [
         {
           "action": "run_guardrails",
@@ -665,7 +665,7 @@
         {
           "condition": "compounding_flagged: true",
           "action_if_met": "AUTO_SAVE_NEW_PAGE",
-          "description": "Synthesis of 2+ sources with novel insight \u2192 save as new page"
+          "description": "Synthesis of 2+ sources with novel insight → save as new page"
         },
         {
           "condition": "answer_requires_synthesis_from_2_or_more_pages",
@@ -678,10 +678,10 @@
         {
           "condition": "new_facts_for_existing_entity",
           "action_if_met": "UPDATE_EXISTING_PAGE",
-          "description": "\u041d\u043e\u0432\u044b\u0435 \u0444\u0430\u043a\u0442\u044b \u043e\u0431 existing entity \u2192 \u043e\u0431\u043d\u043e\u0432\u0438\u0442\u044c \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0443, \u0441\u043e\u0445\u0440\u0430\u043d\u0438\u0432 \u0441\u0442\u0430\u0440\u0443\u044e \u0438\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u044e \u0432 \u0440\u0430\u0437\u0434\u0435\u043b\u0435 '## \u041e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u043e [date]'",
+          "description": "Новые факты об existing entity → обновить страницу, сохранив старую информацию в разделе '## Обновлено [date]'",
           "format": {
             "preserve_old_info": true,
-            "append_section": "## \u041e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u043e [date] \u2014 \u043d\u043e\u0432\u043e\u0435 \u0443\u0442\u043e\u0447\u043d\u0435\u043d\u0438\u0435",
+            "append_section": "## Обновлено [date] — новое уточнение",
             "include_source_link": true
           }
         },
@@ -722,27 +722,27 @@
             "action": "run_auto_crosslink",
             "command": "./scripts/auto-crosslink.sh '${PAGE_PATH}' --include-root 2>/dev/null || true",
             "output_format": "json[{path, score, match_types}]",
-            "description": "Multi-level crosslink discovery: H1 title (+3) \u2192 shared sources (+5) \u2192 frontmatter related (+4). Results sorted by score."
+            "description": "Multi-level crosslink discovery: H1 title (+3) → shared sources (+5) → frontmatter related (+4). Results sorted by score."
           },
           {
             "action": "parse_and_add_backlinks",
             "threshold_score": 5,
-            "rule": "Only add backlinks for pages with score >= 5 (significant match). Low scores (3-4) are informational only \u2014 suggest manual review."
+            "rule": "Only add backlinks for pages with score >= 5 (significant match). Low scores (3-4) are informational only — suggest manual review."
           },
           {
             "action": "add_related_to_frontmatter",
             "description": "For high-score matches, add to related: [paths] in frontmatter if not already present. This creates bidirectional links.",
-            "format": "Update wiki-relative-path.md \u2192 related: [...existing..., 'wiki/${PAGE_PATH}.md']"
+            "format": "Update wiki-relative-path.md → related: [...existing..., 'wiki/${PAGE_PATH}.md']"
           },
           {
             "condition": "no_high_score_matches",
             "action": "mark_orphan_if_no_mentions_found",
-            "note": "Low score matches (3-4) may be weak connections \u2014 suggest manual review rather than auto-add"
+            "note": "Low score matches (3-4) may be weak connections — suggest manual review rather than auto-add"
           }
         ]
       },
       "finalization": {
-        "description": "\u041e\u0431\u044f\u0437\u0430\u0442\u0435\u043b\u044c\u043d\u044b\u0439 \u0444\u0438\u043d\u0430\u043b\u044c\u043d\u044b\u0439 \u0448\u0430\u0433 \u2014 \u0437\u0430\u043f\u0438\u0441\u0430\u0442\u044c \u0441\u043e\u0441\u0442\u043e\u044f\u043d\u0438\u0435 \u0432 working_memory.json \u043f\u0435\u0440\u0435\u0434 \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043d\u0438\u0435\u043c \u0441\u0435\u0441\u0441\u0438\u0438",
+        "description": "Обязательный финальный шаг — записать состояние в working_memory.json перед завершением сессии",
         "actions": [
           {
             "action": "write_to_working_memory",
@@ -776,27 +776,27 @@
     }
   ],
   "post_search_flow": {
-    "description": "\u041f\u043e\u0441\u043b\u0435\u0434\u043e\u0432\u0430\u0442\u0435\u043b\u044c\u043d\u043e\u0441\u0442\u044c \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0439 \u043f\u043e\u0441\u043b\u0435 \u043f\u0443\u0441\u0442\u043e\u0433\u043e \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442\u0430 wiki-search (\u0434\u043e web_search)",
+    "description": "Последовательность действий после пустого результата wiki-search (до web_search)",
     "order": [
       {
         "step": 1,
         "name": "check_raw_sources",
         "action": "run_script: ./scripts/check-new-sources.sh --quick raw/sources/ tracking/raw_registry.json",
-        "description": "\u041f\u0440\u043e\u0432\u0435\u0440\u0438\u0442\u044c, \u0435\u0441\u0442\u044c \u043b\u0438 \u043d\u043e\u0432\u044b\u0435 \u043d\u0435\u043e\u0431\u0440\u0430\u0431\u043e\u0442\u0430\u043d\u043d\u044b\u0435 \u043f\u0430\u043a\u0435\u0442\u044b \u0432 raw/, \u0440\u0435\u043b\u0435\u0432\u0430\u043d\u0442\u043d\u044b\u0435 \u0437\u0430\u043f\u0440\u043e\u0441\u0443"
+        "description": "Проверить, есть ли новые необработанные пакеты в raw/, релевантные запросу"
       },
       {
         "step": 2,
         "name": "if_raw_has_relevant_sources",
         "condition": "new_sources_found && topic_match",
-        "action": "notify_user: '\u041e\u0431\u043d\u0430\u0440\u0443\u0436\u0435\u043d\u044b \u043d\u043e\u0432\u044b\u0435 \u043c\u0430\u0442\u0435\u0440\u0438\u0430\u043b\u044b \u043f\u043e \u044d\u0442\u043e\u0439 \u0442\u0435\u043c\u0435 \u0432 raw/. \u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u0432 wiki?'",
-        "description": "\u041f\u0440\u0435\u0434\u043b\u043e\u0436\u0438\u0442\u044c \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044e \u043e\u0431\u0440\u0430\u0431\u043e\u0442\u0430\u0442\u044c \u043d\u0430\u0439\u0434\u0435\u043d\u043d\u044b\u0435 \u043f\u0430\u043a\u0435\u0442\u044b"
+        "action": "notify_user: 'Обнаружены новые материалы по этой теме в raw/. Добавить в wiki?'",
+        "description": "Предложить пользователю обработать найденные пакеты"
       },
       {
         "step": 3,
         "name": "web_availability_check",
         "action": "check if web_search tool is available in system",
         "output_field": "web_search_available",
-        "description": "\u041f\u0440\u043e\u0432\u0435\u0440\u0438\u0442\u044c \u0434\u043e\u0441\u0442\u0443\u043f\u043d\u043e\u0441\u0442\u044c \u0438\u043d\u0442\u0435\u0440\u043d\u0435\u0442-\u043f\u043e\u0438\u0441\u043a\u0430 \u043f\u0435\u0440\u0435\u0434 \u043f\u0440\u0435\u0434\u043b\u043e\u0436\u0435\u043d\u0438\u0435\u043c \u0432\u0435\u0431-\u0430\u0433\u0435\u043d\u0442\u0430"
+        "description": "Проверить доступность интернет-поиска перед предложением веб-агента"
       },
       {
         "step": 4,
@@ -804,8 +804,8 @@
         "condition": "web_search_available == true",
         "actions": [
           "run web_search(query)",
-          "format_answer_with_source: '\u0414\u0430\u043d\u043d\u044b\u0435 \u0438\u0437 \u0438\u043d\u0442\u0435\u0440\u043d\u0435\u0442\u0430, \u0435\u0449\u0451 \u043d\u0435\u0442 \u0432 wiki.'",
-          "ask_user: '\u0414\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u044d\u0442\u043e \u0432 wiki \u0438\u043b\u0438 \u0432\u043e\u043f\u0440\u043e\u0441 \u043e\u0434\u043d\u043e\u0440\u0430\u0437\u043e\u0432\u044b\u0439?'"
+          "format_answer_with_source: 'Данные из интернета, ещё нет в wiki.'",
+          "ask_user: 'Добавить это в wiki или вопрос одноразовый?'"
         ],
         "error_handling": {
           "web_search_timeout_or_error": [
@@ -827,7 +827,7 @@
           ],
           "user_one_off": [
             "deliver_answer_only",
-            "exit clean \u2014 no tracking, no meta updates"
+            "exit clean — no tracking, no meta updates"
           ],
           "user_declines": [
             "acknowledge_decision",
@@ -840,21 +840,21 @@
         "name": "if_web_unavailable",
         "condition": "web_search_available == false",
         "actions": [
-          "notify: '\u0412 wiki \u043d\u0435\u0442 \u043e\u0442\u0432\u0435\u0442\u0430. \u041c\u043e\u0433\u0443 \u043f\u043e\u0438\u0441\u043a\u0430\u0442\u044c \u0447\u0435\u0440\u0435\u0437 \u0432\u0430\u0448 \u0438\u043d\u0442\u0435\u0440\u043d\u0435\u0442, \u0435\u0441\u043b\u0438 \u043f\u0440\u0435\u0434\u043e\u0441\u0442\u0430\u0432\u0438\u0442\u0435 \u0434\u043e\u0441\u0442\u0443\u043f.'",
-          "optional: '\u041c\u043e\u0433\u0443 \u0434\u0430\u0442\u044c \u043e\u0442\u0432\u0435\u0442 \u0438\u0437 \u0441\u043e\u0431\u0441\u0442\u0432\u0435\u043d\u043d\u044b\u0445 \u0437\u043d\u0430\u043d\u0438\u0439 \u2014 \u043d\u043e \u044d\u0442\u043e \u043d\u0435 \u0434\u0430\u043d\u043d\u044b\u0435 \u0438\u0437 wiki, \u0430 \u043c\u043e\u044f \u0438\u043d\u0442\u0435\u0440\u043f\u0440\u0435\u0442\u0430\u0446\u0438\u044f. \u041f\u0440\u0435\u0434\u0443\u043f\u0440\u0435\u0436\u0443 \u0432\u0430\u0441 \u043e\u0431 \u044d\u0442\u043e\u043c.'"
+          "notify: 'В wiki нет ответа. Могу поискать через ваш интернет, если предоставите доступ.'",
+          "optional: 'Могу дать ответ из собственных знаний — но это не данные из wiki, а моя интерпретация. Предупрежу вас об этом.'"
         ],
-        "description": "\u0421\u043e\u043e\u0431\u0449\u0438\u0442\u044c \u043e \u043d\u0435\u0434\u043e\u0441\u0442\u0443\u043f\u043d\u043e\u0441\u0442\u0438 web + \u043f\u0440\u0435\u0434\u043b\u043e\u0436\u0438\u0442\u044c \u0440\u0443\u0447\u043d\u043e\u0439 \u0434\u043e\u0441\u0442\u0443\u043f \u0438\u043b\u0438 \u043e\u0442\u0432\u0435\u0442 \u0438\u0437 \u0441\u0432\u043e\u0438\u0445 \u0437\u043d\u0430\u043d\u0438\u0439"
+        "description": "Сообщить о недоступности web + предложить ручной доступ или ответ из своих знаний"
       }
     ]
   },
   "web_ingest_flow": {
-    "description": "\u041f\u0435\u0440\u0435\u0445\u043e\u0434 \u043e\u0442 web_search \u043a \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u044e wiki-\u0441\u0442\u0440\u0430\u043d\u0438\u0446\u044b: capture \u2192 integrate \u0447\u0435\u0440\u0435\u0437 \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u044e\u0449\u0438\u0435 \u0441\u043a\u0440\u0438\u043f\u0442\u044b",
+    "description": "Переход от web_search к созданию wiki-страницы: capture → integrate через существующие скрипты",
     "trigger": "user confirms 'save' after web_search answer",
     "steps": [
       {
         "step": 1,
         "name": "capture_web_as_raw_package",
-        "description": "\u0421\u043e\u0437\u0434\u0430\u0442\u044c raw-\u043f\u0430\u043a\u0435\u0442 \u0438\u0437 web-\u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442\u043e\u0432 \u043f\u043e \u0430\u043d\u0430\u043b\u043e\u0433\u0438\u0438 \u0441 user-provided sources",
+        "description": "Создать raw-пакет из web-результатов по аналогии с user-provided sources",
         "actions": [
           {
             "command": "mkdir -p 'raw/sources/SRC-{YYYY-MM-DD}-{hash}/'",
@@ -868,7 +868,7 @@
           {
             "action": "create_manifest",
             "path": "raw/sources/SRC-{date}-{hash}/manifest.json",
-            "content": "{ 'source_type': 'web', 'url': '{url}', 'query': '{user_query}', 'date': '{current_date}' }"
+            "content": "{ 'source_layer': 'web', 'url': '{url}', 'query': '{user_query}', 'date': '{current_date}' }"
           }
         ],
         "error_handling": {
@@ -880,7 +880,7 @@
               "report_disk_space_issue": true
             },
             {
-              "halt_and_notify": "Cannot create directory \u2014 check disk space or permissions."
+              "halt_and_notify": "Cannot create directory — check disk space or permissions."
             }
           ],
           "write_permission_denied": [
@@ -894,7 +894,7 @@
           ],
           "disk_full_or_quota_exceeded": [
             {
-              "log": "'[!] Disk full \u2014 cannot write web content to raw/.'"
+              "log": "'[!] Disk full — cannot write web content to raw/.'"
             },
             {
               "action": "HALT_AND_REPORT",
@@ -913,7 +913,7 @@
       {
         "step": 3,
         "name": "check_existing_page_or_create_new",
-        "description": "\u0418\u0441\u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u044c \u043b\u043e\u0433\u0438\u043a\u0443 process-ingest step 2 (discussion) \u0438 steps 3a/3b",
+        "description": "Использовать логику process-ingest step 2 (discussion) и steps 3a/3b",
         "actions": [
           {
             "action": "search_backlinks_json_for_similar_pages",
@@ -923,12 +923,12 @@
           {
             "condition": "similar_page_found_in_index",
             "action": "run_process_ingest_step_3b: update_existing_page",
-            "note": "read existing page \u2192 identify additions \u2192 write_update with '## \u041e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u043e [date]' section"
+            "note": "read existing page → identify additions → write_update with '## Обновлено [date]' section"
           },
           {
             "condition": "no_similar_page",
             "action": "run_process_ingest_step_3a: create_new_page",
-            "note": "create entity/concept/notes page from web content \u2192 fill sections \u2192 add connections"
+            "note": "create entity/concept/notes page from web content → fill sections → add connections"
           }
         ]
       },
@@ -939,7 +939,7 @@
           "./scripts/rebuild-meta.sh",
           "./scripts/rebuild-meta.sh --index-only"
         ],
-        "description": "\u041f\u0435\u0440\u0435\u0441\u043e\u0431\u0440\u0430\u0442\u044c registry.json, backlinks.json \u0438 wiki/index.md \u0438\u0437 \u0432\u0441\u0435\u0445 \u0441\u0442\u0440\u0430\u043d\u0438\u0446",
+        "description": "Пересобрать registry.json, backlinks.json и wiki/index.md из всех страниц",
         "optimization_for_large_wiki": {
           "skip_rebuild_if_wiki_size_gt_threshold": true,
           "threshold_pages_count": 100,
@@ -952,7 +952,7 @@
               "run_index_only": true
             },
             {
-              "notify_user": "Meta rebuild skipped for performance \u2014 will run on next lint"
+              "notify_user": "Meta rebuild skipped for performance — will run on next lint"
             }
           ]
         }
@@ -986,12 +986,12 @@
       }
     ],
     "integration_with_process_ingest": {
-      "description": "web_ingest_flow \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u0443\u0435\u0442 \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u044e\u0449\u0438\u0435 \u0448\u0430\u0433\u0438 process-ingest (steps 3a/3b), \u043d\u0435 \u0434\u0443\u0431\u043b\u0438\u0440\u0443\u0435\u0442 \u043b\u043e\u0433\u0438\u043a\u0443",
+      "description": "web_ingest_flow использует существующие шаги process-ingest (steps 3a/3b), не дублирует логику",
       "schema_ref": "process-ingest.json#step_3a, process-ingest.json#step_3b"
     }
   },
   "log_format": {
-    "query_record": "## [YYYY-MM-DD] query | \u0412\u043e\u043f\u0440\u043e\u0441 \u043e RAG vs \u043a\u043b\u0430\u0441\u0441\u0438\u0447\u0435\u0441\u043a\u0438\u0445 \u0411\u0414"
+    "query_record": "## [YYYY-MM-DD] query | Вопрос о RAG vs классических БД"
   },
   "schema_ref": "AGENTS.md",
   "inherits_from": [
@@ -1003,6 +1003,6 @@
   ],
   "references": {
     "page_templates_and_metadata": "AGENTS.md",
-    "link_types_reference": "AGENTS.md#git-\u043a\u043e\u043d\u0432\u0435\u043d\u0446\u0438\u0438"
+    "link_types_reference": "AGENTS.md#git-конвенции"
   }
 }

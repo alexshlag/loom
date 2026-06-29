@@ -165,33 +165,188 @@ related: []
 
 ## 📄 Page Templates
 
-Форматы страниц описаны в процессных файлах:
-- **Entity**: `process-ingest.json#entity_template`
-- **Concept**: `process-ingest.json#concept_template`
-- **Comparison/Synthesis**: `process-query.json#synthesis_flow`
+### ⚠️ Global Rule: Template Editing Policy
 
-### Frontmatter Schema (Phase 10.1)
+> **Запрещено свободное редактирование общих шаблонов.** Любые изменения в секции `Шаблоны страниц` или их структурных элементах требуют согласования с пользователем.
+>
+> Все шаблоны — shared contract между агентом и пользователем. Agent может предлагать улучшения через `[schema-patch]`, но не применять самостоятельно.
+
+---
+
+### 📋 Universal Frontmatter (All Types)
+
+**Обязательная секция для всех типов документов.** Machine-readable metadata, единообразна независимо от типа страницы.
+
 ```yaml
 ---
-tags: [entity|concept|notes]
-date: YYYY-MM-DD
-type: code_reality | live_state | documentation
-sources: [raw/sources/...]
-related: []
-evidence_grade: documented | corroborated | assertion_only (optional)
+tags: []                    # свободные keyword-теги для классификации и поиска
+date: YYYY-MM-DD            # текущая дата системы (не из источника!)
+type: documentation         # reality layer: documentation | code_reality | live_state
+category: entity            # раздел wiki: entity | concept | synthesis | comparison | note | project | bibliography | resource
+sources: []                 # откуда данные (raw/..., wiki paths, web_search)
+related: []                 # связанные wiki-страницы (wiki-relative paths)
 ---
 ```
-- `type` — **required**: классифицирует каждый источник по Reality Layer
-  - `code_reality` — код в репозитории (machine-verifiable, deterministic)
-  - `live_state` — метрики/логи прямо сейчас (ephemeral но observable)
-  - `documentation` — утверждения из документов/статей (requires authority layer)
-- `evidence_grade` — optional: оценивает доказательность для documentation
-  - `documented` — прямая ссылка на observable fact (код, метрика)
-  - `corroborated` — 2+ независимых источника подтверждают
-  - `assertion_only` — утверждение без доказательств
-- **Enforced by**: `lint.sh check_id=5` (missing_frontmatter) + `type required` check
 
-**Frontmatter required fields enforced by**: `lint.sh check_id=5` (missing_frontmatter).
+**Fields:**
+| Field | Required | Description |
+|-------|----------|-------------|
+| `tags` | ✅ | Свободный массив keyword-тегов для классификации, поиска и систематизации. Без ограничений — agent сам решает какие теги ставить. Примеры: `entity`, `architecture`, `symfony`, `hexagonal`, `rag`. |
+| `date` | ✅ | Текущая дата системы в формате YYYY-MM-DD. Никогда не берётся из имени файла или комита источника. |
+| `type` | ✅ | Reality layer — уровень достоверности данных: `documentation` (docs/articles/blogs), `code_reality` (machine-verifiable code, GitHub issues/PRs), `live_state` (ephemeral metrics, API responses, logs). Используется в cascade-алгоритме разрешения противоречий. |
+| `category` | ✅ | Раздел wiki, к которому относится страница: `entity`, `concept`, `synthesis`, `comparison`, `note`, `project`, `bibliography`, `resource`. Определяет куда поставить страницу (entities/, concepts/, syntheses/, comparisons/). |
+| `sources` | ✅ | Список источников данных: raw source paths, wiki-relative paths, или `web_search` marker. Может содержать любые источники — не только raw/. |
+| `related` | ✅ | Массив wiki-relative путей к связанным страницам (например: `[wiki/entities/symfony.md]`). Пустой массив означает «нет связей». |
+
+---
+
+### 🔍 Auto-computed Fields (Agent-level)
+
+Некоторые поля вычисляются автоматически агентом при ingest — не требуют ручного заполнения.
+
+#### `evidence_grade` — уровень доказательности фактов
+
+**Когда применяется:** Только для источников с `type: documentation`. Для `code_reality` и `live_state` — авто-статус `documented` (машинная верификация = высокий grade).
+
+| Grade | Когда ставить | Значение |
+|-------|---------------|----------|
+| `documented` | Факт из авторитетного источника (официальная docs, wiki проекта, blog core-maintainer) | Высокая уверенность |
+| `corroborated` | Факт подтверждён 2+ независимыми источниками | Средняя-высокая уверенность |
+| `assertion_only` | Утверждение без подтверждения или из weak source (generic blog, forum post) | Низкая уверенность |
+
+**Правила auto-compute:**
+1. Agent анализирует источник при ingest → автоматически присваивает grade каждому факту
+2. Grade фиксируется в метаданных страницы (не в теле)
+3. При contradiction resolution: `documented(1) > corroborated(2) > assertion_only(3)` — работает как sub-priority для documentation sources
+4. **Никогда не ставится вручную** — только агентом из анализа source authority
+
+> Canonical: `AGENTS.md#auto_computed_fields`
+
+---
+
+### 🌐 Language Policy for Wiki Pages & Agent Responses
+
+#### Page Structure Headers (Templates)
+- **All section titles in templates are English** — `## Definition`, `## Key Characteristics`, `## Principles`, `## Context`, `## Analysis`, `## Conclusions`, etc.
+- This provides consistent structural anchors for agent navigation, regardless of content language
+- Templates serve as machine-readable guide for agent — headers don't change with user language preference
+
+#### Page Content Language
+- **Content follows source language** — if original docs are Russian, write in Russian. If English, write in English.
+- Bilingual sources → bilingual sections (allowed and normal)
+- No forced translation required at ingest time
+
+#### Agent Response Translation
+- When synthesizing answer: **translate section headers to match user's question language**
+  - User asked in Russian → agent uses `Определение`, `Ключевые характеристики`, etc.
+  - User asked in English → agent uses `Definition`, `Key Characteristics`, etc.
+- Content paraphrasing is agent's discretion — can quote directly, summarize, or translate
+
+#### Mixed-Language Pages
+- Allowed and encouraged when reflecting bilingual sources
+- Example: `## Определение` (Russian content) + `## Three-Layer Structure` (English code/comments)
+- Agent treats each section independently for translation at response time
+
+**Canonical reference:** `AGENTS.md#language_policy`
+
+---
+
+### 📐 Recommended Section Order & Types
+
+Section order is **recommended but not enforced** — preserves flexibility while providing consistency baseline.
+
+#### 1. Entity (`entities/*.md`)
+Minimum required: `## Definition`, `## Key Characteristics`
+
+```markdown
+# [Entity Name]
+
+## Definition
+[What it is, short description]
+
+## Key Characteristics
+- Feature 1
+- Feature 2
+...
+
+## Additional Sections (context-dependent)
+### Architecture / Implementation Details
+### Usage Examples
+### History / Evolution
+## Related Pages
+* [[Related Entity]]
+```
+
+#### 2. Concept (`concepts/*.md`)
+Minimum required: `## Definition`, `## Principles/Architecture`
+
+```markdown
+# [Concept Name]
+
+## Definition
+[Abstract idea, principle, methodology description]
+
+## Core Principles / Architecture
+- Principle 1 with explanation
+- Principle 2...
+
+### How It Works (sub-sections)
+
+## Examples / Application
+
+## Related Pages
+* [[Related Concept]]
+```
+
+#### 3. Synthesis (`syntheses/*.md`)
+Minimum required: `## Context`, `## Analysis`, `## Conclusions`
+
+```markdown
+# [Synthesis Title]
+
+## Context
+[Question or topic that led to this synthesis, source overview]
+
+## Analysis
+### Method 1 / Aspect 1
+### Method 2 / Aspect 2
+...
+
+## Conclusions
+[Summary of findings, key takeaways]
+```
+
+#### 4. Comparison (`comparisons/*.md`)
+Minimum required: `## Overview`, `## Comparison Table`
+
+```markdown
+# [A] vs [B] — Comparison
+
+## Overview
+[Brief introduction to the comparison context]
+
+| Criterion | [A] | [B] |
+|-----------|-----|-----|
+| Feature 1 | Value A | Value B |
+
+## Deep Dive Analysis
+### Strengths of [A]
+### Weaknesses of [A]
+### Strengths of [B]
+### Weaknesses of [B]
+
+## Conclusions / Recommendation
+[When to use which, trade-offs summary]
+```
+
+---
+
+### 🔄 Template Co-evolution Process
+
+1. **Agent proposes** structural improvement → `[schema-patch]` in `log.md`
+2. **User reviews and approves** → agent commits update
+3. **New scenarios detected** → discussed in context.md → added to schema
+4. **Never auto-modify templates** — always user-approved changes
 
 ---
 
