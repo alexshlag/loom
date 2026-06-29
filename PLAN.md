@@ -46,6 +46,22 @@ P12 (logging standard), P13 (trap handlers), P15 (minor fixes).
 **Цель**: Agent prompt для "X wrote first, Y copied from X" — causal chain analysis на основе overlap данных из text-similarity.sh
 **Приоритет**: Low (after schema migration + issue fixes)
 
+### Phase 13: Wiki Page Templates Schema (#H4)
+**Цель**: Единый, полный, не-разрозненный набор per-type format descriptions для всех типов wiki pages.
+**Связан с**: `issues.md#H4`
+**Проблемы:**
+- Битые refs в AGENTS.md → process-ingest.json
+- Нет per-type structure descriptions (Entity/Concept/Synthesis/Comparison/Notes)
+- Summary pages: правила создания есть, но нет описания структуры страницы
+- Фактические wiki-файлы показывают consistent patterns, но они не задокументированы
+**Задачи:**
+1. Убрать битые refs из AGENTS.md#page_templates
+2. Добавить inline per-type structure descriptions в AGENTS.md (вместо process-ingest.json refs)
+3. Зафиксировать фактические patterns: frontmatter → ## Контекст → ## Анализ → ## Выводы → ## Связи
+4. Добавить Summary page structure description (sections, frontmatter type=faq_summary rules)
+5. Обновить process-ingest.json step 3a/3b с конкретными секциями для каждого типа
+**Приоритет**: Medium — требуется before any new ingest or synthesis creation
+
 ### Phase 12.2: Auto-Extract Assumptions
 **Цель**: Агент автоматически экстрагирует assumptions из источников (источники с weak evidence помечать)
 **Приоритет**: Future

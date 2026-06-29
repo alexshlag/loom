@@ -75,6 +75,7 @@
 | #H1 | ✅ Yes — resolved in health check, logged here | ✅ FIXED |
 | #H2 | ✅ Resolved via reconciliation notes (content-level) | ✅ FIXED |
 | #H3 | ✅ Yes — mapped to PLAN.md as P8/#H3 fix | Low priority |
+| #H4 | ✅ Mapped to PLAN.md Phase 13 | 📝 Planned |
 | Phase 12.4 | ✅ Schema Migration D1-D10 completed — dialog.md rules embedded | ✅ COMPLETED |
 
 > **Rule**: Every issue must have a corresponding entry in PLAN.md. Content-level issues (#H2) tracked here but don't need PLAN.md entries unless they require code changes.
@@ -92,5 +93,24 @@
 - **R1**: Изучить как Wikipedia решает проблему уникальности файлов при росте контента (subcategories, disambiguation pages)
 - **R2**: Определить префиксы/суффиксы для именования файлов (например: `lang-python.md`, `func-lang-ruby.md`)
 - **R3**: Добавить правила организации подкатегорий в AGENTS.md
+
+### #H4: Wiki Page Templates & Format Schema
+
+**Проблема**: Форматы страниц wiki описаны фрагментарно и с разрывами.
+
+| Где | Что есть | Статус |
+|-----|----------|--------|
+| `AGENTS.md` → Frontmatter Schema | Generic schema: `tags`, `date`, `type`, `sources`, `related`, `evidence_grade` | ✅ Generic frontmatter — работает для всех типов |
+| `AGENTS.md` → Page Templates секция (~строка 169-170) | Ссылки на `process-ingest.json#entity_template` и `concept_template` | ❌ **Битые refs** — этих секций нет в process-ingest.json |
+| `process-ingest.json` step 3a (integration_new_page) | Generic: `fill_all_sections: [description, key_characteristics, connections, sources]` | ⚠️ Нет per-type детализации |
+| Фактические файлы wiki/ | Consistent frontmatter + ## sections — patterns есть на практике | ✅ Примеры есть, но **нет формального описания** в инструкциях |
+
+**Системные проблемы:**
+1. `AGENTS.md#page_templates` → `process-ingest.json#entity_template` / `concept_template` — битые ссылки (не существует)
+2. Нет per-type format descriptions: Entity/Concept/Synthesis/Comparison/Notes имеют разные структуры, но описан только generic frontmatter
+3. Summary pages недавно добавлены в AGENTS.md с правилами создания и decay, но **нет описания структуры страницы** — где описывать sections?
+4. Фактические wiki-файлы показывают consistent patterns (frontmatter + ## Контекст + ## Анализ + ## Выводы), но это не задокументировано в инструкциях
+
+**Решение:** Добавить единый раздел `# Page Templates` с per-type structure descriptions во все типы wiki pages. Заменить битые refs на inline описания.
 
 > **Rule**: Issues F1-F2 require discussion before implementation. Not actionable until rules are defined.
