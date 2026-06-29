@@ -126,11 +126,13 @@ score_page() {
     if [[ -f "meta/search_analytics.json" ]]; then
         popularity_boost=$(POPULARITY_FILEPATH="$filepath" ANALYTICS_PATH="meta/search_analytics.json" \
             python3 -c '
-import json, os
+import json, os, datetime
 fp = os.environ.get("POPULARITY_FILEPATH", "")
 af = os.environ.get("ANALYTICS_PATH", "meta/search_analytics.json")
 tpb = 5
 mb = 30
+decay_days = 30
+decay_factor = 0.5
 try:
     with open(af) as f: data = json.load(f)
 except (FileNotFoundError, json.JSONDecodeError): print(0); exit()
@@ -138,7 +140,18 @@ topics = data.get("topics", {})
 count = topics.get(fp, {}).get("popularity_score", 0)
 if count == 0:
     count = sum(1 for e in data.get("entries", []) if e.get("top_path") and fp.replace("wiki/", "") in e["top_path"])
-print(min(count * tpb, mb))
+# Time decay: apply -50% boost if last_seen > decay_days
+last_seen_str = topics.get(fp, {}).get("last_seen", "")
+if last_seen_str:
+    try:
+        ls_date = datetime.datetime.strptime(last_seen_str.split(",")[0], "%Y-%m-%dT%H:%M:%S")
+        now = datetime.datetime.now()
+        days_diff = (now - ls_date).days
+        if days_diff > decay_days:
+            count *= decay_factor
+    except ValueError:
+        pass  # invalid timestamp — skip decay, use raw count
+print(min(int(count * tpb), mb))
 ' 2>/dev/null) || popularity_boost=0
     fi
     score=$((score + popularity_boost))
