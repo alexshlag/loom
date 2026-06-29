@@ -6,7 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/.."
 META_DIR="$PROJECT_ROOT/meta"
 WIKI_DIR="$PROJECT_ROOT/wiki"
-TIMESTAMP_FILE="$PROJECT_ROOT/.meta_update_timestamp"
+TIMESTAMP_FILE="$WIKI_DIR/.meta_update_timestamp"
 
 # Trap cleanup for .tmp files on crash/abort
 trap 'rm -f "${META_DIR}/registry.json.tmp" "${META_DIR}/backlinks.json.tmp" "${WIKI_DIR}/index.md.tmp" 2>/dev/null' EXIT
@@ -118,11 +118,12 @@ with open(meta_path + '.tmp', 'w') as f:
     json.dump({'pages': pages}, f, indent=2, ensure_ascii=False)
 print(f'Registry updated: {len(pages)} pages' + (' (incremental)' if changed_str != '/all' else ''))
 PYEOF
+BL_PATH="${META_DIR}/backlinks.json"
 if [ $? -ne 0 ]; then
-    rm -f "${meta_path}.tmp"
+    rm -f "${META_DIR}/registry.json.tmp"
     echo "Warning: registry generation had issues" >&2
 else
-    mv "${meta_path}.tmp" "$meta_path"
+    mv "${META_DIR}/registry.json.tmp" "${META_DIR}/registry.json"
 fi
 
 # ─── 2. backlinks.json (skip if --index-only)
@@ -205,10 +206,10 @@ with open(meta_path + '.tmp', 'w') as f:
 print(f'Backlinks updated: {len(final_backlinks)} pages with links' + (' (incremental)' if changed_str != '/all' else ''))
 PYEOF2
 if [ $? -ne 0 ]; then
-    rm -f "${meta_path}.tmp"
+    rm -f "${BL_PATH}.tmp"
     echo "Warning: backlinks generation had issues" >&2
 else
-    mv "${meta_path}.tmp" "$meta_path"
+    mv "${BL_PATH}.tmp" "$BL_PATH"
 fi
 fi
 
@@ -351,11 +352,12 @@ with open(index_path + '.tmp', 'w', encoding='utf-8') as f:
 
 print('Index updated: ' + str(sum(len(v) for v in category_pages.values())) + ' entries across ' + str(len(category_pages)) + ' categories')
 PYEOF3
+IDX_PATH="${WIKI_DIR}/index.md"
 if [ $? -ne 0 ]; then
-    rm -f "${index_path}.tmp"
+    rm -f "${WIKI_DIR}/index.md.tmp"
     echo "Warning: index generation had issues" >&2
 else
-    mv "${index_path}.tmp" "$index_path"
+    mv "${WIKI_DIR}/index.md.tmp" "$IDX_PATH"
 fi
 
 # ─── Update timestamp for next incremental detection ──────

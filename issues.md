@@ -129,7 +129,7 @@ ORPHANS_OUTPUT=$(./scripts/orphan-pages.sh ... 2>&1 || true)
 
 ### Issue #27: Broken Link Handling — Agent Escalation Rules 🆕 IN PROGRESS
 **Проблема**: `link-validator.sh --full` обнаруживает broken links, но agent escalation rules отсутствуют:
-1. Нет правила что делать с Home_Manager.md (fuzzy score 45 < threshold 80)
+1. ✅ **Решено**: DR-EX1 added to AGENTS.md — external link standard с known sources list (NixOS Wiki, GitHub, etc.)
 2. Raw sources содержат битые ссылки на upstream файлы (SKILL.md references) — не исправляются при ingest
 3. Agent не знает когда auto-fix vs escalate to user
 
@@ -141,8 +141,8 @@ ORPHANS_OUTPUT=$(./scripts/orphan-pages.sh ... 2>&1 || true)
 2. ✅ Agent decision thresholds: autonomously fix case/path mismatches; escalate fuzzy < 50 or ambiguous intent
 3. ✅ Добавлено `raw_source_link_repair` в `process-ingest.json#step_1 source_analysis`: при ingest сканирует markdown ссылки, заменяет битые на external URL / GitHub permlink
 4. ✅ Обновлён step `6 post_operation_link_validation` в `process-ingest.json`: только new files check (не --full)
-5. 🔽 Осталось: применить fix к существующей Home_Manager.md ссылке (replace with https://wiki.nixos.org/wiki/Home_Manager)
-6. 🔽 Осталось: починить SKILL.md references в ai-factory configuration.md при следующем ingest
+5. ✅ **Выполнено**: Home_Manager.md → https://wiki.nixos.org/wiki/Home_Manager (fixed in python-nixos-development-environments.md)
+6. ⚠️ **ОТМЕНЕНО**: raw/github/lee-to/ai-factory@2.x был создан вручную, в обход capture flow — удалён. Скрипт raw-link-repair.py/sh не применим к этому случаю (было неправильное размещение).
 
 **Зона ответственности**:
 | Режим | Что делает | Когда сканирует wiki |
