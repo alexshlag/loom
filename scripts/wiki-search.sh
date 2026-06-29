@@ -3,13 +3,11 @@
 # 
 # Usage: ./wiki-search.sh "query" [wiki_dir] [--max N] [--dynamic]
 #
-# Логика (Phase 2 + Phase 5 + Phase 6):
+# Логика (Phase 2 + Phase 5)
 #   1. Static mode: priority-categories из DEFAULT_PRIORITY (syntheses → concepts → entities)
 #   2. Dynamic mode (--dynamic): query intent analysis → entity/concept/comparison keywords → dynamic order categories
-#   3. Context awareness (auto, no flag): read search_history.json → bias priority based on recent queries
 #   4. Relevance scoring: position weight (H1 = x3), frequency count, backlink weight + category bonus
 #   5. Output: sorted by combined score (descending) — релевантные страницы выше
-#   6. Auto-save search to meta/search_history.json after execution
 # 
 # Output: строки формата "relative/path/to/file.md:matched_line"
 #         с относительными путями от wiki_dir для чистоты вывода.
@@ -71,134 +69,6 @@ fi
 
 # ─── Default priority categories ──────────────────────
 DEFAULT_PRIORITY=("syntheses" "concepts" "entities" "comparisons" "notes" "meetings" "projects" "bibliography" "resources")
-
-# ─── Phase 6: Search Context Awareness (auto, no flag) ──
-# Reads meta/search_history.json → detects intent + topic continuity → returns bias
-get_context_bias() {
-    local history_file="meta/search_history.json"
-    
-    if [[ ! -f "$history_file" ]]; then
-        echo ""
-        return
-    fi
-    
-    # Pass path via env var to avoid bash escaping issues
-    HISTORY_FILE="$history_file" CURRENT_QUERY="$QUERY" python3 << 'PYSCRIPT'
-import json, sys, re
-
-def get_topic_tags(query):
-    """Extract topic keywords from query (exclude stop-words)."""
-    words = set(re.findall(r'\b[a-z]{3,}\b', query.lower()))
-    stop = {"what", "how", "when", "why", "which", "compare", "difference",
-            "vs", "versus", "between", "tell", "explain", "describe"}
-    return words - stop
-
-def detect_intent(query):
-    """Simple intent detection from query keywords."""
-    ql = query.lower()
-    if re.search(r'\b(vs|compared\s+to|versus|alternative\s+to)\b', ql):
-        return "comparison"
-    if re.search(r'\b(principles?|methodolog|framework|architecture|pattern|design\s+system)\b', ql):
-        return "concept"
-    if len(query.split()) <= 3 and any(c.isupper() for c in query):
-        return "entity_lookup"
-    return "general_search"
-
-try:
-    import os
-    history_file = os.environ["HISTORY_FILE"]
-    current_query = os.environ.get("CURRENT_QUERY", "")
-    
-    with open(history_file, "r") as f:
-        data = json.load(f)
-    
-    # Only consider last 3 queries (compact window)
-    recent = [q for q in data.get("queries", [])[-3:] if q.get("status") == "active"]
-    current_intent = detect_intent(current_query) if current_query else None
-    current_topics = get_topic_tags(current_query) if current_query else set()
-    
-    # Check topic continuity: does current query share topics with recent queries?
-    topic_overlap = False
-    focus_topic = data.get("current_focus_topic", "")
-    for q in recent:
-        q_topics = set(q.get("topic_tags", []))
-        if not current_topics or not q_topics:
-            continue
-        overlap = len(current_topics & q_topics) > 0
-        if overlap:
-            topic_overlap = True
-        # If focus changed significantly, flag reset needed (stderr for logging only)
-        if focus_topic and q_topics and not (current_topics & q_topics):
-            print("topic_reset_needed", file=sys.stderr)
-    
-    # Build bias based on intent + continuity
-    if current_intent == "comparison" or any(q.get("intent") == "comparison" for q in recent):
-        print("bias_comparisons_concepts")
-    elif current_intent == "entity_lookup" or any(q.get("intent") == "entity_lookup" for q in recent):
-        print("bias_entities")
-    elif topic_overlap:
-        # Continue same topic → boost concepts + syntheses (deeper analysis)
-        print("bias_topic_continuity")
-    else:
-        print("")  # No bias
-except Exception as e:
-    print(f"[!] Context bias error: {e}", file=sys.stderr)
-    sys.exit(0)
-PYSCRIPT
-}
-
-# ─── Apply context bias to priority queue ──
-apply_context_bias() {
-    local category_order="$1"
-    local bias="$2"
-    
-    if [[ -z "$bias" ]]; then
-        echo "$category_order"
-        return
-    fi
-    
-    case "$bias" in
-        "bias_entities")
-            # Move entities/ to front
-            echo "$category_order" | tr ' ' '\n' | awk '!seen[$0]++' | paste -sd ' '
-            ;;
-        "bias_comparisons_concepts")
-            # Move comparisons + concepts to front
-            local new_order=""
-            for cat in comparisons syntheses concepts entities; do
-                if echo "$category_order" | grep -qw "$cat"; then
-                    new_order+="$cat "
-                fi
-            done
-            # Add remaining categories
-            for cat in $category_order; do
-                case "$cat" in
-                    comparisons|syntheses|concepts) ;; # already added
-                    *) new_order+="$cat " ;;
-                esac
-            done
-            echo "${new_order% }"
-            ;;
-        "bias_topic_continuity")
-            # Boost concepts → syntheses → entities (deeper analysis path)
-            local new_order=""
-            for cat in concepts syntheses entities; do
-                if echo "$category_order" | grep -qw "$cat"; then
-                    new_order+="$cat "
-                fi
-            done
-            for cat in $category_order; do
-                case "$cat" in
-                    concepts|syntheses|entities) ;; # already added
-                    *) new_order+="$cat " ;;
-                esac
-            done
-            echo "${new_order% }"
-            ;;
-    esac
-    
-    echo "$category_order"
-}
 
 # ─── Dynamic Priority: Query Intent Analysis (Phase 5) ──
 get_dynamic_priority() {
@@ -281,23 +151,9 @@ if [[ "$DYNAMIC" == "true" ]]; then
     CATEGORY_ORDER=$(get_dynamic_priority "$QUERY")
     echo "[+] Priority queue (pre-bias): $CATEGORY_ORDER" >&2
     
-    CONTEXT_BIAS=$(get_context_bias)
-    if [[ -n "$CONTEXT_BIAS" ]]; then
-        echo "[+] Context bias detected: $CONTEXT_BIAS — adjusting priority..." >&2
-        CATEGORY_ORDER=$(apply_context_bias "$CATEGORY_ORDER" "$CONTEXT_BIAS")
-        echo "[+] Priority queue (post-bias): $CATEGORY_ORDER" >&2
-    fi
     
     FINAL_CATEGORY_ORDER="$CATEGORY_ORDER"
 else
-    CONTEXT_BIAS=$(get_context_bias)
-    CATEGORY_ORDER="${DEFAULT_PRIORITY[*]}"
-    
-    if [[ -n "$CONTEXT_BIAS" ]]; then
-        echo "[+] Context bias detected: $CONTEXT_BIAS — adjusting priority..." >&2
-        CATEGORY_ORDER=$(apply_context_bias "$CATEGORY_ORDER" "$CONTEXT_BIAS")
-        echo "[+] Priority queue (post-bias): $CATEGORY_ORDER" >&2
-    fi
     
     FINAL_CATEGORY_ORDER="$CATEGORY_ORDER"
 fi
@@ -437,89 +293,20 @@ if [[ $COUNTER -eq 0 ]]; then
 fi
 
 # ─── Output: Sorted by Score (descending) ──────────
-save_query_to_history() {
     local query="$1"
-    local results_count="$2"
-    local cat_order_str="$3"
-    
-    # Fix: pass query via env vars, not inline expansion (prevents heredoc injection)
-    export HISTORY_QUERY="$QUERY" HISTORY_RESULTS_COUNT="$results_count" CAT_ORDER_STR="$cat_order_str"
-    python3 << 'PYEOF'
-import json, os, datetime, re
-
-def get_topic_tags(q):
-    """Extract topic keywords."""
-    words = set(re.findall(r'\b[a-z]{3,}\b', q.lower()))
-    stop = {"what", "how", "when", "why", "which", "compare", "difference",
-            "vs", "versus", "between", "tell", "explain", "describe"}
-    return list(words - stop)
-
-def detect_intent(q):
-    ql = q.lower()
-    if re.search(r'\b(vs|compared\s+to|versus|alternative)\b', ql):
-        return "comparison"
-    if re.search(r'\b(principles?|methodolog|framework|architecture|pattern)\b', ql):
-        return "concept"
-    if len(q.split()) <= 3 and any(c.isupper() for c in q):
-        return "entity_lookup"
-    return "general_search"
-
-try:
-    with open("meta/search_history.json", "r") as f:
-        data = json.load(f)
-except Exception:
-    data = {"queries": [], "max_entries": 5}
-
-entry = {
-    "query": os.environ.get("HISTORY_QUERY", ""),
-    "timestamp": datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
-    "results_count": int(os.environ.get("HISTORY_RESULTS_COUNT", "0")),
-    "intent": detect_intent(os.environ.get("HISTORY_QUERY", "")),
-    "topic_tags": get_topic_tags(os.environ.get("HISTORY_QUERY", "")),
-    "status": "active"
-}
-
-# Append and keep only last max_entries
-data["queries"].append(entry)
-data["queries"] = data["queries"][-(data.get("max_entries", 5)):]
-
-# Update focus topic if continuity detected
-if len(data["queries"]) >= 2:
-    latest = data["queries"][-1]
-    prev = data["queries"][-2]
-    current_tags = set(latest.get("topic_tags", []))
-    prev_tags = set(prev.get("topic_tags", []))
-    if current_tags and prev_tags and (current_tags & prev_tags):
-        # Continue same topic — keep focus
-        pass
-    elif latest.get("intent") in ("entity_lookup", "comparison"):
-        data["current_focus_topic"] = f"{latest['intent']}_query"
-
-with open("meta/search_history.json", "w") as f:
-    json.dump(data, f, indent=2)
-PYEOF
-}
-
 if [[ $COUNTER -gt 0 ]]; then
     sort -t'|' -k1 -rn "$TEMP_FILE" | cut -d'|' -f2-
     
     RESULTS_COUNT=$COUNTER
     
-    # Phase 6: Auto-save search to history (compact, last N entries)
-    cat_order_str="$(IFS=' '; echo "${CAT_ARRAY[*]}")"
-    export HISTORY_QUERY="$QUERY" HISTORY_RESULTS_COUNT="$RESULTS_COUNT" CAT_ORDER_STR
-    save_query_to_history "$QUERY" "$RESULTS_COUNT" "$cat_order_str"
-    
+        
     rm -f "$TEMP_FILE"
     exit 0
 else
     echo "[!] No results for: $QUERY" >&2
     
-    # Also save empty queries to track what user looked for
-    cat_order_str="$(IFS=' '; echo "${CAT_ARRAY[*]}")"
     export HISTORY_QUERY="$QUERY" HISTORY_RESULTS_COUNT="0" CAT_ORDER_STR
-    save_query_to_history "$QUERY" "0" "$cat_order_str"
-    
+        
     rm -f "$TEMP_FILE"
     exit 1
 fi

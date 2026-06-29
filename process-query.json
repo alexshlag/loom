@@ -63,26 +63,6 @@
         "agent_prompt": "Evaluate: Does the answer contain a NEW logical inference that wasn't explicitly stated in any source? If yes → propose synthesis page. If no → suggest updating existing entity/concept or creating notes."
       }
     },
-    "context_bubble": {
-      "description": "Ограничение: не более 3 активных страниц в контексте одновременно",
-      "rule": "AGENT_READS_MAX_3_PAGES_CONCURRENTLY",
-      "action_when_exceeded": "DISMISS_LEAST_IMPORTANT_PAGE_FROM_CONTEXT",
-      "status_tracking": [
-        {
-          "path": "page_path.md",
-          "status": "reading"
-        },
-        {
-          "path": "page_path.md",
-          "status": "updating"
-        },
-        {
-          "path": "page_path.md",
-          "status": "read"
-        }
-      ],
-      "schema_ref": "AGENTS.md#context_bubble"
-    },
     "grep_contract": {
       "description": "Безопасное чтение файлов через bash — запрет на cat крупных файлов, обязательный -m для grep",
       "allowed_patterns": [

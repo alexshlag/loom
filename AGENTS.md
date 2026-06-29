@@ -268,7 +268,7 @@ evidence_grade: documented | corroborated | assertion_only (optional)
 ### CONTEXT_BUBBLE & GREP CONTRACT
 - **CONTEXT_BUBBLE**: не более 3 активных страниц в контексте одновременно.
 - **GREP CONTRACT**: используем только разрешённые паттерны bash (см. `process-query.json#grep_contract`).
-> Canonical: `process-query.json#context_bubble` + `process-query.json#grep_contract`.
+> Canonical: `process-query.json#grep_contract`.
 
 ---
 
