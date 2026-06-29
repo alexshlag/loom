@@ -293,9 +293,48 @@ if [[ $COUNTER -eq 0 ]]; then
 fi
 
 # ─── Output: Sorted by Score (descending) ──────────
+save_search_analytics() {
+    local query="$1"
+    local results_count="$2"  # 0 = no results, >0 = actual count
+    local analytics_file="meta/search_analytics.json"
+    
+    python3 << PYEOF &
+import json, os, datetime
+
+query = os.environ.get("ANALYTICS_QUERY", "")
+results_count = int(os.environ.get("ANALYTICS_RESULTS_COUNT", "0"))
+analytics_file = os.environ.get("ANALYTICS_FILE", "meta/search_analytics.json")
+max_entries = 100
+
+entry = {
+    "query": query,
+    "timestamp": datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
+    "results_count": results_count,
+}
+
+try:
+    with open(analytics_file, "r") as f:
+        data = json.load(f)
+except (FileNotFoundError, json.JSONDecodeError):
+    data = {"entries": []}
+
+data["entries"].append(entry)
+data["entries"] = data["entries"][-max_entries:]  # auto-trim
+
+with open(analytics_file + ".tmp", "w") as f:
+    json.dump(data, f, indent=2)
+os.rename(analytics_file + ".tmp", analytics_file)  # atomic rename
+PYEOF
+}
+
 if [[ $COUNTER -gt 0 ]]; then
     sort -t'|' -k1 -rn "$TEMP_FILE" | cut -d'|' -f2-
+    ANALYTICS_QUERY="$QUERY" ANALYTICS_RESULTS_COUNT="$COUNTER" \
+        save_search_analytics "$QUERY" "$COUNTER"
+    exit 0
 else
     echo "[!] No results for: $QUERY" >&2
+    ANALYTICS_QUERY="$QUERY" ANALYTICS_RESULTS_COUNT="0" \
+        save_search_analytics "$QUERY" "0"
     exit 1
 fi
