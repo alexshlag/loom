@@ -1,15 +1,12 @@
 {
   "last_updated": "2026-06-30T17:XX:XX+03",
-  "current_mode": null,
-  "focus_node": "Query Intent Decoder (QID) mechanism for metaphor parsing + user intent recognition",
-  "open_pages": [],
-  "dead_ends": [
-    {
-      "approach": "deep-dive in Loomana via web_search + wiki-read",
-      "reason": "Agent proposed plan but stopped before executing — entered analysis mode instead of service mode.",
-      "timestamp": "2026-06-30T17:XX:XX+03"
-    }
+  "current_mode": "ingest",
+  "focus_node": "Ingest workflow comparison and implementation planning",
+  "open_pages": [
+    {"path": "issues.md", "status": "updating"},
+    {"path": "PLAN.md", "status": "updating"}
   ],
+  "dead_ends": [],
   "broken_links_resolved": [
     {
       "file": "scripts/link-validator.sh",
@@ -61,23 +58,37 @@
     }
   ],
   "query_summary": {
-    "intent": "Query Intent Decoder (QID) mechanism for metaphor/association parsing + user intent recognition",
+    "intent": "Изучить ingest архитектуру claude-obsidian и выявить заимствуемые решения для Loomana",
     "pages_read": [
-      "process-query.json",
-      "working_memory.json",
-      "AGENTS.md"
+      "skills/wiki-ingest/SKILL.md",
+      "skills/autoresearch/SKILL.md",
+      "wiki/entities/loomana.md",
+      "issues.md",
+      "PLAN.md"
     ],
     "key_findings": [
-      "User's 'окунёмся в Loomana!' was interpreted as architecture-deep-dive instead of query_wiki intent",
-      "Added query_intent_decoder (step 0.5) to process-query.json — decodes metaphors like 'дай мне из', 'окунёмся' → query_wiki",
-      "QID-1: if wiki empty → warn_with_humor, if has data → proceed_to_search_flow"
+      "Claude-obsidian использует dual-path ingest: URL → .raw/articles/, autoresearch → direct-to-wiki",
+      "Mode-based routing через Python script (wiki-mode.py) для маршрутизации по категориям",
+      "Transport abstraction layer (CLI→MCP→filesystem)",
+      "Advisory file locking с flock для safe concurrent writes",
+      "Delta tracking в .raw/.manifest.json — но .raw/ protected в Loomana, нужно альтернативное размещение"
     ]
   },
   "next_steps_todo": [
     {
-      "task": "Phase 11.2: Causal Chain Analysis — agent prompt для 'X wrote first, Y copied from X' на основе text-similarity данных",
-      "priority": "low",
-      "source": "PLAN.md pending phases"
+      "task": "Phase 13.1: Delta Tracking — решение по размещению manifest-файла",
+      "priority": "high",
+      "source": "PLAN.md Phase 13"
+    },
+    {
+      "task": "Phase 13.2: Batch Ingest Workflow — дизайн agent/script split",
+      "priority": "medium",
+      "source": "PLAN.md Phase 13"
+    },
+    {
+      "task": "Phase 14: Wiki Sources Structure — решение о wiki/sources/ папке",
+      "priority": "medium",
+      "source": "PLAN.md Phase 14"
     }
   ]
 }

@@ -284,3 +284,8 @@
 - Key findings: mode-based routing, transport abstraction, advisory locking, delta tracking — all applicable to Loomana
 - New page created: [ingest-workflow-comparison](../wiki/concepts/ingest-workflow-comparison.md)
 - Research logged: research-2.md updated with comparison summary
+## [2026-06-30] ingest | Ingest workflow issues logged to issues.md + PLAN.md
+- Source: comparative analysis of claude-obsidian vs Loomana architecture
+- Issues created: #29 (delta tracking), #30 (batch ingest), #31 (media pipeline), #32 (wiki/sources/)
+- Plan updated with Phase 13-15 implementation roadmap
+- Open questions remaining: delta manifest placement, batch agent/script split, media file location
