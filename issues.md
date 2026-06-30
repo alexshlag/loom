@@ -1,8 +1,54 @@
 # Issues — Wiki Audit Tracker
 
+# Issues — Wiki Audit Tracker
+
 ---
 
 ## 🚨 Live Issues (требуют решения)
+
+### Issue #29: Delta Tracking — Placement & Implementation 🆕
+**Проблема**: В claude-obsidian delta tracking лежит в `.raw/.manifest.json`, но в Loomana:
+1. `raw/**` protected для writes (validate-path.sh + pre-commit hook)
+2. `meta/` занят для auto-generated файлов, rebuild через скрипт
+3. Agent не может писать напрямую в protected zones
+
+**Вопросы**:
+- [ ] Где разместить source-manifest.json? Варианты: `.wiki-meta/`, root directory, или git-based (git ls-files + hash)
+- [ ] Нужен ли отдельный rebuild script для manifest?
+- [ ] Как интегрировать в ingest flow — agent вызывает скрипт или пишет напрямую?
+
+**Severity**: HIGH — предотвращает waste of tokens на re-ingest
+
+### Issue #30: Batch Ingest Workflow Missing 🆕
+**Проблема**: В Loomana каждый источник обрабатывается изолированно. Нет cross-reference между новыми источниками и bulk-update index/hot/log.
+
+**Вопросы**:
+- [ ] Как разделить интеллект (агент) vs автоматизация (скрипт)?
+- [ ] Нужен ли `scripts/batch-ingest.sh` для автоматизированной части?
+- [ ] Или достаточно правила в AGENTS.md + agent's memory context?
+
+**Severity**: MEDIUM — улучшает cross-references и снижает количество мелких писаний
+
+### Issue #31: Media Files Pipeline Missing 🆕
+**Проблема**: В Loomana нет специфицированного pipeline для media files:
+- Описание изображения → markdown + OCR
+- Копия оригинала в vault
+- Структура `.raw/images/` vs `_attachments/`
+
+**Вопросы**:
+- [ ] Как реализовать если `raw/**` protected? Нужен отдельный каталог?
+- [ ] Стоит ли использовать `meta/media-manifest.json`?
+
+**Severity**: LOW — nice-to-have, не блокирует работу
+
+### Issue #32: Wiki/sources/ Structure Missing 🆕
+**Проблема**: В Loomana нет отдельной зоны для sources. Факты из разных источников смешаны.
+
+**Вопросы**:
+- [ ] Нужна ли `wiki/sources/` папка?
+- [ ] Или достаточно frontmatter `sources: []` в каждой странице?
+
+**Severity**: MEDIUM — улучшает audit trail и conflict resolution
 
 ### Issue #16: Broken Unit Tests (CRITICAL) 🆕
 **Проблема**: Единственный тест `tests/text-similarity.bats:6` содержит typo — `$BATS_TEST_DIRTEXT` вместо `$BATS_TEST_DIRNAME`. Все тесты падают.

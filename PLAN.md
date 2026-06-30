@@ -95,6 +95,61 @@ P12 (logging standard), P13 (trap handlers), P15 (minor fixes).
 
 ---
 
+## 🔄 Pending Ingest Workflow Improvements (from claude-obsidian analysis)
+
+### Phase 13: Delta Tracking 🥇
+**Цель**: Предотвратить waste of tokens на re-ingest тех же источников.
+
+**Задачи**:
+| Step | Action | Owner |
+|------|--------|-------|
+| 1 | Решить размещение manifest-файла (`.wiki-meta/` vs root) | Agent + user decision |
+| 2 | Создать `scripts/rebuild-source-manifest.sh` для пересчёта хешей | Agent |
+| 3 | Добавить delta check в ingest flow (hash → skip if unchanged) | Agent |
+| 4 | Обновить AGENTS.md и process-ingest.json с правилами delta tracking | Agent |
+
+**Зависимости**: Нет.
+**Связано**: `issues.md#29`
+
+### Phase 13: Batch Ingest Workflow 🥈
+**Цель**: Cross-reference между новыми источниками + bulk-update index/hot/log.
+
+**Задачи**:
+| Step | Action | Owner |
+|------|--------|-------|
+| 1 | Разделить интеллект (агент) vs автоматизация (скрипт) — дизайн решения | Agent + user discussion |
+| 2 | Создать `scripts/batch-ingest.sh` для автоматизированной части | Agent |
+| 3 | Добавить batch workflow в AGENTS.md → process-ingest.json step 3 | Agent |
+
+**Зависимости**: Phase 13.1 (delta tracking) — не строго.
+**Связано**: `issues.md#30`
+
+### Phase 14: Wiki Sources Structure 🥉
+**Цель**: Отдельная зона для sources → audit trail и conflict resolution.
+
+**Задачи**:
+| Step | Action | Owner |
+|------|--------|-------|
+| 1 | Решить нужна ли `wiki/sources/` папка vs frontmatter `sources: []` | Agent + user decision |
+| 2 | Если да → создать структуру и правила filing в AGENTS.md | Agent |
+
+**Зависимости**: Phase 13.2 (batch ingest) — для bulk source processing.
+**Связано**: `issues.md#32`
+
+### Phase 15: Media Files Pipeline 🪢
+**Цель**: Структурированный pipeline для изображений и медиа-файлов.
+
+**Задачи**:
+| Step | Action | Owner |
+|------|--------|-------|
+| 1 | Решить размещение (raw protected → alternative directory?) | Agent + user decision |
+| 2 | Добавить image ingestion rules в AGENTS.md | Agent |
+
+**Зависимости**: Нет.
+**Связано**: `issues.md#31`
+
+---
+
 ## ✅ Schema Migration — Dialog.md → AGENTS.md + process-файлы (Phase 12.4)
 
 **Status**: ✅ **COMPLETED** (06-29) — all rules embedded in AGENTS.md / process files.
