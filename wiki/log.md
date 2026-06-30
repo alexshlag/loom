@@ -273,3 +273,8 @@
   - Contradictions: 2 pairs — agent review required to resolve stale vs fresh facts
   - Orphan pages: 3 pages with zero backlinks — need cross-references or cleanup
   - Broken links: ✅ 0 | Text similarity overlaps: ✅ 0 | Date consistency: ✅ OK
+
+## [2026-06-30] schema | LOG_APPEND_ONLY rule added to prevent log destruction
+  - **Problem**: Agent used `cat >` instead of `cat >>` → destroyed ~250 lines of history in wiki/log.md
+  - **Fix**: Added append-only guardrail to AGENTS.md#Memory_Architecture_Contract
+  - **Rule**: wiki/log.md is always appended. Never overwritten with write() or cat > file.
