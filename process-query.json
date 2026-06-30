@@ -153,6 +153,54 @@
       ]
     },
     {
+      "step_id": "0.5",
+      "name": "query_intent_decoder",
+      "description": "Расшифровка метафор и ассоциаций пользователя перед поиском в wiki. Понимает, что 'окунёмся', 'дай мне из', 'что есть по' = query_wiki intent.",
+      "intent_patterns": [
+        {
+          "pattern": [
+            "окунёмся",
+            "нырнём",
+            "давай посмотрим в",
+            "используя wiki",
+            "поиск в базе"
+          ],
+          "intent": "query_wiki"
+        },
+        {
+          "pattern": [
+            "исследуй систему",
+            "как устроена",
+            "архитектура"
+          ],
+          "intent": "study_architecture"
+        }
+      ],
+      "actions": [
+        {
+          "action_name": "detect_user_intent",
+          "rule_id": "QID-1",
+          "if_match_is_query_wiki": [
+            {
+              "check": "wiki_has_data",
+              "method": "count wiki/**/*.md files"
+            },
+            {
+              "if_empty_or_few_files": "warn_with_humor: 'Предупреждаю: в Loomana пока мало записей. Смотри не расшиби лоб, ныряльщик! ;)' → предложить задать вопрос или начать заполнять базу"
+            },
+            {
+              "if_has_data": "proceed_to_search_flow"
+            }
+          ],
+          "if_match_is_study_architecture": [
+            {
+              "action": "read AGENTS.md + schema docs + architecture overview"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "step_id": "0.75",
       "name": "broken_link_awareness",
       "description": "Проверить наличие известных битых ссылок из previous lint/ingest sessions (из working_memory). Не сканирует wiki — использует кэш.",
@@ -563,7 +611,11 @@
             }
           ]
         }
-      ]
+      ],
+      "post_action": {
+        "trigger": "compaction_complete",
+        "command": "./scripts/restore-hot-cache.sh || true"
+      }
     },
     {
       "step_id": "2.5",
@@ -753,6 +805,13 @@
           }
         ]
       },
+      "post_operations": [
+        {
+          "trigger": "page_created_or_updated",
+          "command": "./scripts/git-auto-commit.sh",
+          "note": "Harness-independent auto-commit for wiki changes — runs after write/edit on wiki pages"
+        }
+      ],
       "finalization": {
         "description": "Обязательный финальный шаг — записать состояние в working_memory.json перед завершением сессии",
         "actions": [
