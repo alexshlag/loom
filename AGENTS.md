@@ -457,6 +457,15 @@ Minimum required: `## Overview`, `## Comparison Table`
 - **GREP CONTRACT**: используем только разрешённые паттерны bash (см. `process-query.json#grep_contract`).
 > Canonical: `process-query.json#grep_contract`.
 
+### CONTEXT COMPACTION HANDLING
+- Компакция контекста выбрасает injected content включая hot.md.
+- **После компакции** → агент обязан вызвать:
+  ```bash
+  bash scripts/restore-hot-cache.sh || true
+  ```
+- Это восстановит фактовый контекст wiki, который был потеряен при compact.
+> Canonical: `AGENTS.md#context_compaction_handling` — см. также NEW_EXT_PLAN.md #Phase_5
+
 ---
 
 ## 🔧 Error Handling Protocol
@@ -697,6 +706,70 @@ Process files inherit from AGENTS.md via `schema_ref` (never duplicate rules).
 **Trigger**: Ingest process after create_page/update_existing. Lint after link_validation.
 
 > Logic details: script parses wiki/**/*.md, groups by subdirectory, sorts alphabetically.
+
+---
+
+## 🔁 Harness-Independent Session & Git Operations
+
+Эти скрипты эмулируют хуки `claude-obsidian` (hooks.json) без зависимости от harness — работают идентично в Pi, Claude Code, Codex, OpenCode.
+
+### 4 ключевых скрипта
+
+| Скрипт | Эмулирует | Когда вызывать |
+|--------|-----------|------------------|
+| `git-auto-commit.sh` | PostToolUse | После каждого Write/Edit на wiki/ файлах |
+| `load-hot-cache.sh` | SessionStart | В начале сессии (молча) |
+| `restore-hot-cache.sh` | PostCompact | Когда контекст был компакирован |
+| `check-wiki-changes.sh` | Stop | Перед завершением сессии если работали с wiki |
+
+### Bootstrap: загрузка hot cache
+При старте сессии (или возврате) → выполнить молча:
+```bash
+bash scripts/load-hot-cache.sh || true   # silent no-op если нет vault
+```
+Агент читает вывод internally — не анонсировать что было загружено.
+
+### Пост-запись коммит
+После каждого Write/Edit, который трогает wiki/ файлы → выполнить:
+```bash
+bash scripts/git-auto-commit.sh
+```
+Никогда не запускайте `git add *` напрямую — скрипт сам стейджит только `wiki/`. Также он уважает wiki-lock concurrency.
+
+### После компакции контекста
+Если во время long session контекст был compacted → перечитать:
+```bash
+bash scripts/restore-hot-cache.sh || true
+```
+Compact-контексты выбрасывают injected content; это восстанавливает его.
+
+### Гигиена конца сессии
+Перед завершением сессии, где была работа с wiki → проверить и обновить hot.md:
+```bash
+if bash scripts/check-wiki-changes.sh 2>/dev/null; then
+  # Агент читает prompt output из скрипта и обновляет wiki/hot.md accordingly
+fi
+```
+Если изменений нет — молча пропустить.
+
+### Concurrency awareness (wiki-lock)
+Перед записью в любую wiki-страницу:
+1. Проверить, существует ли `scripts/wiki-lock.sh`
+2. Если да → получить advisory lock перед Write/Edit: `bash scripts/wiki-lock.sh acquire <path>`
+3. После записи → `bash scripts/wiki-lock.sh release <path>`
+4. Пропустить auto-commit если locks active (другой writer может быть в flight)
+
+### Delta tracking
+Перед ingestion нового файла → проверить `.raw/.manifest.json`:
+- Если hash совпадает → skip, сказать "Already ingested"
+- Если нет или файла нет → proceed с ingest + обновить manifest после
+
+### Integration with working_memory.json
+- `working_memory.json` = session metadata (focus_node, next_steps_todo) — хранит агентный state flow
+- `wiki/hot.md` = fact context (recent wiki changes, active threads) — хранит фактовый контекст для пользователя
+- Оба файла co-exist: WM для agent state, hot.md для user knowledge continuity
+
+> Schema ref: `NEW_EXT_PLAN.md#implementation_plan` — полный план интеграции.
 
 ---
 

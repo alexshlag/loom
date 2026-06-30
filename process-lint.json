@@ -21,7 +21,10 @@
   "lint_checks": [
     {
       "rule_ref": "DUAL-MODE-LINT-1",
-      "modes": ["fast (--fast flag, new_page_only)", "deep (default/full_wiki)"],
+      "modes": [
+        "fast (--fast flag, new_page_only)",
+        "deep (default/full_wiki)"
+      ],
       "check_id": "1",
       "name": "contradictions_between_pages",
       "description": "Ищи страницы, где старые утверждения уже не актуальны",
@@ -184,6 +187,16 @@
         "exit_code_1": "overlaps_found — report count + pairs, agent applies decision rules"
       },
       "schema_ref": "AGENTS.md#decision_rules"
+    },
+    {
+      "check_id": "8",
+      "name": "hot_cache_stale_check",
+      "description": "Проверить, есть ли изменения в wiki/ с момента последнего hot.md update. Если да — предложить пользователю обновить hot.md",
+      "command": "./scripts/check-wiki-changes.sh || true",
+      "output_handling": {
+        "0": "changes_detected → prompt user to update wiki/hot.md",
+        "1": "no_changes → skip silently"
+      }
     }
   ],
   "schema_ref": "AGENTS.md#non-blocking-lint",

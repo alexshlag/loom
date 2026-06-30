@@ -239,6 +239,10 @@
           "description": "Parse auto-crosslink JSON output, add backlinks to pages with score >= 5. Low scores (3-4) are informational only — suggest manual review.",
           "threshold_score": 5,
           "action_if_high_score_found": "Add [[path]] to related/mentions section in high-score page if not already present"
+        },
+        {
+          "trigger": "post_integration_complete",
+          "command": "./scripts/git-auto-commit.sh"
         }
       ]
     },
@@ -287,6 +291,10 @@
           "description": "Parse auto-crosslink JSON output, add backlinks to pages with score >= 5. Low scores (3-4) are informational only — suggest manual review.",
           "threshold_score": 5,
           "action_if_high_score_found": "Add [[path]] to related/mentions section in high-score page if not already present"
+        },
+        {
+          "trigger": "post_integration_complete",
+          "command": "./scripts/git-auto-commit.sh"
         }
       ]
     },

@@ -141,6 +141,18 @@
       ]
     },
     {
+      "step_id": "0.25",
+      "name": "hot_cache_bootstrap",
+      "description": "Загрузить wiki/hot.md для контекста последних фактов wiki — дополняет working_memory.json (session metadata) fact context",
+      "command": "./scripts/load-hot-cache.sh || true",
+      "actions": [
+        {
+          "action": "read_script_output",
+          "purpose": "Agent reads internally, does NOT announce loaded content to user"
+        }
+      ]
+    },
+    {
       "step_id": "0.75",
       "name": "broken_link_awareness",
       "description": "Проверить наличие известных битых ссылок из previous lint/ingest sessions (из working_memory). Не сканирует wiki — использует кэш.",

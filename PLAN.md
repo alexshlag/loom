@@ -54,6 +54,9 @@ P12 (logging standard), P13 (trap handlers), P15 (minor fixes).
 - Нет per-type structure descriptions (Entity/Concept/Synthesis/Comparison/Notes)
 - Summary pages: правила создания есть, но нет описания структуры страницы
 - Фактические wiki-файлы показывают consistent patterns, но они не задокументированы
+
+**Discussion context:** `context.md` — фиксация решений по Q1-Q4 (universal vs type-specific templates, summary structure, section naming, comparison format).
+
 **Задачи:**
 1. Убрать битые refs из AGENTS.md#page_templates
 2. Добавить inline per-type structure descriptions в AGENTS.md (вместо process-ingest.json refs)

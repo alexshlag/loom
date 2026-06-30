@@ -4,20 +4,6 @@
 
 ## 🚨 Live Issues (требуют решения)
 
-### Issue #21 / P8: Heredoc Injection in wiki-search.sh ✅ RESOLVED
-**Проблема**: `wiki-search.sh:314,445` — unquoted heredoc (`<< PYEOF`) позволял shell expand `$QUERY` перед передачей Python → command injection.
-**Fix (2026-06-28)**:
-1. ✅ Оба heredoc заменены на `'PYEOF'` (квантованные)
-2. ✅ Query передан через env var (`export SEARCH_QUERY`) вместо inline expansion
-3. ✅ `save_query_to_history` также переведён на env var passing (`HISTORY_QUERY`, `HISTORY_RESULTS_COUNT`)
-4. ✅ Добавлен `import os` во second heredoc для чтения env vars
-**Результат**: `$(echo pwned)` не выполняется, выводится как literal string.
-
-### Issue #H3: detect-contradications False Positives ✅ RESOLVED
-**Проблема**: `_detect_contradictions.py` сканировал все `.md` в wiki/, включая system files (`issues.md`, `log.md`) → false positives.
-**Fix (2026-06-28)**: Добавлен `EXCLUDED_FILES` set + проверка `if fname in EXCLUDED_FILES: continue`. Исключены: log.md, issues.md, timeline.md, overview.md, snapshot.md, index.md, GIT-STATUS-LOG.md, working_memory.json.
-**Результат**: Только legitimate contradictions (python-nixos date conflict) возвращаются.
-
 ### Issue #16: Broken Unit Tests (CRITICAL) 🆕
 **Проблема**: Единственный тест `tests/text-similarity.bats:6` содержит typo — `$BATS_TEST_DIRTEXT` вместо `$BATS_TEST_DIRNAME`. Все тесты падают.
 - `assert` function не импортирована — bats использует другой синтаксис
@@ -197,4 +183,4 @@ ORPHANS_OUTPUT=$(./scripts/orphan-pages.sh ... 2>&1 || true)
 
 ---
 
-*Last update: 2026-06-28 | Live: P9-P26 from full audit (P8/#H3 resolved). Resolved: #1-4, #6-7, architecture fixes, P8 (#21), #H3. **Critical**: #15 atomic writes, #16 broken tests, #17 silent errors.*
+*Last update: 2026-06-29 | Live: P9-P26 from full audit (P8/#H3 moved to resolved). Resolved: #1-4, #6-7, architecture fixes. **Critical**: #16 broken tests, #17 silent errors.*
