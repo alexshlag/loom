@@ -57,6 +57,16 @@
       "issue_reference": "issues.md #27"
     }
   ],
+  "architectural_decisions": [
+    {
+      "id": "AD-001",
+      "topic": "Delta tracking placement",
+      "decision": "source-manifest.json → meta/ (alongside registry, backlinks). Agent writes via script only.",
+      "reasoning": "raw/** is protected for agent writes. meta/ uses existing pattern: rebuild through scripts (rebuild-meta.sh), not direct edit. Consistent with validate-path.sh guardrails.",
+      "date": "2026-06-30",
+      "status": "resolved"
+    }
+  ],
   "query_summary": {
     "intent": "Изучить ingest архитектуру claude-obsidian и выявить заимствуемые решения для Loomana",
     "pages_read": [
@@ -71,15 +81,10 @@
       "Mode-based routing через Python script (wiki-mode.py) для маршрутизации по категориям",
       "Transport abstraction layer (CLI→MCP→filesystem)",
       "Advisory file locking с flock для safe concurrent writes",
-      "Delta tracking в .raw/.manifest.json — но .raw/ protected в Loomana, нужно альтернативное размещение"
+      "Delta tracking в .raw/.manifest.json — но .raw/ protected в Loomana, размещаем в meta/ через скрипт"
     ]
   },
   "next_steps_todo": [
-    {
-      "task": "Phase 13.1: Delta Tracking — решение по размещению manifest-файла",
-      "priority": "high",
-      "source": "PLAN.md Phase 13"
-    },
     {
       "task": "Phase 13.2: Batch Ingest Workflow — дизайн agent/script split",
       "priority": "medium",

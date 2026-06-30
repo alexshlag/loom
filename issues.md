@@ -12,10 +12,15 @@
 2. `meta/` занят для auto-generated файлов, rebuild через скрипт
 3. Agent не может писать напрямую в protected zones
 
-**Вопросы**:
-- [ ] Где разместить source-manifest.json? Варианты: `.wiki-meta/`, root directory, или git-based (git ls-files + hash)
-- [ ] Нужен ли отдельный rebuild script для manifest?
-- [ ] Как интегрировать в ingest flow — agent вызывает скрипт или пишет напрямую?
+**Решение:** ✅ **DECISION MADE**
+- `source-manifest.json` → разместить в `meta/source-manifest.json`
+- Агент НЕ пишет напрямую — только через скрипт (pattern как `rebuild-meta.sh`)
+- Скрипт: `scripts/rebuild-source-manifest.sh --add <path>` / `--scan` / `--check <path>`
+- Совместимо с existing guardrails: validate-path.sh blocks direct write, script bypasses via internal logic
+
+**Вопросы, которые остались открытыми**:
+- [ ] Скрипт: `--add`, `--scan`, `--check` — API design (подробности при имплементации)
+- [ ] Интеграция в ingest flow — trigger point (agent вызывает скрипт после каждого source read)
 
 **Severity**: HIGH — предотвращает waste of tokens на re-ingest
 
@@ -258,6 +263,13 @@ ORPHANS_OUTPUT=$(./scripts/orphan-pages.sh ... 2>&1 || true)
 2. ✅ Living-doc создан: `wiki/concepts/natural-memory.md` — принципы, примеры, table date→human-term
 3. ✅ Snapshot обновлён с новыми проектами и датой 2026-06-30
 4. ✅ Log updated with today's entries
+
+### Delta Tracking Placement → DECISION MADE (2026-06-30)
+**Решение**: `source-manifest.json` живёт в `meta/`, агент пишет через скрипт, не напрямую.
+1. ✅ **Placement resolved**: `meta/source-manifest.json` — alongside registry.json, backlinks.json
+2. ✅ **Access pattern resolved**: agent calls `scripts/rebuild-source-manifest.sh`, never writes JSON directly
+3. ✅ Matches existing meta pattern: rebuild-meta.sh → rebuild all; rebuild-source-manifest.sh → rebuild manifest only
+4. ⬜ Implementation pending: script API design (`--add`, `--scan`, `--check`) и integration в ingest flow
 
 ---
 

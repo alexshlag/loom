@@ -289,3 +289,8 @@
 - Issues created: #29 (delta tracking), #30 (batch ingest), #31 (media pipeline), #32 (wiki/sources/)
 - Plan updated with Phase 13-15 implementation roadmap
 - Open questions remaining: delta manifest placement, batch agent/script split, media file location
+## [2026-06-30] schema | Architectural decision AD-001: delta tracking placement resolved
+- Decision: `meta/source-manifest.json`, agent writes via script only (pattern: rebuild-source-manifest.sh)
+- Reasoning: raw/** is protected for agent; meta/ uses existing pattern of script-based access
+- Consistent with validate-path.sh guardrails and rebuild-meta.sh precedent
+- Implementation pending: script API design (--add, --scan, --check) and ingest flow integration

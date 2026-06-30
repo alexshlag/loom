@@ -101,15 +101,15 @@ P12 (logging standard), P13 (trap handlers), P15 (minor fixes).
 **Цель**: Предотвратить waste of tokens на re-ingest тех же источников.
 
 **Задачи**:
-| Step | Action | Owner |
-|------|--------|-------|
-| 1 | Решить размещение manifest-файла (`.wiki-meta/` vs root) | Agent + user decision |
-| 2 | Создать `scripts/rebuild-source-manifest.sh` для пересчёта хешей | Agent |
-| 3 | Добавить delta check в ingest flow (hash → skip if unchanged) | Agent |
-| 4 | Обновить AGENTS.md и process-ingest.json с правилами delta tracking | Agent |
+| Step | Action | Owner | Status |
+|------|--------|-------|--------|
+| ✅ 1 | **Размещение решено**: `meta/source-manifest.json`, agent пишет через скрипт | Decision made | ✅ Done |
+| 2 | Создать `scripts/rebuild-source-manifest.sh` — API: --add, --scan, --check | Agent | ⬜ Next |
+| 3 | Добавить delta check в ingest flow (hash → skip if unchanged) | Agent | ⬜ After step 2 |
+| 4 | Обновить AGENTS.md и process-ingest.json с правилами delta tracking | Agent | ⬜ After step 2 |
 
 **Зависимости**: Нет.
-**Связано**: `issues.md#29`
+**Связано**: `issues.md#29` (placement resolved, implementation pending)
 
 ### Phase 13: Batch Ingest Workflow 🥈
 **Цель**: Cross-reference между новыми источниками + bulk-update index/hot/log.
