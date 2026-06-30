@@ -166,6 +166,32 @@ ORPHANS_OUTPUT=$(./scripts/orphan-pages.sh ... 2>&1 || true)
 
 **Статус:** 🔴 **Broken** — требуется починить существующий тест и добавить новые
 
+### Issue #5/#9: Orphan Pages + Auto-Crosslink Logic ⚠️ PARTIAL FIX
+**Проблема**: `auto-crosslink.sh` работает только на текстовом совпадении имени, не учитывает semantic relationships и shared-source clusters.
+
+**Fix applied (2026-06-28)**:
+1. ✅ `orphan-pages.sh` fixed — 37 → 5 orphan pages (только системные)
+2. ✅ `auto-crosslink.sh` rewritten с multi-level scoring (H1 + shared sources + frontmatter)
+3. ✅ Integrated into ingest process: step_3a, step_3b, step_3d
+
+**Remaining**:
+- [ ] Merge/clarify `concepts/python-nixos-development.md` vs `syntheses/python-nixos-development-environments.md` — redundant content
+- [x] Exclude system files (log.md, timeline.md) from normal search logic ✅ done
+
+👉 **Canonical**: `scripts/orphan-pages.sh`, `scripts/auto-crosslink.sh`, `decision-rules.md`, `process-ingest.json`
+
+### Issue #34: Auto-Crosslink Shared-Source Noise Filtering 🆕 PENDING
+**Проблема**: `auto-crosslink.sh` считает shared_source (+5) для любых общих источников. System files (AGENTS.md, context.md, PLAN.md, hot.md) есть почти везде → false positives на score 5+.
+
+**Результат**: при ingest новой страницы auto-crosslink выдаёт десятки match'ов с score 5 просто из-за shared system file sources. High-confidence: `python-nixos-development-environments.md` (score 9 = shared_source + related_field).
+
+**Fix needed**:
+- [ ] Exclude SYSTEM_FILES from crosslink scoring (как сделано в wiki-search.sh)
+- [ ] Add semantic weight: prioritize H1/body overlap over mere source sharing
+- [ ] Reduce threshold or add diminishing factor for low-confidence clusters
+
+**Priority**: LOW — cosmetic, doesn't break functionality.
+
 ### Issue #13: scripts/README.md 🔽 LOW PRIORITY
 **Проблема**: Нет единой документации по скриптам.
 - Usage examples, architecture overview, known limitations отсутствуют

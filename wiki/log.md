@@ -355,3 +355,7 @@
 
 
 ## [2026-07-01] idea captured: harness-aware wiki setup flow — saved to wiki/concepts/harness-aware-setup.md, status pending design discussion
+
+## [2026-07-01] ingest | Issue #34 added: auto-crosslink shared_source noise filtering
+  - Source: conversation — identified system file shared_source false positives in crosslink results
+  - Logged to issues.md as pending improvement
