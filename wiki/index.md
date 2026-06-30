@@ -17,7 +17,6 @@
 * [Doctrine ORM Integration](concepts/doctrine-orm.md) — # Doctrine ORM Integration Doctrine ORM — object-relational mapper для PHP, интегрированный в Symfony через DoctrineBridge.
 * [Event Dispatcher](concepts/event-dispatcher.md) — # Event Dispatcher Event Dispatcher — компонент Symfony, который обеспечивает decoupled communication между компонентами системы через события.
 * [Hexagonal Architecture & Clean Patterns in Symfony](concepts/hexagonal-architecture.md) — # Hexagonal Architecture & Clean Patterns in Symfony Hexagonal Architecture (Ports & Adapters) — architectural pattern that keeps business logic separ
-* [Ingest Workflow Patterns — Claude-obsidian vs Loomana](concepts/ingest-workflow-comparison.md) — # Ingest Workflow Patterns — Claude-obsidian vs Loomana Сравнительный анализ архитектур ingest и обработки источников между **claude-obsidian** (фрейм
 * [LLM Wiki Pattern — Incremental Knowledge Base Building](concepts/llm-wiki.md) — > **Origin:** Andrej Karpathy. [Reference gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
 * [Messenger Component](concepts/messenger-component.md) — # Messenger Component Messenger — component for sending and receiving messages to/from other applications or via message queues.
 * [Natural Memory Translation — Перевод машинных фактов в живую память](concepts/natural-memory.md) — # Natural Memory Translation — Перевод машинных фактов в живую память Перевод машино-читаемых данных (даты, комиты, timestamps) в естественную форму, 
@@ -61,7 +60,7 @@
 
 
 ---
-*Created: auto-generated | Last updated: 2026-06-30 21:25*
+*Created: auto-generated | Last updated: 2026-06-30 23:44*
 
 ## Хронология
 | Дата | Событие |

@@ -58,7 +58,7 @@ curl -fsSL https://pi.dev/install.sh | sh
 ## Источники:
 * `raw/sources/SRC-2025-06-24-001/pi-dev-docs-latest.md` — https://pi.dev/docs/latest (оригинал)
 
-## Обновлено 2026-06-24 — новые связи и инструкции
+## Обновления (2026-06-24)
 * Добавлены: Keybindings, Sessions, Compaction, Development, Windows/Termux/tmux links
 * **Uninstall:** `npm uninstall -g @earendil-works/pi-coding-agent` (также pnpm/yarn/bun)
 * **Аутентификация:** `/login` для subscription providers или `ANTHROPIC_API_KEY`

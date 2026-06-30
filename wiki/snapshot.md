@@ -2,7 +2,7 @@
 tags: [snapshot, active-projects]
 date: 2026-06-30
 sources: []
-related: [wiki/comparisons/llm-wiki-implementations.md, wiki/concepts/llm-wiki.md, wiki/entities/loomana.md, wiki/concepts/natural-memory.md]
+related: [wiki/comparisons/llm-wiki-implementations.md, wiki/comparisons/loom-vs-claude-obsidian.md, wiki/concepts/llm-wiki.md, wiki/entities/loomana.md, wiki/concepts/natural-memory.md]
 ---
 # Wiki Snapshot — Активные проекты
 
@@ -50,6 +50,12 @@ related: [wiki/comparisons/llm-wiki-implementations.md, wiki/concepts/llm-wiki.m
 - **Контекст**: Перевод машино-читаемых фактов (даты, коммиты) в естественную форму: «позавчера», «неделю назад». Точность фактов + живая формулировка. Правило в AGENTS.md, living-doc на `wiki/concepts/natural-memory.md`.
 - **Связанные wiki-страницы**:
   - `[Concept: Natural Memory Translation](concepts/natural-memory.md)` — принципы и примеры
+
+### LOOM vs claude-obsidian — Comparative Analysis
+- **Статус**: active (comparison created)
+- **Контекст**: Сравнение двух реализаций LLM Wiki Companion — LOOM (depth, evidence grading) vs claude-obsidian (breadth, transport abstraction). Анализ показывает взаимодополняющие архитектуры.
+- **Связанные wiki-страницы**:
+  - `[Comparison: LOOM vs claude-obsidian](comparisons/loom-vs-claude-obsidian.md)` — deep-dive analysis
 
 ---
 

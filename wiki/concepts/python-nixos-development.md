@@ -80,7 +80,7 @@ environment.systemPackages = with pkgs; [
 > - **Синтез** — структурированный анализ способов с выводами
 > Обе страницы согласованы, дублирование намеренное для разных целей чтения.
 
-## Обновлено 2026-06-24 — новое уточнение
+## Обновления (2026-06-24)
 * Добавлено: **R packages в Python через rpy2** — секция про R integration
 * Добавлено: **Nix shell (new command line)** — `nix shell --impure --expr '(import <nixpkgs> {}).python3.withPackages(...)'`
 * Добавлено: **Упаковка приложений** — buildPythonApplication для Flask, pyproject.nix

@@ -1,10 +1,10 @@
 ---
-tags: [comparison, architecture, wiki-framework]
-date: 2026-06-29
+tags: [comparison, architecture, wiki-framework, ingest, workflow]
+date: 2026-06-30
 type: comparison
 category: comparison
-sources: []
-related: [wiki/concepts/wiki-schema.md]
+sources: [raw/..., /home/andrew/projects/claude-obsidian/skills/wiki-ingest/SKILL.md, /home/andrew/projects/claude-obsidian/skills/autoresearch/SKILL.md]
+related: [wiki/concepts/natural-memory.md, wiki/entities/pi-coding-agent.md, wiki/concepts/wiki-schema.md]
 ---
 
 # LOOM vs claude-obsidian — Сравнение двух реализаций LLM Wiki Companion
@@ -69,6 +69,67 @@ process-{lint}         → wiki-lint/SKILL.md
 ```
 
 LOOM — это **работа** над знаниями. claude-obsidian — это **инструмент** для работы с знаниями. Разные оси: LOOM глубже в каждой зоне, конкурент шире по возможностям организации.
+
+---
+
+## Ingest Workflow Patterns — Deep Dive
+
+### Core Ingest Mechanisms
+
+#### Claude-obsidian: Dual-path Ingest
+1. **URL Ingestion** (через `wiki-ingest` skill): Fetch → Defuddle → Slug derivation → `.raw/articles/[slug]-[date].md`, delta tracking через `.raw/.manifest.json`
+2. **Direct-to-wiki filing** (через `autoresearch` skill): Web search + fetch → прямое создание страниц в `wiki/sources/`, `wiki/concepts/`, `wiki/entities/` без промежуточного raw
+
+#### Loomana: Immutable Raw Layer
+- `raw/**` — только чтение, защищён через `validate-path.sh`
+- Agent пишет напрямую в `wiki/**`
+- Нет промежуточного raw для web sources — web_search сразу → wiki
+
+### Key Differences & Best Practices
+
+1. **Mode-based Routing** (Claude-obsidian)
+   ```python
+   python3 scripts/wiki-mode.py route source "Topic Name"
+   # generic:    wiki/sources/[topic].md
+   # LYT:        wiki/notes/[topic].md + MOC update
+   # PARA:       wiki/resources/incoming/[topic].md
+   # zettelkasten: wiki/<timestamp>-[topic].md
+   ```
+
+2. **Transport Abstraction** — CLI → MCP → Filesystem fallback chain
+3. **Advisory File Locking** — `flock` с age-based staleness (60s), cross-process release
+4. **Delta Tracking** — `.raw/.manifest.json`: source hash → skip if unchanged, pages created/updated per source
+5. **Image/Vision Ingestion** — два файла: markdown + оригинал в `_attachments/images/`
+
+### Loomana Advantages
+
+| Aspect | LOOM | Claude-obsidian |
+|--------|------|------------------|
+| Raw immutability | ✅ `validate-path.sh` guardrails + pre-commit hook | ⚠️ `.raw/**` read-only, но без filesystem-level protection |
+| Schema co-evolution | ✅ AGENTS.md живая схема с user approval | ❌ Static skill templates |
+| Context bubble | ✅ Max 3 pages в контексте | ❌ Нет ограничения |
+| Compacting memory | ✅ `restore-hot-cache.sh` после compact | ⚠️ Только hot.md |
+| Natural memory translation | ✅ «позавчера» вместо «2026-06-28» | ❌ Raw dates |
+
+### Заимствуемые решения для LOOM
+
+**High Priority (IF-1..IF-4)**
+1. Mode-based routing — маршрутизация по категориям
+2. Transport abstraction — fallback chain (MCP → filesystem)
+3. Advisory locking — `scripts/wiki-lock.sh` для safe concurrent writes
+4. Delta tracking — `.raw/.manifest.json` или аналог
+
+**Medium Priority**
+5. Image ingestion pipeline — `.raw/images/` + `_attachments/images/`
+6. Web egress hygiene — URL validation, content sanitization
+7. Address assignment — stable IDs для страниц
+
+**Low Priority (deferred)**
+8. MCP server support
+9. Zettelkasten/PARA modes
+
+### Conclusions
+Claude-obsidian предоставляет более структурированный ingest workflow с тремя слоями абстракции: routing → transport → locking. LOOM выигрывает в schema co-evolution и контекстном управлении.
 
 ## Выводы
 

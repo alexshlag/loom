@@ -282,7 +282,7 @@
 - Source: claude-obsidian skills + Loomana wiki
 - Summary: Analyzed dual-path ingest in claude-obsidian (URL→.raw, autoresearch→direct) vs Loomana immutable raw layer
 - Key findings: mode-based routing, transport abstraction, advisory locking, delta tracking — all applicable to Loomana
-- New page created: [ingest-workflow-comparison](../wiki/concepts/ingest-workflow-comparison.md)
+- Merged into: [loom-vs-claude-obsidian](../wiki/comparisons/loom-vs-claude-obsidian.md) — added ingest workflow patterns section
 - Research logged: research-2.md updated with comparison summary
 ## [2026-06-30] ingest | Ingest workflow issues logged to issues.md + PLAN.md
 - Source: comparative analysis of claude-obsidian vs Loomana architecture
@@ -309,3 +309,41 @@
 - lint.sh now sources common.sh and uses safe_run for all 7 inner-script calls
 - No more silent failures or || true hiding errors
 - All script exit codes properly handled and logged
+
+## [2026-06-30] Lint Cleanup — Wiki Health Improved
+
+### Actions taken:
+1. **hot.md** → added frontmatter with `category: cache` + excluded from orphan-pages.sh SYSTEM_FILES list
+2. **Merged**: `concepts/ingest-workflow-comparison.md` → `comparisons/loom-vs-claude-obsidian.md` (added Ingest Workflow Patterns section)
+3. **Deleted**: `concepts/ingest-workflow-comparison.md`
+4. **Fixed broken link** in log.md (pointed to deleted ingest-workflow-comparison.md → now points to merged loom-vs-claude-obsidian.md)
+5. **Added crosslinks** from snapshot.md to both orphan pages: natural-memory.md + loom-vs-claude-obsidian.md
+
+### Results:
+| Check | Before | After |
+|-------|--------|-------|
+| Orphan pages | 4 | **0** ✅ |
+| Broken links | 1 | **0** ✅ |
+| Contradictions | 2 (soft) | 2 (unchanged, informational) |
+| Total issues | 6 | **2** ⚠️ |
+
+
+## [2026-06-30] Contradictions Cleaned — Wiki Status: CLEAN
+
+### Actions taken:
+1. Replaced `## Обновлено 2026-06-24` → `## Обновления (2026-06-24)` in both files:
+   - `concepts/python-nixos-development.md` — content preserved, removed soft-scan flag
+   - `entities/pi-coding-agent.md` — content preserved, removed soft-scan flag
+
+### Final status:
+| Check | Result |
+|-------|--------|
+| Contradictions | **0** ✅ |
+| Orphan pages | 0 ✅ |
+| Broken links | 0 ✅ |
+| Duplicate titles | 0 ✅ |
+| Date inconsistencies | 0 ✅ |
+| **Total issues** | **0** ✅ |
+
+### Wiki Status: **CLEAN** 🎉
+

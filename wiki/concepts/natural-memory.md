@@ -4,7 +4,7 @@ date: 2026-06-30
 type: documentation
 category: concept
 sources: []
-related: ["wiki/concepts/memory-architecture.md"]
+related: ["wiki/concepts/memory-architecture.md", "wiki/overview.md", "wiki/snapshot.md"]
 ---
 
 # Natural Memory Translation — Перевод машинных фактов в живую память
@@ -82,4 +82,6 @@ Agent может override default behavior, если:
 > Note: это draft. Формат может эволюционировать через `schema-patch` proposals.
 
 ## Related Pages
-* [AGENTS.md#natural_memory_translation](../../AGENTS.md) — кратное правило агента в Memory Architecture Contract
+* [AGENTS.md#natural_memory_translation](../../AGENTS.md) — краткое правило агента в Memory Architecture Contract
+* [[wiki/overview.md]] — обзор wiki, упоминает natural memory как ключевой принцип
+* [[wiki/snapshot.md]] — snapshot проекта
