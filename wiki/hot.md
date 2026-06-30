@@ -15,3 +15,10 @@
 - LOOM uses working_memory.json for session metadata; claude-obsidian uses wiki/hot.md for fact context — two complementary approaches
 - claude-obsidian's hooks.json provides automatic PostToolUse/SessionStart/PostCompact/Stop automation but is Claude Code-specific
 - Our solution: harness-independent scripts (git-auto-commit.sh, load-hot-cache.sh, restore-hot-cache.sh, check-wiki-changes.sh) that work identically in Pi, Claude Code, Codex, etc.
+
+## [2026-06-30] Ingest Architecture Study
+- Completed comparative analysis of claude-obsidian ingest vs Loomana architecture
+- Created wiki page: `concepts/ingest-workflow-comparison.md`
+- Identified 7 key practices for implementation in Loomana
+- Priority: mode-based routing, transport abstraction, advisory locking, delta tracking
+- Logged to wiki/log.md + research-2.md for future planning

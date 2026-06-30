@@ -278,3 +278,9 @@
   - **Problem**: Agent used `cat >` instead of `cat >>` → destroyed ~250 lines of history in wiki/log.md
   - **Fix**: Added append-only guardrail to AGENTS.md#Memory_Architecture_Contract
   - **Rule**: wiki/log.md is always appended. Never overwritten with write() or cat > file.
+## [2026-06-30] ingest | Ingest workflow comparison study
+- Source: claude-obsidian skills + Loomana wiki
+- Summary: Analyzed dual-path ingest in claude-obsidian (URL→.raw, autoresearch→direct) vs Loomana immutable raw layer
+- Key findings: mode-based routing, transport abstraction, advisory locking, delta tracking — all applicable to Loomana
+- New page created: [ingest-workflow-comparison](../wiki/concepts/ingest-workflow-comparison.md)
+- Research logged: research-2.md updated with comparison summary
