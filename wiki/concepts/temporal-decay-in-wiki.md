@@ -40,7 +40,7 @@ related: [wiki/syntheses/rag-vs-llm-wiki-pattern.md, wiki/concepts/llm-wiki.md]
 ## Связи:
 * [LLM Wiki Pattern Concept](concepts/llm-wiki.md) — compounding knowledge base approach
 * [Synthesis: RAG vs LLM Wiki Pattern](syntheses/rag-vs-llm-wiki-pattern.md) — comparison table shows wiki compounds over time
-* [Issues #1](issues.md#issue-1-актуальность-информации) — актуальность информации требует решения
+* [Issues #1](../../issues.md#issue-1-актуальность-информации) — актуальность информации требует решения
 
 ---
 *Создано: 2026-06-25 | Query synthesis on temporal decay problem*

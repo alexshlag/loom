@@ -348,7 +348,7 @@ Minimum required: `## Overview`, `## Comparison Table`
 
 ### 🔄 Template Co-evolution Process
 
-1. **Agent proposes** structural improvement → `[schema-patch]` in `log.md`
+1. **Agent proposes** structural improvement → log via `process-ingest.json#schema_evolution`
 2. **User reviews and approves** → agent commits update
 3. **New scenarios detected** → discussed in context.md → added to schema
 4. **Never auto-modify templates** — always user-approved changes
@@ -511,15 +511,8 @@ Minimum required: `## Overview`, `## Comparison Table`
 
 ### 4-step loop
 
-1. **Detect & Log** `[!]` →
-   ```json
-   {
-     "action": "append_to_log",
-     "format": "## [YYYY-MM-DD] error | [description]: <context>",
-     "trigger": "immediately after detecting error/dead-end/conflict"
-   }
-   ```
-   Записать в `log.md` с типом `[error]`, описанием и контекстом. Всегда append (`>>`), never overwrite.
+1. **Detect & Log** `[!]` → См. `process-query.json#error_handling.logging_actions`
+   Записать в log.md с типом [error], описанием и контекстом. Всегда append (`>>`), never overwrite.
 2. **Analyze** → Краткий анализ: что пошло не так, почему инструкция сломалась (не просто «ошибка», а корень проблемы)
 3. **Resolve** → Выбрать стратегию:
    - `local-fix`: проблема локальная (путь, ссылка, логика) → исправить самостоятельно
@@ -571,14 +564,8 @@ Minimum required: `## Overview`, `## Comparison Table`
 1. **Detect**: Script reports signal (overlap, contradiction, similarity)
 2. **Evaluate**: Agent reads context → applies relevant DR from table above
 3. **Log**:
-   ```json
-   {
-     "action": "append_to_log",
-     "format": "## [YYYY-MM-DD] decision | [DR-N]: <reasoning — какие данные → какой вывод>",
-     "trigger": "immediately after applying any decision rule (DR-1/2/3)"
-   }
-   ```
-   Записать решение в `log.md`. Всегда append (`>>`), never overwrite.
+   См. `process-query.json#contradiction_resolution_flow.logging_actions`.
+   Записать решение в log.md. Всегда append (`>>`), never overwrite.
 4. **Evolve**: New scenarios → discuss → add new rule to table → commit
 
 > Schema ref: `AGENTS.md#decision_rules` — canonical source for agent evaluation logic.
@@ -686,9 +673,6 @@ After step_3a/3b → run `./scripts/auto-crosslink.sh <path>`:
     ],
     "protected_by": "validate-path.sh blocks direct write to meta/**"
   },
-  "system_files_excluded_from_search": {
-    "rule": "wiki system files (log.md, issues.md, timeline.md, overview.md, snapshot.md, index.md, GIT-* etc) are NOT part of normal semantic search"
-  },
   "never_do": [
     "directly_edit_protected_zones",
     "skip_capture_flow_for_raw_sources",
@@ -703,7 +687,7 @@ After step_3a/3b → run `./scripts/auto-crosslink.sh <path>`:
 
 > Canonical flow: `index_lookup → semantic_search → wiki-search.sh` — полный алгоритм в `process-query.json#search_priority_details`. 
 **Fallback**: `meta/search-index.json` — structured index with keywords/tags/first-sentences for fast lookup.
-**System files excluded**: log.md, issues.md, timeline.md, overview.md, snapshot.md, index.md, GIT-* are NOT part of normal search. They appear in index.md but should not be returned as semantic matches.
+**System files excluded**: См. `process-query.json#step_1.system_files_exclusion`.
 
 ---
 

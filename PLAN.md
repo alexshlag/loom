@@ -20,6 +20,8 @@ P12 (logging standard), P13 (trap handlers), P15 (minor fixes).
 
 **Resolved from 06-28 session**: P8/#21 (heredoc injection → env var passing), #H3 (system file exclusion in detect-contradications), Phase 12.3 D6 (rebuild-meta auto-trigger after link-fix).
 
+**Completed today (2026-06-30)**: Harness-Independent Session & Git Operations — 4 скрипта интегрированы в process-файлы, секция из AGENTS.md удалена, NEW_EXT_PLAN.md удалён. Natural Memory Translation — правило в AGENTS.md + living-doc.
+
 ---
 
 ## ⬜ Unresolved — From 06-28 Audit

@@ -1,7 +1,7 @@
 ---
 tags: [tool, cli, agent-skill-system, stack-agnostic, spec-driven]
 date: 2026-06-24
-sources: [raw/github/lee-to/ai-factory@2.x/]
+sources: [https://github.com/lee-to/ai-factory, https://www.npmjs.com/package/ai-factory]
 related: [wiki/entities/pi-coding-agent.md]
 ---
 

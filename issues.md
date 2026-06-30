@@ -151,6 +151,14 @@ ORPHANS_OUTPUT=$(./scripts/orphan-pages.sh ... 2>&1 || true)
 
 **Remaining**: Добавить rule в AGENTS.md → `syntheses not processed like regular wiki pages` (drafted, needs user approval)
 
+### Issue #28: Page Templates Co-evolution — INCOMPLETE 🆕
+**Проблема**: AGENTS.md содержит секции Template Editing Policy и Template Co-evolution Process, но фактическая работа над шаблонами страниц (user-approved structural improvements) не завершена.
+- Agent может предлагать улучшения через `[schema-patch]` в log.md
+- User должен review/approve → agent commit update
+- Новые сценарии → discuss → add to schema
+**Статус:** ⬜ Open — требуется discussion + user approval для推进
+**Schema ref**: `AGENTS.md#template_co_evolution`, `process-ingest.json` (логирование в log.md)
+
 ---
 
 ## ✅ Resolved
@@ -183,4 +191,28 @@ ORPHANS_OUTPUT=$(./scripts/orphan-pages.sh ... 2>&1 || true)
 
 ---
 
-*Last update: 2026-06-29 | Live: P9-P26 from full audit (P8/#H3 moved to resolved). Resolved: #1-4, #6-7, architecture fixes. **Critical**: #16 broken tests, #17 silent errors.*
+## ✅ Resolved Today (2026-06-30)
+
+### Harness-Independent Session & Git Operations → COMPLETED
+**Проблема**: Скрипты для session management и auto-commit существовали, но не были интегрированы в process-файлы.
+**Fix applied**:
+1. ✅ `git-auto-commit.sh` — ingest step 3a/3b + query result_fixation (6 точек вызова)
+2. ✅ `load-hot-cache.sh` — query bootstrap (step 0.25)
+3. ✅ `restore-hot-cache.sh` — query compaction post_action (step 2.3)
+4. ✅ `check-wiki-changes.sh` — lint check_id "8"
+5. ✅ Секция Harness-Independent удалена из AGENTS.md — правила живут в процессах
+6. ✅ NEW_EXT_PLAN.md удалён как выполненный план
+7. ✅ wiki/hot.md инициализирован (1477 байт)
+**Schema ref**: `AGENTS.md#context_compaction_handling`, `process-query.json#step_0.25`, `process-ingest.json#step_3a`
+
+### Natural Memory Translation → NEW CONCEPT CREATED
+**Проблема**: Agent не переводил машино-читаемые даты в естественную форму.
+**Fix applied**:
+1. ✅ Правило добавлено в AGENTS.md → Memory Architecture Contract (NATURAL MEMORY TRANSLATION)
+2. ✅ Living-doc создан: `wiki/concepts/natural-memory.md` — принципы, примеры, table date→human-term
+3. ✅ Snapshot обновлён с новыми проектами и датой 2026-06-30
+4. ✅ Log updated with today's entries
+
+---
+
+*Last update: 2026-06-30 | Live: #16 (broken tests), #17 (silent errors), #20 (validate-path bypass). Resolved today: Harness-Independent Session & Git Operations, Natural Memory Translation.*

@@ -194,7 +194,14 @@ check_file() {
         local base_target=$(echo "$target_path" | sed 's/#.*//')
         if [[ -z "$base_target" ]]; then continue; fi
         
+        # Resolve relative path against the file's directory (not WIKI_DIR)
         local full_target="$WIKI_DIR/$base_target"
+        if [[ "$target_path" == ../* ]]; then
+            local target_dir=$(dirname "$file")
+            local resolved=$(cd "$target_dir" 2>/dev/null && realpath -m "$base_target" 2>/dev/null) || true
+            if [[ -n "$resolved" ]]; then full_target="$resolved"; fi
+        fi
+        
         if [[ ! -f "$full_target" ]]; then
           BROKEN_COUNT=$((BROKEN_COUNT + 1))
           

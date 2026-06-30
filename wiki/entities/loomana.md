@@ -149,6 +149,91 @@ Root файлы:
 
 ---
 
+## Harness-Independent Session & Git Operations (Phase 5)
+
+Автономная работа без зависимости от harness — работает идентично в Pi, Claude Code, Codex.
+
+### 4 ключевых скрипта
+
+| Скрипт | Назначение |
+|--------|------------|
+| `git-auto-commit.sh` | Автоматический commit после Write/Edit на wiki/ (stage только wiki/, уважает wiki-lock) |
+| `load-hot-cache.sh` | Загрузка hot.md в начале сессии — факт-контекст для пользователя |
+| `restore-hot-cache.sh` | Восстановление контекста после compaction — читает актуальный hot.md из disk |
+| `check-wiki-changes.sh` | End-of-session check — обновляет hot.md если были изменения |
+
+**Точки вызова:**
+- Ingest: step 3a + 3b (git-auto-commit)
+- Query: bootstrap (load-hot-cache), compaction post_action (restore-hot-cache), result_fixation (git-auto-commit)
+- Lint: check_id "8" (check-wiki-changes)
+
+### wiki/hot.md — факт-контекст между сессиями
+Файл, который хранит recent wiki changes и active threads. Агент читает его при старте сессии (silent no-op если нет vault) и восстанавливает после компакции контекста.
+> Canonical: `AGENTS.md#context_compaction_handling`
+
+### Natural Memory Translation
+
+Перевод машино-читаемых фактов (frontmatter dates, git timestamps) в естественную форму:
+- «позавчера» вместо «2026-06-28», если сегодня 30 июня
+- Ссылаться на «мы» вместо «система/агент» при общем опыте проекта
+- Точность фактов не нарушается — просто формулировка живая
+> Canonical: `AGENTS.md#natural_memory_translation`
+
+---
+
+## Search Analytics (S5)
+
+`scripts/wiki-search.sh` + `meta/search_analytics.json` — асинхронный tracking query frequency для popularity boost.
+
+### Как работает
+1. Каждый query логируется в `search_analytics.json` с timestamp и keywords
+2. `score_page()` читает analytics → добавляет +frequency_boost к pages, которые появлялись в популярных запросах
+3. **Soft signal only** — никогда не фильтрует результаты, только boost релевантности
+4. Schema v2: topics{} persistent rating DB — сохраняет историю частоты запросов по topic
+
+### Integration points
+- Query flow: после каждого search → async log query into analytics
+- Page scoring: `score_page()` в wiki-search.sh читает analytics перед ранжированием
+- Frequency boost: pages из popular queries получают +frequency_boost к combined score
+> Canonical: `AGENTS.md#search_analytics` — см. также `process-query.json#search_priority_details`
+
+---
+
+## Schema & Page Structure (updated 2026-06-30)
+
+### Universal Frontmatter Template
+```yaml
+---
+tags: []                    # keyword-теги для классификации и поиска
+date: YYYY-MM-DD            # текущая дата системы
+type: documentation         # reality layer: documentation | code_reality | live_state
+category: entity            # раздел wiki: entity | concept | synthesis | comparison | note | project
+sources: []                 # откуда данные (raw/..., wiki paths, web_search)
+related: []                 # связанные wiki-страницы (wiki-relative paths)
+---
+```
+
+### Language Policy
+- Section titles в templates — **English** (consistent structural anchors)
+- Page content follows source language (Russian if original is Russian)
+- Agent translates section headers to match user's question language
+- Mixed-language pages allowed and encouraged when reflecting bilingual sources
+> Canonical: `AGENTS.md#language_policy`
+
+### Summary FAQ Pages (DR-4)
+`syntheses/` = priority search layer. Auto-create summary page when answer aggregates ≥3 wiki pages.
+**Lifecycle Rules:**
+| Событие | Действие |
+|---------|----------|
+| Два summary охватывают одну тему | Merge → одна страница, старые links обновлены |
+| Summary > 30 дней без запросов | Decay: -50% popularity boost. Agent может merge или mark stale |
+| Новый query → другой top_path для same topic | Update existing summary + last_seen = current, popularity_score++ |
+
+**Frontmatter type:** `type: faq_summary` — явно маркировать как ответ на вопрос.
+> Canonical: `AGENTS.md#summary_pages`
+
+---
+
 ## Memory Architecture
 
 ### Context Bridge (`working_memory.json`)
@@ -204,10 +289,15 @@ AGENTS.md — живая схема, которая **co-evolves** между ч
 
 | Компонент | Статус |
 |-----------|--------|
-| `working_memory.json` — Context Bridge | ✅ |
-| CONTEXT_BUBBLE + Delta-Scoping | ✅ |
-| Grep-контракт (разрешённые/запрещённые паттерны) | ✅ |
+| `working_memory.json` — Context Bridge + Clear & Rewrite Rule | ✅ |
+| CONTEXT_BUBBLE (max 3 pages) + Delta-Scoping | ✅ |
+| Grep Contract (allowed/prohibited patterns) | ✅ |
 | Error Handling Protocol (4-step loop) | ✅ |
+| Harness-Independent Session & Git Operations | ✅ Все 4 скрипта, 6 точек вызова |
+| Natural Memory Translation — human-time from machine facts | ✅ Rule in AGENTS.md + living-doc |
+| Summary FAQ Pages auto-create trigger + time decay | ✅ DR-4, priority categories |
+| S5 search_analytics.json — topics{} persistent rating DB | ✅ Frequency logging + popularity boost |
+| wiki-search.sh — dynamic intent analysis + relevance scoring | ✅ Position weight, frequency, backlink weight |
 
 ### 🔜 В очереди
 
@@ -215,6 +305,7 @@ AGENTS.md — живая схема, которая **co-evolves** между ч
 * [ ] Автоматизировать lint через cron/bash — агент получает готовый отчёт
 * [ ] Перейти на MCP-сервер при росте wiki (>100 страниц)
 * [ ] Оптимизация Schema: AGENTS.md растёт, нужна модулизация
+* [ ] Phase 13: Wiki Page Templates Schema — единый per-type format descriptions
 
 ---
 
@@ -229,4 +320,4 @@ AGENTS.md — живая схема, которая **co-evolves** между ч
 
 ---
 
-*Created: 2026-06-28 — первая версия статьи о самой wiki*
+*Created: 2026-06-28 — последняя редакция: 2026-06-30. Обновлено: Harness-Independent Session & Git Operations, Natural Memory Translation, S5 search_analytics.json, Summary FAQ trigger + time decay, Universal Frontmatter Template.*

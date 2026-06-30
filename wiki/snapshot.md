@@ -1,8 +1,8 @@
 ---
 tags: [snapshot, active-projects]
-date: 2026-06-28
+date: 2026-06-30
 sources: []
-related: [wiki/comparisons/llm-wiki-implementations.md, wiki/concepts/llm-wiki.md, wiki/entities/loomana.md]
+related: [wiki/comparisons/llm-wiki-implementations.md, wiki/concepts/llm-wiki.md, wiki/entities/loomana.md, wiki/concepts/natural-memory.md]
 ---
 # Wiki Snapshot — Активные проекты
 
@@ -37,6 +37,20 @@ related: [wiki/comparisons/llm-wiki-implementations.md, wiki/concepts/llm-wiki.m
 - **Связанные wiki-страницы**:
   - `[Entity: Loomana](entities/loomana.md)` — основная документация системы
 
+### Harness-Independent Session & Git Operations (Phase 5)
+- **Статус**: active (integration complete)
+- **Контекст**: Интегрировали 4 скрипта для автономной работы без зависимости от harness: `git-auto-commit.sh`, `load-hot-cache.sh`, `restore-hot-cache.sh`, `check-wiki-changes.sh`. Все process-файлы обновлены, секция из AGENTS.md удалена (правила живут в процессах). NEW_EXT_PLAN.md удалён.
+  - 6 точек вызова скриптов: ingest step 3a/3b, query bootstrap + compaction + result_fixation, lint check
+  - wiki/hot.md — факт-контекст между сессиями
+- **Связанные wiki-страницы**:
+  - `[Concept: Natural Memory Translation](concepts/natural-memory.md)` — естественный перевод машинных дат
+
+### Natural Memory Translation — Human-Time from Machine Facts
+- **Статус**: active (concept created)
+- **Контекст**: Перевод машино-читаемых фактов (даты, коммиты) в естественную форму: «позавчера», «неделю назад». Точность фактов + живая формулировка. Правило в AGENTS.md, living-doc на `wiki/concepts/natural-memory.md`.
+- **Связанные wiki-страницы**:
+  - `[Concept: Natural Memory Translation](concepts/natural-memory.md)` — принципы и примеры
+
 ---
 
-*Last updated: 2026-06-28*
+*Last updated: 2026-06-30*

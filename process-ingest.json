@@ -477,5 +477,63 @@
     ],
     "note": "Этот режим экономит время, но требует доверия к автономным решениям агента."
   },
-  "decision_rules_schema_ref": "AGENTS.md#decision_rules"
+  "decision_rules_schema_ref": "AGENTS.md#decision_rules",
+  "error_handling": {
+    "description": "При обнаружении любой ошибки, противоречия или dead end — не зависать. Следовать 4-step loop.",
+    "steps": [
+      {
+        "step": 1,
+        "name": "detect_and_log",
+        "action": "append_to_log"
+      },
+      {
+        "step": 2,
+        "name": "analyze"
+      },
+      {
+        "step": 3,
+        "name": "resolve"
+      },
+      {
+        "step": 4,
+        "name": "continue"
+      }
+    ],
+    "logging_actions": [
+      {
+        "action": "append_to_log",
+        "format": "## [YYYY-MM-DD] error | <description>: <context>",
+        "trigger": "immediately after detecting error/dead-end/conflict"
+      }
+    ],
+    "resolution_strategies": [
+      {
+        "type": "local-fix",
+        "description": "Исправить самостоятельно"
+      },
+      {
+        "type": "schema-patch",
+        "description": "Предложить патч AGENTS.md на review"
+      },
+      {
+        "type": "source-conflict",
+        "description": "Отметить как CONFLICT на странице и продолжить"
+      },
+      {
+        "type": "dead-end",
+        "description": "Документировать причину, сменить стратегию"
+      }
+    ]
+  },
+  "schema_evolution": {
+    "description": "Template Co-evolution Process — агент предлагает улучшения через [schema-patch] в log.md. User должен approve → agent commit update.",
+    "logging_actions": [
+      {
+        "action": "append_to_log",
+        "format": "## [YYYY-MM-DD] schema-patch | Proposed: <description>",
+        "trigger": "when agent detects structural improvement opportunity for wiki pages"
+      }
+    ],
+    "rule": "Never auto-modify templates — always user-approved changes per AGENTS.md#template_co_evolution"
+  }
 }
