@@ -1,12 +1,12 @@
 {
   "last_updated": "2026-06-30T17:XX:XX+03",
   "current_mode": null,
-  "focus_node": "Deep-dive into Loomana + Execution Contract fix for proposal→stop trap",
+  "focus_node": "Query Intent Decoder (QID) mechanism for metaphor parsing + user intent recognition",
   "open_pages": [],
   "dead_ends": [
     {
       "approach": "deep-dive in Loomana via web_search + wiki-read",
-      "reason": "Agent proposed plan (quick vs deep options) but stopped before executing — entered analysis mode without action.",
+      "reason": "Agent proposed plan but stopped before executing — entered analysis mode instead of service mode.",
       "timestamp": "2026-06-30T17:XX:XX+03"
     }
   ],
@@ -61,18 +61,16 @@
     }
   ],
   "query_summary": {
-    "intent": "Deep-dive into Loomana architecture, execution_contract fix for proposal→stop trap",
+    "intent": "Query Intent Decoder (QID) mechanism for metaphor/association parsing + user intent recognition",
     "pages_read": [
-      "scripts/link-validator.sh",
+      "process-query.json",
       "working_memory.json",
-      "wiki/entities/ai-factory.md",
-      "wiki/concepts/llm-wiki.md",
       "AGENTS.md"
     ],
     "key_findings": [
-      "Executed web_search + wiki-read for deep-dive — fixed dead_end from proposal→stop trap",
-      "Loomana = Karpathy Pattern v2.0 with production-ops (guardrails, evidence grading, contradiction cascade)",
-      "Added EXECUTION CONTRACT to AGENTS.md: agent acts immediately, never asks permission for execution actions"
+      "User's 'окунёмся в Loomana!' was interpreted as architecture-deep-dive instead of query_wiki intent",
+      "Added query_intent_decoder (step 0.5) to process-query.json — decodes metaphors like 'дай мне из', 'окунёмся' → query_wiki",
+      "QID-1: if wiki empty → warn_with_humor, if has data → proceed_to_search_flow"
     ]
   },
   "next_steps_todo": [
