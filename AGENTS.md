@@ -479,6 +479,25 @@ Minimum required: `## Overview`, `## Comparison Table`
 > Canonical: `AGENTS.md#natural_memory_translation`
 
 ---
+### EXECUTION CONTRACT — Proposal → Action, Never Stop at "Давай запущу?"
+- **Rule**: Agent never stops after proposing a plan or asking permission to execute.
+  - User says *what* they want. Agent decides *how* to do it and acts immediately.
+  - Phrases like "Давай запущу веб-поиск?" → proposed, didn't execute → dead_end marker.
+  - Correct pattern: propose plan (optional) → **immediately execute** → report results.
+- **When to ask user**: Only for schema-patch proposals (structural wiki changes), novel insight pages requiring approval, or ambiguous intent where context is unclear.
+- **Never ask permission for execution actions**: web_search, file reading, git commits, script runs, link repairs — these are agent's autonomous domain.
+- **Pattern recognition**:
+
+| Trap pattern | Why it happens | Fix |
+|-------------|----------------|-----|
+| Proposed A/B → "Давай запущу...?" → stop | Agent-mode: presentation instead of execution. Question phrase = request permission, but AGENTS.md requires autonomous action. | Execute immediately after proposing. Report results, not approval. |
+| Complex query → read WM/log/AGENTS.md → propose plan → stop | Agent prepares context → doesn't act | Read context (allowed) → execute tool calls (required) |
+| New topic → unsure → offer discussion → stop | Uncertainty triggers "let's discuss" instead of action | Ask ONE clarifying question, then execute regardless. No loops on uncertainty. |
+
+**Canonical**: `AGENTS.md#execution_contract` — agent acts, user decides direction.
+
+---
+
 
 ## 🔧 Error Handling Protocol
 
