@@ -1,5 +1,23 @@
 # Wiki Log
 
+## [2026-06-30] schema | Auto-cleanup rule for working_memory.json
+  - Добавлено правило: перед каждым write() agent обязан отфильтровать completed задачи из next_steps_todo
+  - broken_links_resolved — audit trail, не удалять. next_steps_todo и open_pages — чистить.
+  - Решена проблема stale tasks в working_memory (link-validator.sh --full висел выполненный)
+
+## [2026-06-30] schema | Harness-Independent Session & Git Operations complete
+  - Интегрированы все 4 скрипта: git-auto-commit.sh, load-hot-cache.sh, restore-hot-cache.sh, check-wiki-changes.sh
+  - Обновлены process-файлы: ingest step 3a/3b (git-auto-commit), query bootstrap (load-hot-cache), query step 2.3 post_action (restore-hot-cache), query step 3 post_operations (git-auto-commit), lint check_id "8" (check-wiki-changes)
+  - Секция Harness-Independent удалена из AGENTS.md — правила живут в process-файлах
+  - NEW_EXT_PLAN.md удалён как выполненный план
+  - wiki/hot.md — факт-контекст между сессиями
+
+## [2026-06-30] concept | Natural Memory Translation created
+  - Перевод машино-читаемых данных (frontmatter dates, git timestamps) в естественную форму: «позавчера», «неделю назад»
+  - Правило добавлено в AGENTS.md → Memory Architecture Contract
+  - Living-doc создан на wiki/concepts/natural-memory.md с принципами, таблицей соответствия, примерами
+  - Цель: точные факты + живая формулировка. Wiki как память, а не архив.
+
 ## [2026-06-29] ingest | LOOM vs claude-obsidian comparison
   - Source: user prompt — comparative analysis of two LLM Wiki Companion projects
   - Pages created: [[wiki/comparisons/loom-vs-claude-obsidian]]
