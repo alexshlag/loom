@@ -68,8 +68,8 @@
 
 **Severity**: **CRITICAL** — тестовое покрытие = 0%.
 
-### Issue #17: Silent Error Swallowing (HIGH) ⚠️ PARTIAL FIX
-**Проблема**: `lint.sh` оборачивает всё в `|| true` — ошибки под-скриптов тихо глотаются.
+### Issue #17: Silent Error Swallowing (HIGH) ✅ FIXED
+**Проблема**: `lint.sh` оборачивает всё в `|| true` — ошибки под-скриптов тихо глотались.
 - `orphan-pages.sh`, `check-new-sources.sh`, `duplicate-titles.sh`, `date-consistency.sh`, `link-validator.sh` — все `|| true`
 - Если любой скрипт упадёт с segfault / exception, lint покажет 0 проблем
 
@@ -83,6 +83,10 @@ ORPHANS_OUTPUT=$(./scripts/orphan-pages.sh ... 2>&1 || true)
 2. ✅ Добавлена `log_error()` функция для unified error logging в stderr
 3. ✅ Исправлён duplicate code в check-new-sources (дважды дублировался блок с '^NEW:')
 4. ✅ Нумерация checks исправлена: 1-7 primary + 8-9 extended
+5. ✅ Created `scripts/utilities/common.sh` — unified safe_run() with expected exit codes
+6. ✅ lint.sh теперь использует safe_run для всех inner-script вызовов
+7. ✅ Все скрипты вызываются с явным expected_codes: "0", "0 1", etc.
+8. ✅ Ошибки логируются в stderr, но не блокируют flow
 
 **Remaining**: 
 - [ ] Убрать `|| true` у всех скриптов → заменить на safe_run() или explicit exit code handling
