@@ -1,3 +1,4 @@
+# Test wiki change for harness-independent operations
 # Wiki Hot Cache — Last Updated: 2026-06-30
 
 ## Active Threads
