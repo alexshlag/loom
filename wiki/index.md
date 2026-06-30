@@ -16,6 +16,7 @@
 * [Dependency Injection в Symfony](concepts/symfony-dependency-injection.md) — # Dependency Injection в Symfony Dependency Injection (DI) — паттерн проектирования, позволяющий внедрять зависимости объекта извне.
 * [Doctrine ORM Integration](concepts/doctrine-orm.md) — # Doctrine ORM Integration Doctrine ORM — object-relational mapper для PHP, интегрированный в Symfony через DoctrineBridge.
 * [Event Dispatcher](concepts/event-dispatcher.md) — # Event Dispatcher Event Dispatcher — компонент Symfony, который обеспечивает decoupled communication между компонентами системы через события.
+* [Harness-Aware Wiki Setup Flow](concepts/harness-aware-setup.md) — # Harness-Aware Wiki Setup Flow Идея автоматической настройки wiki-контекста для конкретного harness (Pi, Claude Code, Cursor и т.д.).
 * [Hexagonal Architecture & Clean Patterns in Symfony](concepts/hexagonal-architecture.md) — # Hexagonal Architecture & Clean Patterns in Symfony Hexagonal Architecture (Ports & Adapters) — architectural pattern that keeps business logic separ
 * [LLM Wiki Pattern — Incremental Knowledge Base Building](concepts/llm-wiki.md) — > **Origin:** Andrej Karpathy. [Reference gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
 * [Messenger Component](concepts/messenger-component.md) — # Messenger Component Messenger — component for sending and receiving messages to/from other applications or via message queues.
@@ -60,7 +61,7 @@
 
 
 ---
-*Created: auto-generated | Last updated: 2026-06-30 23:44*
+*Created: auto-generated | Last updated: 2026-07-01 01:10*
 
 ## Хронология
 | Дата | Событие |

@@ -1,5 +1,11 @@
 # Wiki Log
 
+## [2026-07-01] ingest | harness-aware wiki setup flow concept captured
+  - Source: conversation / user idea about harness-specific wiki setup automation
+  - Type: concept (pending design discussion)
+  - Created: wiki/concepts/harness-aware-setup.md
+  - Followed process-ingest.json full flow: guardrails ✅, analysis ✅, integration ✅, post_operations ✅
+
 ## [2026-06-30] lint | Audit: 5 issues found (2 contradictions, 3 orphan pages)
   - Contradictions: 2 pairs detected — agent review required to resolve stale vs fresh facts
   - Orphan pages: 3 pages with zero backlinks — need cross-references or cleanup
@@ -347,3 +353,5 @@
 
 ### Wiki Status: **CLEAN** 🎉
 
+
+## [2026-07-01] idea captured: harness-aware wiki setup flow — saved to wiki/concepts/harness-aware-setup.md, status pending design discussion
