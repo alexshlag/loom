@@ -471,6 +471,12 @@ Minimum required: `## Overview`, `## Comparison Table`
 - Это восстановит фактовый контекст wiki, который был потеряен при compact.
 > Canonical: `AGENTS.md#context_compaction_handling`.
 
+### LOG_APPEND_ONLY — wiki/log.md never overwritten, always appended
+- **Rule**: `wiki/log.md` is append-only. Never use `write()` or `cat > file`. Always use `cat >> file` (append).
+- Violation example: `cat > wiki/log.md` → destroys entire history (~250 lines).
+- Correct pattern: read existing log → append new entries at end → write back. Or better: always append via bash `>>`.
+- **Canonical reference**: `AGENTS.md#log_append_only` — canonical source for log.md edit rules.
+
 ### NATURAL MEMORY TRANSLATION
 - Факты из frontmatter / git → переводить в human-time: «позавчера», «неделю назад»
 - Ссылаться на «мы» вместо «система/агент» когда речь об общем опыте проекта
