@@ -25,7 +25,7 @@ backlinks_json_path = '${BACKLINKS_JSON}'
 
 SYSTEM_FILES = {
     'log.md', 'issues.md', 'timeline.md', 'overview.md',
-    'snapshot.md', 'index.md', 'GIT-TROUBLESHOOTING.md',
+    'snapshot.md', 'index.md', 'hot.md', 'GIT-TROUBLESHOOTING.md',
     'GIT-WORKFLOW.md', 'Home_Manager.md'
 }
 

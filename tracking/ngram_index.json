@@ -1,0 +1,8 @@
+{
+  "file1.md|file2.md|g3": {
+    "similarity": 75.0,
+    "common_ngrams": 9,
+    "total_unique": 12,
+    "match_level": "high_similarity"
+  }
+}
