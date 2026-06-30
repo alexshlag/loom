@@ -97,6 +97,11 @@ related: []
 * **Clear & Rewrite Rule**: Never append to JSON files. Always read the entire file → modify in memory → write back the complete document.
   - Это предотвращает дубликаты ключей, которые возникают когда agent пишет поверх старого содержимого без очистки.
   - Пример: если `focus_node` меняет значение — agent должен полностью перезаписать файл, а не просто добавить новый ключ поверх.
+* **Auto-cleanup Rule**: Перед каждым write() в working_memory.json agent обязан отфильтровать из массивов выполненные/устаревшие элементы. Никогда не append-ить к существующим массивам без очистки.
+  - `next_steps_todo`: удалять задачи со статусом `completed` или которые больше не актуальны
+  - `broken_links_resolved`: **не удалять** — это audit trail, добавляет новую запись сверху
+  - `open_pages`, `dead_ends`: чистить после закрытия сессии (dismiss всех прочитанных)
+  - Пример: если агент выполнил задачу "link-validator.sh --full", он должен удалить её из `next_steps_todo` перед write()
 * Не дублирует wiki — хранит только метаданные сессии (не сами страницы)
 
 **Формат**:
@@ -464,7 +469,14 @@ Minimum required: `## Overview`, `## Comparison Table`
   bash scripts/restore-hot-cache.sh || true
   ```
 - Это восстановит фактовый контекст wiki, который был потеряен при compact.
-> Canonical: `AGENTS.md#context_compaction_handling` — см. также NEW_EXT_PLAN.md #Phase_5
+> Canonical: `AGENTS.md#context_compaction_handling`.
+
+### NATURAL MEMORY TRANSLATION
+- Факты из frontmatter / git → переводить в human-time: «позавчера», «неделю назад»
+- Ссылаться на «мы» вместо «система/агент» когда речь об общем опыте проекта
+- Точность фактов не нарушается — просто формулировка становится естественной
+- Living-страница для примеров и эволюции: `wiki/concepts/natural-memory.md`
+> Canonical: `AGENTS.md#natural_memory_translation`
 
 ---
 
@@ -707,71 +719,7 @@ Process files inherit from AGENTS.md via `schema_ref` (never duplicate rules).
 
 > Logic details: script parses wiki/**/*.md, groups by subdirectory, sorts alphabetically.
 
----
 
-## 🔁 Harness-Independent Session & Git Operations
-
-Эти скрипты эмулируют хуки `claude-obsidian` (hooks.json) без зависимости от harness — работают идентично в Pi, Claude Code, Codex, OpenCode.
-
-### 4 ключевых скрипта
-
-| Скрипт | Эмулирует | Когда вызывать |
-|--------|-----------|------------------|
-| `git-auto-commit.sh` | PostToolUse | После каждого Write/Edit на wiki/ файлах |
-| `load-hot-cache.sh` | SessionStart | В начале сессии (молча) |
-| `restore-hot-cache.sh` | PostCompact | Когда контекст был компакирован |
-| `check-wiki-changes.sh` | Stop | Перед завершением сессии если работали с wiki |
-
-### Bootstrap: загрузка hot cache
-При старте сессии (или возврате) → выполнить молча:
-```bash
-bash scripts/load-hot-cache.sh || true   # silent no-op если нет vault
-```
-Агент читает вывод internally — не анонсировать что было загружено.
-
-### Пост-запись коммит
-После каждого Write/Edit, который трогает wiki/ файлы → выполнить:
-```bash
-bash scripts/git-auto-commit.sh
-```
-Никогда не запускайте `git add *` напрямую — скрипт сам стейджит только `wiki/`. Также он уважает wiki-lock concurrency.
-
-### После компакции контекста
-Если во время long session контекст был compacted → перечитать:
-```bash
-bash scripts/restore-hot-cache.sh || true
-```
-Compact-контексты выбрасывают injected content; это восстанавливает его.
-
-### Гигиена конца сессии
-Перед завершением сессии, где была работа с wiki → проверить и обновить hot.md:
-```bash
-if bash scripts/check-wiki-changes.sh 2>/dev/null; then
-  # Агент читает prompt output из скрипта и обновляет wiki/hot.md accordingly
-fi
-```
-Если изменений нет — молча пропустить.
-
-### Concurrency awareness (wiki-lock)
-Перед записью в любую wiki-страницу:
-1. Проверить, существует ли `scripts/wiki-lock.sh`
-2. Если да → получить advisory lock перед Write/Edit: `bash scripts/wiki-lock.sh acquire <path>`
-3. После записи → `bash scripts/wiki-lock.sh release <path>`
-4. Пропустить auto-commit если locks active (другой writer может быть в flight)
-
-### Delta tracking
-Перед ingestion нового файла → проверить `.raw/.manifest.json`:
-- Если hash совпадает → skip, сказать "Already ingested"
-- Если нет или файла нет → proceed с ingest + обновить manifest после
-
-### Integration with working_memory.json
-- `working_memory.json` = session metadata (focus_node, next_steps_todo) — хранит агентный state flow
-- `wiki/hot.md` = fact context (recent wiki changes, active threads) — хранит фактовый контекст для пользователя
-- Оба файла co-exist: WM для agent state, hot.md для user knowledge continuity
-
-> Schema ref: `NEW_EXT_PLAN.md#implementation_plan` — полный план интеграции.
-
----
 
 ## 🔄 Non-blocking Lint (Phase 3)
 
@@ -837,10 +785,6 @@ cd /path/to/loomana && ./scripts/lint.sh --skip-checks 3,5
 # crontab -e — автоматический lint каждые N часов
 0 */4 * * * cd /path/to/loomana && ./scripts/lint.sh --quiet >> logs/lint.log 2>&1
 ```
-
----
-
-*Schema Version: 10 | Last Updated: 2026-06-28 | Author Pattern: Andrej Karpathy (LLM Wiki)*
 
 ---
 
