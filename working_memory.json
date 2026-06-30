@@ -1,9 +1,15 @@
 {
   "last_updated": "2026-06-30T17:XX:XX+03",
   "current_mode": null,
-  "focus_node": "schema cleanup — removed invalid raw/github/ references",
+  "focus_node": "Deep-dive into Loomana + Execution Contract fix for proposal→stop trap",
   "open_pages": [],
-  "dead_ends": [],
+  "dead_ends": [
+    {
+      "approach": "deep-dive in Loomana via web_search + wiki-read",
+      "reason": "Agent proposed plan (quick vs deep options) but stopped before executing — entered analysis mode without action.",
+      "timestamp": "2026-06-30T17:XX:XX+03"
+    }
+  ],
   "broken_links_resolved": [
     {
       "file": "scripts/link-validator.sh",
@@ -55,17 +61,18 @@
     }
   ],
   "query_summary": {
-    "intent": "Schema cleanup — removed invalid raw/github/ references from entity sources",
+    "intent": "Deep-dive into Loomana architecture, execution_contract fix for proposal→stop trap",
     "pages_read": [
       "scripts/link-validator.sh",
       "working_memory.json",
-      "wiki/entities/ai-factory.md"
+      "wiki/entities/ai-factory.md",
+      "wiki/concepts/llm-wiki.md",
+      "AGENTS.md"
     ],
     "key_findings": [
-      "link-validator.sh path resolution fixed — now resolves ../ relative to file's directory using realpath -m",
-      "2 broken links resolved: natural-memory.md → AGENTS.md, temporal-decay-in-wiki.md → issues.md",
-      "Stale meta-reference in ai-factory.md cleaned up: sources field no longer references non-existent raw/github/",
-      "All internal wiki links now valid"
+      "Executed web_search + wiki-read for deep-dive — fixed dead_end from proposal→stop trap",
+      "Loomana = Karpathy Pattern v2.0 with production-ops (guardrails, evidence grading, contradiction cascade)",
+      "Added EXECUTION CONTRACT to AGENTS.md: agent acts immediately, never asks permission for execution actions"
     ]
   },
   "next_steps_todo": [
