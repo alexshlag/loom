@@ -511,7 +511,15 @@ Minimum required: `## Overview`, `## Comparison Table`
 
 ### 4-step loop
 
-1. **Detect & Log** `[!]` → Записать в `log.md` с типом `[error]`, описанием и контекстом
+1. **Detect & Log** `[!]` →
+   ```json
+   {
+     "action": "append_to_log",
+     "format": "## [YYYY-MM-DD] error | [description]: <context>",
+     "trigger": "immediately after detecting error/dead-end/conflict"
+   }
+   ```
+   Записать в `log.md` с типом `[error]`, описанием и контекстом. Всегда append (`>>`), never overwrite.
 2. **Analyze** → Краткий анализ: что пошло не так, почему инструкция сломалась (не просто «ошибка», а корень проблемы)
 3. **Resolve** → Выбрать стратегию:
    - `local-fix`: проблема локальная (путь, ссылка, логика) → исправить самостоятельно
@@ -562,7 +570,15 @@ Minimum required: `## Overview`, `## Comparison Table`
 
 1. **Detect**: Script reports signal (overlap, contradiction, similarity)
 2. **Evaluate**: Agent reads context → applies relevant DR from table above
-3. **Log**: Decision + reasoning in `log.md` under `[decision] [DR-N]`
+3. **Log**:
+   ```json
+   {
+     "action": "append_to_log",
+     "format": "## [YYYY-MM-DD] decision | [DR-N]: <reasoning — какие данные → какой вывод>",
+     "trigger": "immediately after applying any decision rule (DR-1/2/3)"
+   }
+   ```
+   Записать решение в `log.md`. Всегда append (`>>`), never overwrite.
 4. **Evolve**: New scenarios → discuss → add new rule to table → commit
 
 > Schema ref: `AGENTS.md#decision_rules` — canonical source for agent evaluation logic.
