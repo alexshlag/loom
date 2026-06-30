@@ -454,7 +454,7 @@
           "format": "Если найдены противоречия — добавить раздел '## ⚠ Противоречия' в ответ перед основным контентом",
           "include_in_answer_if_contradiction_found": true
         },
-        "agent_prompt": "При разрешении противоречия:\n1. Определите тип факта: objective (математика, код, физические законы) или subjective/ambiguous (мнения, исторические утверждения без доказательств).\n2. Если objective → cascade priority (code > live > docs). User override ЗАПРЕЩЁН.\n3. Если subjective → user override ДОПУСКАЕТСЯ (final say пользователя).\n4. Применяй cascade: priority 1 (code) > priority 2 (live) > priority 3 (docs with evidence_grade).\n5. Для documentation: documented(1) > corroborated(2) > assertion_only(3).\n6. Если agent_confidence < threshold → human_override.\nПример: GitHub issue (live_state, priority 2) > docs (documentation, priority 3).7. Если detected overlap ≥90% между A и B → примени DR из AGENTS.md#decision_rules:\n   - DR-1: script reports raw overlap only — не менять баллы автоматически\n   - DR-2: если B содержит additions/deletions (исправление) + evidence → evaluate correction, B > A на corrected claim\n   - DR-3: если attribution conflict → A wins original; B только reporter\n",
+        "agent_prompt": "При разрешении противоречия:\n1. Определите тип факта: objective (математика, код, физические законы) или subjective/ambiguous (мнения, исторические утверждения без доказательств).\n2. Если objective → cascade priority (code > live > docs). User override ЗАПРЕЩЁН.\n3. Если subjective → user override ДОПУСКАЕТСЯ (final say пользователя).\n4. Применяй cascade: priority 1 (code) > priority 2 (live) > priority 3 (docs with evidence_grade).\n5. Для documentation: documented(1) > corroborated(2) > assertion_only(3).\n6. Если agent_confidence < threshold → human_override.\nПример: GitHub issue (live_state, priority 2) > docs (documentation, priority 3).7. Если detected overlap ≥90% между A и B → примени DR из decision-rules.md:\n   - DR-1: script reports raw overlap only — не менять баллы автоматически\n   - DR-2: если B содержит additions/deletions (исправление) + evidence → evaluate correction, B > A на corrected claim\n   - DR-3: если attribution conflict → A wins original; B только reporter\n",
         "type_classification": "classify each source as documentation | code_reality | live_state (reality layer)",
         "cascade_order": [
           {
@@ -582,7 +582,7 @@
           "format": "- **YYYY-MM-DD**: Обновлено с [старое] → [новое]"
         }
       },
-      "decision_rules_schema_ref": "AGENTS.md#decision_rules"
+      "decision_rules_schema_ref": "decision-rules.md"
     },
     {
       "step_id": "2.3",
@@ -849,7 +849,7 @@
         ],
         "rule": "AGENT_MUST_WRITE_WM_AFTER_EACH_QUERY"
       },
-      "decision_rules_schema_ref": "AGENTS.md#decision_rules"
+      "decision_rules_schema_ref": "decision-rules.md"
     }
   ],
   "post_search_flow": {

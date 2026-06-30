@@ -536,17 +536,6 @@ Minimum required: `## Overview`, `## Comparison Table`
 
 ---
 
-
-## 🧠 Decision Rules
-
-Система даёт сигналы → агент делает inference. Ручные веса через скрипты = запрещены.
-
-**Полный набор**: `decision-rules.md` — системная инструкция, всегда загружается перед любыми inference-решениями.
-
-> Schema ref: `AGENTS.md#decision_rules`, full table: `decision-rules.md`
-
-
-
 ## 🔄 Process Roles
 
 Каждая роль — отдельный процессный файл в корневой директории.

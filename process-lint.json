@@ -179,14 +179,14 @@
         },
         {
           "condition": "matches_count > 0",
-          "note": "Agent review required — apply DR-1/DR-2 из AGENTS.md#decision_rules к каждому overlap"
+          "note": "Agent review required — apply DR-1/DR-2 из decision-rules.md к каждому overlap"
         }
       ],
       "output_handling": {
         "exit_code_0": "no_overlaps — proceed",
         "exit_code_1": "overlaps_found — report count + pairs, agent applies decision rules"
       },
-      "schema_ref": "AGENTS.md#decision_rules"
+      "schema_ref": "decision-rules.md"
     },
     {
       "check_id": "8",

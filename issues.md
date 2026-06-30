@@ -52,7 +52,7 @@ ORPHANS_OUTPUT=$(./scripts/orphan-pages.sh ... 2>&1 || true)
 - [ ] Merge/clarify `concepts/python-nixos-development.md` vs `syntheses/python-nixos-development-environments.md` — redundant content
 - [x] Exclude system files (log.md, timeline.md) from normal search logic ✅ done
 
-👉 **Canonical**: `scripts/orphan-pages.sh`, `scripts/auto-crosslink.sh`, `AGENTS.md#decision_rules`, `process-ingest.json`
+👉 **Canonical**: `scripts/orphan-pages.sh`, `scripts/auto-crosslink.sh`, `decision-rules.md`, `process-ingest.json`
 
 ### Issue #10: Error Logging — Unified Format 🔽 LOW PRIORITY
 **Проблема**: Нет единого формата логирования ошибок между скриптами.
@@ -167,7 +167,7 @@ ORPHANS_OUTPUT=$(./scripts/orphan-pages.sh ... 2>&1 || true)
 | Issue | Решение |
 |-------|---------|
 | Как часто обновлять? | User-requested или cron (`check-new-sources.sh`) |
-| web_search приоритет? | Тот же источник → внешние данные; разные → AGENTS.md#decision_rules |
+| web_search приоритет? | Тот же источник → внешние данные; разные → `decision-rules.md` |
 | Novelty threshold | Факты → update existing. Новый вывод → flag for fixation. |
 
 ### Issue #4: Authoritative Sources Criteria ✅ RESOLVED
