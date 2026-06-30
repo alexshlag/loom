@@ -250,3 +250,9 @@
 
 ## [2026-06-30] test | harness-independent flow verification
 
+
+## [2026-06-30] process | Query Intent Decoder (QID) mechanism added
+  - Добавлен step 0.5 в process-query.json: query_intent_decoder для расшифровки метафор и ассоциаций пользователя
+  - Pattern recognition: "окунёмся", "дай мне из" → query_wiki intent
+  - Decision logic: if wiki has data → proceed_to_search_flow; if empty → warn_with_humor + suggest first question
+  - Решена проблема misinterpretation: пользователь сказал "окунёмся в Loomana!" (дай мне ответы), agent начал изучать архитектуру вместо использования базы
