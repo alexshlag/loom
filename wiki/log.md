@@ -229,3 +229,6 @@
   - Agent translates headers at response time to match user's question language
   - Mixed-language pages normal and encouraged for bilingual sources
   - Fixed в context.md#Q6, added to AGENTS.md#language_policy
+
+## [2026-06-30] test | harness-independent flow verification
+
