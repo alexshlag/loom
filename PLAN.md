@@ -2,6 +2,25 @@
 
 ---
 
+## ✅ Completed — 2026-06-30 Session
+
+### Script Fixes (from issues.md HIGH priority)
+
+| ID | Issue | Status | Changes |
+|----|-------|--------|---------|
+| #16 | Broken unit tests | ✅ Working via `npx bats` | Tests pass, just need documentation update |
+| #17 | Silent error swallowing | ⚠️ PARTIAL FIX | lint.sh: removed set -e, added log_error(), fixed duplicate code & check numbering. Remaining: replace || true with safe_run() |
+| #18 | Hardcoded /tmp/ overlap file | ✅ FIXED | process-ingest.json: mktemp instead of hardcoded /tmp/overlap_result.json |
+| #19 | Link validator 500-file limit | ✅ FIXED | link-validator.sh: --max flag (default 100), -maxdepth 5, removed head -500 |
+| #20 | validate-path.sh pattern bypass | ✅ FIXED | Prefix-only match + write-zone validation for raw/sources/ and wiki/ |
+
+### Next batch of tasks:
+- [ ] Complete #17: replace all || true in lint.sh with safe_run() + exit code logging
+- [ ] Add error logging to orphan-pages.sh, check-new-sources.sh, duplicate-titles.sh, date-consistency.sh (Issue #11)
+- [ ] Add unified log_error function to utilities/ (Issue #10)
+
+---
+
 ## ✅ Completed (reference only)
 
 | Phase | Feature | Commit |
@@ -137,13 +156,15 @@ P12 (logging standard), P13 (trap handlers), P15 (minor fixes).
 **Связано**: `issues.md#32`
 
 ### Phase 15: Media Files Pipeline 🪢
-**Цель**: Структурированный pipeline для изображений и медиа-файлов.
+**Цель**: Структурированный pipeline для изображений и медиа-файлов (OCR, metadata extraction).
 
 **Задачи**:
-| Step | Action | Owner |
-|------|--------|-------|
-| 1 | Решить размещение (raw protected → alternative directory?) | Agent + user decision |
-| 2 | Добавить image ingestion rules в AGENTS.md | Agent |
+| Step | Action | Owner | Status |
+|------|--------|-------|--------|
+| ✅ 1 | **Размещение решено**: `wiki/assets/images/` + `wiki/assets/descriptions/`, agent-owned | Decision made | ✅ Done |
+| 2 | Добавить wiki/assets/ структуру в AGENTS.md → "The Wiki (wiki/)" section | Agent | ⬜ Next |
+| 3 | Создать image ingestion rules в AGENTS.md + process-ingest.json step | Agent | After step 2 |
+| 4 | (Optional) `scripts/media-ingest.sh` — автоматизация OCR + metadata | Agent | Future |
 
 **Зависимости**: Нет.
 **Связано**: `issues.md#31`

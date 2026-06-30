@@ -22,5 +22,15 @@ for PATTERN in "${PROTECTED_PATTERNS[@]}"; do
   fi
 done
 
-# Path is safe to edit
+# Write validation — check path is in allowed zones
+for ZONE in "${ALLOWED_WRITE_ZONES[@]}"; do
+  if [[ "$PATH_TO_CHECK" == "$ZONE"* ]]; then
+    # Path starts with allowed zone prefix — safe to edit
+    exit 0
+  fi
+done
+
+# If path doesn't match any allowed zone, block it (except read operations)
+echo "⛔ BLOCKED: '$PATH_TO_CHECK' is not in an allowed write zone" >&2
+exit 1
 exit 0

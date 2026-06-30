@@ -3,13 +3,21 @@
 # Usage: ./scripts/lint.sh [--quiet] [--skip-checks ID1,ID2] [wiki_dir]
 # Exit code: 0 = all checks passed, 1 = issues found (но не блокирует flow)
 
-set -euo pipefail
+set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/.."
 WIKI_DIR="${2:-$PROJECT_ROOT/wiki}"
 QUIET=false
 SKIP_CHECKS=""
+ERROR_LOG=""
+
+# Error logging function — unified format for all scripts
+log_error() {
+    local msg="$1"
+    ERROR_LOG+="[!] Lint error: $msg\n"
+    echo "[!] LINT ERROR: $msg" >&2
+}
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -42,7 +50,7 @@ safe_run() {
     output=$(eval "$cmd" 2>&1)
     local exit_code=$?
     if [[ ",$expected," != *",$exit_code,"* ]]; then
-        echo "[!] Script exited with code $exit_code (expected: $expected)" >&2
+        log_error "Script exited with code $exit_code (expected: $expected): $(echo "$output" | head -1)"
     fi
     eval "$varname=\"$output\""
 }
@@ -53,7 +61,10 @@ CONTRADICTIONS=0
 if [[ ! "$(echo "$SKIP_CHECKS" | grep -o '1' || true)" == "1" ]]; then
   # Quick contradiction scan: look for "## Обновлено" sections with conflicting dates
   CONTRADICTION_PAGES=$({ grep -r "^## Обновлено" "$WIKI_DIR/" --include="*.md" -l 2>/dev/null | head -20; } || true)
-  if [ -n "$CONTRADICTION_PAGES" ]; then
+  if [ -z "$CONTRADICTION_PAGES" ]; then
+    # grep returns 1 when no matches — non-fatal, ignore silently
+    : # ok, no contradictions found
+  else
     CONTRADICTIONS=$(echo "$CONTRADICTION_PAGES" | wc -l)
   fi
 fi
@@ -72,7 +83,7 @@ TOTAL_ISSUES=$((TOTAL_ISSUES + ORPHAN_COUNT))
 
 # --- Check 3: Knowledge gaps (mentions without own page) ---
 # Note: Soft check — agent reviews manually
-echo "[✓] Check 4/9: knowledge_gaps — skipped (soft check, agent review required)" >&2
+echo "[✓] Check 3/9: knowledge_gaps — skipped (soft check, agent review required)" >&2
 
 # --- Check 4: New sources available ---
 NEW_SOURCES=0
@@ -81,16 +92,12 @@ if [[ ! "$(echo "$SKIP_CHECKS" | grep -o '3' || true)" == "3" ]]; then
   NEW_SOURCES_OUTPUT=$({ ./scripts/check-new-sources.sh --max 10 "${PROJECT_ROOT}/raw/sources" "${PROJECT_ROOT}/tracking/raw_registry.json"; } || true)
   if echo "$NEW_SOURCES_OUTPUT" | grep -q '^NEW:'; then
     # FIX: count lines with 'NEW:' prefix, not first number in output (which was parsing '2025' from SRC-2025)
-    NEW_SOURCES=$(echo "$NEW_SOURCES_OUTPUT" | grep -c '^NEW:' || echo "0")
-  fi
-  if echo "$NEW_SOURCES_OUTPUT" | grep -q "^NEW:"; then
-    # FIX: count lines with 'NEW:' prefix, not first number in output (which was parsing '2025' from SRC-2025)
-    NEW_SOURCES=$(echo "$NEW_SOURCES_OUTPUT" | grep -c '^NEW:' || echo "0")
+    NEW_SOURCES=$(echo "$NEW_SOURCES_OUTPUT" | grep -c '^NEW:')
   fi
 fi
 
-# --- Check 5: New topics proposal (soft check) ---
-echo "[✓] Check 5/9: new_topics_proposal — skipped (requires external sources)" >&2
+# --- Check 6: New topics proposal (soft check) ---
+echo "[✓] Check 6/9: new_topics_proposal — skipped (requires external sources)" >&2
 
 # --- Check 6: Mechanical linting (frontmatter, duplicate titles, empty categories) ---
 DUPLICATE_TITLES=0
@@ -113,7 +120,7 @@ if [[ ! "$(echo "$SKIP_CHECKS" | grep -o '6' || true)" == "6" ]]; then
 fi
 TOTAL_ISSUES=$((TOTAL_ISSUES + DATE_ISSUES))
 
-# --- Check 7: Link validation (broken internal links, auto-repair) ---
+# --- Check 8: Link validation (broken internal links, auto-repair) ---
 BROKEN_LINKS=0
 AUTO_REPAIRED=0
 AGENT_REVIEW_REQUIRED_JSON=""
@@ -142,7 +149,7 @@ if [[ $AUTO_REPAIRED -gt 0 ]]; then
   ./scripts/rebuild-meta.sh --index-only 2>/dev/null || true
 fi
 
-# --- Check 10: Contradiction deep scan (Python-based) ---
+# --- Check 9: Contradiction deep scan (Python-based) ---
 CONTRADICTIONS_DEEP=0
 if [[ ! "$(echo "$SKIP_CHECKS" | grep -oE ',?8,?' || true)" == ",8," ]]; then
   DEEP_OUTPUT=$({ ./scripts/detect-contradications.sh --quiet; } || true)

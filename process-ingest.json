@@ -309,8 +309,8 @@
       "actions": [
         {
           "action": "run_text_similarity_scan",
-          "command": "./scripts/text-similarity.sh --scan-all --threshold 90 --verbose > /tmp/overlap_result.json",
-          "output_file": "/tmp/overlap_result.json"
+          "command": "TMP_OVERLAP=$(mktemp); ./scripts/text-similarity.sh --scan-all --threshold 90 --verbose > \"$TMP_OVERLAP\"; echo \"$TMP_OVERLAP\"",
+          "output_file": "$TMP_OVERLAP"
         },
         {
           "action": "parse_matches_from_json",

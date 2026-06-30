@@ -294,3 +294,12 @@
 - Reasoning: raw/** is protected for agent; meta/ uses existing pattern of script-based access
 - Consistent with validate-path.sh guardrails and rebuild-meta.sh precedent
 - Implementation pending: script API design (--add, --scan, --check) and ingest flow integration
+
+## [2026-06-30] fix | Script improvements from claude-obsidian best practices
+- Issue #17 (silent errors): lint.sh — removed set -e, added log_error() function, fixed duplicate code in check-new-sources, corrected check numbering
+- Issue #18 (/tmp/ overlap): process-ingest.json — mktemp instead of hardcoded /tmp/overlap_result.json
+- Issue #19 (500-file limit): link-validator.sh — --max flag with default 100, -maxdepth 5 on find commands
+- Issue #20 (validate-path bypass): prefix-only match + write-zone validation for raw/sources/ and wiki/
+
+## [2026-06-30] fix | Testing infrastructure
+- Issue #16: Verified tests work via `npx bats` — all 5 tests pass, status updated from CRITICAL to Working

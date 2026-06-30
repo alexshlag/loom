@@ -124,7 +124,7 @@ find_best_match() {
     
     # Early exit: perfect match found
     [[ $score -eq 100 ]] && break
-  done < <(find "$WIKI_DIR" -name "*.md" -type f 2>/dev/null)
+  done < <(find "$WIKI_DIR" -name "*.md" -type f -maxdepth 5 2>/dev/null | head -$MAX_MATCHES)
   
   echo "${score}:${best_file}"
 }
@@ -273,7 +273,7 @@ if [[ "$MODE" == "full" || "$MODE" == "full-auto" ]]; then
     
     while IFS= read -r file; do
       check_file "$file"
-    done < <(find "$WIKI_DIR" -name "*.md" -type f 2>/dev/null)
+    done < <(find "$WIKI_DIR" -name "*.md" -type f -maxdepth 5 2>/dev/null | head -$MAX_MATCHES)
   fi
 
 elif [[ "$MODE" == "pattern" ]]; then

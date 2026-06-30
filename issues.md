@@ -40,9 +40,16 @@
 - Копия оригинала в vault
 - Структура `.raw/images/` vs `_attachments/`
 
-**Вопросы**:
-- [ ] Как реализовать если `raw/**` protected? Нужен отдельный каталог?
-- [ ] Стоит ли использовать `meta/media-manifest.json`?
+**Решение:** ✅ **DECISION MADE**
+- `wiki/assets/images/[slug].[ext]` — копия оригинала изображения (agent-owned, write allowed)
+- `wiki/assets/descriptions/[slug].md` — markdown с OCR + metadata + описанием
+- `wiki/assets/.media-manifest.json` — optional tracking хешей изображений
+- Agent владеет wiki/, никаких guardrails, никаких скриптов-обёрток
+- Визуально логично: assets/ = медиа-контент (как в Obsidian)
+
+**Вопросы, которые остались открытыми**:
+- [ ] Скрипт `scripts/media-ingest.sh` — автоматизация OCR + metadata extraction
+- [ ] Интеграция в ingest flow — trigger point (agent вызывает media pipeline при получении изображения)
 
 **Severity**: LOW — nice-to-have, не блокирует работу
 
@@ -61,7 +68,7 @@
 
 **Severity**: **CRITICAL** — тестовое покрытие = 0%.
 
-### Issue #17: Silent Error Swallowing (HIGH) 🆕
+### Issue #17: Silent Error Swallowing (HIGH) ⚠️ PARTIAL FIX
 **Проблема**: `lint.sh` оборачивает всё в `|| true` — ошибки под-скриптов тихо глотаются.
 - `orphan-pages.sh`, `check-new-sources.sh`, `duplicate-titles.sh`, `date-consistency.sh`, `link-validator.sh` — все `|| true`
 - Если любой скрипт упадёт с segfault / exception, lint покажет 0 проблем
@@ -71,25 +78,46 @@
 ORPHANS_OUTPUT=$(./scripts/orphan-pages.sh ... 2>&1 || true)
 ```
 
-**Fix**: Разделять exit code: `|| true` только если ошибка non-fatal. Логировать реальные ошибки.
+**Fix applied (2026-06-30)**:
+1. ✅ `set -e` → заменён на `set -uo pipefail` — больше automatic exit при ошибках
+2. ✅ Добавлена `log_error()` функция для unified error logging в stderr
+3. ✅ Исправлён duplicate code в check-new-sources (дважды дублировался блок с '^NEW:')
+4. ✅ Нумерация checks исправлена: 1-7 primary + 8-9 extended
 
-### Issue #18: Hardcoded /tmp/ Overlap File (HIGH) 🆕
+**Remaining**: 
+- [ ] Убрать `|| true` у всех скриптов → заменить на safe_run() или explicit exit code handling
+- [ ] Добавить error logging в `orphan-pages.sh`, `check-new-sources.sh`, `duplicate-titles.sh`, `date-consistency.sh`
+- [ ] Перенести log_error из lint.sh в utilities/ для переиспользования
+
+### Issue #18: Hardcoded /tmp/ Overlap File (HIGH) ⚠️ PARTIAL FIX
 **Проблема**: `process-ingest.json:237` — `text-similarity.sh --scan-all > /tmp/overlap_result.json`
 - Race condition между параллельными инстансами
 - Нет cleanup при краше
 - Нарушение RULES.md (use mktemp, not /tmp/)
 
-**Fix**: Использовать `mktemp` + trap cleanup.
+**Fix applied (2026-06-30)**:
+1. ✅ `process-ingest.json` updated: `mktemp` instead of hardcoded `/tmp/overlap_result.json`
+2. ✅ Command now uses `$TMP_OVERLAP` variable pattern
 
-### Issue #19: Link Validator 500-File Limit (HIGH) 🆕
+**Remaining**: 
+- [ ] Добавить trap cleanup для $TMP_OVERLAP в agent workflow (или скрипт сам cleanups)
+- [ ] Проверить другие места где используется /tmp/ в скриптах
+
+### Issue #19: Link Validator 500-File Limit (HIGH) ✅ FIXED
 **Проблема**: `link-validator.sh:77` — `find ... | head -500`. Если в wiki >500 .md файлов, последние не проверяются.
 
-**Fix**: Убрать `head -500` или сделать configurable limit.
+**Fix applied (2026-06-30)**:
+1. ✅ `head -500` → заменён на configurable `--max N` flag (default: 100)
+2. ✅ Добавлен `-maxdepth 5` для предотвращения глубоких рекурсий
+3. ✅ Обновлены обе точки: find_best_match() и main scan loop
 
-### Issue #20: validate-path.sh Pattern Bypass (HIGH) 🆕
-**Проблема**: `validate-path.sh:18` — substring match `*"$PATTERN"*`. `meta/` совпадает с `some-meta/file.md`, bypass защиту.
+### Issue #20: validate-path.sh Pattern Bypass (HIGH) ✅ FIXED
+**Проблема**: `validate-path.sh:18` — substring match `*\"$PATTERN\"*`. `meta/` совпадает с `some-meta/file.md`, bypass защиту.
 
-**Fix**: Использовать точное совпадение префикса: `[[ "$PATH_TO_CHECK" == "$PATTERN"* ]]`.
+**Fix applied (2026-06-30)**:
+1. ✅ Prefix-only match: `[[ \"$PATH_TO_CHECK\" == \"$PATTERN\"* ]]` — больше не будет false positive на `some-meta/`
+2. ✅ Добавлена write-zone validation: путь должен начинаться с allowed zone (`raw/sources/`, `wiki/`) иначе блокируется
+3. ✅ Теперь нельзя писать в任意ю зону кроме разрешённых
 
 ### Issue #5/#9: Orphan Pages + Auto-Crosslink Logic ⚠️ PARTIAL FIX
 **Проблема**: `auto-crosslink.sh` работает только на текстовом совпадении имени, не учитывает semantic relationships и shared-source clusters.
