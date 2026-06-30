@@ -14,10 +14,14 @@
 | #19 | Link validator 500-file limit | ✅ FIXED | link-validator.sh: --max flag (default 100), -maxdepth 5, removed head -500 |
 | #20 | validate-path.sh pattern bypass | ✅ FIXED | Prefix-only match + write-zone validation for raw/sources/ and wiki/ |
 
+### ✅ Completed this session:
+✅ Issue #17: lint.sh fully refactored — all script calls use safe_run(), no more silent errors
+✅ Issue #10: Created scripts/utilities/common.sh with unified log_error() + safe_run()
+✅ Issues #16, #18, #19, #20: All fixed (link validator limits, validate-path guards, mktemp)
+
 ### Next batch of tasks:
-- [ ] Complete #17: replace all || true in lint.sh with safe_run() + exit code logging
-- [ ] Add error logging to orphan-pages.sh, check-new-sources.sh, duplicate-titles.sh, date-consistency.sh (Issue #11)
-- [ ] Add unified log_error function to utilities/ (Issue #10)
+- [ ] Add trap handlers to orphan-pages.sh, check-new-sources.sh, duplicate-titles.sh, date-consistency.sh (Issue #11)
+- [ ] Refactor Python scripts to use logging module instead of print() (Issue #10)
 
 ---
 

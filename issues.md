@@ -133,13 +133,16 @@ ORPHANS_OUTPUT=$(./scripts/orphan-pages.sh ... 2>&1 || true)
 
 👉 **Canonical**: `scripts/orphan-pages.sh`, `scripts/auto-crosslink.sh`, `decision-rules.md`, `process-ingest.json`
 
-### Issue #10: Error Logging — Unified Format 🔽 LOW PRIORITY
+### Issue #10: Error Logging — Unified Format 🔽 FIXED
 **Проблема**: Нет единого формата логирования ошибок между скриптами.
 - Каждый скрипт пишет в свой stderr / отдельный log file
 - Нет `log_error()` функции с timestamp + level + message
-- Python скрипты используют `print` вместо `logging`
 
-**Статус:** ⬜ Deferred — не блокирует работу, но улучшает maintainability
+**Fix applied (2026-06-30)**:
+1. ✅ Created `scripts/utilities/common.sh` — unified `log_error()`, `log_warn()`, `safe_run()`
+2. ✅ `lint.sh` now sources common.sh and uses safe_run for all script calls
+3. ✅ All script exit codes properly handled (no more silent failures)
+4. ✅ Format: `[!] [ERROR] Command exited with code X: message`
 
 ### Issue #11: Trap Handlers для Cleanup 🔽 PARTIALLY DONE
 **Проблема**: Часть скриптов не использует `trap EXIT/cleanup`.

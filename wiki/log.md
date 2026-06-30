@@ -303,3 +303,9 @@
 
 ## [2026-06-30] fix | Testing infrastructure
 - Issue #16: Verified tests work via `npx bats` — all 5 tests pass, status updated from CRITICAL to Working
+
+## [2026-06-30] fix | Lint script fully refactored — Issue #17 complete
+- Created scripts/utilities/common.sh: log_error(), log_warn(), safe_run() with expected exit codes
+- lint.sh now sources common.sh and uses safe_run for all 7 inner-script calls
+- No more silent failures or || true hiding errors
+- All script exit codes properly handled and logged
