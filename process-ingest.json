@@ -1,603 +1,504 @@
-{
-  "module": "process_ingest",
-  "description": "Поглощение новых данных в wiki — единственный путь: capture → integrate",
-  "pre_conditions": [
-    {
-      "condition": "user_provided_source",
-      "action": "START_INGEST"
-    },
-    {
-      "condition": "source_layer_unknown",
-      "evaluation": [
-        {
-          "exit_code": 0,
-          "action": "CLASSIFY_SOURCE"
-        }
-      ]
-    }
-  ],
-  "steps": [
-    {
-      "step_id": "0",
-      "name": "guardrails_validation",
-      "command": "./scripts/validate-path.sh ${SOURCE_PATH}",
-      "evaluation": [
-        {
-          "exit_code": 0,
-          "action": "PROCEED_TO_ANALYSIS"
-        },
-        {
-          "exit_code": 1,
-          "stdout_contains": "BLOCKED",
-          "action": "HALT_AND_REPORT",
-          "message": "Источник в protected zone. Используй capture flow."
-        }
-      ]
-    },
-    {
-      "step_id": "1.5",
-      "name": "external_source_policy",
-      "description": "Canonical external source rules (EXT-RES1) with ingest-specific hooks for manifest creation and registry updates.",
-      "rules": [
-        {
-          "rule_id": "EXT-RES1",
-          "core_rule": "External links → canonical http/https URLs. Never raw/** or ../**.",
-          "exceptions": [
-            {
-              "field": "frontmatter sources[]",
-              "reason": "Metadata only, not clickable"
-            },
-            {
-              "field": "descriptive text",
-              "reason": "raw/** in prose = documentation, not link"
-            }
-          ],
-          "canonical_patterns": {
-            "github_specific_file": "https://github.com/{owner}/{repo}/blob/{branch}/{path}",
-            "doc_site_root": "https://{domain}/en/latest/ or /manual/",
-            "article_page": "https://{domain}/{specific-page}"
-          },
-          "rule": "Use most specific URL matching content granularity. Repo root = only if covering entire project.",
-          "ingest_flow": [
-            {
-              "step": 1,
-              "action": "classify source: external_url or local_only"
-            },
-            {
-              "step": 2,
-              "action": "extract canonical URL → replace raw/ link"
-            }
-          ],
-          "exception_local_only": "Link to raw/ required when no external URL exists",
-          "ingest_hooks": [
-            {
-              "hook": "create_src_id_and_manifest",
-              "path": "tracking/raw_manifests/SRC-{timestamp}-{ID}.json"
-            },
-            {
-              "hook": "add_to_raw_registry",
-              "command": "update tracking/raw_registry.json with ingested_sources array"
-            }
-          ]
-        }
-      ],
-      "schema_ref": "AGENTS.md#link-conventions"
-    },
-    {
-      "step_id": "0.5_corrected_copy",
-      "name": "create_corrected_copy_or_skip",
-      "description": "После capture (original saved to raw/SRC-*/) — агент проверяет, есть ли уже corrected copy в raw/corrected/. Если нет → создаёт её через scripts/raw-correct.sh.",
-      "pre_condition": {
-        "after_step": "0",
-        "purpose": "create corrected copy after capturing original"
-      },
-      "actions": [
-        {
-          "action": "check_existing_corrected_copy",
-          "command": "test -f \"raw/corrected/SRC-*/<filename>\"",
-          "description": "Проверить, существует ли уже исправленная копия"
-        },
-        {
-          "action": "create_corrected_if_missing",
-          "condition": "corrected_copy_not_exists",
-          "command": "./scripts/raw-correct.sh --add \"raw/corrected/SRC-*/<filename>\" <content_from_original>",
-          "description": "Создать corrected copy с исправленными ссылками, опечатками"
-        },
-        {
-          "action": "skip_if_already_exists",
-          "condition": "corrected_copy_exists",
-          "note": "Уже есть processed версия → перейти к шагу 1 (source analysis)"
-        }
-      ],
-      "schema_ref": "AGENTS.md#raw_corrected_zone"
-    },
-    {
-      "step_id": "1",
-      "name": "source_analysis",
-      "actions": [
-        {
-          "action": "read_file",
-          "path": "${SOURCE_PATH}",
-          "purpose": "extract_key_theses"
-        },
-        {
-          "action": "classify_source",
-          "types": [
-            "entity",
-            "concept",
-            "notes",
-            "meeting",
-            "project"
-          ],
-          "source_layer_classification": {
-            "description": "Classify each source for Reality Layer cascade priority",
-            "options": [
-              "code_reality",
-              "live_state",
-              "documentation"
-            ],
-            "rules": [
-              {
-                "condition": "file_is_code_or_github_issue_or_pr",
-                "result": "code_reality"
-              },
-              {
-                "condition": "file_is_api_response_or_metrics_or_live_log",
-                "result": "live_state"
-              },
-              {
-                "condition": "file_is_documentation_article_or_blog_or_docs_page",
-                "result": "documentation"
-              }
-            ],
-            "default": "documentation",
-            "agent_prompt": "Determine source_layer based on file content:\n- If it contains code, GitHub issue/PR → code_reality\n- If it contains live metrics/API responses/logs → live_state\n- Otherwise (docs/articles/blogs) → documentation\nThis determines contradiction cascade priority."
-          }
-        },
-        {
-          "action": "extract_evidence_grade",
-          "description": "Оценивает каждый факт по уровню доказательности для documentation sources",
-          "agent_prompt": "Analyze each claim in the source. Classify as documented/corroborated/assertion_only. Only apply for documentation type sources.",
-          "output": "evidence_grade_for_each_fact"
-        },
-        {
-          "action": "identify_entities_and_concepts",
-          "output": "list_of_mentioned_pages"
-        },
-        {
-          "action": "check_for_contradications",
-          "reference": "existing_wiki_pages"
-        },
-        {
-          "action": "raw_source_link_repair",
-          "command": "./scripts/raw-link-repair.sh ${SOURCE_PATH} --dry-run",
-          "description": "Автоматически преобразует все относительные markdown-ссылки в raw-источнике на GitHub permalinks.",
-          "rules": [
-            {
-              "pattern": "relative paths like ./file.md or ../README.md → https://github.com/owner/repo/blob/<branch>/file.md",
-              "action": "auto_convert: replace all relative .md links with GitHub permalink"
-            },
-            {
-              "pattern": "subdirectory references like ../docs/config.md → https://github.com/owner/repo/blob/<branch>/docs/config.md",
-              "action": "auto_convert: preserve subdirectory structure in permalink"
-            }
-          ],
-          "post_action": "verify_repairs_by_running_again_without_dry_run",
-          "log_to": "manifest.json under 'link_repairs': [{original, repaired, count}]",
-          "schema_ref": "scripts/raw-link-repair.py"
-        }
-      ]
-    },
-    {
-      "step_id": "1.5_batch",
-      "name": "batch_ingest_trigger",
-      "description": "Если агент получает/обнаруживает N+ связанных источников → запускает batch-ingest.sh для кластеризации перед discussion.",
-      "condition": "multiple_sources_detected OR user_provides_multiple_files",
-      "pre_condition": {
-        "after_step": 1,
-        "purpose": "cluster after individual source analysis"
-      },
-      "actions": [
-        {
-          "action": "run_batch_scanner",
-          "command": "./scripts/batch-ingest.sh --scan ",
-          "description": "Скрипт сканирует все файлы, извлекает H1/tags/keywords, группирует по shared entities"
-        },
-        {
-          "action": "receive_cluster_manifest",
-          "format": "JSON {clusters: [{id, name, sources: [], shared_keywords}], total_sources: N}"
-        },
-        {
-          "action": "present_clusters_to_user",
-          "description": "Агент показывает кластеризованные результаты для принятия решения о batch processing"
-        }
-      ],
-      "evaluation": [
-        {
-          "condition": "clusters_count == 0",
-          "note": "no_batch_needed — proceed to step_2 (discussion) with individual sources"
-        },
-        {
-          "condition": "clusters_count > 0 AND user_confirms_batch",
-          "action": "PROCEED_TO_BATCH_PROCESSING"
-        }
-      ],
-      "schema_ref": "AGENTS.md#batch_ingest_trigger"
-    },
-    {
-      "step_id": "2",
-      "name": "discussion_with_user",
-      "actions": [
-        {
-          "action": "present_summary",
-          "content": "key_theses_from_analysis"
-        },
-        {
-          "action": "propose_wiki_pages_to_create_or_update"
-        },
-        {
-          "action": "identify_contradications_for_marking"
-        }
-      ],
-      "evaluation": [
-        {
-          "user_confirmed": true,
-          "action": "PROCEED_TO_INTEGRATION"
-        },
-        {
-          "user_rejected": true,
-          "action": "HALT_AND_REPORT",
-          "message": "Пользователь отклонил. Ожидаю уточнений."
-        }
-      ]
-    },
-    {
-      "step_id": "3a",
-      "name": "integration_new_page",
-      "condition": "source_is_new_entity_or_concept",
-      "pre_check": {
-        "command": "./scripts/validate-path.sh wiki/${PAGE_PATH}.md",
-        "expected_exit_code": 0,
-        "on_failure": "HALT_AND_REPORT"
-      },
-      "syntheses_rule": {
-        "rule": "DR-4: syntheses treated as special category. Only create new synthesis if agent detects **new logical inference** (not just fact collection). Requires explicit fixation flag from user.",
-        "condition": "page_type == 'synthesis'",
-        "action_if_no_novel_inference": "SKIP_SAVE → suggest adding to existing concept/entity page instead"
-      },
-      "actions": [
-        {
-          "action_type": "create_page",
-          "template": "${SOURCE_TYPE}",
-          "destination": "wiki/${PAGE_PATH}.md"
-        },
-        {
-          "action": "fill_all_sections",
-          "sections": [
-            "description",
-            "key_characteristics",
-            "connections",
-            "sources"
-          ]
-        }
-      ],
-      "post_check": {
-        "command": "./scripts/rebuild-meta.sh",
-        "action_on_success": "CONTINUE_TO_LINK_VALIDATION",
-        "action_on_failure": "LOG_WARNING_AND_PROCEED"
-      },
-      "post_operations": [
-        {
-          "trigger": "page_created",
-          "command": "./scripts/unified-pass.sh --quiet --skip-meta --skip-crosslinks",
-          "note": "Full walk link validation via unified-pass (shared walk). Replaces separate link-validator.sh call. Output is JSON to stdout."
-        },
-        {
-          "trigger": "page_created_after_validation",
-          "command": "./scripts/auto-crosslink.sh \"${NEW_PAGE_PATH}\" --include-root 2>/dev/null || true",
-          "output_format": "json[{path, score, match_types}]",
-          "note": "Multi-level crosslink discovery: H1 title (+3) → shared sources (+5) → frontmatter related (+4). Results sorted by score."
-        },
-        {
-          "trigger": "auto_add_backlinks_from_crosslink_results",
-          "description": "Parse auto-crosslink JSON output, add backlinks to pages with score >= 5. Low scores (3-4) are informational only — suggest manual review.",
-          "threshold_score": 5,
-          "action_if_high_score_found": "Add [[path]] to related/mentions section in high-score page if not already present"
-        },
-        {
-          "trigger": "post_integration_complete",
-          "command": "./scripts/git-auto-commit.sh"
-        }
-      ]
-    },
-    {
-      "step_id": "3b",
-      "name": "integration_update_existing_page",
-      "condition": "source_updates_existing_entity_or_concept",
-      "pre_check": {
-        "command": "./scripts/validate-path.sh ${EXISTING_PAGE_PATH}",
-        "expected_exit_code": 0,
-        "on_failure": "HALT_AND_REPORT"
-      },
-      "actions": [
-        {
-          "action": "read_file",
-          "path": "${EXISTING_PAGE_PATH}"
-        },
-        {
-          "action": "identify_additions_and_changes"
-        },
-        {
-          "action": "write_update",
-          "preserve_old_info": true,
-          "append_section": "## Обновлено [date] — новое уточнение"
-        }
-      ],
-      "post_check": {
-        "command": "./scripts/rebuild-meta.sh",
-        "action_on_success": "CONTINUE_TO_4",
-        "action_on_failure": "LOG_WARNING_AND_PROCEED"
-      },
-      "post_operations": [
-        {
-          "trigger": "page_updated_with_new_facts",
-          "command": "./scripts/unified-pass.sh --quiet --skip-meta --skip-crosslinks",
-          "note": "Full walk link validation via unified-pass (shared walk). Replaces separate link-validator.sh call. Output is JSON to stdout."
-        },
-        {
-          "trigger": "page_updated_after_validation",
-          "command": "./scripts/auto-crosslink.sh \"${NEW_CONCEPT_OR_ENTITY}\" --include-root 2>/dev/null || true",
-          "output_format": "json[{path, score, match_types}]",
-          "note": "Multi-level crosslink discovery: H1 title (+3) → shared sources (+5) → frontmatter related (+4). Results sorted by score."
-        },
-        {
-          "trigger": "auto_add_backlinks_from_crosslink_results",
-          "description": "Parse auto-crosslink JSON output, add backlinks to pages with score >= 5. Low scores (3-4) are informational only — suggest manual review.",
-          "threshold_score": 5,
-          "action_if_high_score_found": "Add [[path]] to related/mentions section in high-score page if not already present"
-        },
-        {
-          "trigger": "post_integration_complete",
-          "command": "./scripts/git-auto-commit.sh"
-        }
-      ]
-    },
-    {
-      "step_id": "3c",
-      "name": "post_integration_overlap_scan",
-      "description": "Сканит wiki на overlap с новой/обновлённой страницей. Применяет DR-1/DR-2 из decision-rules.md.",
-      "pre_condition": {
-        "condition": "new_page_created OR page_updated",
-        "trigger_after_step": "step_3b"
-      },
-      "actions": [
-        {
-          "action": "run_text_similarity_scan",
-          "command": "TMP_OVERLAP=$(mktemp); ./scripts/text-similarity.sh --scan-all --threshold 90 --verbose > \"$TMP_OVERLAP\"; echo \"$TMP_OVERLAP\"",
-          "output_file": "$TMP_OVERLAP"
-        },
-        {
-          "action": "parse_matches_from_json",
-          "description": "Из JSON output извлечь matches[] → для каждого pair: similarity_score, file1, file2"
-        }
-      ],
-      "evaluation": [
-        {
-          "condition": "matches_count == 0",
-          "action": "PROCEED_TO_CROSS_LINK_UPDATE",
-          "note": "no_overlaps — proceed to step_4 (cross_link_update)"
-        },
-        {
-          "condition": "matches_count > 0",
-          "note": "Agent review required — apply DR-1/DR-2 из decision-rules.md к каждому overlap. Read existing pages from matches[].file1, compare with new page, proceed to cross_link_update after evaluation."
-        }
-      ],
-      "schema_ref": "decision-rules.md"
-    },
-    {
-      "step_id": "3d",
-      "name": "cross_link_update",
-      "actions": [
-        {
-          "action": "run_auto_crosslink",
-          "command": "./scripts/auto-crosslink.sh '${NEW_PAGE_PATH}' --include-root 2>/dev/null || true",
-          "output_format": "json_array[{path, score, match_types}]",
-          "description": "Multi-level crosslink discovery: H1 title (+3) → shared sources (+5) → frontmatter related (+4). Sorted by score descending."
-        },
-        {
-          "action": "parse_crosslink_results",
-          "threshold_score": 5,
-          "description": "Only add backlinks for pages with score >= 5 (significant match). Lower scores are informational only."
-        },
-        {
-          "action": "add_backlinks_to_high_score_pages",
-          "condition": "score_ge_5",
-          "format": "Add [[wiki-relative-path]] to related/mentions section if not already present"
-        },
-        {
-          "action": "handle_syntheses_special_case",
-          "rule": "syntheses treated as special category per DR-4. Auto-crosslink distinguishes synthesis from entity/concept via scoring. Never auto-create synthesis without explicit fixation flag.",
-          "condition": "page_type == 'synthesis'"
-        },
-        {
-          "action": "mark_orphan_if_no_high_score_matches",
-          "suggestion": "propose_manual_link_creation_for_low_score_pages",
-          "note": "Low score matches (3-4) may be weak connections — suggest manual review rather than auto-add"
-        }
-      ]
-    },
-    {
-      "step_id": "3e",
-      "name": "register_source_ingested",
-      "description": "После успешного создания/обновления страницы — добавь ID raw-пакета в tracking/raw_registry.json, исключив его из будущих проверок новых источников. Сбрось new_sources_pending marker.",
-      "actions": [
-        {
-          "action": "update_json_file",
-          "path": "tracking/raw_registry.json",
-          "operation": "append_to_ingested_sources_array",
-          "value": "${RAW_PACKAGE_ID}"
-        },
-        {
-          "action": "clear_working_memory_field",
-          "field": "new_sources_pending"
-        }
-      ]
-    },
-    {
-      "step_id": "4",
-      "name": "log_registration",
-      "pre_check": {
-        "command": "./scripts/validate-path.sh wiki/log.md",
-        "expected_exit_code": 0,
-        "on_failure": "HALT_AND_REPORT"
-      },
-      "actions": [
-        {
-          "action": "append_to_log",
-          "format": "## [YYYY-MM-DD] ingest | ${SOURCE_NAME}"
-        },
-        {
-          "condition": "multiple_sources",
-          "action": "append_batch_entry",
-          "format": "## [YYYY-MM-DD] ingest | ${SOURCE_NAME} — несколько файлов"
-        }
-      ]
-    },
-    {
-      "step_id": "5",
-      "name": "auto_update_index",
-      "command": "./scripts/rebuild-meta.sh --index-only",
-      "actions": [
-        {
-          "action_type": "auto_generate_from_wiki_pages"
-        }
-      ],
-      "note": "Полностью заменяет ручной update_index. Автоматически перестраивает index.md из всех wiki-страниц по категориям (entities→concepts→comparisons→syntheses→...)."
-    },
-    {
-      "step_id": "6",
-      "name": "post_operation_link_validation",
-      "condition": "any_path_change_or_new_page_created",
-      "description": "После создания/обновления wiki-страницы — проверить только новые файлы, НЕ сканировать весь wiki. Легковесная проверка.",
-      "actions": [
-        {
-          "action": "run_link_validator_on_new_files_only",
-          "command": "./scripts/unified-pass.sh --quiet --skip-meta --skip-crosslinks",
-          "description": "Full walk link validation via unified-pass (shared walk). Replaces separate link-validator.sh call."
-        },
-        {
-          "condition": "broken_links_found AND auto_fixable (case/path mismatch)",
-          "action_name": "auto_fix_broken_links",
-          "note": "Can resolve autonomously: rewrite to correct path"
-        },
-        {
-          "condition": "broken_links_found AND NOT auto_fixable",
-          "action_name": "report_to_user_with_options",
-          "options": [
-            "create_new_page",
-            "remove_broken_link",
-            "mark_as_todo"
-          ],
-          "fallback_message": "[!] Broken link detected in new page. Cannot auto-fix."
-        }
-      ],
-      "output_handling": {
-        "exit_code_0": "no_broken_links — proceed to next step",
-        "exit_code_1": "broken_links_found — report with options (create/remove/defer)"
-      },
-      "rules": [
-        {
-          "rule_name": "do_not_run_full_wiki_scan_in_ingest"
-        },
-        {
-          "rule_name": "only_check_new_file_broken_links"
-        }
-      ],
-      "schema_ref": "AGENTS.md#post_operation_link_validation"
-    }
-  ],
-  "schema_ref": "AGENTS.md#guardrails",
-  "inherits_from": [
-    "guardrails",
-    "date_convention",
-    "logging_templates"
-  ],
-  "note": "Guardrails are defined in AGENTS.md. This file references them rather than duplicating.",
-  "strict_rules": {
-    "capture_first_integrate_second": "Сначала сохрани оригинал в raw/, затем создай/обнови wiki-страницу."
-  },
-  "batch_mode": {
-    "trigger": "user_specifies_batch_processing",
-    "flow": [
+[
+  {
+    "step_id": "0",
+    "name": "guardrails_validation",
+    "command": "./scripts/validate-path.sh ${SOURCE_PATH}",
+    "evaluation": [
       {
-        "step": "read_each_source_and_extract_theses"
+        "exit_code": 0,
+        "action": "PROCEED_TO_ANALYSIS"
       },
       {
-        "step": "create_or_update_pages_for_all"
-      },
-      {
-        "step": "log_results_and_index"
-      }
-    ],
-    "note": "Этот режим экономит время, но требует доверия к автономным решениям агента."
-  },
-  "decision_rules_schema_ref": "decision-rules.md",
-  "error_handling": {
-    "description": "При обнаружении любой ошибки, противоречия или dead end — не зависать. Следовать 4-step loop.",
-    "steps": [
-      {
-        "step": 1,
-        "name": "detect_and_log",
-        "action": "append_to_log"
-      },
-      {
-        "step": 2,
-        "name": "analyze"
-      },
-      {
-        "step": 3,
-        "name": "resolve"
-      },
-      {
-        "step": 4,
-        "name": "continue"
-      }
-    ],
-    "logging_actions": [
-      {
-        "action": "append_to_log",
-        "format": "## [YYYY-MM-DD] error | <description>: <context>",
-        "trigger": "immediately after detecting error/dead-end/conflict"
-      }
-    ],
-    "resolution_strategies": [
-      {
-        "type": "local-fix",
-        "description": "Исправить самостоятельно"
-      },
-      {
-        "type": "schema-patch",
-        "description": "Предложить патч AGENTS.md на review"
-      },
-      {
-        "type": "source-conflict",
-        "description": "Отметить как CONFLICT на странице и продолжить"
-      },
-      {
-        "type": "dead-end",
-        "description": "Документировать причину, сменить стратегию"
+        "exit_code": 1,
+        "stdout_contains": "BLOCKED",
+        "action": "HALT_AND_REPORT",
+        "message": "Источник в protected zone. Используй capture flow."
       }
     ]
   },
-  "schema_evolution": {
-    "description": "Template Co-evolution Process — агент предлагает улучшения через [schema-patch] в log.md. User должен approve → agent commit update.",
-    "logging_actions": [
+  {
+    "step_id": "1.5",
+    "name": "external_source_policy",
+    "description": "Canonical external source rules (EXT-RES1) with ingest-specific hooks for manifest creation and registry updates.",
+    "rules": [
       {
-        "action": "append_to_log",
-        "format": "## [YYYY-MM-DD] schema-patch | Proposed: <description>",
-        "trigger": "when agent detects structural improvement opportunity for wiki pages"
+        "rule_id": "EXT-RES1",
+        "core_rule": "External links → canonical http/https URLs. Never raw/** or ../**.",
+        "exceptions": [
+          {
+            "field": "frontmatter sources[]",
+            "reason": "Metadata only, not clickable"
+          },
+          {
+            "field": "descriptive text",
+            "reason": "raw/** in prose = documentation, not link"
+          }
+        ],
+        "canonical_patterns": {
+          "github_specific_file": "https://github.com/{owner}/{repo}/blob/{branch}/{path}",
+          "doc_site_root": "https://{domain}/en/latest/ or /manual/",
+          "article_page": "https://{domain}/{specific-page}"
+        },
+        "rule": "Use most specific URL matching content granularity. Repo root = only if covering entire project.",
+        "ingest_flow": [
+          {
+            "step": 1,
+            "action": "classify source: external_url or local_only"
+          },
+          {
+            "step": 2,
+            "action": "extract canonical URL → replace raw/ link"
+          }
+        ],
+        "exception_local_only": "Link to raw/ required when no external URL exists",
+        "ingest_hooks": [
+          {
+            "hook": "create_src_id_and_manifest",
+            "path": "tracking/raw_manifests/SRC-{timestamp}-{ID}.json"
+          },
+          {
+            "hook": "add_to_raw_registry",
+            "command": "update tracking/raw_registry.json with ingested_sources array"
+          }
+        ]
       }
     ],
-    "rule": "Never auto-modify templates — always user-approved changes per AGENTS.md#template_co_evolution"
+    "schema_ref": "AGENTS.md#link-conventions"
+  },
+  {
+    "step_id": "1",
+    "name": "source_analysis",
+    "actions": [
+      {
+        "action": "read_file",
+        "path": "${SOURCE_PATH}",
+        "purpose": "extract_key_theses"
+      },
+      {
+        "action": "classify_source",
+        "types": [
+          "entity",
+          "concept",
+          "notes",
+          "meeting",
+          "project"
+        ],
+        "source_layer_classification": {
+          "description": "Classify each source for Reality Layer cascade priority",
+          "options": [
+            "code_reality",
+            "live_state",
+            "documentation"
+          ],
+          "rules": [
+            {
+              "condition": "file_is_code_or_github_issue_or_pr",
+              "result": "code_reality"
+            },
+            {
+              "condition": "file_is_api_response_or_metrics_or_live_log",
+              "result": "live_state"
+            },
+            {
+              "condition": "file_is_documentation_article_or_blog_or_docs_page",
+              "result": "documentation"
+            }
+          ],
+          "default": "documentation",
+          "agent_prompt": "Determine source_layer based on file content:\n- If it contains code, GitHub issue/PR → code_reality\n- If it contains live metrics/API responses/logs → live_state\n- Otherwise (docs/articles/blogs) → documentation\nThis determines contradiction cascade priority."
+        }
+      },
+      {
+        "action": "extract_evidence_grade",
+        "description": "Оценивает каждый факт по уровню доказательности для documentation sources",
+        "agent_prompt": "Analyze each claim in the source. Classify as documented/corroborated/assertion_only. Only apply for documentation type sources.",
+        "output": "evidence_grade_for_each_fact"
+      },
+      {
+        "action": "identify_entities_and_concepts",
+        "output": "list_of_mentioned_pages"
+      },
+      {
+        "action": "check_for_contradications",
+        "reference": "existing_wiki_pages"
+      },
+      {
+        "action": "raw_source_link_repair",
+        "command": "./scripts/raw-link-repair.sh ${SOURCE_PATH} --dry-run",
+        "description": "Автоматически преобразует все относительные markdown-ссылки в raw-источнике на GitHub permalinks.",
+        "rules": [
+          {
+            "pattern": "relative paths like ./file.md or ../README.md → https://github.com/owner/repo/blob/<branch>/file.md",
+            "action": "auto_convert: replace all relative .md links with GitHub permalink"
+          },
+          {
+            "pattern": "subdirectory references like ../docs/config.md → https://github.com/owner/repo/blob/<branch>/docs/config.md",
+            "action": "auto_convert: preserve subdirectory structure in permalink"
+          }
+        ],
+        "post_action": "verify_repairs_by_running_again_without_dry_run",
+        "log_to": "manifest.json under 'link_repairs': [{original, repaired, count}]",
+        "schema_ref": "scripts/raw-link-repair.py"
+      }
+    ]
+  },
+  {
+    "step_id": "0.5_corrected_copy",
+    "name": "create_corrected_copy_or_skip",
+    "description": "После source analysis — агент читает оригинал, понимает что нужно исправить (ссылки, OCR-ошибки), создаёт corrected copy в raw/corrected/SRC-*/* через scripts/raw-correct.sh.",
+    "pre_condition": {
+      "after_step": "1",
+      "purpose": "create corrected copy after reading and analyzing original"
+    },
+    "actions": [
+      {
+        "action": "read_original_and_analyze",
+        "description": "Агент читает raw/SRC-*/original.md, определяет что нужно исправить (broken links, OCR errors)"
+      },
+      {
+        "action": "check_existing_corrected_copy",
+        "command": "test -f \"raw/corrected/SRC-*/<filename>\"",
+        "description": "Проверить, существует ли уже исправленная копия"
+      },
+      {
+        "action": "create_corrected_if_missing",
+        "condition": "corrected_copy_not_exists OR needs_update",
+        "command": "./scripts/raw-correct.sh --add \"raw/corrected/SRC-*/<filename>\" <processed_content>",
+        "description": "Создать corrected copy с исправленными ссылками, OCR-ошибками через scripts/raw-correct.sh"
+      },
+      {
+        "action": "skip_if_already_exists",
+        "condition": "corrected_copy_exists AND up_to_date",
+        "note": "Уже есть processed версия → перейти к шагу 2 (discussion)"
+      }
+    ],
+    "schema_ref": "AGENTS.md#raw_corrected_zone"
+  },
+  {
+    "step_id": "1.5_batch",
+    "name": "batch_ingest_trigger",
+    "description": "Если агент получает/обнаруживает N+ связанных источников → запускает batch-ingest.sh для кластеризации перед discussion.",
+    "condition": "multiple_sources_detected OR user_provides_multiple_files",
+    "pre_condition": {
+      "after_step": 1,
+      "purpose": "cluster after individual source analysis"
+    },
+    "actions": [
+      {
+        "action": "run_batch_scanner",
+        "command": "./scripts/batch-ingest.sh --scan ",
+        "description": "Скрипт сканирует все файлы, извлекает H1/tags/keywords, группирует по shared entities"
+      },
+      {
+        "action": "receive_cluster_manifest",
+        "format": "JSON {clusters: [{id, name, sources: [], shared_keywords}], total_sources: N}"
+      },
+      {
+        "action": "present_clusters_to_user",
+        "description": "Агент показывает кластеризованные результаты для принятия решения о batch processing"
+      }
+    ],
+    "evaluation": [
+      {
+        "condition": "clusters_count == 0",
+        "note": "no_batch_needed — proceed to step_2 (discussion) with individual sources"
+      },
+      {
+        "condition": "clusters_count > 0 AND user_confirms_batch",
+        "action": "PROCEED_TO_BATCH_PROCESSING"
+      }
+    ],
+    "schema_ref": "AGENTS.md#batch_ingest_trigger"
+  },
+  {
+    "step_id": "2",
+    "name": "discussion_with_user",
+    "actions": [
+      {
+        "action": "present_summary",
+        "content": "key_theses_from_analysis"
+      },
+      {
+        "action": "propose_wiki_pages_to_create_or_update"
+      },
+      {
+        "action": "identify_contradications_for_marking"
+      }
+    ],
+    "evaluation": [
+      {
+        "user_confirmed": true,
+        "action": "PROCEED_TO_INTEGRATION"
+      },
+      {
+        "user_rejected": true,
+        "action": "HALT_AND_REPORT",
+        "message": "Пользователь отклонил. Ожидаю уточнений."
+      }
+    ]
+  },
+  {
+    "step_id": "3a",
+    "name": "integration_new_page",
+    "condition": "source_is_new_entity_or_concept",
+    "pre_check": {
+      "command": "./scripts/validate-path.sh wiki/${PAGE_PATH}.md",
+      "expected_exit_code": 0,
+      "on_failure": "HALT_AND_REPORT"
+    },
+    "syntheses_rule": {
+      "rule": "DR-4: syntheses treated as special category. Only create new synthesis if agent detects **new logical inference** (not just fact collection). Requires explicit fixation flag from user.",
+      "condition": "page_type == 'synthesis'",
+      "action_if_no_novel_inference": "SKIP_SAVE → suggest adding to existing concept/entity page instead"
+    },
+    "actions": [
+      {
+        "action_type": "create_page",
+        "template": "${SOURCE_TYPE}",
+        "destination": "wiki/${PAGE_PATH}.md"
+      },
+      {
+        "action": "fill_all_sections",
+        "sections": [
+          "description",
+          "key_characteristics",
+          "connections",
+          "sources"
+        ]
+      }
+    ],
+    "post_check": {
+      "command": "./scripts/rebuild-meta.sh",
+      "action_on_success": "CONTINUE_TO_LINK_VALIDATION",
+      "action_on_failure": "LOG_WARNING_AND_PROCEED"
+    },
+    "post_operations": [
+      {
+        "trigger": "page_created",
+        "command": "./scripts/unified-pass.sh --quiet --skip-meta --skip-crosslinks",
+        "note": "Full walk link validation via unified-pass (shared walk). Replaces separate link-validator.sh call. Output is JSON to stdout."
+      },
+      {
+        "trigger": "page_created_after_validation",
+        "command": "./scripts/auto-crosslink.sh \"${NEW_PAGE_PATH}\" --include-root 2>/dev/null || true",
+        "output_format": "json[{path, score, match_types}]",
+        "note": "Multi-level crosslink discovery: H1 title (+3) → shared sources (+5) → frontmatter related (+4). Results sorted by score."
+      },
+      {
+        "trigger": "auto_add_backlinks_from_crosslink_results",
+        "description": "Parse auto-crosslink JSON output, add backlinks to pages with score >= 5. Low scores (3-4) are informational only — suggest manual review.",
+        "threshold_score": 5,
+        "action_if_high_score_found": "Add [[path]] to related/mentions section in high-score page if not already present"
+      },
+      {
+        "trigger": "post_integration_complete",
+        "command": "./scripts/git-auto-commit.sh"
+      }
+    ]
+  },
+  {
+    "step_id": "3b",
+    "name": "integration_update_existing_page",
+    "condition": "source_updates_existing_entity_or_concept",
+    "pre_check": {
+      "command": "./scripts/validate-path.sh ${EXISTING_PAGE_PATH}",
+      "expected_exit_code": 0,
+      "on_failure": "HALT_AND_REPORT"
+    },
+    "actions": [
+      {
+        "action": "read_file",
+        "path": "${EXISTING_PAGE_PATH}"
+      },
+      {
+        "action": "identify_additions_and_changes"
+      },
+      {
+        "action": "write_update",
+        "preserve_old_info": true,
+        "append_section": "## Обновлено [date] — новое уточнение"
+      }
+    ],
+    "post_check": {
+      "command": "./scripts/rebuild-meta.sh",
+      "action_on_success": "CONTINUE_TO_4",
+      "action_on_failure": "LOG_WARNING_AND_PROCEED"
+    },
+    "post_operations": [
+      {
+        "trigger": "page_updated_with_new_facts",
+        "command": "./scripts/unified-pass.sh --quiet --skip-meta --skip-crosslinks",
+        "note": "Full walk link validation via unified-pass (shared walk). Replaces separate link-validator.sh call. Output is JSON to stdout."
+      },
+      {
+        "trigger": "page_updated_after_validation",
+        "command": "./scripts/auto-crosslink.sh \"${NEW_CONCEPT_OR_ENTITY}\" --include-root 2>/dev/null || true",
+        "output_format": "json[{path, score, match_types}]",
+        "note": "Multi-level crosslink discovery: H1 title (+3) → shared sources (+5) → frontmatter related (+4). Results sorted by score."
+      },
+      {
+        "trigger": "auto_add_backlinks_from_crosslink_results",
+        "description": "Parse auto-crosslink JSON output, add backlinks to pages with score >= 5. Low scores (3-4) are informational only — suggest manual review.",
+        "threshold_score": 5,
+        "action_if_high_score_found": "Add [[path]] to related/mentions section in high-score page if not already present"
+      },
+      {
+        "trigger": "post_integration_complete",
+        "command": "./scripts/git-auto-commit.sh"
+      }
+    ]
+  },
+  {
+    "step_id": "3c",
+    "name": "post_integration_overlap_scan",
+    "description": "Сканит wiki на overlap с новой/обновлённой страницей. Применяет DR-1/DR-2 из decision-rules.md.",
+    "pre_condition": {
+      "condition": "new_page_created OR page_updated",
+      "trigger_after_step": "step_3b"
+    },
+    "actions": [
+      {
+        "action": "run_text_similarity_scan",
+        "command": "TMP_OVERLAP=$(mktemp); ./scripts/text-similarity.sh --scan-all --threshold 90 --verbose > \"$TMP_OVERLAP\"; echo \"$TMP_OVERLAP\"",
+        "output_file": "$TMP_OVERLAP"
+      },
+      {
+        "action": "parse_matches_from_json",
+        "description": "Из JSON output извлечь matches[] → для каждого pair: similarity_score, file1, file2"
+      }
+    ],
+    "evaluation": [
+      {
+        "condition": "matches_count == 0",
+        "action": "PROCEED_TO_CROSS_LINK_UPDATE",
+        "note": "no_overlaps — proceed to step_4 (cross_link_update)"
+      },
+      {
+        "condition": "matches_count > 0",
+        "note": "Agent review required — apply DR-1/DR-2 из decision-rules.md к каждому overlap. Read existing pages from matches[].file1, compare with new page, proceed to cross_link_update after evaluation."
+      }
+    ],
+    "schema_ref": "decision-rules.md"
+  },
+  {
+    "step_id": "3d",
+    "name": "cross_link_update",
+    "actions": [
+      {
+        "action": "run_auto_crosslink",
+        "command": "./scripts/auto-crosslink.sh '${NEW_PAGE_PATH}' --include-root 2>/dev/null || true",
+        "output_format": "json_array[{path, score, match_types}]",
+        "description": "Multi-level crosslink discovery: H1 title (+3) → shared sources (+5) → frontmatter related (+4). Sorted by score descending."
+      },
+      {
+        "action": "parse_crosslink_results",
+        "threshold_score": 5,
+        "description": "Only add backlinks for pages with score >= 5 (significant match). Lower scores are informational only."
+      },
+      {
+        "action": "add_backlinks_to_high_score_pages",
+        "condition": "score_ge_5",
+        "format": "Add [[wiki-relative-path]] to related/mentions section if not already present"
+      },
+      {
+        "action": "handle_syntheses_special_case",
+        "rule": "syntheses treated as special category per DR-4. Auto-crosslink distinguishes synthesis from entity/concept via scoring. Never auto-create synthesis without explicit fixation flag.",
+        "condition": "page_type == 'synthesis'"
+      },
+      {
+        "action": "mark_orphan_if_no_high_score_matches",
+        "suggestion": "propose_manual_link_creation_for_low_score_pages",
+        "note": "Low score matches (3-4) may be weak connections — suggest manual review rather than auto-add"
+      }
+    ]
+  },
+  {
+    "step_id": "3e",
+    "name": "register_source_ingested",
+    "description": "После успешного создания/обновления страницы — добавь ID raw-пакета в tracking/raw_registry.json, исключив его из будущих проверок новых источников. Сбрось new_sources_pending marker.",
+    "actions": [
+      {
+        "action": "update_json_file",
+        "path": "tracking/raw_registry.json",
+        "operation": "append_to_ingested_sources_array",
+        "value": "${RAW_PACKAGE_ID}"
+      },
+      {
+        "action": "clear_working_memory_field",
+        "field": "new_sources_pending"
+      }
+    ]
+  },
+  {
+    "step_id": "4",
+    "name": "log_registration",
+    "pre_check": {
+      "command": "./scripts/validate-path.sh wiki/log.md",
+      "expected_exit_code": 0,
+      "on_failure": "HALT_AND_REPORT"
+    },
+    "actions": [
+      {
+        "action": "append_to_log",
+        "format": "## [YYYY-MM-DD] ingest | ${SOURCE_NAME}"
+      },
+      {
+        "condition": "multiple_sources",
+        "action": "append_batch_entry",
+        "format": "## [YYYY-MM-DD] ingest | ${SOURCE_NAME} — несколько файлов"
+      }
+    ]
+  },
+  {
+    "step_id": "5",
+    "name": "auto_update_index",
+    "command": "./scripts/rebuild-meta.sh --index-only",
+    "actions": [
+      {
+        "action_type": "auto_generate_from_wiki_pages"
+      }
+    ],
+    "note": "Полностью заменяет ручной update_index. Автоматически перестраивает index.md из всех wiki-страниц по категориям (entities→concepts→comparisons→syntheses→...)."
+  },
+  {
+    "step_id": "6",
+    "name": "post_operation_link_validation",
+    "condition": "any_path_change_or_new_page_created",
+    "description": "После создания/обновления wiki-страницы — проверить только новые файлы, НЕ сканировать весь wiki. Легковесная проверка.",
+    "actions": [
+      {
+        "action": "run_link_validator_on_new_files_only",
+        "command": "./scripts/unified-pass.sh --quiet --skip-meta --skip-crosslinks",
+        "description": "Full walk link validation via unified-pass (shared walk). Replaces separate link-validator.sh call."
+      },
+      {
+        "condition": "broken_links_found AND auto_fixable (case/path mismatch)",
+        "action_name": "auto_fix_broken_links",
+        "note": "Can resolve autonomously: rewrite to correct path"
+      },
+      {
+        "condition": "broken_links_found AND NOT auto_fixable",
+        "action_name": "report_to_user_with_options",
+        "options": [
+          "create_new_page",
+          "remove_broken_link",
+          "mark_as_todo"
+        ],
+        "fallback_message": "[!] Broken link detected in new page. Cannot auto-fix."
+      }
+    ],
+    "output_handling": {
+      "exit_code_0": "no_broken_links — proceed to next step",
+      "exit_code_1": "broken_links_found — report with options (create/remove/defer)"
+    },
+    "rules": [
+      {
+        "rule_name": "do_not_run_full_wiki_scan_in_ingest"
+      },
+      {
+        "rule_name": "only_check_new_file_broken_links"
+      }
+    ],
+    "schema_ref": "AGENTS.md#post_operation_link_validation"
   }
-}
+]
