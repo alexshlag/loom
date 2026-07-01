@@ -161,12 +161,25 @@ if [[ "$SKIP_CHECKS" != *",10,"* ]]; then
 fi
 TOTAL_ISSUES=$((TOTAL_ISSUES + TEXT_SIMILARITY_MATCHES))
 
+# --- Check 11: Hot cache staleness ---
+HOT_CACHE_STALE=false
+if [[ "$SKIP_CHECKS" != *",11,"* ]]; then
+  if safe_run "./scripts/check-wiki-changes.sh" local_hot_check "0 1"; then
+    if echo "$local_hot_check" | grep -q "WIKI CHANGES DETECTED"; then
+      HOT_CACHE_STALE=true
+      $QUIET || echo "[!] Check 11/11: hot_cache_stale — WIKI CHANGES DETECTED" >&2
+    else
+      $QUIET || echo "[✓] Check 11/11: hot_cache_stale — no changes" >&2
+    fi
+  fi
+fi
+
 # --- Summary output (machine-readable JSON to stdout) ---
 cat <<EOF | grep -v "^="
 {
   "timestamp": "$(date +%Y-%m-%dT%H:%M:%S)",
   "wiki_dir": "${WIKI_DIR#/}",
-  "checks_run": 10,
+  "checks_run": 11,
   "issues_found": {
     "contradictions": ${CONTRADICTIONS},
     "orphan_pages": ${ORPHAN_COUNT},
@@ -178,7 +191,8 @@ cat <<EOF | grep -v "^="
     "agent_review_required": ${AGENT_REVIEW:-0},
     "agent_review_details": ${AGENT_REVIEW_REQUIRED_JSON},
     "contradictions_deep": ${CONTRADICTIONS_DEEP},
-    "text_similarity_overlaps": ${TEXT_SIMILARITY_MATCHES}
+    "text_similarity_overlaps": ${TEXT_SIMILARITY_MATCHES},
+    "hot_cache_stale": ${HOT_CACHE_STALE}
   },
   "total_issues": ${TOTAL_ISSUES},
   "status": "$([ $TOTAL_ISSUES -eq 0 ] && echo 'CLEAN' || echo 'ISSUES_FOUND')"
@@ -189,7 +203,7 @@ EOF
 if [ "$QUIET" = true ]; then
   : # no-op: silent mode — suppress human-readable output
 else
-  echo "[✓] Checks run: 10" >&2
+  echo "[✓] Checks run: 11" >&2
   echo "[!] Total issues found: ${TOTAL_ISSUES}" >&2
 fi
 

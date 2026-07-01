@@ -819,7 +819,7 @@
         }
       ],
       "finalization": {
-        "description": "Обязательный финальный шаг — записать состояние в working_memory.json перед завершением сессии",
+        "description": "Обязательный финальный шаг — записать состояние в working_memory.json перед завершением сессии, затем проверить актуальность hot.md",
         "actions": [
           {
             "action": "write_to_working_memory",
@@ -845,6 +845,15 @@
                 "value": "null (after dismissal) OR discussion (if topic continues)"
               }
             ]
+          },
+          {
+            "action": "check_hot_cache_staleness",
+            "command": "./scripts/check-wiki-changes.sh || true",
+            "description": "После записи WM — проверить, были ли изменения в wiki/ за сессию. Если да → агент обновляет wiki/hot.md вручную.",
+            "output_handling": {
+              "exit_code_0": "changes_detected — agent updates hot.md with session summary",
+              "exit_code_1": "no_changes — proceed, hot.md is current"
+            }
           }
         ],
         "rule": "AGENT_MUST_WRITE_WM_AFTER_EACH_QUERY"

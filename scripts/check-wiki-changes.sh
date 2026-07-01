@@ -4,17 +4,19 @@
 # Returns 0 if changes detected (guide agent to update), 1 otherwise
 
 [ -d .git ] || exit 1
-[ -d wiki ]    || exit 1
+[ -d wiki ] || exit 1
 
 CHANGED=$(git diff --name-only HEAD 2>/dev/null | grep '^wiki/' || true)
 [ -z "$CHANGED" ] && exit 1
 
-cat <<'PROMPT'
+cat << PROMPT
 === WIKI CHANGES DETECTED ===
-Modified: 
+Modified:
+$CHANGED
 
 Update wiki/hot.md with a summary (under 500 words):
 - Last Updated, Key Recent Facts, Recent Changes, Active Threads
 === END PROMPT ===
+PROMPT
 
 exit 0

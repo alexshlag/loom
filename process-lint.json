@@ -189,13 +189,13 @@
       "schema_ref": "decision-rules.md"
     },
     {
-      "check_id": "8",
+      "check_id": "11",
       "name": "hot_cache_stale_check",
       "description": "Проверить, есть ли изменения в wiki/ с момента последнего hot.md update. Если да — предложить пользователю обновить hot.md",
       "command": "./scripts/check-wiki-changes.sh || true",
       "output_handling": {
-        "0": "changes_detected → prompt user to update wiki/hot.md",
-        "1": "no_changes → skip silently"
+        "exit_code_0": "changes_detected → prompt user to update wiki/hot.md",
+        "exit_code_1": "no_changes → skip silently"
       }
     }
   ],
