@@ -44,12 +44,24 @@ wiki/**/*.md: sources: ["raw/corrected/SRC-*/file.md"]
 | Step | Task | Status | Details |
 |------|------|--------|---------|
 | **1** | API design `scripts/rebuild-source-manifest.sh` | ✅ Done | --add <path> content, --scan, --check <path>, hash_original + status:processed |
-| **2** | Update `validate-path.sh`: add raw/corrected/ to ALLOWED_WRITE_ZONES | ⬜ Next | Script bypasses guardrails internally via validate_path() check |
-| **3** | Create `scripts/raw-correct.sh` safe write wrapper | ⬜ After step 1 | Validates path prefix, JSON format for .json files |
-| **4** | Update process-ingest.json: add post-processing step after capture | ⬜ After step 2 | Step 0.5_corrected_copy: agent reads original → creates corrected copy in raw/corrected/ |
-| **5** | Update AGENTS.md: delta tracking integration rules | ⬜ After step 4 | Document manifest.json generation + contradiction resolution flow |
+| **2** | Update `validate-path.sh`: add raw/corrected/ to ALLOWED_WRITE_ZONES | ✅ Done (Phase 23) | Script bypasses guardrails internally via validate_path() check |
+| **3** | Create `scripts/raw-correct.sh` safe write wrapper | ✅ Done (Phase 23) | Validates path prefix, JSON format for .json files |
+| **4** | Update process-ingest.json: add post-processing step after capture | ✅ Done | Step 0.5_corrected_copy: agent reads original → creates corrected copy in raw/corrected/ + delta check Step 0_delta_check |
+| **5** | Update AGENTS.md: delta tracking integration rules | ✅ Done (Phase 23) | Document manifest.json generation + contradiction resolution flow |
 
-**Зависимости**: Sequential (1→2→3→4→5). Каждый шаг требует testing before next.
+**Зависимости**: Sequential (1→2→3→4→5). Все шаги завершены.
+
+**Результат:**
+| Component | Status | Notes |
+|-----------|--------|-------|
+| `scripts/rebuild-source-manifest.sh` | ✅ Created | Python-based, handles hash comparison and manifest generation |
+| `scripts/raw-correct.sh` | ✅ Exists | Safe write wrapper with path validation |
+| `validate-path.sh` | ✅ Updated | raw/corrected/ in ALLOWED_WRITE_ZONES |
+| process-ingest.json Step 0_delta_check | ✅ Added | Hash-based deduplication before ingest |
+| process-ingest.json post_operations (Step 3a/3b) | ✅ Updated | Rebuild manifest after page creation/update |
+
+> **Canonical**: `AGENTS.md#delta_tracking` — canonical source for delta tracking rules.
+> **Schema ref**: `process-ingest.json#step_0_delta_check`, `process-ingest.json#post_operations_manifest_update`
 **Связано**: `issues.md#29`, `AGENTS.md#raw_corrected_zone`
 
 ---
@@ -134,4 +146,4 @@ wiki/**/*.md: sources: ["raw/corrected/SRC-*/file.md"]
 
 ---
 
-*Last update: 2026-07-01 | Phase 13.3 Schema Refs Migration Fix completed. Pending: Phase 29 (raw/corrected/), Phase 12.2 (auto-extract assumptions), S5 (search analytics).*
+*Last update: 2026-07-01 | Phase 13.3 Schema Refs Migration Fix completed, Phase 29 Delta Tracking fully implemented. Pending: Phase 12.2 (auto-extract assumptions), S5 (search analytics).*

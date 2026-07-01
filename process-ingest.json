@@ -18,6 +18,37 @@
   ],
   "steps": [
     {
+      "step_id": "0_delta_check",
+      "name": "delta_tracking_hash_check",
+      "description": "Проверка хешей оригинального файла против существующих corrected копий — предотвращает re-ingest уже обработанных источников. Schema ref: AGENTS.md#raw_corrected_zone",
+      "schema_ref": "AGENTS.md#delta_tracking",
+      "actions": [
+        {
+          "action": "run_hash_check",
+          "command": "./scripts/rebuild-source-manifest.sh --scan-only",
+          "description": "Сканирует все источники, определяет что уже processed, что stale/unprocessed"
+        },
+        {
+          "action": "check_specific_source_status",
+          "note": "Если текущий ${SOURCE_PATH} имеет status=processed → пропустить re-ingest. Если unprocessed/stale → продолжить ingest flow.",
+          "on_skip_condition": "source_already_ingested AND corrected_copy_up_to_date",
+          "on_proceed_condition": "no_corrected_copy OR hash_mismatch OR source_is_new"
+        }
+      ],
+      "evaluation": [
+        {
+          "condition": "source_status == processed",
+          "action": "SKIP_INGEST — SOURCE_ALREADY_PROCESSED",
+          "note": "Уже есть corrected copy с актуальным хешем → перейти к Step 2 (discussion)"
+        },
+        {
+          "condition": "source_status == unprocessed OR stale",
+          "action": "PROCEED_TO_ANALYSIS",
+          "note": "Нужен новый/обновлённый ingest — продолжить к Step 1 (source_analysis)"
+        }
+      ]
+    },
+    {
       "step_id": "0",
       "name": "guardrails_validation",
       "command": "./scripts/validate-path.sh ${SOURCE_PATH}",
@@ -309,6 +340,11 @@
           "action_if_high_score_found": "Add [[path]] to related/mentions section in high-score page if not already present"
         },
         {
+          "trigger": "update_source_manifest",
+          "command": "./scripts/rebuild-source-manifest.sh",
+          "description": "Обновить centralized manifest после создания corrected copy и wiki страницы. delta tracking теперь актуален."
+        },
+        {
           "trigger": "post_integration_complete",
           "command": "./scripts/git-auto-commit.sh"
         }
@@ -359,6 +395,11 @@
           "description": "Parse auto-crosslink JSON output, add backlinks to pages with score >= 5. Low scores (3-4) are informational only — suggest manual review.",
           "threshold_score": 5,
           "action_if_high_score_found": "Add [[path]] to related/mentions section in high-score page if not already present"
+        },
+        {
+          "trigger": "update_source_manifest",
+          "command": "./scripts/rebuild-source-manifest.sh",
+          "description": "Обновить centralized manifest после обновления wiki страницы. delta tracking теперь актуален."
         },
         {
           "trigger": "post_integration_complete",
