@@ -1,7 +1,7 @@
 ---
 tags: [concept, nixos, python, development-environment]
 date: 2026-06-24
-sources: [raw/sources/SRC-2025-06-24-002/nixos-python-wiki.md]
+sources: [raw/corrected/SRC-2025-06-24-002/nixos-python-wiki.md]
 related: [wiki/syntheses/python-nixos-development-environments.md]
 ---
 
@@ -72,7 +72,7 @@ environment.systemPackages = with pkgs; [
 * [poetry2nix](https://github.com/nix-community/poetry2nix) — создание Nix-derivation из pyproject.toml
 
 ## Источники:
-* `raw/sources/SRC-2025-06-24-002/nixos-python-wiki.md` — https://wiki.nixos.org/wiki/Python (оригинал)
+* `raw/corrected/SRC-2025-06-24-002/nixos-python-wiki.md` — https://wiki.nixos.org/wiki/Python (оригинал)
 
 ## Reconciliation note (#H2)
 > Эта страница и [syntheses/python-nixos-development-environments.md](syntheses/python-nixos-development-environments.md) обе используют один источник (SRC-2025-06-24-002). Они охватывают одну тему из разных углов:

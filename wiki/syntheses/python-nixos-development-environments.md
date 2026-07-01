@@ -1,7 +1,7 @@
 ---
 tags: [synthesis, nixos, python, development-environment]
 date: 2026-06-24
-sources: [wiki/concepts/python-nixos-development.md, raw/sources/SRC-2025-06-24-002/nixos-python-wiki.md]
+sources: [wiki/concepts/python-nixos-development.md, raw/corrected/SRC-2025-06-24-002/nixos-python-wiki.md]
 related: [wiki/concepts/python-nixos-development.md]
 ---
 

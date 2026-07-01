@@ -1,7 +1,7 @@
 ---
 tags: [концепция, architecture, hexagonal, clean-architecture, domain-driven-design]
 date: 2026-06-25
-sources: [raw/sources/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md]
+sources: [raw/corrected/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md]
 related: [wiki/entities/symfony.md, wiki/concepts/symfony-dependency-injection.md]
 ---
 

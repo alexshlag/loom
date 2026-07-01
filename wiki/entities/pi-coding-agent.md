@@ -1,7 +1,7 @@
 ---
 tags: [entity, coding-agent, terminal]
 date: 2026-06-24
-sources: [raw/sources/SRC-2025-06-24-001/pi-dev-docs-latest.md]
+sources: [raw/corrected/SRC-2025-06-24-001/pi-dev-docs-latest.md]
 related: []
 ---
 
@@ -56,7 +56,7 @@ curl -fsSL https://pi.dev/install.sh | sh
 * [Compaction](https://pi.dev/docs/latest/compaction) — компактификация контекста и суммаризация веток
 
 ## Источники:
-* `raw/sources/SRC-2025-06-24-001/pi-dev-docs-latest.md` — https://pi.dev/docs/latest (оригинал)
+* `raw/corrected/SRC-2025-06-24-001/pi-dev-docs-latest.md` — https://pi.dev/docs/latest (оригинал)
 
 ## Обновления (2026-06-24)
 * Добавлены: Keybindings, Sessions, Compaction, Development, Windows/Termux/tmux links
