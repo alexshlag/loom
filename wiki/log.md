@@ -359,3 +359,10 @@
 ## [2026-07-01] ingest | Issue #34 added: auto-crosslink shared_source noise filtering
   - Source: conversation — identified system file shared_source false positives in crosslink results
   - Logged to issues.md as pending improvement
+
+## [2026-07-01] schema | Phase 13.2 Batch Ingest Workflow implemented
+  - Added step "1.5_batch" to process-ingest.json (trigger after source_analysis, before discussion)
+  - Created scripts/batch-ingest.sh — orchestrator with --scan flag and JSON output
+  - Created scripts/_batch_ingest.py — Python clustering engine (keyword-based)
+  - AGENTS.md updated with Batch Ingest Trigger section
+  - Working memory updated: Phase 13.2 complete, next = Phase 14 (Wiki Sources Structure)

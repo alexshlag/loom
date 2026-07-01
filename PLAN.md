@@ -2,123 +2,54 @@
 
 ---
 
-## ✅ Completed — 2026-06-30 Session
+## ✅ Completed — 2026-07-01 Session
 
-### Script Fixes (from issues.md HIGH priority)
+### Phase 13.2: Batch Ingest Workflow ✅ COMPLETED
+**Цель**: Cross-reference между новыми источниками + bulk-update index/hot/log.
 
-| ID | Issue | Status | Changes |
-|----|-------|--------|---------|
-| #16 | Broken unit tests | ✅ Working via `npx bats` | Tests pass, just need documentation update |
-| #17 | Silent error swallowing | ⚠️ PARTIAL FIX | lint.sh: removed set -e, added log_error(), fixed duplicate code & check numbering. Remaining: replace || true with safe_run() |
-| #18 | Hardcoded /tmp/ overlap file | ✅ FIXED | process-ingest.json: mktemp instead of hardcoded /tmp/overlap_result.json |
-| #19 | Link validator 500-file limit | ✅ FIXED | link-validator.sh: --max flag (default 100), -maxdepth 5, removed head -500 |
-| #20 | validate-path.sh pattern bypass | ✅ FIXED | Prefix-only match + write-zone validation for raw/sources/ and wiki/ |
+**Этапы реализации:**
+| Step | Task | Effort | Status |
+|------|------|--------|--------|
+| **1** | Разделить интеллект (агент) vs автоматизация (скрипт) — дизайн решения | Low | ✅ Done |
+| **2** | Создать `scripts/batch-ingest.sh` + `_batch_ingest.py` для кластеризации | Medium | ✅ Done |
+| **3** | Добавить batch workflow в AGENTS.md → process-ingest.json step 1.5_batch | High | ✅ Done |
 
-### ✅ Completed this session:
-✅ Issue #17: lint.sh fully refactored — all script calls use safe_run(), no more silent errors
-✅ Issue #10: Created scripts/utilities/common.sh with unified log_error() + safe_run()
-✅ Issues #16, #18, #19, #20: All fixed (link validator limits, validate-path guards, mktemp)
-
-### ✅ Completed this session:
-✅ Phase 23 Step 1: link-validator.sh --batch now supports --auto flag and stdin (--batch -)
-✅ Phase 23 Step 2: unified-pass.sh — shared walk + 3 consumers (validate_links, collect_metadata, discover_crosslinks)
-✅ auto-crosslink.sh: --file-list flag to avoid redundant find (used by unified-pass)
-✅ ID-генерация в rebuild-meta.sh: resolve_target для bare filenames unified с registry (bug fix)
-✅ Инкрементальная логика rebuild-meta.sh: no timestamp → full rebuild, а не stale incremental
-
-### ✅ Completed — 2026-07-01 Session
-
-- ✅ **Phase 23 Step 3**: unified-pass.sh integrated into lint/ingest workflows.
-  - unified-pass.sh: added `--auto` flag + output normalization for auto-fix mode
-  - lint.sh check 8: replaced `link-validator.sh --auto` with `unified-pass.sh --quiet --skip-meta --skip-crosslinks --auto`
-  - process-lint.json check_id=7: updated command + description
-  - process-ingest.json step_3a/3b: replaced link-validator.sh post_operations with unified-pass.sh calls
-  - process-ingest.json step_6: updated to reference unified-pass
-- ✅ Issue #11: Fixed check-new-sources.sh trap pattern to match atomic_write_content's `.tmp.$$` naming
-- ✅ Issue #10: Refactored 4 Python scripts (raw-link-repair, _detect_contradictions, h1-index, similarity_index) to use logging module for human-readable messages (→stderr), keeping print() only for stdout machine-readable output
-
----
-
-## ✅ Completed (reference only)
-
-| Phase | Feature | Commit |
-|-------|----------|--------|
-| 1-5 | Auto-rebuild meta, smarter search, non-blocking lint, index update, dynamic scoring | `1990a20` |
-| 8 | Contradiction Deep Scan (Python-based) | `c368411` |
-| 10 | Evidence-Based Priority System + frontmatter schema | `581b115` |
-| 11.1 | Syndication Detection — `text-similarity.sh` | `258fa2c` |
-| 12.1 | Decision Rules Framework — DR-1/DR-2/DR-3 | `c368411` |
-| IF-1..IF-4 | Integration hooks: lint check_id=9, process refs, step_3c ingest scan | `b824a7` |
-| S5 | Search analytics — async query frequency logging (`meta/search_analytics.json`) | `94c4fbe` |
-
-**Resolved from 06-28 audit**: P1 (shebangs), P2 (atomic writes), P3 (tests), P4 (error handling),
-P5 (temp files), P6 (link validator limit), P7 (path guardrails), P9 (debug prints),
-P12 (logging standard), P13 (trap handlers), P15 (minor fixes).
-
-**Resolved from 06-28 session**: P8/#21 (heredoc injection → env var passing), #H3 (system file exclusion in detect-contradications), Phase 12.3 D6 (rebuild-meta auto-trigger after link-fix).
-
-**Completed today (2026-06-30)**: Harness-Independent Session & Git Operations — 4 скрипта интегрированы в process-файлы, секция из AGENTS.md удалена, NEW_EXT_PLAN.md удалён. Natural Memory Translation — правило в AGENTS.md + living-doc.
-
----
-
-## ⬜ Unresolved — From 06-28 Audit
-
-### Script fixes needed
-
-| ID | Issue | Plan | Priority |
-|----|-------|------|----------|
-| **Phase 11.2** | Causal Chain Analysis | After schema migration → future priority | 🟡 Low |
-
-### Deferred (strategic)
-
-| ID | Issue | Status |
-|----|-------|--------|
-| **P10** | Redundant wiki walks — 3 full walks per ingest, unified pass needed | ✅ Done (Issue #23) | See issues.md#23
-| **P11** | Manual JSON construction in bash scripts (`echo/printf` vs `jq`) | Scripts already use `json.dump()` for complex output; only echo-level needs migration | ⬜ Deferred |
-| **P11** | Manual JSON construction in bash scripts (`echo/printf` vs `jq`) | Scripts already use `json.dump()` for complex output; only echo-level needs migration | ⬜ Deferred |
-| **P14** | Scripts documentation — no unified docs for 15+ scripts | Nice-to-have → deferred to onboarding work | ⬜ Deferred |
+**Зависимости**: Нет.
+**Связано**: `issues.md#30`
 
 ---
 
 ## 🔄 Pending Feature Phases (from original roadmap)
 
-### Phase 23: Wiki Scalability — Unified Pass Architecture ✅ COMPLETED
-**Цель**: Устранить redundant wiki walks (Issue #23). Заменить 3 отдельных скрипта на единый `unified-pass.sh` с single-walk analysis.
+### Phase 29: Raw Corrected Zone + Delta Tracking 🥇
+**Цель**: Добавить zone `raw/corrected/` для agent-writable processed copies, обеспечить delta tracking и correct source referencing.
+
+**Проблема:**
+- raw/** — read-only для агента (immutable originals)
+- wiki pages ссылаются на frontmatter sources: [] — но нет механизма re-read оригиналов при contradiction
+- Agent не может хранить обработанные версии рядом с оригиналами → дублирование в wiki/
+
+**Решение:** `raw/corrected/SRC-*/` — agent-writable zone для processed copies.
 
 **Этапы реализации:**
-| Step | Task | Effort | Status |
-|------|------|--------|--------|
-| **1** | `--batch` mode в `link-validator.sh` — принимает список файлов, один pass validation | Low | ✅ Done |
-| **2** | Создать `scripts/unified-pass.sh` — single walk по wiki, three analyses in one pass. Outputs: broken_links JSON + crosslink_candidates JSON. | Medium | ✅ Done |
-| **3** | Интегрировать в lint/ingest workflows — заменить 3 отдельных вызова на 1 unified call. Удалить дублирующиеся atomarные скрипты. | High | ✅ Done |
+| Step | Task | Owner | Effort | Status |
+|------|------|-------|--------|--------|
+| **1** | Обновить `validate-path.sh`: добавить `raw/corrected/` в ALLOWED_WRITE_ZONES | Agent | Low | ⬜ Next |
+| **2** | Создать `scripts/raw-correct.sh` — agent вызов для создания corrected copy (валидирует путь, формат) | Agent | Medium | ⬜ After step 1 |
+| **3** | Обновить process-ingest.json: add post-processing step после capture → agent сохраняет corrected copy в raw/corrected/SRC-*/ | Agent | High | ⬜ After step 2 |
+| **4** | Обновить AGENTS.md: правила original vs corrected, wiki referencing pattern, delta tracking integration | Agent | Medium | ⬜ After step 3 |
 
-**Зависимости**: Steps sequential (1→2→3). Каждый шаг должен пройти testing before next.
-**Связано**: `issues.md#23`, PLAN.md P10
+**Зависимости**: Sequential (1→2→3→4). Каждый шаг требует testing before next.
+**Связано**: `issues.md#29` (delta tracking placement), `issues.md#32` (wiki sources structure)
 
-### Phase 11.2: Causal Chain Analysis
-**Цель**: Agent prompt для "X wrote first, Y copied from X" — causal chain analysis на основе overlap данных из text-similarity.sh
-**Приоритет**: Low (after schema migration + issue fixes)
+---
 
-### Phase 13: Wiki Page Templates Schema (#H4)
+### Phase 13: Wiki Page Templates Schema (#H4) 🥈
 **Цель**: Единый, полный, не-разрозненный набор per-type format descriptions для всех типов wiki pages.
 **Связан с**: `issues.md#H4`
-**Проблемы:**
-- Битые refs в AGENTS.md → process-ingest.json
-- Нет per-type structure descriptions (Entity/Concept/Synthesis/Comparison/Notes)
-- Summary pages: правила создания есть, но нет описания структуры страницы
-- Фактические wiki-файлы показывают consistent patterns, но они не задокументированы
-
-**Discussion context:** `context.md` — фиксация решений по Q1-Q4 (universal vs type-specific templates, summary structure, section naming, comparison format).
-
-**Задачи:**
-1. Убрать битые refs из AGENTS.md#page_templates
-2. Добавить inline per-type structure descriptions в AGENTS.md (вместо process-ingest.json refs)
-3. Зафиксировать фактические patterns: frontmatter → ## Контекст → ## Анализ → ## Выводы → ## Связи
-4. Добавить Summary page structure description (sections, frontmatter type=faq_summary rules)
-5. Обновить process-ingest.json step 3a/3b с конкретными секциями для каждого типа
 **Приоритет**: Medium — требуется before any new ingest or synthesis creation
 
-### Phase 12.2: Auto-Extract Assumptions
+### Phase 12.2: Auto-Extract Assumptions 🥉
 **Цель**: Агент автоматически экстрагирует assumptions из источников (источники с weak evidence помечать)
 **Приоритет**: Future
 
@@ -135,71 +66,144 @@ P12 (logging standard), P13 (trap handlers), P15 (minor fixes).
 
 ---
 
-## 📝 Future Improvements (linked to issues.md)
+## 📝 Phase 29 Deep-Dive Analysis — Raw Corrected Zone Architecture
 
-| ID | Issue ID | Description | Status |
-|----|----------|-------------|--------|
-| F1 | #F1 (issues.md) | Root index format: `wiki/index.md` → краткий (categories + links). Research Wikipedia naming conventions + unique file naming rules. | 📝 Planning — discussion required |
-| F2 | #F2 (issues.md) | Local indexes in every category folder with keywords/tags/first sentences. Requires rebuild-meta.sh update. | 📝 Planned — depends on F1 research |
+### 🔍 Problem Statement
 
-> **Note**: Файл `h1-index.py` + `rebuild-meta.sh` генерируют index.md автоматически, не вручную агентом.
+#### Current setup (before raw/corrected):
+```bash
+# Originals (immutable)
+raw/SRC-001/pi-dev-docs-latest.md          # ← original, agent read-only
 
+# Wiki pages reference via frontmatter (broken chain)
+wiki/entities/pi-coding-agent.md:
+  sources: ["https://pi.dev/docs/latest"]   # ← external URL only!
+```
+
+**Проблемы:**
+1. **No audit trail**: Agent can't re-read original source for contradiction resolution
+2. **No delta tracking**: Agent doesn't know if raw/SRC-001 was already processed → waste of tokens on re-ingest
+3. **Broken link chain**: Wiki references external URL, but agent needs intermediate processing step (fix paths, OCR errors, extract entities)
+
+#### Proposed architecture:
+```bash
+# Layer 1: Originals (immutable, agent read-only)
+raw/SRC-001/pi-dev-docs-latest.md          # ← original, never modified by agent
+
+# Layer 2: Corrected copies (agent rw, full access)
+raw/corrected/SRC-001/pi-dev-docs-latest.md   # ← agent writes corrected version here
+                                                  #     - fixed broken links to external URLs
+                                                  #     - OCR errors from capture process
+                                                  #     - extracted entities/tags as markdown
+
+# Layer 3: Wiki pages reference Layer 2
+wiki/entities/pi-coding-agent.md:
+  sources: ["raw/corrected/SRC-001/pi-dev-docs-latest.md"]   # ← corrected copy!
+```
+
+### 🛡 Guardrails for raw/corrected/:
+
+#### validate-path.sh changes:
+```bash
+# Current:
+ALLOWED_WRITE_ZONES=("raw/sources/" "wiki/")
+
+# After Phase 29:
+ALLOWED_WRITE_ZONES=("raw/corrected/**/*" "wiki/")   # ← agent rw zone added
+PROTECTED_PATTERNS=("meta/")                        # ← unchanged
+```
+
+#### Agent write rules for raw/corrected/:
+1. ✅ Agent can create/write `.md`, `.json`, `.txt` files in `raw/corrected/SRC-*/*`
+2. ❌ Agent cannot modify originals in `raw/SRC-*/original.*` (read-only)
+3. ❌ Agent cannot delete/move original files
+4. ✅ Agent-generated files must use naming convention: `{filename}` or `_extracted-{filename}`
+
+### 🔄 Integration with existing processes:
+
+#### process-ingest.json integration points:
+
+**Step 0 (capture)** — unchanged: agent reads source, saves to raw/SRC-*/
+**Step 1 (source analysis)** — NEW: after reading original → agent creates corrected copy in raw/corrected/
+**Step 2 (discussion with user)** — NEW: agent presents summary from corrected copy
+**Step 3a (integration_new_page)** — updated: wiki pages reference `raw/corrected/SRC-*/` instead of originals
+**Step 1.5_batch (batch ingest)** — enhanced: batch scanner reads raw/corrected/ files, not originals
+
+#### Delta Tracking integration:
+
+```bash
+# raw/corrected/SRC-001/.manifest.json ← agent-generated delta tracking file
+{
+  "original_path": "raw/SRC-001/pi-dev-docs-latest.md",
+  "corrected_path": "raw/corrected/SRC-001/pi-dev-docs-latest.md",
+  "hash_original": "abc123...",
+  "hash_corrected": "def456...",
+  "date_ingested": "2026-07-01",
+  "status": "processed"
+}
+```
+
+**Delta check flow:**
+1. Agent receives new source → hash of original
+2. Check meta/source-manifest.json for existing entry with same hash
+3. If found → skip re-ingest (already processed)
+4. If not found → create corrected copy in raw/corrected/, write manifest, proceed
+
+#### Contradiction Resolution integration:
+
+**Current:** wiki pages have sources: [] but no way to trace back to original source for comparison.
+
+**After Phase 29:**
+```yaml
+# wiki/entities/pi-coding-agent.md:
 ---
+sources: ["raw/corrected/SRC-001/pi-dev-docs-latest.md"]
+---
+## Definition
+[Current facts from corrected copy]
+## Обновлено [date] — новое уточнение
+[Facts from new source that contradicts existing]
+```
 
-## 🔄 Pending Ingest Workflow Improvements (from claude-obsidian analysis)
+**Resolution flow:**
+1. Agent detects contradiction → reads wiki page → gets sources: ["raw/corrected/SRC-001/..."]
+2. Agent reads meta/source-manifest.json → finds original_path + hash_original
+3. Agent re-reads raw/SRC-001/original (immutable) for comparison
+4. Compare facts from current wiki vs original source → resolve based on cascade priority
 
-### Phase 13: Delta Tracking 🥇
-**Цель**: Предотвратить waste of tokens на re-ingest тех же источников.
+### 📊 Impact assessment:
 
-**Задачи**:
-| Step | Action | Owner | Status |
-|------|--------|-------|--------|
-| ✅ 1 | **Размещение решено**: `meta/source-manifest.json`, agent пишет через скрипт | Decision made | ✅ Done |
-| 2 | Создать `scripts/rebuild-source-manifest.sh` — API: --add, --scan, --check | Agent | ⬜ Next |
-| 3 | Добавить delta check в ingest flow (hash → skip if unchanged) | Agent | ⬜ After step 2 |
-| 4 | Обновить AGENTS.md и process-ingest.json с правилами delta tracking | Agent | ⬜ After step 2 |
+| Aspect | Before Phase 29 | After Phase 29 | Change |
+|--------|-----------------|---------------|--------|
+| **Audit trail** | None — agent can't trace back to source | raw/corrected/ + manifest.json → full chain | ✅ Major improvement |
+| **Contradiction resolution** | Blind cascade priority (code > docs) | Source re-read via original_path in manifest | ✅ Major improvement |
+| **Delta tracking** | meta/source-manifest.json only | raw/corrected/.manifest.json + hash check | ✅ Enhanced |
+| **Wiki references** | External URLs or frontmatter-only | Direct links to corrected copies (rw zone) | ✅ Cleaner chain |
 
-**Зависимости**: Нет.
-**Связано**: `issues.md#29` (placement resolved, implementation pending)
+### 📋 Implementation order:
 
-### Phase 13: Batch Ingest Workflow 🥈
-**Цель**: Cross-reference между новыми источниками + bulk-update index/hot/log.
+1. **Step 1**: Update `validate-path.sh` → add raw/corrected/ to ALLOWED_WRITE_ZONES
+   - Test: agent can write to raw/corrected/SRC-001/test.md ✓
+   
+2. **Step 2**: Create `scripts/raw-correct.sh` — safe write wrapper for agent
+   - API: `--add "raw/corrected/SRC-001/file.md" content...`
+   - Validates path prefix, JSON format (for .json files), prevents original modification
+   
+3. **Step 3**: Update process-ingest.json → add post-processing step after capture
+   - Step 1: After reading raw/SRC-*/original → agent creates corrected copy in raw/corrected/
+   - Wiki pages reference corrected copies via sources: [] field
+   
+4. **Step 4**: Update AGENTS.md + delta tracking integration (Phase 29, step 3)
+   - Document rules about original vs corrected files
+   - Add manifest.json generation to ingest flow
 
-**Задачи**:
-| Step | Action | Owner |
-|------|--------|-------|
-| 1 | Разделить интеллект (агент) vs автоматизация (скрипт) — дизайн решения | Agent + user discussion |
-| 2 | Создать `scripts/batch-ingest.sh` для автоматизированной части | Agent |
-| 3 | Добавить batch workflow в AGENTS.md → process-ingest.json step 3 | Agent |
+### ⚠️ Risks & Mitigations:
 
-**Зависимости**: Phase 13.1 (delta tracking) — не строго.
-**Связано**: `issues.md#30`
-
-### Phase 14: Wiki Sources Structure 🥉
-**Цель**: Отдельная зона для sources → audit trail и conflict resolution.
-
-**Задачи**:
-| Step | Action | Owner |
-|------|--------|-------|
-| 1 | Решить нужна ли `wiki/sources/` папка vs frontmatter `sources: []` | Agent + user decision |
-| 2 | Если да → создать структуру и правила filing в AGENTS.md | Agent |
-
-**Зависимости**: Phase 13.2 (batch ingest) — для bulk source processing.
-**Связано**: `issues.md#32`
-
-### Phase 15: Media Files Pipeline 🪢
-**Цель**: Структурированный pipeline для изображений и медиа-файлов (OCR, metadata extraction).
-
-**Задачи**:
-| Step | Action | Owner | Status |
-|------|--------|-------|--------|
-| ✅ 1 | **Размещение решено**: `wiki/assets/images/` + `wiki/assets/descriptions/`, agent-owned | Decision made | ✅ Done |
-| 2 | Добавить wiki/assets/ структуру в AGENTS.md → "The Wiki (wiki/)" section | Agent | ⬜ Next |
-| 3 | Создать image ingestion rules в AGENTS.md + process-ingest.json step | Agent | After step 2 |
-| 4 | (Optional) `scripts/media-ingest.sh` — автоматизация OCR + metadata | Agent | Future |
-
-**Зависимости**: Нет.
-**Связано**: `issues.md#31`
+| Risk | Severity | Mitigation |
+|------|----------|------------|
+| Agent accidentally modifies originals in raw/SRC-*/ | HIGH | validate-path.sh blocks writes to raw/** except raw/corrected/ |
+| Agent creates malformed JSON in .manifest files | MEDIUM | scripts/raw-correct.sh validates format before writing |
+| Corrected copies get out of sync with originals | LOW | manifest.json stores hash_original → agent can verify if corrected is stale |
 
 ---
 
@@ -211,7 +215,7 @@ P12 (logging standard), P13 (trap handlers), P15 (minor fixes).
 ### Completed actions:
 | Step | Action | Result |
 |------|---------|--------|
-| D1-D2 | Link Conventions + EXT-LINK-V1 embedded, DR-EX1 removed | AGENTS.md updated |
+| D1-D2 | Link Conventions + EXT-RES1 embedded, DR-EX1 removed | AGENTS.md updated |
 | D3 | fetch_content_truncation.secondary_action cleaned (raw hierarchy example removed) | AGENTS.md cleaned |
 | D4 | ZONE-DEF1 + META-DEF1 added to Protected Zones | AGENTS.md updated |
 | D5 | EXT-RES1 embedded in process-ingest.json (EXT-1..EXT-4 merged into single rule) | process-ingest.json updated |
@@ -226,6 +230,4 @@ P12 (logging standard), P13 (trap handlers), P15 (minor fixes).
 
 ---
 
----
-
-*Last update: 2026-06-29 | Schema migration plan corrected — Phase 12.4. All rules embedded, NOT referenced via schema_ref. Future improvements tracked (F1-F2 linked to issues.md).*
+*Last update: 2026-07-01 | Phase 29 Deep-Dive Analysis — Raw Corrected Zone Architecture added. Phase 13.2 Batch Ingest Workflow completed (Phase 14 deferred pending raw/corrected implementation).*
