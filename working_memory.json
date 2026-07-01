@@ -1,7 +1,7 @@
 {
-  "last_updated": "2026-07-01T12:52:02+03",
-  "current_mode": "ingest",
-  "focus_node": "Phase 29 Deep-Dive Analysis \u2014 Raw Corrected Zone Architecture complete",
+  "last_updated": "2026-07-01T13:14:51+03",
+  "current_mode": "project",
+  "focus_node": "Phase 29 completed \u2014 all steps done",
   "open_pages": [
     {
       "path": "issues.md",
@@ -74,40 +74,28 @@
     }
   ],
   "query_summary": {
-    "intent": "Deep-dive analysis of raw/corrected zone architecture for Phase 29",
+    "intent": "Phase 29 implementation \u2014 Raw Corrected Zone architecture complete",
     "pages_read": [
-      "PLAN.md",
-      "process-ingest.json",
+      "AGENTS.md",
       "validate-path.sh"
     ],
     "key_findings": [
-      "raw/corrected/SRC-*/ provides agent-writable zone for processed copies alongside immutable originals",
-      "validate-path.sh needs ALLOWED_WRITE_ZONES updated to include raw/corrected/",
-      "process-ingest.json requires post-processing step after capture \u2192 creates corrected copy in raw/corrected/",
-      "Delta tracking via manifest.json + hash check prevents re-ingest waste",
-      "Contradiction resolution enhanced: agent can re-read original source for comparison via manifest"
+      "Step 1: validate-path.sh updated with raw/corrected/ in ALLOWED_WRITE_ZONES \u2713",
+      "Step 2: scripts/raw-correct.sh created with safe write wrapper for agent \u2713",
+      "Step 3: process-ingest.json step 0.5_corrected_copy added after source_analysis \u2713",
+      "Step 4: AGENTS.md updated with Raw Corrected Zone rules + Delta Tracking integration \u2713"
     ]
   },
   "next_steps_todo": [
     {
-      "task": "Step 1: Update validate-path.sh \u2014 add raw/corrected/ to ALLOWED_WRITE_ZONES",
-      "priority": "high",
+      "task": "Update PLAN.md with Phase 29 completion status",
+      "priority": "low",
       "status": "ready"
     },
     {
-      "task": "Step 2: Create scripts/raw-correct.sh \u2014 safe write wrapper for agent",
+      "task": "Create sample corrected copy from existing raw source (validation test)",
       "priority": "medium",
-      "status": "pending (after step 1)"
-    },
-    {
-      "task": "Step 3: Update process-ingest.json \u2014 add post-processing step after capture \u2192 raw/corrected/",
-      "priority": "high",
-      "status": "pending (after step 2)"
-    },
-    {
-      "task": "Step 4: Update AGENTS.md + delta tracking integration (manifest.json generation)",
-      "priority": "medium",
-      "status": "pending (after step 3)"
+      "status": "pending (manual verification)"
     }
   ]
 }
