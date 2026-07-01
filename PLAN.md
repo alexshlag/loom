@@ -59,13 +59,27 @@ P12 (logging standard), P13 (trap handlers), P15 (minor fixes).
 
 | ID | Issue | Status |
 |----|-------|--------|
-| **P10** | Redundant wiki walks — 3 full walks per ingest, can be unified | Large refactor → deferred | ⬜ Deferred |
+| **P10** | Redundant wiki walks — 3 full walks per ingest, unified pass needed | ✅ Done (Issue #23) | See issues.md#23
+| **P11** | Manual JSON construction in bash scripts (`echo/printf` vs `jq`) | Scripts already use `json.dump()` for complex output; only echo-level needs migration | ⬜ Deferred |
 | **P11** | Manual JSON construction in bash scripts (`echo/printf` vs `jq`) | Scripts already use `json.dump()` for complex output; only echo-level needs migration | ⬜ Deferred |
 | **P14** | Scripts documentation — no unified docs for 15+ scripts | Nice-to-have → deferred to onboarding work | ⬜ Deferred |
 
 ---
 
 ## 🔄 Pending Feature Phases (from original roadmap)
+
+### Phase 23: Wiki Scalability — Unified Pass Architecture ✅ IN PROGRESS
+**Цель**: Устранить redundant wiki walks (Issue #23). Заменить 3 отдельных скрипта на единый `unified-pass.sh` с single-walk analysis.
+
+**Этапы реализации:**
+| Step | Task | Effort | Status |
+|------|------|--------|--------|
+| **1** | `--batch` mode в `link-validator.sh` — принимает список файлов, один pass validation | Low | ⬜ Next |
+| **2** | Создать `scripts/unified-pass.sh` — single walk по wiki, three analyses in one pass. Outputs: broken_links JSON + crosslink_candidates JSON. | Medium | ⬜ After step 1 passes testing |
+| **3** | Интегрировать в lint/ingest workflows — заменить 3 отдельных вызова на 1 unified call. Удалить дублирующиеся atomarные скрипты. | High | ⬜ After steps 1-2 validated |
+
+**Зависимости**: Steps sequential (1→2→3). Каждый шаг должен пройти testing before next.
+**Связано**: `issues.md#23`, PLAN.md P10
 
 ### Phase 11.2: Causal Chain Analysis
 **Цель**: Agent prompt для "X wrote first, Y copied from X" — causal chain analysis на основе overlap данных из text-similarity.sh
