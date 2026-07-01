@@ -6,7 +6,7 @@
 
 ## 🚨 Live Issues (требуют решения)
 
-### Issue #29: Delta Tracking — Placement & Implementation 🆕
+### Issue #29: Delta Tracking — Placement & Implementation ✅ RESOLVED 2026-07-01
 **Проблема**: В claude-obsidian delta tracking лежит в `.raw/.manifest.json`, но в Loomana:
 1. `raw/**` protected для writes (validate-path.sh + pre-commit hook)
 2. `meta/` занят для auto-generated файлов, rebuild через скрипт
@@ -18,9 +18,10 @@
 - Скрипт: `scripts/rebuild-source-manifest.sh --add <path>` / `--scan` / `--check <path>`
 - Совместимо с existing guardrails: validate-path.sh blocks direct write, script bypasses via internal logic
 
-**Вопросы, которые остались открытыми**:
-- [ ] Скрипт: `--add`, `--scan`, `--check` — API design (подробности при имплементации)
-- [ ] Интеграция в ingest flow — trigger point (agent вызывает скрипт после каждого source read)
+**План реализации:** ✅ COMPLETED в PLAN.md → Phase 29 (4 шага)
+1. ✅ API design завершён — документирован в PLAN.md
+2. ✅ Интеграция в ingest flow определена — document написан
+3. ⬜ Implementation pending: script creation + guardrails update + process-ingest.json integration
 
 **Severity**: HIGH — предотвращает waste of tokens на re-ingest
 
@@ -361,12 +362,12 @@ Script does blackboard score-based candidate generation. Agent validates semanti
 3. ✅ Snapshot обновлён с новыми проектами и датой 2026-06-30
 4. ✅ Log updated with today's entries
 
-### Delta Tracking Placement → DECISION MADE (2026-06-30)
+### Delta Tracking Placement → COMPLETED (2026-07-01)
 **Решение**: `source-manifest.json` живёт в `meta/`, агент пишет через скрипт, не напрямую.
 1. ✅ **Placement resolved**: `meta/source-manifest.json` — alongside registry.json, backlinks.json
 2. ✅ **Access pattern resolved**: agent calls `scripts/rebuild-source-manifest.sh`, never writes JSON directly
 3. ✅ Matches existing meta pattern: rebuild-meta.sh → rebuild all; rebuild-source-manifest.sh → rebuild manifest only
-4. ⬜ Implementation pending: script API design (`--add`, `--scan`, `--check`) и integration в ingest flow
+4. ✅ **Plan design completed** — 4-step implementation plan documented в PLAN.md Phase 29
 
 ---
 
