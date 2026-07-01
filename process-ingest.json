@@ -161,6 +161,42 @@
       ]
     },
     {
+      "step_id": "1.5_batch",
+      "name": "batch_ingest_trigger",
+      "description": "Если агент получает/обнаруживает N+ связанных источников → запускает batch-ingest.sh для кластеризации перед discussion.",
+      "condition": "multiple_sources_detected OR user_provides_multiple_files",
+      "pre_condition": {
+        "after_step": 1,
+        "purpose": "cluster after individual source analysis"
+      },
+      "actions": [
+        {
+          "action": "run_batch_scanner",
+          "command": "./scripts/batch-ingest.sh --scan ",
+          "description": "Скрипт сканирует все файлы, извлекает H1/tags/keywords, группирует по shared entities"
+        },
+        {
+          "action": "receive_cluster_manifest",
+          "format": "JSON {clusters: [{id, name, sources: [], shared_keywords}], total_sources: N}"
+        },
+        {
+          "action": "present_clusters_to_user",
+          "description": "Агент показывает кластеризованные результаты для принятия решения о batch processing"
+        }
+      ],
+      "evaluation": [
+        {
+          "condition": "clusters_count == 0",
+          "note": "no_batch_needed — proceed to step_2 (discussion) with individual sources"
+        },
+        {
+          "condition": "clusters_count > 0 AND user_confirms_batch",
+          "action": "PROCEED_TO_BATCH_PROCESSING"
+        }
+      ],
+      "schema_ref": "AGENTS.md#batch_ingest_trigger"
+    },
+    {
       "step_id": "2",
       "name": "discussion_with_user",
       "actions": [

@@ -1,26 +1,32 @@
 {
-  "last_updated": "2026-06-30T17:XX:XX+03",
+  "last_updated": "2026-07-01T12:00:40+03",
   "current_mode": "ingest",
-  "focus_node": "Ingest workflow comparison and implementation planning",
+  "focus_node": "Phase 13.2 Batch Ingest Workflow - implementation complete",
   "open_pages": [
-    {"path": "issues.md", "status": "updating"},
-    {"path": "PLAN.md", "status": "updating"}
+    {
+      "path": "issues.md",
+      "status": "updating"
+    },
+    {
+      "path": "PLAN.md",
+      "status": "updating"
+    }
   ],
   "dead_ends": [],
   "broken_links_resolved": [
     {
       "file": "scripts/link-validator.sh",
-      "change": "Fixed path resolution for ../ links — now resolves against file's directory, not WIKI_DIR",
+      "change": "Fixed path resolution for ../ links \u2014 now resolves against file's directory, not WIKI_DIR",
       "rule_applied": "Relative paths with ../* must be resolved using dirname(file) + realpath -m",
       "timestamp": "2026-06-30T17:XX:XX+03",
-      "notes": "Fixes #2 broken links (natural-memory.md → AGENTS.md, temporal-decay-in-wiki.md → issues.md)"
+      "notes": "Fixes #2 broken links (natural-memory.md \u2192 AGENTS.md, temporal-decay-in-wiki.md \u2192 issues.md)"
     },
     {
       "file": "wiki/entities/ai-factory.md",
-      "change": "Removed invalid source path from frontmatter — sources field must not reference non-existent raw/github/",
+      "change": "Removed invalid source path from frontmatter \u2014 sources field must not reference non-existent raw/github/",
       "rule_applied": "EXT-LINK-V1: Never link to or source from raw/** unless files exist on disk. Replace with canonical external URLs.",
       "timestamp": "2026-06-30T17:XX:XX+03",
-      "notes": "Cleaned up stale meta-reference [raw/github/lee-to/ai-factory@2.x/] → replaced with actual GitHub/NPM URLs"
+      "notes": "Cleaned up stale meta-reference [raw/github/lee-to/ai-factory@2.x/] \u2192 replaced with actual GitHub/NPM URLs"
     },
     {
       "file": "wiki/syntheses/python-nixos-development-environments.md",
@@ -43,7 +49,7 @@
         "https://github.com/lee-to/ai-factory/blob/2.x/docs/workflow.md",
         "https://github.com/lee-to/ai-factory/blob/2.x/docs/skills.md"
       ],
-      "rule_applied": "raw/* links must exist on disk; when missing → replace with external GitHub permalinks",
+      "rule_applied": "raw/* links must exist on disk; when missing \u2192 replace with external GitHub permalinks",
       "timestamp": "2026-06-28T17:XX:XX+00",
       "notes": "Fixed 3 broken raw-links to official GitHub docs. Also fixed link-validator.sh to check raw/* existence instead of skipping them."
     },
@@ -51,7 +57,7 @@
       "tool": "scripts/raw-link-repair.py + raw-link-repair.sh",
       "scope": "raw/github/lee-to/ai-factory@2.x (13 files)",
       "repairs_count": 76,
-      "rule_applied": "github/{owner}/{repo}@{branch}/path.md → https://github.com/owner/repo/blob/<branch>/path.md",
+      "rule_applied": "github/{owner}/{repo}@{branch}/path.md \u2192 https://github.com/owner/repo/blob/<branch>/path.md",
       "timestamp": "2026-06-28T17:XX:XX+00",
       "notes": "All relative markdown links in ai-factory repo converted to GitHub permalinks. Process-ingest.json updated to call raw-link-repair.sh at step 1.",
       "issue_reference": "issues.md #27"
@@ -61,14 +67,14 @@
     {
       "id": "AD-001",
       "topic": "Delta tracking placement",
-      "decision": "source-manifest.json → meta/ (alongside registry, backlinks). Agent writes via script only.",
+      "decision": "source-manifest.json \u2192 meta/ (alongside registry, backlinks). Agent writes via script only.",
       "reasoning": "raw/** is protected for agent writes. meta/ uses existing pattern: rebuild through scripts (rebuild-meta.sh), not direct edit. Consistent with validate-path.sh guardrails.",
       "date": "2026-06-30",
       "status": "resolved"
     }
   ],
   "query_summary": {
-    "intent": "Изучить ingest архитектуру claude-obsidian и выявить заимствуемые решения для Loomana",
+    "intent": "\u0418\u0437\u0443\u0447\u0438\u0442\u044c ingest \u0430\u0440\u0445\u0438\u0442\u0435\u043a\u0442\u0443\u0440\u0443 claude-obsidian \u0438 \u0432\u044b\u044f\u0432\u0438\u0442\u044c \u0437\u0430\u0438\u043c\u0441\u0442\u0432\u0443\u0435\u043c\u044b\u0435 \u0440\u0435\u0448\u0435\u043d\u0438\u044f \u0434\u043b\u044f Loomana",
     "pages_read": [
       "skills/wiki-ingest/SKILL.md",
       "skills/autoresearch/SKILL.md",
@@ -77,21 +83,16 @@
       "PLAN.md"
     ],
     "key_findings": [
-      "Claude-obsidian использует dual-path ingest: URL → .raw/articles/, autoresearch → direct-to-wiki",
-      "Mode-based routing через Python script (wiki-mode.py) для маршрутизации по категориям",
-      "Transport abstraction layer (CLI→MCP→filesystem)",
-      "Advisory file locking с flock для safe concurrent writes",
-      "Delta tracking в .raw/.manifest.json — но .raw/ protected в Loomana, размещаем в meta/ через скрипт"
+      "Claude-obsidian \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u0443\u0435\u0442 dual-path ingest: URL \u2192 .raw/articles/, autoresearch \u2192 direct-to-wiki",
+      "Mode-based routing \u0447\u0435\u0440\u0435\u0437 Python script (wiki-mode.py) \u0434\u043b\u044f \u043c\u0430\u0440\u0448\u0440\u0443\u0442\u0438\u0437\u0430\u0446\u0438\u0438 \u043f\u043e \u043a\u0430\u0442\u0435\u0433\u043e\u0440\u0438\u044f\u043c",
+      "Transport abstraction layer (CLI\u2192MCP\u2192filesystem)",
+      "Advisory file locking \u0441 flock \u0434\u043b\u044f safe concurrent writes",
+      "Delta tracking \u0432 .raw/.manifest.json \u2014 \u043d\u043e .raw/ protected \u0432 Loomana, \u0440\u0430\u0437\u043c\u0435\u0449\u0430\u0435\u043c \u0432 meta/ \u0447\u0435\u0440\u0435\u0437 \u0441\u043a\u0440\u0438\u043f\u0442"
     ]
   },
   "next_steps_todo": [
     {
-      "task": "Phase 13.2: Batch Ingest Workflow — дизайн agent/script split",
-      "priority": "medium",
-      "source": "PLAN.md Phase 13"
-    },
-    {
-      "task": "Phase 14: Wiki Sources Structure — решение о wiki/sources/ папке",
+      "task": "Phase 14: Wiki Sources Structure \u2014 \u0440\u0435\u0448\u0435\u043d\u0438\u0435 \u043e wiki/sources/ \u043f\u0430\u043f\u043a\u0435",
       "priority": "medium",
       "source": "PLAN.md Phase 14"
     }
