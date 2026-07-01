@@ -182,6 +182,41 @@
         "exit_code_0": "changes_detected → prompt user to update wiki/hot.md",
         "exit_code_1": "no_changes → skip silently"
       }
+    },
+    {
+      "check_id": "12",
+      "name": "source_manifest_backfill_detection",
+      "description": "Сканирует meta/source-manifest.json, находит unprocessed/stale источники. Если source ссылается на wiki-страницу (frontmatter sources: [raw/sources/...]) но corrected copy отсутствует — предлагает backfill. Lint detect → User decides → Ingest process handles actual processing.",
+      "command": "./scripts/rebuild-source-manifest.sh --scan-only",
+      "output_handling": {
+        "exit_code_0": "all_sources_processed — no action needed",
+        "exit_code_1": "unprocessed_or_stale_found — parse JSON: unprocessed_count + stale_count, list sources[] with status=unprocessed/stale"
+      },
+      "actions": [
+        {
+          "action": "parse_unprocessed_sources",
+          "description": "Из JSON output извлечь sources[].source_path и .corrected_base для каждого unprocessed/stale entry"
+        },
+        {
+          "action": "check_wiki_pages_with_source_reference",
+          "note": "Для каждого unprocessed source найти wiki-страницы, которые ссылаются на этот raw/sources/ путь в frontmatter sources[]"
+        }
+      ],
+      "evaluation": [
+        {
+          "condition": "unprocessed_count == 0 AND stale_count == 0",
+          "action": "PROCEED_TO_NEXT_CHECK",
+          "note": "no_backfill_needed — все источники processed, proceed to next lint check"
+        },
+        {
+          "condition": "unprocessed_count > 0 OR stale_count > 0",
+          "action_name": "REPORT_AND_PROMPT_USER",
+          "output_format": "UNPROCESSED/SOURCE: {source_path} → {corrected_base}. Found {N} wiki pages referencing this source. Ask user: backfill corrected copies? (y/n)",
+          "note": "Lint не делает actions — только report + prompt. Интеграция через Step 0_delta_check в process-ingest.json"
+        }
+      ],
+      "schema_ref": "AGENTS.md#raw_corrected_zone",
+      "lint_policy": "Soft-only: lint.sh prints detection results, does NOT create corrected copies or modify wiki pages. User decides → Ingest process handles processing."
     }
   ],
   "schema_ref": "AGENTS.md#non-blocking-lint",

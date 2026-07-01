@@ -60,8 +60,20 @@ wiki/**/*.md: sources: ["raw/corrected/SRC-*/file.md"]
 | process-ingest.json Step 0_delta_check | ✅ Added | Hash-based deduplication before ingest |
 | process-ingest.json post_operations (Step 3a/3b) | ✅ Updated | Rebuild manifest after page creation/update |
 
-> **Canonical**: `AGENTS.md#delta_tracking` — canonical source for delta tracking rules.
-> **Schema ref**: `process-ingest.json#step_0_delta_check`, `process-ingest.json#post_operations_manifest_update`
+**Backfill Detection & Flow (Phase 29 extension):**
+| Component | Status | Notes |
+|-----------|--------|-------|
+| process-lint.json check_id=12 | ✅ Added | Source manifest backfill detection — scans unprocessed/stale + wiki references |
+| process-ingest.json Step 0.5_backfill | ✅ Added | Backflow for existing wiki pages referencing raw/sources/ without corrected copies |
+
+**Текущие unprocessed источники (найдены check_id=12):**
+| Source | Wiki Pages Referencing | Status |
+|--------|----------------------|--------|
+| SRC-2025-06-24-002/nixos-python-wiki.md | 2 pages (python-nixos-development, syntheses/python-nixos) | **unprocessed** |
+| SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md | 10+ pages (concepts/*, entities/symfony.md) | **unprocessed** |
+
+> **Canonical**: `AGENTS.md#raw_corrected_zone` — canonical source for raw/corrected/ zone rules.
+> **Schema refs**: `process-ingest.json#step_0_delta_check`, `process-lint.json#check_id_12`, `process-ingest.json#step_0.5_backfill`
 **Связано**: `issues.md#29`, `AGENTS.md#raw_corrected_zone`
 
 ---

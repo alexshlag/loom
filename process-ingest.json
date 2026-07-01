@@ -224,6 +224,44 @@
       "schema_ref": "AGENTS.md#raw_corrected_zone"
     },
     {
+      "step_id": "0.5_backfill",
+      "name": "backfill_existing_wiki_references",
+      "description": "Backflow для существующих wiki-страниц, которые ссылаются на raw/sources/ но не имеют corrected copies (pre-Phase 23 legacy). Ловится через check_id=12 в process-lint.json.",
+      "trigger_condition": "lint_check_12_reports_unprocessed_sources_with_wiki_references",
+      "actions": [
+        {
+          "action": "find_wiki_pages_by_source_reference",
+          "description": "Найти все wiki-страницы, которые ссылаются на unprocessed source в frontmatter sources[] (grep -l 'raw/sources/SRC-*' wiki/**/*.md)",
+          "output_format": "JSON [{wiki_page_path, matching_sources: [raw/sources/...]}]"
+        },
+        {
+          "action": "create_corrected_copy_for_each",
+          "note": "Для каждого unprocessed source: создать corrected copy в raw/corrected/SRC-*/* через scripts/raw-correct.sh --add"
+        },
+        {
+          "action": "generate_manifest_json",
+          "command": "./scripts/rebuild-source-manifest.sh",
+          "description": "Создать .manifest.json для каждого corrected copy с hash_original + status=processed"
+        },
+        {
+          "action": "update_wiki_frontmatter_sources",
+          "note": "Для каждой найденной wiki-страницы: заменить sources: [\"raw/sources/SRC-*/*.md\"] на sources: [\"raw/corrected/SRC-*/*.md\"]"
+        }
+      ],
+      "post_operations": [
+        {
+          "trigger": "backfill_complete",
+          "command": "./scripts/rebuild-source-manifest.sh",
+          "description": "Обновить centralized manifest после создания всех corrected copies"
+        },
+        {
+          "trigger": "frontmatter_updated",
+          "note": "Перезаписать meta/backlinks.json и meta/registry.json через rebuild-meta.sh"
+        }
+      ],
+      "schema_ref": "AGENTS.md#raw_corrected_zone"
+    },
+    {
       "step_id": "1.5_batch",
       "name": "batch_ingest_trigger",
       "description": "Если агент получает/обнаруживает N+ связанных источников → запускает batch-ingest.sh для кластеризации перед discussion.",
