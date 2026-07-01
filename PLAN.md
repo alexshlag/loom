@@ -73,6 +73,30 @@ wiki/**/*.md: sources: ["raw/corrected/SRC-*/file.md"]
 
 ---
 
+### Phase 13.4: Section Template System ✅ COMPLETED (2026-07-01)
+**Цель:** Agent-driven recommended section names for wiki pages — JSON templates in `wiki/templates/<category>-template.json`.
+
+**Архитектура:**
+```bash
+# Per-category template files (optional, agent-managed)
+wiki/templates/entity-template.json
+wiki/templates/concept-template.json
+wiki/templates/synthesis-template.json
+wiki/templates/comparison-template.json
+```
+
+**Этапы реализации:**
+| Step | Task | Status |
+|------|------|--------|
+| **1** | Design JSON schema for `*template.json` files (category, version, updated, sections[]) | ✅ Done |
+| **2** | Add step 2.5 to process-ingest.json: template read → section selection → agent write | ✅ Done |
+| **3** | Define agent instructions: required fields vs editable sections, validation rules | ✅ Done |
+
+> **Schema refs:** `process-ingest.json#step_2.5`, `issues.md` Section Template System entry
+**Связано:** `PLAN.md Phase 13 (Wiki Page Templates Schema)` — partial closure via agent-driven approach
+
+---
+
 ## 🔄 Pending Feature Phases (from original roadmap)
 
 ### Phase 13: Wiki Page Templates Schema (#H4) 🥈

@@ -96,12 +96,6 @@
 
 👉 **Severity:** LOW — nice-to-have, не блокирует работу.
 
-### Issue #32: Wiki/sources/ Structure Missing ✅ RESOLVED (Phase 29)
-**Решение**: Создан `raw/corrected/` с full архитектурой "Original → Corrected → Wiki". 
-- Immutable originals (`raw/SRC-*/*`) + corrected copies (`raw/corrected/SRC-*/*`) + manifests
-- Это **сильнее**, чем просто `wiki/sources/` — даёт immutable originals, agent-managed corrected zone, delta tracking (hash-based), и backflow для contradiction resolution
-- В AGENTS.md: секция `📂 Raw Corrected Zone`, Delta Tracking workflow, Schema refs в process-ingest.json + AGENTS.md
-
 ### Issue #13: scripts/README.md 🔽 LOW PRIORITY
 **Проблема**: Нет единой документации по скриптам (usage examples, architecture overview, known limitations). Сложно новичку понять, как работают 15+ скриптов.
 
@@ -139,8 +133,20 @@
 ### Issue #38: Process-Lint JSON Corruption ✅ RESOLVED (2026-07-01)
 **Fix:** Trailing commas removed, all schema_ref fixed.
 
+### Issue #32: Wiki/sources/ Structure Missing ✅ RESOLVED (Phase 29)
+**Решение:** Создан `raw/corrected/` с архитектурой "Original → Corrected → Wiki".
+- Immutable originals + corrected copies + manifests
+- Delta tracking, hash-based deduplication, backflow for contradiction resolution
+
 ### Delta Tracking + Backflow ✅ COMPLETED (2026-07-01)
 **Phase 29:** `scripts/rebuild-source-manifest.sh` created; raw-correct.sh exists; validate-path.sh updated; process-ingest.json Step 0_delta_check added; **backflow completed**: 3 sources now have corrected copies + manifests.
+
+### Section Template System ✅ COMPLETED (2026-07-01)
+**Phase 13.4:** `wiki/templates/<category>-template.json` — рекомендательные списки секций для agent-guided page creation.
+- Step 2.5 в process-ingest.json: read template → select sections → add new ones if needed
+- Agent-driven evolution: agent добавляет новые секции сам, validates JSON before write
+- No-template scenario handled gracefully (system works without templates)
+**Связано:** `process-ingest.json#step_2.5`
 
 ### Schema Migration — Dialog.md → AGENTS.md ✅ COMPLETED (2026-06-29)
 **Status:** All rules embedded, dialog.md removed. D1-D8 completed.
@@ -148,5 +154,5 @@
 
 ---
 
-*Last update: 2026-07-01 | Live: #16, #5/#9, #11, #12, #18, #27, #28, #22, #23, #24, #25, #26, #8, #31, #13. Resolved today: Delta Tracking + Backflow (Phase 29), Issue #32.*
+*Last update: 2026-07-01 | Live: #16, #5/#9, #11, #12, #18, #27, #28, #22, #23, #24, #25, #26, #8, #31, #13. Resolved today: Delta Tracking + Backflow (Phase 29), Issue #32, Section Template System.*
 
