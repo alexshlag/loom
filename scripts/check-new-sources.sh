@@ -28,7 +28,8 @@ REGISTRY_FILE="${2:-tracking/raw_registry.json}"
 CACHE_FILE="tracking/last_check.json"
 
 # Trap cleanup for .tmp files on crash/abort
-trap 'rm -f "$REGISTRY_FILE.tmp" "$CACHE_FILE.tmp" 2>/dev/null' EXIT
+# atomic_write_content creates .tmp.$$ (with PID suffix), clean both patterns
+trap 'rm -f "${REGISTRY_FILE}.tmp" "${REGISTRY_FILE}.tmp."* "${CACHE_FILE}.tmp" "${CACHE_FILE}.tmp."* 2>/dev/null' EXIT
 
 # Создаём registry, если не существует
 mkdir -p "$(dirname "$REGISTRY_FILE")"

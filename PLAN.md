@@ -26,10 +26,16 @@
 ✅ ID-генерация в rebuild-meta.sh: resolve_target для bare filenames unified с registry (bug fix)
 ✅ Инкрементальная логика rebuild-meta.sh: no timestamp → full rebuild, а не stale incremental
 
-### Next batch of tasks:
-- [ ] Phase 23 Step 3: Интегрировать unified-pass.sh в lint/ingest workflows. Заменить 3 отдельных вызова на 1 unified call.
-- [ ] Add trap handlers to orphan-pages.sh, check-new-sources.sh, duplicate-titles.sh, date-consistency.sh (Issue #11)
-- [ ] Refactor Python scripts to use logging module instead of print() (Issue #10)
+### ✅ Completed — 2026-07-01 Session
+
+- ✅ **Phase 23 Step 3**: unified-pass.sh integrated into lint/ingest workflows.
+  - unified-pass.sh: added `--auto` flag + output normalization for auto-fix mode
+  - lint.sh check 8: replaced `link-validator.sh --auto` with `unified-pass.sh --quiet --skip-meta --skip-crosslinks --auto`
+  - process-lint.json check_id=7: updated command + description
+  - process-ingest.json step_3a/3b: replaced link-validator.sh post_operations with unified-pass.sh calls
+  - process-ingest.json step_6: updated to reference unified-pass
+- ✅ Issue #11: Fixed check-new-sources.sh trap pattern to match atomic_write_content's `.tmp.$$` naming
+- ✅ Issue #10: Refactored 4 Python scripts (raw-link-repair, _detect_contradictions, h1-index, similarity_index) to use logging module for human-readable messages (→stderr), keeping print() only for stdout machine-readable output
 
 ---
 
@@ -76,7 +82,7 @@ P12 (logging standard), P13 (trap handlers), P15 (minor fixes).
 
 ## 🔄 Pending Feature Phases (from original roadmap)
 
-### Phase 23: Wiki Scalability — Unified Pass Architecture ✅ IN PROGRESS
+### Phase 23: Wiki Scalability — Unified Pass Architecture ✅ COMPLETED
 **Цель**: Устранить redundant wiki walks (Issue #23). Заменить 3 отдельных скрипта на единый `unified-pass.sh` с single-walk analysis.
 
 **Этапы реализации:**
@@ -84,7 +90,7 @@ P12 (logging standard), P13 (trap handlers), P15 (minor fixes).
 |------|------|--------|--------|
 | **1** | `--batch` mode в `link-validator.sh` — принимает список файлов, один pass validation | Low | ✅ Done |
 | **2** | Создать `scripts/unified-pass.sh` — single walk по wiki, three analyses in one pass. Outputs: broken_links JSON + crosslink_candidates JSON. | Medium | ✅ Done |
-| **3** | Интегрировать в lint/ingest workflows — заменить 3 отдельных вызова на 1 unified call. Удалить дублирующиеся atomarные скрипты. | High | ⬜ After steps 1-2 validated |
+| **3** | Интегрировать в lint/ingest workflows — заменить 3 отдельных вызова на 1 unified call. Удалить дублирующиеся atomarные скрипты. | High | ✅ Done |
 
 **Зависимости**: Steps sequential (1→2→3). Каждый шаг должен пройти testing before next.
 **Связано**: `issues.md#23`, PLAN.md P10

@@ -23,6 +23,7 @@ SKIP_LINKS=false
 SKIP_META=false
 SKIP_CROSSLINKS=false
 QUIET=false
+AUTO=false
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -30,6 +31,7 @@ while [[ $# -gt 0 ]]; do
     --skip-links) SKIP_LINKS=true; shift;;
     --skip-meta) SKIP_META=true; shift;;
     --skip-crosslinks) SKIP_CROSSLINKS=true; shift;;
+    --auto) AUTO=true; shift;;
     --quiet|-q) QUIET=true; shift;;
     *) echo "[!] Unknown flag: $1" >&2; exit 1;;
   esac
@@ -79,15 +81,32 @@ $QUIET || echo "[*] unified-pass: $TOTAL_FILES files found" >&2
 if [[ "$SKIP_LINKS" == "false" ]]; then
   $QUIET || echo "[*] Consumer 1: validate_links..." >&2
 
-  # stdout = JSON (captured), stderr = human-readable (or quiet)
-  if $QUIET; then
-    "$SCRIPT_DIR/link-validator.sh" --batch - < "$FILE_LIST" > "$LINK_RESULTS" 2>/dev/null || true
+  if $AUTO; then
+    "$SCRIPT_DIR/link-validator.sh" --batch --auto - < "$FILE_LIST" > "$LINK_RESULTS" 2>/dev/null || true
   else
-    "$SCRIPT_DIR/link-validator.sh" --batch - < "$FILE_LIST" > "$LINK_RESULTS" || true
+    "$SCRIPT_DIR/link-validator.sh" --batch - < "$FILE_LIST" > "$LINK_RESULTS" 2>/dev/null || true
   fi
 
+  # Normalize link-validator output: array (non-auto) or object with broken_links/agent_review_required (auto)
   if [[ -s "$LINK_RESULTS" ]]; then
-    BROKEN_COUNT=$(grep -o '"target_path"' "$LINK_RESULTS" | wc -l)
+    python3 -c "
+import json
+with open('$LINK_RESULTS') as f:
+    data = json.load(f)
+if isinstance(data, dict) and 'broken_links' in data:
+    bl = data.get('broken_links', [])
+    ar_data = data.get('agent_review_required', [])
+    auto_fixed = sum(1 for x in ar_data if x.get('auto_fixed'))
+    result = {'links': bl, 'auto_repaired': auto_fixed, 'agent_review': ar_data}
+elif isinstance(data, list):
+    result = {'links': data, 'auto_repaired': 0, 'agent_review': []}
+else:
+    result = {'links': [], 'auto_repaired': 0, 'agent_review': []}
+with open('$LINK_RESULTS', 'w') as f:
+    json.dump(result, f)
+" 2>/dev/null || true
+
+    BROKEN_COUNT=$(python3 -c "import json; print(len(json.load(open('$LINK_RESULTS'))['links']))" 2>/dev/null) || BROKEN_COUNT=0
     $QUIET || echo "[!] Consumer 1: $BROKEN_COUNT broken links found" >&2
     OVERALL_EXIT=1
   else
@@ -149,8 +168,12 @@ fi
 # OUTPUT (stdout = JSON, stderr = human-readable)
 # ============================================================
 LINKS_JSON="[]"
+AUTO_REPAIRED=0
+AGENT_REVIEW_REQUIRED_JSON="[]"
 if [[ -s "$LINK_RESULTS" ]]; then
-  LINKS_JSON=$(cat "$LINK_RESULTS")
+  LINKS_JSON=$(python3 -c "import json; print(json.dumps(json.load(open('$LINK_RESULTS'))['links']))" 2>/dev/null) || LINKS_JSON="[]"
+  AUTO_REPAIRED=$(python3 -c "import json; print(json.load(open('$LINK_RESULTS'))['auto_repaired'])" 2>/dev/null) || AUTO_REPAIRED=0
+  AGENT_REVIEW_REQUIRED_JSON=$(python3 -c "import json; print(json.dumps(json.load(open('$LINK_RESULTS'))['agent_review']))" 2>/dev/null) || AGENT_REVIEW_REQUIRED_JSON="[]"
 fi
 
 CROSSLINKS_JSON="[]"
@@ -174,6 +197,8 @@ cat << EOF
 {
   "files_scanned": $TOTAL_FILES,
   "broken_links": $LINKS_JSON,
+  "auto_repaired": $AUTO_REPAIRED,
+  "agent_review_required": $AGENT_REVIEW_REQUIRED_JSON,
   "crosslink_candidates": $CROSSLINKS_JSON
 }
 EOF

@@ -117,11 +117,11 @@
     {
       "check_id": "7",
       "name": "broken_link_auto_resole",
-      "description": "Найди битые ссылки, попробуй auto-fix через fuzzy-match (score>=80%), report agent_review_required для оставшихся. Fuzzy matching logic embedded from dialog.md#link_rules (see AGENTS.md#link-conventions).",
-      "command": "./scripts/link-validator.sh --auto [wiki_dir] [--max N]",
+      "description": "Найди битые ссылки через unified-pass (единый walk), попробуй auto-fix через fuzzy-match (score>=80%), report agent_review_required для оставшихся. Unified-pass replaces 3 separate script calls with 1 shared walk.",
+      "command": "./scripts/unified-pass.sh --quiet --skip-meta --skip-crosslinks --auto",
       "output_handling": {
         "exit_code_0": "all_links_valid — proceed to next check",
-        "exit_code_1": "broken_links_found — parse JSON with auto_fixed flag, report broken_count + auto_repaired + agent_review_required"
+        "exit_code_1": "broken_links_found — parse JSON: broken_links[] + auto_repaired + agent_review_required[]"
       },
       "reference": "AGENTS.md#link-conventions",
       "post_check": {

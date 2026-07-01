@@ -1,6 +1,8 @@
-import json, sys, os, re
+import json, sys, os, re, logging
 from collections import defaultdict
 from datetime import datetime
+
+logging.basicConfig(stream=sys.stderr, level=logging.INFO, format='%(message)s')
 
 wiki_dir = os.environ.get("WIKI_DIR", "wiki")
 quiet_mode = os.environ.get("QUIET") == "true" or "--quiet" in sys.argv
@@ -96,14 +98,12 @@ output = {
 
 print(json.dumps(output, indent=2))
 
-# Human-readable summary on stderr unless --quiet
+# Human-readable summary via logging (stderr) unless --quiet
 if not quiet_mode and contradictions:
-    print(f"\n[!] Found {len(contradictions)} potential contradiction(s):", file=sys.stderr)
+    logging.info(f"[!] Found {len(contradictions)} potential contradiction(s):")
     for c in contradictions[:5]:
-        print(f"  • {c['group_key']}: ", end="", file=sys.stderr)
-        for e in c["entries"]:
-            print(f"{e['path']} -> {e['context'][:80]} | ", end="", file=sys.stderr)
-        print(file=sys.stderr)
+        entries_str = " | ".join(f"{e['path']} -> {e['context'][:80]}" for e in c["entries"])
+        logging.info(f"  • {c['group_key']}: {entries_str}")
 
 # Exit code: 1 if issues found, 0 if clean
 if contradictions:

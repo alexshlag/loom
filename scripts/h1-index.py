@@ -8,7 +8,9 @@ Usage:
 Output (for --search): path/to/file.md:matched_line (sorted by relevance score)
 """
 
-import json, os, re, sys, glob, time
+import json, os, re, sys, glob, time, logging
+
+logging.basicConfig(stream=sys.stderr, level=logging.INFO, format='%(message)s')
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WIKI_DIR = os.path.join(PROJECT_ROOT, "wiki")
@@ -54,7 +56,7 @@ def build_index():
     with open(H1_INDEX_FILE, 'w') as f:
         json.dump(h1_index, f, indent=2, ensure_ascii=False)
     
-    print(f"[*] Built H1 index: {len(h1_index)} entries from {len(all_files)} files")
+    logging.info(f"[*] Built H1 index: {len(h1_index)} entries from {len(all_files)} files")
     return h1_index
 
 def score_query(filepath, query):
@@ -128,11 +130,11 @@ def search_files(query):
                 matched_files.append(key)
                 break
     
-    print(f"[*] H1 index search found {len(matched_files)} candidates")
+    logging.info(f"[*] H1 index search found {len(matched_files)} candidates")
     
     # Phase 2: Full-text grep for remaining results (if needed)
     if len(matched_files) < 5:
-        print("[*] Falling back to full-text grep...")
+        logging.info("[*] Falling back to full-text grep...")
         
         for root, dirs, files in os.walk(WIKI_DIR):
             if 'meta' in dirs or 'raw' in dirs:

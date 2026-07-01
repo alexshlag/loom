@@ -225,8 +225,8 @@
       "post_operations": [
         {
           "trigger": "page_created",
-          "command": "./scripts/link-validator.sh \"${OLD_ORIGINAL_NAME}\" --max 50",
-          "note": "Scan for cross-references that may need updating. Output is JSON array to stdout, human-readable log to stderr."
+          "command": "./scripts/unified-pass.sh --quiet --skip-meta --skip-crosslinks",
+          "note": "Full walk link validation via unified-pass (shared walk). Replaces separate link-validator.sh call. Output is JSON to stdout."
         },
         {
           "trigger": "page_created_after_validation",
@@ -277,8 +277,8 @@
       "post_operations": [
         {
           "trigger": "page_updated_with_new_facts",
-          "command": "./scripts/link-validator.sh \"${NEW_CONCEPT_OR_ENTITY}\" --max 50",
-          "note": "Scan for cross-references that may need updating. Output is JSON array to stdout, human-readable log to stderr."
+          "command": "./scripts/unified-pass.sh --quiet --skip-meta --skip-crosslinks",
+          "note": "Full walk link validation via unified-pass (shared walk). Replaces separate link-validator.sh call. Output is JSON to stdout."
         },
         {
           "trigger": "page_updated_after_validation",
@@ -418,8 +418,8 @@
       "actions": [
         {
           "action": "run_link_validator_on_new_files_only",
-          "command": "./scripts/link-validator.sh --full <new_page_path>",
-          "description": "Check only the newly created/modified page for broken links, NOT full wiki scan"
+          "command": "./scripts/unified-pass.sh --quiet --skip-meta --skip-crosslinks",
+          "description": "Full walk link validation via unified-pass (shared walk). Replaces separate link-validator.sh call."
         },
         {
           "condition": "broken_links_found AND auto_fixable (case/path mismatch)",

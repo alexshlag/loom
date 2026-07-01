@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """raw-link-repair — Convert relative markdown links in raw GitHub sources to permalinks."""
-import sys, re, os, json
+import sys, re, os, json, logging
+
+logging.basicConfig(stream=sys.stderr, level=logging.INFO, format='%(message)s')
 
 raw_dir = sys.argv[1].rstrip('/') if len(sys.argv) > 1 else "raw"
 dry_run = sys.argv[2] == "true" if len(sys.argv) > 2 and sys.argv[2] != "" else False
 
 abs_raw = os.path.abspath(raw_dir)
 
-print(f"[*] Scanning: {raw_dir}")
+logging.info(f"[*] Scanning: {raw_dir}")
 
 # Extract repo metadata from raw_dir path (expects github/{owner}/{repo}[@{branch}] pattern)
 owner = repo_name = branch = "UNKNOWN"
@@ -38,10 +40,10 @@ if owner == "UNKNOWN" and abs_raw.startswith(os.path.abspath("raw")):
                 branch = 'HEAD'
             break
 
-print(f"[*] Repo metadata: owner={owner}, repo={repo_name}, branch={branch}")
+logging.info(f"[*] Repo metadata: owner={owner}, repo={repo_name}, branch={branch}")
 
 if owner == "UNKNOWN":
-    print("[!] No GitHub repo metadata found in path — exiting")
+    logging.warning("[!] No GitHub repo metadata found in path — exiting")
     sys.exit(0)
 
 repairs = []
@@ -104,9 +106,9 @@ for root, _, files in os.walk(raw_dir):
                 with open(filepath, 'w', encoding='utf-8') as f:
                     f.write(new_content)
                 
-                print(f"[✓] {filepath}")
+                logging.info(f"[✓] {filepath}")
             else:
-                print(f"[D] {filepath}")
+                logging.info(f"[D] {filepath}")
 
 print(json.dumps({"dry_run": dry_run, "total_repairs": len(repairs), "files_scanned": file_count, "repaired_files": repaired_files, "repairs": repairs}))
-print(f"\n[✓] Scanned: {file_count} files, Repaired: {repaired_files} files")
+logging.info(f"[✓] Scanned: {file_count} files, Repaired: {repaired_files} files")

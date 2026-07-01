@@ -14,7 +14,9 @@ Usage:
   python3 scripts/performance/similarity_index.py --scan-all [--threshold N]
 """
 
-import hashlib, json, os, sys, time, re
+import hashlib, json, os, sys, time, re, logging
+
+logging.basicConfig(stream=sys.stderr, level=logging.INFO, format='%(message)s')
 
 # ─── Configuration ────────────────────────────────────────────────
 NUM_PERMUTATIONS = 128
@@ -177,7 +179,7 @@ def extract_text_from_md(filepath):
         return words.lower()
     
     except Exception as e:
-        print(f"[!] Error reading {filepath}: {e}", file=sys.stderr)
+        logging.warning(f"[!] Error reading {filepath}: {e}")
         return ""
 
 def tokenize(text):
@@ -201,7 +203,7 @@ def build_index(wiki_dir, output_dir=None):
     
     output_path = os.path.join(os.path.abspath(output_dir), 'similarity_index.json')
     
-    print(f"[*] Building MinHash+LSH index from {wiki_dir}...")
+    logging.info(f"[*] Building MinHash+LSH index from {wiki_dir}...")
     time_start = time.time()
     
     # Collect all wiki .md files (exclude system files and meta/)
@@ -239,7 +241,7 @@ def build_index(wiki_dir, output_dir=None):
             except Exception:
                 continue
     
-    print(f"[*] Processing {len(doc_files)} files...")
+    logging.info(f"[*] Processing {len(doc_files)} files...")
     
     # Build signatures and LSH index
     signatures = {}  # doc_idx -> minhash signature tuple
@@ -262,8 +264,8 @@ def build_index(wiki_dir, output_dir=None):
     
     build_time = time.time() - time_start
     
-    print(f"[*] Built index: {len(signatures)} documents, {len(lsh_index.buckets)} buckets")
-    print(f"[*] Build time: {build_time:.3f}s")
+    logging.info(f"[*] Built index: {len(signatures)} documents, {len(lsh_index.buckets)} buckets")
+    logging.info(f"[*] Build time: {build_time:.3f}s")
     
     # Save index to disk for reuse
     import json
@@ -278,7 +280,7 @@ def build_index(wiki_dir, output_dir=None):
             'num_permutations': NUM_PERMUTATIONS
         }, f, indent=2, ensure_ascii=False)
     
-    print(f"[*] Index saved to {output_path}")
+    logging.info(f"[*] Index saved to {output_path}")
     return output_path
 
 # ─── Scan for Similar Pairs ───────────────────────────────────────
@@ -294,10 +296,10 @@ def scan_for_similar(wiki_dir=None, threshold=DEFAULT_THRESHOLD):
     index_file = pathlib.Path(index_file_path)
     
     if not index_file.exists():
-        print('[!] Similarity index not found. Run --build first.')
+        logging.warning('[!] Similarity index not found. Run --build first.')
         sys.exit(1)
     
-    print(f"[*] Loading similarity index from {index_file}...")
+    logging.info(f"[*] Loading similarity index from {index_file}...")
     
     with open(str(index_file)) as f:
         data = json.load(f)
@@ -312,18 +314,18 @@ def scan_for_similar(wiki_dir=None, threshold=DEFAULT_THRESHOLD):
     lsh_index.band_size = band_size
     lsh_index.buckets = {k: [int(v) for v in vs] for k, vs in data['buckets'].items()}
     
-    print(f"[*] Found {len(doc_files)} documents, threshold={threshold}")
+    logging.info(f"[*] Found {len(doc_files)} documents, threshold={threshold}")
     
     # Find similar pairs using LSH
     time_start = time.time()
     matches = lsh_index.find_similar_pairs(signatures, threshold)
     scan_time = time.time() - time_start
     
-    print(f"[*] Scan completed: {len(matches)} similar pairs in {scan_time:.3f}s")
+    logging.info(f"[*] Scan completed: {len(matches)} similar pairs in {scan_time:.3f}s")
     
     # Fallback: if LSH found no matches (due to low collision rate), try full pairwise
     if len(matches) == 0:
-        print("[!] No LSH collisions detected. Falling back to full pairwise scan...")
+        logging.warning("[!] No LSH collisions detected. Falling back to full pairwise scan...")
         time_start = time.time()
         matches = []
         for i in range(len(signatures)):
@@ -340,7 +342,7 @@ def scan_for_similar(wiki_dir=None, threshold=DEFAULT_THRESHOLD):
                         'match_level': match_level
                     })
         scan_time = time.time() - time_start
-        print(f"[*] Pairwise scan completed: {len(matches)} similar pairs in {scan_time:.3f}s")
+        logging.info(f"[*] Pairwise scan completed: {len(matches)} similar pairs in {scan_time:.3f}s")
     
     # Format output as JSON for consumption by other tools
     results = []
@@ -434,6 +436,6 @@ if __name__ == '__main__':
         scan_for_similar(wiki_dir, threshold)
     
     else:
-        print(f"[!] Unknown command: {args[0]}")
+        logging.warning(f"[!] Unknown command: {args[0]}")
         usage()
         sys.exit(1)

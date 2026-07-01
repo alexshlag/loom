@@ -93,19 +93,33 @@ if [[ ! "$(echo "$SKIP_CHECKS" | grep -o '6')" == "6" ]]; then
 fi
 TOTAL_ISSUES=$((TOTAL_ISSUES + DATE_ISSUES))
 
-# --- Check 8: Link validation (broken internal links, auto-repair) ---
+# --- Check 8: Link validation (broken internal links, auto-repair) via unified-pass ---
 BROKEN_LINKS=0
 AUTO_REPAIRED=0
 AGENT_REVIEW_REQUIRED_JSON="[]"
 if [[ ! "$(echo "$SKIP_CHECKS" | grep -o '7')" == "7" ]]; then
-  local_lf=""
-  safe_run "./scripts/link-validator.sh --auto $WIKI_DIR --max 100" local_lf || true
-  if echo "$local_lf" | grep -q "Broken links found"; then
-    BROKEN_LINKS=$(echo "$local_lf" | sed -n '/Broken links found/p' | grep -oE '[0-9]+' | head -1) || BROKEN_LINKS=0
-    local_fixed=$(echo "$local_lf" | grep 'Auto-repaired:' | grep -oE '[0-9]+')
-    [ -n "$local_fixed" ] && AUTO_REPAIRED=$local_fixed
-    AGENT_REVIEW_REQUIRED_JSON=$(echo "$local_lf" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(json.dumps(d.get("agent_review_required",[])))' 2>/dev/null) || AGENT_REVIEW_REQUIRED_JSON="[]"
-  fi
+  local_up_out=""
+  safe_run "./scripts/unified-pass.sh --quiet --skip-meta --skip-crosslinks --auto" local_up_out || true
+
+  # Extract JSON from mixed stdout+stderr output via Python
+  local_up_json=$(echo "$local_up_out" | python3 -c '
+import json, sys
+content = sys.stdin.read()
+start = content.find("{")
+end = content.rfind("}")
+if start >= 0 and end >= 0:
+    try:
+        d = json.loads(content[start:end+1])
+        print(json.dumps(d))
+    except:
+        print("{}")
+else:
+    print("{}")
+' 2>/dev/null) || local_up_json="{}"
+
+  BROKEN_LINKS=$(echo "$local_up_json" | python3 -c 'import json,sys; print(len(json.load(sys.stdin).get("broken_links",[])))' 2>/dev/null) || BROKEN_LINKS=0
+  AUTO_REPAIRED=$(echo "$local_up_json" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("auto_repaired",0))' 2>/dev/null) || AUTO_REPAIRED=0
+  AGENT_REVIEW_REQUIRED_JSON=$(echo "$local_up_json" | python3 -c 'import json,sys; print(json.dumps(json.load(sys.stdin).get("agent_review_required",[])))' 2>/dev/null) || AGENT_REVIEW_REQUIRED_JSON="[]"
 fi
 TOTAL_ISSUES=$((TOTAL_ISSUES + BROKEN_LINKS))
 
