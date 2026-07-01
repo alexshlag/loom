@@ -270,6 +270,35 @@ Script does blackboard score-based candidate generation. Agent validates semanti
 
 **Remaining**: Добавить rule в AGENTS.md → `syntheses not processed like regular wiki pages` (drafted, needs user approval)
 
+### Issue #37: Broken Schema References (Schema Refs) ✅ RESOLVED 2026-07-01
+**Проблема**: process-query.json, process-ingest.json, process-lint.json содержали schema_ref на существующие секции в AGENTS.md, но сами headings были пропущены при синтаксических правках.
+
+**Fix applied (2026-07-01)**:
+1. ✅ `AGENTS.md#compounding_workflow` — добавлен heading после Wiki Snapshot section
+2. ✅ `AGENTS.md#batch_ingest_trigger` — добавлен heading после Process Roles table
+3. ✅ `AGENTS.md#post_operation_link_validation` — добавлен в Link Conventions section
+4. ✅ `AGENTS.md#meta_rebuild_path` — добавлен как sub-heading в Auto-Rebuild Metadata
+5. ✅ `AGENTS.md#guardrails_reference` — добавлен под Rules & Guardrails
+6. ✅ process-query.json: schema_ref → note для compounding_workflow и meta_rebuild_path
+7. ✅ process-ingest.json: schema_ref → note для guardrails и post_operation_link_validation
+8. ✅ process-lint.json: 2× schema_ref → note для contradiction_resolution_flow (inline, не отдельный heading)
+
+**Severity**: MEDIUM — ломал cross-references между процессными файлами
+**Date fixed**: 2026-07-01
+
+### Issue #38: Process-Lint JSON Corruption ✅ RESOLVED 2026-07-01
+**Проблема**: process-lint.json содержал trailing commas и unclosed strings после частичных правок.
+
+**Fix applied (2026-07-01)**:
+1. ✅ Удалены trailing commas в contradiction_resolution_flow и text_similarity_scan entries
+2. ✅ JSON теперь валиден: `python3 -c "import json; json.load(open('process-lint.json'))"` → OK
+3. ✅ Все schema_ref заменены на note-поля (не broken references)
+
+**Severity**: CRITICAL — JSON ломался, скрипты не могли парсить
+**Date fixed**: 2026-07-01
+
+---
+
 ### Issue #28: Page Templates Co-evolution — INCOMPLETE 🆕
 **Проблема**: AGENTS.md содержит секции Template Editing Policy и Template Co-evolution Process, но фактическая работа над шаблонами страниц (user-approved structural improvements) не завершена.
 - Agent может предлагать улучшения через `[schema-patch]` в log.md
@@ -341,7 +370,7 @@ Script does blackboard score-based candidate generation. Agent validates semanti
 
 ---
 
-*Last update: 2026-07-01 | Live: #16 (broken tests), #17 (silent errors), #35 (orphan output gap), #36 (check #9 vs #1 overlap). Resolved today: AGENTS.md output schema updated, process-lint.json fixes.*
+*Last update: 2026-07-01 | Live: #16 (broken tests), #17 (silent errors), #35 (orphan output gap), #36 (check #9 vs #1 overlap). Resolved today: AGENTS.md schema_refs added, process-JSON broken references fixed.*
 
 
 ---

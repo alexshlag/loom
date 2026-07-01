@@ -73,7 +73,7 @@
           "message": "No compounding value detected"
         }
       ],
-      "save_conditions_schema_ref": "AGENTS.md#compounding_workflow",
+      "note": "Compounding workflow rules in AGENTS.md under Synthesis section",
       "syntheses_special_handling": {
         "rule": "DR-4: Never auto-create synthesis without explicit fixation flag. Synthesis = new logical inference (A + B → C), not just fact collection.",
         "condition": "page_type == 'synthesis'",
@@ -111,7 +111,7 @@
         }
       ],
       "rule": "AGENT_MUST_USE_ALLOWED_PATTERNS_FOR_BASH_READING",
-      "schema_ref": "AGENTS.md#grep_contract"
+      "note": "Grep contract defined in AGENTS.md under CONTEXT_BUBBLE section"
     }
   },
   "trigger_condition": "user_asks_question",
@@ -781,7 +781,7 @@
       ],
       "post_check": {
         "command": "./scripts/rebuild-meta.sh",
-        "schema_ref": "AGENTS.md#meta_rebuild_path",
+        "note": "Meta rebuild via scripts/rebuild-meta.sh — canonical path defined in AGENTS.md under Auto-Rebuild Metadata section",
         "note": "Canonical path defined in AGENTS.md. Do not hardcode absolute paths.",
         "action_on_success": "PROCEED_TO_LOG_AND_INDEX_UPDATE",
         "action_on_failure": "LOG_WARNING_AND_PROCEED"

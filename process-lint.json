@@ -39,9 +39,7 @@
           "action": "identify_conflicts"
         }
       ],
-      "schema_ref": "process-query.json#contradiction_resolution_flow",
-      "resolution_flow": null,
-      "note": "Lint only detects and flags contradictions. Resolution is handled by Query/Ingest per process-query.json#contradiction_resolution_flow."
+      "note": "Contradiction resolution flow is defined inline within process-query.json step_id=2 (agent_prompt section), not as a separate heading."
     },
     {
       "check_id": "2",
@@ -149,7 +147,7 @@
           "note": "Agent review required — apply DR-1/DR-2 из decision-rules.md к каждому конфликту"
         }
       ],
-      "schema_ref": "process-query.json#contradiction_resolution_flow"
+      "note": "See process-query.json step 2 for full contradiction cascade resolution logic."
     },
     {
       "check_id": "10",

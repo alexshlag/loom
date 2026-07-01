@@ -4,6 +4,21 @@
 
 ## ✅ Completed — 2026-07-01 Session
 
+### Phase 13.3: Schema References Migration Fix ✅ COMPLETED
+**Цель**: Устранить broken schema_refs в process-query.json, process-ingest.json, process-lint.json.
+
+**Результат:**
+| Step | Task | Status |
+|------|------|--------|
+| **1** | Добавить 6 missing headings в AGENTS.md | ✅ Done |
+| **2** | Заменить broken schema_ref → note в process-query.json (2 refs) | ✅ Done |
+| **3** | Заменить broken schema_ref → note в process-ingest.json (2 refs) | ✅ Done |
+| **4** | Исправить JSON corruption в process-lint.json (2 refs + trailing commas) | ✅ Done |
+
+**Связано**: `issues.md#37`, `issues.md#38`
+
+---
+
 ### Phase 13.2: Batch Ingest Workflow ✅ COMPLETED
 **Цель**: Cross-reference между новыми источниками + bulk-update index/hot/log.
 
@@ -230,4 +245,4 @@ sources: ["raw/corrected/SRC-001/pi-dev-docs-latest.md"]
 
 ---
 
-*Last update: 2026-07-01 | Phase 29 Deep-Dive Analysis — Raw Corrected Zone Architecture added. Phase 13.2 Batch Ingest Workflow completed (Phase 14 deferred pending raw/corrected implementation).*
+*Last update: 2026-07-01 | Phase 13.3 Schema Refs Migration Fix completed. Pending: Phase 29 (raw/corrected/), Phase 12.2 (auto-extract assumptions), S5 (search analytics).*

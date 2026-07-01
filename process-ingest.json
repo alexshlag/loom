@@ -517,10 +517,10 @@
           "rule_name": "only_check_new_file_broken_links"
         }
       ],
-      "schema_ref": "AGENTS.md#post_operation_link_validation"
+      "note": "Post-operation link validation defined in AGENTS.md under Link Conventions — only new files check"
     }
   ],
-  "schema_ref": "AGENTS.md#guardrails",
+  "note": "Guardrails defined in AGENTS.md under Rules section — implemented via validate-path.sh",
   "inherits_from": [
     "guardrails",
     "date_convention",

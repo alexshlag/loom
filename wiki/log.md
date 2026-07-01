@@ -366,3 +366,4 @@
   - Created scripts/_batch_ingest.py — Python clustering engine (keyword-based)
   - AGENTS.md updated with Batch Ingest Trigger section
   - Working memory updated: Phase 13.2 complete, next = Phase 14 (Wiki Sources Structure)
+## [2026-07-01] schema-fix | Fixed broken schema_refs in process-query.json, process-ingest.json, process-lint.json. Added 6 missing headings to AGENTS.md.
