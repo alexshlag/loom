@@ -1,7 +1,7 @@
 {
-  "last_updated": "2026-07-01T12:00:40+03",
+  "last_updated": "2026-07-01T12:52:02+03",
   "current_mode": "ingest",
-  "focus_node": "Phase 13.2 Batch Ingest Workflow - implementation complete",
+  "focus_node": "Phase 29 Deep-Dive Analysis \u2014 Raw Corrected Zone Architecture complete",
   "open_pages": [
     {
       "path": "issues.md",
@@ -74,27 +74,40 @@
     }
   ],
   "query_summary": {
-    "intent": "\u0418\u0437\u0443\u0447\u0438\u0442\u044c ingest \u0430\u0440\u0445\u0438\u0442\u0435\u043a\u0442\u0443\u0440\u0443 claude-obsidian \u0438 \u0432\u044b\u044f\u0432\u0438\u0442\u044c \u0437\u0430\u0438\u043c\u0441\u0442\u0432\u0443\u0435\u043c\u044b\u0435 \u0440\u0435\u0448\u0435\u043d\u0438\u044f \u0434\u043b\u044f Loomana",
+    "intent": "Deep-dive analysis of raw/corrected zone architecture for Phase 29",
     "pages_read": [
-      "skills/wiki-ingest/SKILL.md",
-      "skills/autoresearch/SKILL.md",
-      "wiki/entities/loomana.md",
-      "issues.md",
-      "PLAN.md"
+      "PLAN.md",
+      "process-ingest.json",
+      "validate-path.sh"
     ],
     "key_findings": [
-      "Claude-obsidian \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u0443\u0435\u0442 dual-path ingest: URL \u2192 .raw/articles/, autoresearch \u2192 direct-to-wiki",
-      "Mode-based routing \u0447\u0435\u0440\u0435\u0437 Python script (wiki-mode.py) \u0434\u043b\u044f \u043c\u0430\u0440\u0448\u0440\u0443\u0442\u0438\u0437\u0430\u0446\u0438\u0438 \u043f\u043e \u043a\u0430\u0442\u0435\u0433\u043e\u0440\u0438\u044f\u043c",
-      "Transport abstraction layer (CLI\u2192MCP\u2192filesystem)",
-      "Advisory file locking \u0441 flock \u0434\u043b\u044f safe concurrent writes",
-      "Delta tracking \u0432 .raw/.manifest.json \u2014 \u043d\u043e .raw/ protected \u0432 Loomana, \u0440\u0430\u0437\u043c\u0435\u0449\u0430\u0435\u043c \u0432 meta/ \u0447\u0435\u0440\u0435\u0437 \u0441\u043a\u0440\u0438\u043f\u0442"
+      "raw/corrected/SRC-*/ provides agent-writable zone for processed copies alongside immutable originals",
+      "validate-path.sh needs ALLOWED_WRITE_ZONES updated to include raw/corrected/",
+      "process-ingest.json requires post-processing step after capture \u2192 creates corrected copy in raw/corrected/",
+      "Delta tracking via manifest.json + hash check prevents re-ingest waste",
+      "Contradiction resolution enhanced: agent can re-read original source for comparison via manifest"
     ]
   },
   "next_steps_todo": [
     {
-      "task": "Phase 14: Wiki Sources Structure \u2014 \u0440\u0435\u0448\u0435\u043d\u0438\u0435 \u043e wiki/sources/ \u043f\u0430\u043f\u043a\u0435",
+      "task": "Step 1: Update validate-path.sh \u2014 add raw/corrected/ to ALLOWED_WRITE_ZONES",
+      "priority": "high",
+      "status": "ready"
+    },
+    {
+      "task": "Step 2: Create scripts/raw-correct.sh \u2014 safe write wrapper for agent",
       "priority": "medium",
-      "source": "PLAN.md Phase 14"
+      "status": "pending (after step 1)"
+    },
+    {
+      "task": "Step 3: Update process-ingest.json \u2014 add post-processing step after capture \u2192 raw/corrected/",
+      "priority": "high",
+      "status": "pending (after step 2)"
+    },
+    {
+      "task": "Step 4: Update AGENTS.md + delta tracking integration (manifest.json generation)",
+      "priority": "medium",
+      "status": "pending (after step 3)"
     }
   ]
 }

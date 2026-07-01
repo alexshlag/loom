@@ -84,6 +84,34 @@
       "schema_ref": "AGENTS.md#link-conventions"
     },
     {
+      "step_id": "0.5_corrected_copy",
+      "name": "create_corrected_copy_or_skip",
+      "description": "После capture (original saved to raw/SRC-*/) — агент проверяет, есть ли уже corrected copy в raw/corrected/. Если нет → создаёт её через scripts/raw-correct.sh.",
+      "pre_condition": {
+        "after_step": "0",
+        "purpose": "create corrected copy after capturing original"
+      },
+      "actions": [
+        {
+          "action": "check_existing_corrected_copy",
+          "command": "test -f \"raw/corrected/SRC-*/<filename>\"",
+          "description": "Проверить, существует ли уже исправленная копия"
+        },
+        {
+          "action": "create_corrected_if_missing",
+          "condition": "corrected_copy_not_exists",
+          "command": "./scripts/raw-correct.sh --add \"raw/corrected/SRC-*/<filename>\" <content_from_original>",
+          "description": "Создать corrected copy с исправленными ссылками, опечатками"
+        },
+        {
+          "action": "skip_if_already_exists",
+          "condition": "corrected_copy_exists",
+          "note": "Уже есть processed версия → перейти к шагу 1 (source analysis)"
+        }
+      ],
+      "schema_ref": "AGENTS.md#raw_corrected_zone"
+    },
+    {
       "step_id": "1",
       "name": "source_analysis",
       "actions": [

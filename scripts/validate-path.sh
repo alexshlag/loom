@@ -12,7 +12,7 @@ fi
 
 # Protected zones — meta/ is read-only, raw/ must be write via capture only
 PROTECTED_PATTERNS=("meta/")
-ALLOWED_WRITE_ZONES=("raw/sources/" "wiki/")
+ALLOWED_WRITE_ZONES=("raw/corrected/" "wiki/")
 
 for PATTERN in "${PROTECTED_PATTERNS[@]}"; do
   # Prefix-only match — prevents bypass via e.g. 'some-meta/file.md'
