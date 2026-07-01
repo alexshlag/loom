@@ -340,14 +340,13 @@
         },
         {
           "rule_id": "TEMPLATE_EDIT_WRITE",
-          "description": "If agent invents a new section name not in template → add it to wiki/templates/<category>-template.json under categories[].sections[]",
+          "description": "If agent invents a new section name not in template → add it to wiki/templates/<category>-template.json under sections[] array",
           "write_access": "Agent writes directly (no external scripts required)"
         },
         {
-          "rule_id": "JSON_VALIDATION",
+          "rule_id": "TEMPLATE_VALIDATION",
           "description": "Before write() to any *template.json → validate JSON syntax. If parse error detected → fix before committing.",
-          "validation_trigger": "every agent write to wiki/templates/ directory",
-          "agent_instruction": "If JSON is invalid after edit: re-read file, identify syntax error, correct it, then retry write"
+          "validation_trigger": "every agent write to wiki/templates/ directory"
         },
         {
           "rule_id": "NO_TEMPLATE_EXISTS",

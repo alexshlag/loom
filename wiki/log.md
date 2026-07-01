@@ -401,3 +401,4 @@
   - Sonata repositioned as "Niche enterprise" — for complex custom admin interfaces
   - Added crosslink between Sonata ↔ EasyAdmin concepts
 - Verified links: 0 broken, 0 auto-repaired
+## [2026-07-02] ingest | Clippy Rust lint tool from raw/sources/SRC-test-entity-001/rust-clippy.md

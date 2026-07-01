@@ -5,6 +5,7 @@
 * [AI Factory](entities/ai-factory.md) — Stack-agnostic CLI tool and skill system for AI-powered development.
 * [API Platform](entities/api-platform.md) — # API Platform API Platform — фреймворк для создания гипермедийных REST и GraphQL API.
 * [Andrej Karpathy](entities/andrej-karpathy.md) — AI Researcher, автор LLM Wiki pattern (LLM-powered personal knowledge base).
+* [Clippy](entities/rust-clippy.md) — # Clippy Clippy is a collection of lints (static analysis checks) to catch common mistakes and improve Rust code.
 * [Ibexa DXP](entities/ibexa-dxp.md) — # Ibexa DXP Ibexa DXP (Digital Experience Platform) — enterprise-grade CMS + commerce platform на базе Symfony.
 * [Loomana — Wiki System Documentation](entities/loomana.md) — ### 1. Raw Sources (`raw/`) — Immutable ### 2.
 * [Nvidia](entities/nvidia.md) — # Nvidia Американская технологическая корпорация, лидер в области разработки графических процессоров (GPU), аппаратных ускорителей для искусственного 
@@ -67,7 +68,7 @@
 
 
 ---
-*Created: auto-generated | Last updated: 2026-07-01 23:58*
+*Created: auto-generated | Last updated: 2026-07-02 02:35*
 
 ## Хронология
 | Дата | Событие |
