@@ -325,6 +325,72 @@
       ]
     },
     {
+      "step_id": "2.5",
+      "name": "template_read_and_section_selection",
+      "description": "Агент читает соответствующий template.json из wiki/templates/ для формирования структуры страницы. Template — рекомендательный, не обязательный.",
+      "rules": [
+        {
+          "rule_id": "TEMPLATE-READ-V1",
+          "when_to_read": "Before creating/updating any wiki page → read wiki/templates/<category>-template.json matching the page type"
+        },
+        {
+          "rule_id": "FLEXIBLE_ZONES",
+          "description": "Template sections are **recommended** — agent may add new sections beyond template list. If section doesn't fit the topic, skip it.",
+          "agent_discretion": "Agent decides which recommended sections apply to this specific source"
+        },
+        {
+          "rule_id": "TEMPLATE_EDIT_WRITE",
+          "description": "If agent invents a new section name not in template → add it to wiki/templates/<category>-template.json under categories[].sections[]",
+          "write_access": "Agent writes directly (no external scripts required)"
+        },
+        {
+          "rule_id": "JSON_VALIDATION",
+          "description": "Before write() to any *template.json → validate JSON syntax. If parse error detected → fix before committing.",
+          "validation_trigger": "every agent write to wiki/templates/ directory",
+          "agent_instruction": "If JSON is invalid after edit: re-read file, identify syntax error, correct it, then retry write"
+        },
+        {
+          "rule_id": "NO_TEMPLATE_EXISTS",
+          "description": "If no template exists for a category → agent creates page without recommendations. System remains fully operational.",
+          "example": "wiki/templates/deployment-template.json may not exist — agent still creates deployment pages with flexible structure"
+        }
+      ],
+      "actions": [
+        {
+          "action": "read_template",
+          "path_pattern": "wiki/templates/${PAGE_CATEGORY}-template.json",
+          "condition": "file_exists",
+          "description": "Read template for category (entity, concept, synthesis, comparison). Returns recommended sections array."
+        },
+        {
+          "action": "select_applicable_sections",
+          "description": "Agent reviews source content and selects which recommended sections apply. May skip some or add new ones.",
+          "output": "final_section_list_with_agent_additions"
+        }
+      ],
+      "agent_instructions": {
+        "what_is_template_json": "wiki/templates/<category>-template.json — рекомендательный список названий секций для страниц определённой категории. Не обязательный, не ограничивающий.",
+        "purpose": "Обеспечивает единообразные названия секций в однотипных документах. Agent получает baseline, но может его игнорировать или расширять.",
+        "required_fields": ["category", "version", "updated"],
+        "editable_fields": {
+          "sections[]": "Agent может добавлять новые секции, удалять (deprecated) или менять порядок. Если новая секция придумана — agent обязан добавить её в массив.",
+          "agent_discretion": "Если рекомендованная секция не применима к конкретному источнику — агент пропускает её. Если не хватает подходящей секции — придумывает и добавляет в template.json"
+        },
+        "how_to_use": [
+          "1. Before creating/updating wiki page → read wiki/templates/<category>-template.json",
+          "2. Review recommended sections, select applicable ones for this source",
+          "3. If new section needed → add to sections[] in template.json before writing the wiki page",
+          "4. Validate JSON syntax after edit → fix any parse errors immediately"
+        ],
+        "validation_rule": "Валидный JSON — обязательное условие write(). Если синтаксис сломался при редактировании → agent читает файл, находит ошибку (пропущенная запятая, лишняя скобка и т.д.), исправляет и retry write",
+        "no_template_scenario": "Если файла шаблона нет для категории — агент создаёт страницу без рекомендаций. Система работает полностью.",
+        "examples_of_missing_templates": [
+          "wiki/templates/deployment-template.json (может не существовать)",
+          "wiki/templates/meeting-template.json (агент всё равно создаст meeting-страницу)"
+        ]
+      }
+    },
+    {
       "step_id": "3a",
       "name": "integration_new_page",
       "condition": "source_is_new_entity_or_concept",
