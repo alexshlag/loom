@@ -29,3 +29,11 @@ related: []
 - All 4 Python scripts now use `logging.basicConfig(stream=sys.stderr)` for human-readable output
 - `check-wiki-changes.sh` now correctly lists modified files in its output prompt
 - After every session, `process-query.json` step 3 finalization checks wiki changes → agent updates hot.md
+- **2026-07-01**: Updated `wiki/comparisons/loom-vs-claude-obsidian.md` — full rewrite with deep analysis of architecture differences, evidence grading, contradiction cascade vs transport abstraction, mode routing vs static categories.
+
+## Active Threads
+- LOOM vs claude-obsidian comparison completed (2026-07-01)
+- Phase 23 Step 3: unified-pass.sh integration into lint/ingest workflows (COMPLETED)
+- Issue #10: Python scripts refactored to use logging module (COMPLETED)
+- Issue #11: check-new-sources.sh trap handler fixed (COMPLETED)
+- Lint.sh skip-check numbering bug fixed + hot_cache_stale_check wired (COMPLETED)
