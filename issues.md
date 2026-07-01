@@ -180,17 +180,24 @@ ORPHANS_OUTPUT=$(./scripts/orphan-pages.sh ... 2>&1 || true)
 
 👉 **Canonical**: `scripts/orphan-pages.sh`, `scripts/auto-crosslink.sh`, `decision-rules.md`, `process-ingest.json`
 
-### Issue #34: Auto-Crosslink Shared-Source Noise Filtering 🆕 PENDING
-**Проблема**: `auto-crosslink.sh` считает shared_source (+5) для любых общих источников. System files (AGENTS.md, context.md, PLAN.md, hot.md) есть почти везде → false positives на score 5+.
+### Issue #34: Auto-Crosslink Shared-Source Noise Filtering ✅ FIXED
+**Проблема**: `auto-crosslink.sh` считал shared_source (+5) для любых общих источников. System files (AGENTS.md, context.md, PLAN.md, hot.md) есть почти везде → false positives на score 5+.
 
-**Результат**: при ingest новой страницы auto-crosslink выдаёт десятки match'ов с score 5 просто из-за shared system file sources. High-confidence: `python-nixos-development-environments.md` (score 9 = shared_source + related_field).
+**Результат**: при ingest новой страницы auto-crosslink выдавал десятки match'ов с score 5 просто из-за shared system file sources. High-confidence: `python-nixos-development-environments.md` (score 9 = shared_source + related_field).
 
-**Fix needed**:
-- [ ] Exclude SYSTEM_FILES from crosslink scoring (как сделано в wiki-search.sh)
-- [ ] Add semantic weight: prioritize H1/body overlap over mere source sharing
-- [ ] Reduce threshold or add diminishing factor for low-confidence clusters
+**Fix applied:**
+- ✅ Exclude SYSTEM_FILES from crosslink scoring (wiki meta files excluded)
+- ✅ Root-level system files excluded from scoring pool: AGENTS.md, context.md, PLAN.md, hot.md
+- ✅ Reduce shared_source weight: +2 base + diminishing factor (+1 for each additional)
+- ✅ Add `--max-results 5` limit to prevent noise overload
+- ✅ Architecture defined: Script Suggests, Agent Decides (separation of concerns)
 
-**Priority**: LOW — cosmetic, doesn't break functionality.
+**Architecture decision:**
+Script does blackboard score-based candidate generation. Agent validates semantically and decides final crosslinks. Never auto-write from script output.
+
+**Priority**: LOW — cosmetic issue, doesn't break functionality. Fixed with minimal change.
+
+**Date fixed**: 2026-07-01
 
 ### Issue #13: scripts/README.md 🔽 LOW PRIORITY
 **Проблема**: Нет единой документации по скриптам.

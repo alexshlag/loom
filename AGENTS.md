@@ -608,13 +608,42 @@ External links must use canonical http/https URLs. Never link to `raw/**` or `..
 > Full workflow: `process-ingest.json#step_1.5.external_source_policy`, `process-query.json#broken_link_awareness`.
 
 ### Crosslink Discovery
-After step_3a/3b → run `./scripts/auto-crosslink.sh <path>`:
-- H1 match: +3 points
-- Shared sources: +5 points
-- Frontmatter related field: +4 points
-- Auto-threshold for suggestion: score ≥ 5. Scores 3–4 = suggest review only.
+**Architecture: Script Suggests, Agent Decides**
 
-> Schema ref: `AGENTS.md#link-conventions` — canonical source for link rules.
+Скрипт делает черновой score-based анализ и предлагает кандидатов. Агент принимает финальное решение на основе семантического понимания.
+
+| Layer | Who | What | Output |
+|-------|-----|------|--------|
+| **Discovery** (blackboard) | `auto-crosslink.sh` | Score-based candidate generation | JSON list of candidates with scores & match types |
+| **Decision** (judgment) | Agent | Semantic validation + contextual reasoning | Final crosslinks to write |
+
+**Rule**: never auto-write crosslinks from script output alone. Script output = suggestion, not command.
+
+**Scoring levels:**
+- H1 title match: +3 points
+- Shared sources: +2 base + diminishing factor (+1 for each additional shared source)
+- Frontmatter related field: +4 points
+
+**Thresholds:**
+| Score | Action |
+|-------|--------|
+| ≥ 5 | Strong candidate — suggest crosslink with confidence |
+| 3–4 | Weak signal — suggest review, agent decides |
+| < 3 | Ignore (below noise floor) |
+
+**System file exclusion:**
+- Wiki system files excluded automatically: `log.md`, `issues.md`, `timeline.md`, `overview.md`, `snapshot.md`, `index.md`
+- Root-level system files excluded from scoring: `AGENTS.md`, `context.md`, `PLAN.md`, `hot.md` (appear in most pages but NOT wiki content)
+
+**Usage pattern:**
+```bash
+# After creating/updating a wiki page
+./scripts/auto-crosslink.sh <path> --max-results 5
+```
+
+Script returns ≤5 candidates sorted by score. Agent reviews each, validates semantic relevance, and writes crosslinks if appropriate.
+
+> Schema ref: `AGENTS.md#crosslink_discovery` — canonical source for crosslink rules.
 
 ---
 

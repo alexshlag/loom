@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 # auto-crosslink.sh — Multi-level crosslink discovery for wiki pages
 # Levels: H1 title → shared sources → frontmatter related → semantic keywords
-# Output: JSON [{"path": "...", "score": N, "match_types": ["level1","level2"]}]
+# Output: JSON [{"path": "...", "score": N, "match_types": [...}], sorted by score desc
+# Architecture: Script Suggests, Agent Decides
+#
+# Discovery layer (script): score-based candidate generation
+# Decision layer (agent): semantic validation + contextual reasoning
+# Rule: never auto-write crosslinks from script output alone
 # Exit codes: 0 = found matches, 1 = no mentions
 
 set -euo pipefail
@@ -15,11 +20,12 @@ RAW_SOURCES_DIR="${PROJECT_ROOT}/raw/sources"
 # Parse arguments
 NEW_PAGE=""
 INCLUDE_ROOT=false
-SCORE_THRESHOLD=3  # minimum score to report
-
+SCORE_THRESHOLD=3     # minimum score to report
+MAX_RESULTS=5         # maximum candidates returned (prevents noise)
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --include-root) INCLUDE_ROOT=true; shift;;
+        --max-results) MAX_RESULTS="$2"; shift 2;;
         --min-score) SCORE_THRESHOLD="$2"; shift 2;;
         *) NEW_PAGE="$1"; shift;;
     esac
@@ -82,25 +88,35 @@ find_and_score() {
         fi
     fi
     
-    # Level 2: Shared source matching (+5 per shared source)
-    local NEW_SOURCES=$(get_sources "$NEW_FILE")
-    local FILE_SOURCES=$(get_sources "$filepath")
+    # Level 2: Shared source matching (+2 base, diminishing returns)
+    # Only counts wiki-level shared sources (not root system files like AGENTS.md)
+    local NEW_WIKI_SOURCES=$(get_sources "$NEW_FILE" | grep -v "^\s*sources:" || true)
+    local FILE_WIKI_SOURCES=$(get_sources "$filepath" | grep -v "^\s*sources:" || true)
     
+    # Count shared sources with diminishing factor: first=+2, rest=+1 each
+    local SHARED_COUNT=0
     while IFS= read -r src; do
         [[ -z "$src" ]] && continue
-        if echo "$FILE_SOURCES" | grep -qF "$(basename "$src" .md)" 2>/dev/null || \
-           echo "$FILE_SOURCES" | grep -qF "$(basename "$src")" 2>/dev/null; then
-            score=$((score + 5))
+        if echo "$FILE_WIKI_SOURCES" | grep -qF "$(basename "$src")" 2>/dev/null || \
+           echo "$FILE_WIKI_SOURCES" | grep -qF "$(basename "$src" .md)" 2>/dev/null; then
+            SHARED_COUNT=$((SHARED_COUNT + 1))
             [[ "$types" ]] && types="$types,"
             types="${types}shared_source"
         fi
-    done <<< "$NEW_SOURCES"
+    done <<< "$NEW_WIKI_SOURCES"
+    
+    # Apply diminishing factor: first source = +2, subsequent = +1 each
+    if [ "$SHARED_COUNT" -gt 0 ]; then
+        score=$((score + 2))
+        score=$((score + (SHARED_COUNT - 1)))  # +1 for each additional shared source
+    fi
     
     # Level 3: Frontmatter related field matching (+4)
     local NEW_RELATED=$(sed -n '/^---$/,/^---$/p' "$NEW_FILE" 2>/dev/null | grep 'related:' || true)
     if [[ -n "$NEW_RELATED" ]]; then
         # Check if this file references the same entity/concept
-        if echo "$FILE_SOURCES" | grep -qiF "$(basename "${NEW_REL%/*}")" 2>/dev/null; then
+        # Use FILE_WIKI_SOURCES (not old $FILE_SOURCES) for consistency
+        if echo "$FILE_WIKI_SOURCES" | grep -qiF "$(basename "${NEW_REL%/*}")" 2>/dev/null; then
             score=$((score + 4))
             [[ "$types" ]] && types="$types,"
             types="${types}related_field"
@@ -114,8 +130,15 @@ find_and_score() {
     fi
 }
 
-# System files to exclude from crosslink discovery (per AGENTS.md system_files_excluded_from_search)
-SYSTEM_FILES=("log.md" "issues.md" "timeline.md" "overview.md" "snapshot.md" "index.md" "GIT-TROUBLESHOOTING.md" "GIT-WORKFLOW.md" "Home_Manager.md")
+# System files to exclude from crosslink discovery
+# Excludes all wiki meta/system pages AND root-level contract documents
+SYSTEM_FILES=(
+    "log.md" "issues.md" "timeline.md" "overview.md"
+    "snapshot.md" "index.md" "GIT-TROUBLESHOOTING.md"
+    "GIT-WORKFLOW.md" "Home_Manager.md"
+)
+# Root-level system files that appear in most pages' sources but are NOT wiki content
+ROOT_SYSTEM_FILES=("AGENTS.md" "context.md" "PLAN.md" "hot.md")
 is_system_file() {
     local f="$1"
     for sf in "${SYSTEM_FILES[@]}"; do
@@ -140,9 +163,11 @@ if [[ "$INCLUDE_ROOT" == "true" ]]; then
     done < <(find "${PROJECT_ROOT}" -maxdepth 1 -name "*.md" ! -path "*/meta/*" ! -path "$WIKI_DIR*" 2>/dev/null || true)
 fi
 
-# Sort by score descending and output JSON array
+# Sort by score descending and output JSON array (limited to MAX_RESULTS)
 if [[ -s "$RESULTS_FILE" ]]; then
-    sort -t: -k2 -rn "$RESULTS_FILE" | awk 'BEGIN{print "["} NR>1{print ","} {printf "  %s",$0} END{print "\n]"}'
+    # Limit results to prevent noise; sort by score desc
+    sort -t: -k2 -rn "$RESULTS_FILE" | head -n "${MAX_RESULTS}" | \
+        awk 'BEGIN{print "["} NR>1{print ","} {printf "  %s",$0} END{print "\n]"}'
     exit 0
 else
     echo "[]"
