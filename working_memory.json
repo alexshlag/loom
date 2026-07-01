@@ -1,100 +1,67 @@
 {
-  "last_updated": "2026-07-01T15:20:11+03",
-  "current_mode": "project",
-  "focus_node": "Phase 29 completed \u2014 all steps done",
-  "open_pages": [
-    {
-      "path": "issues.md",
-      "status": "updating"
-    },
-    {
-      "path": "PLAN.md",
-      "status": "updating"
-    }
-  ],
+  "last_updated": "2026-07-01T16:XX:XX+03",
+  "current_mode": "query",
+  "focus_node": "LOOM vs claude-obsidian — completed comparison update",
+  "open_pages": [],
   "dead_ends": [],
   "broken_links_resolved": [
     {
       "file": "scripts/link-validator.sh",
-      "change": "Fixed path resolution for ../ links \u2014 now resolves against file's directory, not WIKI_DIR",
+      "change": "Fixed path resolution for ../ links — now resolves against file's directory, not WIKI_DIR",
       "rule_applied": "Relative paths with ../* must be resolved using dirname(file) + realpath -m",
-      "timestamp": "2026-06-30T17:XX:XX+03",
-      "notes": "Fixes #2 broken links (natural-memory.md \u2192 AGENTS.md, temporal-decay-in-wiki.md \u2192 issues.md)"
+      "timestamp": "2026-06-30T17:XX:XX+03"
     },
     {
       "file": "wiki/entities/ai-factory.md",
-      "change": "Removed invalid source path from frontmatter \u2014 sources field must not reference non-existent raw/github/",
-      "rule_applied": "EXT-LINK-V1: Never link to or source from raw/** unless files exist on disk. Replace with canonical external URLs.",
-      "timestamp": "2026-06-30T17:XX:XX+03",
-      "notes": "Cleaned up stale meta-reference [raw/github/lee-to/ai-factory@2.x/] \u2192 replaced with actual GitHub/NPM URLs"
+      "change": "Removed invalid source path from frontmatter — sources field must not reference non-existent raw/github/",
+      "rule_applied": "EXT-LINK-V1: Never link to or source from raw/** unless files exist on disk.",
+      "timestamp": "2026-06-30T17:XX:XX+03"
     },
     {
       "file": "wiki/syntheses/python-nixos-development-environments.md",
-      "original_link": "./Home_Manager.md",
-      "replaced_with": "https://wiki.nixos.org/wiki/Home_Manager",
+      "change": "Fixed broken link to NixOS Wiki external URL",
       "rule_applied": "DR-EX1 (External Links Standard)",
-      "timestamp": "2026-06-28T17:10:00+00",
-      "notes": "Fixed to correct NixOS Wiki URL per issues.md #27 requirement"
-    },
-    {
-      "tool": "scripts/link-validator.sh (updated raw/* rule)",
-      "file": "wiki/entities/ai-factory.md",
-      "original_links": [
-        "raw/github/lee-to/ai-factory@2.x/getting-started.md",
-        "raw/github/lee-to/ai-factory@2.x/workflow.md",
-        "raw/github/lee-to/ai-factory@2.x/skills.md"
-      ],
-      "replaced_with": [
-        "https://github.com/lee-to/ai-factory/blob/2.x/docs/getting-started.md",
-        "https://github.com/lee-to/ai-factory/blob/2.x/docs/workflow.md",
-        "https://github.com/lee-to/ai-factory/blob/2.x/docs/skills.md"
-      ],
-      "rule_applied": "raw/* links must exist on disk; when missing \u2192 replace with external GitHub permalinks",
-      "timestamp": "2026-06-28T17:XX:XX+00",
-      "notes": "Fixed 3 broken raw-links to official GitHub docs. Also fixed link-validator.sh to check raw/* existence instead of skipping them."
-    },
-    {
-      "tool": "scripts/raw-link-repair.py + raw-link-repair.sh",
-      "scope": "raw/github/lee-to/ai-factory@2.x (13 files)",
-      "repairs_count": 76,
-      "rule_applied": "github/{owner}/{repo}@{branch}/path.md \u2192 https://github.com/owner/repo/blob/<branch>/path.md",
-      "timestamp": "2026-06-28T17:XX:XX+00",
-      "notes": "All relative markdown links in ai-factory repo converted to GitHub permalinks. Process-ingest.json updated to call raw-link-repair.sh at step 1.",
-      "issue_reference": "issues.md #27"
+      "timestamp": "2026-06-28T17:10:00+03"
     }
   ],
   "architectural_decisions": [
     {
       "id": "AD-001",
       "topic": "Delta tracking placement",
-      "decision": "source-manifest.json \u2192 meta/ (alongside registry, backlinks). Agent writes via script only.",
-      "reasoning": "raw/** is protected for agent writes. meta/ uses existing pattern: rebuild through scripts (rebuild-meta.sh), not direct edit. Consistent with validate-path.sh guardrails.",
+      "decision": "source-manifest.json → meta/ (alongside registry, backlinks). Agent writes via script only.",
+      "reasoning": "raw/** is protected for agent writes. meta/ uses existing pattern: rebuild through scripts (rebuild-meta.sh), not direct edit.",
       "date": "2026-06-30",
       "status": "resolved"
     }
   ],
   "query_summary": {
-    "intent": "Fixed broken schema_refs in process-files, added 6 missing headings to AGENTS.md",
+    "intent": "Сравнительный анализ LOOM vs claude-obsidian — обновление wiki страницы с учётом новых данных",
     "pages_read": [
-      "AGENTS.md",
-      "process-query.json",
-      "process-ingest.json",
-      "process-lint.json"
+      "wiki/entities/loomana.md",
+      "wiki/snapshot.md",
+      "wiki/comparisons/loom-vs-claude-obsidian.md",
+      "wiki/index.md",
+      "wiki/hot.md",
+      "AGENTS.md (claude-obsidian)",
+      "CLAUDE.md (claude-obsidian)",
+      "skills/wiki-ingest/SKILL.md (claude-obsidian)"
     ],
     "key_findings": [
-      "Added Compounding Workflow heading after Wiki Snapshot section",
-      "Added Batch Ingest Trigger heading after Process Roles table",
-      "Added Post-Operation Link Validation in Link Conventions section",
-      "Added Meta Rebuild Path sub-heading in Auto-Rebuild Metadata",
-      "Added Guardrails Reference under Rules & Guardrails",
-      "Replaced 6 broken schema_refs with note fields across process-files"
+      "claude-obsidian: 15 skills, cross-platform Agent Skills spec (Codex/OpenCode compatible)",
+      "Transport abstraction layer: CLI → MCP → filesystem fallback chain",
+      "Mode routing: LYT/PARA/Zettelkasten/Generic через .vault-meta/mode.json + wiki-mode.py",
+      "Advisory locking: per-file granularity, 60s staleness, cross-process release",
+      "Delta tracking: .raw/.manifest.json hash-based, skip unchanged sources",
+      "Canvas visual layer + Obsidian Bases (.base files)",
+      "DragonScale Mechanism 1 (wiki-fold) и Mechanism 2 (address assignment c-XXXXXX)",
+      "LOOM выигрывает в depth: evidence grading, contradiction cascade, dynamic search scoring"
     ]
   },
   "next_steps_todo": [
     {
-      "task": "Update PLAN.md with Phase 29 completion status",
-      "priority": "low",
-      "status": "ready"
+      "task": "Consider implementing IF priorities from comparison: mode routing, transport abstraction, advisory locking",
+      "priority": "medium",
+      "status": "pending"
     }
   ]
 }
