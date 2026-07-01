@@ -22,11 +22,13 @@ NEW_PAGE=""
 INCLUDE_ROOT=false
 SCORE_THRESHOLD=3     # minimum score to report
 MAX_RESULTS=5         # maximum candidates returned (prevents noise)
+FILE_LIST=""
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --include-root) INCLUDE_ROOT=true; shift;;
         --max-results) MAX_RESULTS="$2"; shift 2;;
         --min-score) SCORE_THRESHOLD="$2"; shift 2;;
+        --file-list) FILE_LIST="$2"; shift 2;;
         *) NEW_PAGE="$1"; shift;;
     esac
 done
@@ -148,11 +150,21 @@ is_system_file() {
 }
 
 # Search wiki pages (exclude system files)
-while IFS= read -r filepath; do
-    REL_PATH="${filepath#${WIKI_DIR}/}"
-    is_system_file "$REL_PATH" && continue
-    find_and_score "$filepath"
-done < <(find "$WIKI_DIR" -name "*.md" ! -path "*/meta/*" 2>/dev/null || true)
+# Use --file-list if provided (avoids redundant find for unified-pass.sh)
+if [[ -n "$FILE_LIST" ]]; then
+    while IFS= read -r filepath; do
+        [[ -z "$filepath" ]] && continue
+        REL_PATH="${filepath#${WIKI_DIR}/}"
+        is_system_file "$REL_PATH" && continue
+        find_and_score "$filepath"
+    done < "$FILE_LIST"
+else
+    while IFS= read -r filepath; do
+        REL_PATH="${filepath#${WIKI_DIR}/}"
+        is_system_file "$REL_PATH" && continue
+        find_and_score "$filepath"
+    done < <(find "$WIKI_DIR" -name "*.md" ! -path "*/meta/*" 2>/dev/null || true)
+fi
 
 # Also check root wiki files if requested
 if [[ "$INCLUDE_ROOT" == "true" ]]; then
