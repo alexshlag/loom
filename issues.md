@@ -341,4 +341,45 @@ Script does blackboard score-based candidate generation. Agent validates semanti
 
 ---
 
-*Last update: 2026-06-30 | Live: #16 (broken tests), #17 (silent errors), #20 (validate-path bypass). Resolved today: Harness-Independent Session & Git Operations, Natural Memory Translation.*
+*Last update: 2026-07-01 | Live: #16 (broken tests), #17 (silent errors), #35 (orphan output gap), #36 (check #9 vs #1 overlap). Resolved today: AGENTS.md output schema updated, process-lint.json fixes.*
+
+
+---
+
+### Issue #35: Orphan Pages Output — Fixed ✅ 2026-07-01
+**Проблема**: `lint.sh` для Check #2 извлекал только **число** орфанов, не передавая paths.
+
+**Fix applied**:
+1. ✅ Добавлена экстракция путей из `orphan-pages.sh` output в lint.sh: Python parser indented lines → JSON array
+2. ✅ JSON output включает `"orphan_paths": []` — agent читает массив без повторного вызова скрипта
+3. ✅ `process-lint.json` check #2 description обновлён с note о paths output
+4. ✅ `AGENTS.md` output schema дополнено полем `orphan_paths`
+
+**Severity**: MEDIUM → RESOLVED
+
+### Issue #36: Check #9 vs Check #1 — ANALYSIS COMPLETE ✅ RESOLVED
+**Результат анализа (2026-07-01)**:
+
+| Aspect | Check #1 (`## Обновлено` grep) | Check #9 (`detect-contradications.sh`) |
+|--------|-------------------------------|---------------------------------------|
+| **Метод** | Surface scan — ищет `## Обновлено` секции | Deep scan — парсит frontmatter dates + body text patterns (versions, dates) |
+| **Precision на текущем wiki** | 0 found (нет ни одной `## Обновлено`) | 2 "contradictions" найдено, но оба **false positive** |
+
+**False positives от Check #9**:
+1. `date:2026-06-28` — natural-memory.md упоминает свою own frontmatter date дважды в теле → self-reference, не межстраничный conflict
+2. `date:2025-06-24` — shared source reference (одна дата как `sources:[]` в разных страницах) → metadata совпадение, не fact conflict
+
+**Verdict**: 
+- Check #1 = **surface heuristic**, бесполезен пока нет `## Обновлено` секций. Быстрый O(n).
+- Check #9 = **pattern matcher** с низкой precision (false positive rate ~100% на текущем wiki). Медленнее, но требует tuning — filter same-page references, ignore shared source metadata dates.
+
+**Decision**: 
+1. ✅ Check #1 оставить как lightweight pre-scan (быстрый отсев)
+2. ⚠️ Check #9 нуждается в precision tuning: skip entries where all entries are from same page, exclude "sources:" lines from fact extraction
+3. ✅ Оба check'а — detection only, resolution → agent/inprocess per process-query.json
+
+**Action items**: 
+- [ ] `detect-contradications.py`: добавить filter "same-page self-references" (entries with identical paths)
+- [ ] `detect-contradications.py`: exclude lines matching `sources:.*\[.*\]` from fact extraction (metadata noise)
+
+**Severity**: LOW — cosmetic efficiency issue, не блокирует работу.

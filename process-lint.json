@@ -46,8 +46,8 @@
     {
       "check_id": "2",
       "name": "orphan_pages_detection",
-      "description": "Найди страницы без входящих ссылок из других wiki-страниц",
-      "note": "Запускается автоматически через scripts/lint.sh — не вызывай отдельно"
+      "description": "Найди страницы без входящих ссылок из других wiki-страниц. Возвращает count + paths в JSON.",
+      "note": "Запускается автоматически через scripts/lint.sh — не вызывай отдельно. Output: orphan_pages (count) + orphan_paths ([])."
     },
     {
       "check_id": "3",
@@ -58,16 +58,16 @@
           "action": "search_mentions_of_entity_concept_in_texts"
         },
         {
-          "condition": "mention_found_but_no_index_entry",
-          "action": "create_page_or_flag_for_ingest"
+          "action": "create_page_or_flag_for_ingest",
+          "note": "Soft-only: lint.sh prints 'skipped (soft check)', does NOT create pages"
         }
       ]
     },
     {
-      "check_id": "3b",
+      "check_id": "4",
       "name": "new_sources_available",
       "description": "Полная проверка raw/sources на новые пакеты, которые не обработаны. Выводит список всех новых пакетов и предлагает запустить ingest.",
-      "command": "./scripts/check-new-sources.sh raw/sources/ tracking/raw_registry.json",
+      "command": "./scripts/check-new-sources.sh --max 10 ${PROJECT_ROOT}/raw/sources ${PROJECT_ROOT}/tracking/raw_registry.json",
       "output_handling": {
         "exit_code_0": "no_new_sources — proceed to next check",
         "exit_code_1": "new_sources_found — report list of NEW: <package_id> packages, ask user if they want to ingest"
@@ -75,7 +75,7 @@
       "note": "Детальная проверка — только для lint. Не дублирует quick-check из process-query. Lint detect → User decides → Ingest process handles actual processing."
     },
     {
-      "check_id": "4",
+      "check_id": "5",
       "name": "new_topics_proposal",
       "description": "Предложи новые темы или источники для поиска, опираясь на контекст диалога, связи из index.md и доступ к интернету",
       "inputs": [
@@ -85,7 +85,7 @@
       ]
     },
     {
-      "check_id": "5",
+      "check_id": "6",
       "name": "mechanical_linting",
       "description": "Механические проверки: фронтматер, дубли заголовков, пустые категории",
       "checks": [
@@ -102,21 +102,21 @@
           "rule": "which_index_categories_are_empty"
         }
       ],
-      "note": "orphaned_pages и broken_links вынесены в check_id=2 и check_id=7 для глубокой проверки"
-    },
-    {
-      "check_id": "6",
-      "name": "date_consistency_check",
-      "description": "Проверь, что год в date: совпадает с годом в секциях обновления (Обновлено YYYY-MM-DD), и что даты не старше 1 года",
-      "command": "./scripts/date-consistency.sh wiki/",
-      "output_handling": {
-        "exit_code_0": "dates_consistent — proceed to next check",
-        "exit_code_1": "inconsistencies_found — report with suggestion: review and correct dates using current system date"
-      }
+      "note": "orphaned_pages (check_id=2) и broken_links (check_id=8) вынесены в отдельные deep checks"
     },
     {
       "check_id": "7",
-      "name": "broken_link_auto_resole",
+      "name": "date_consistency_check",
+      "description": "Проверь, что год в date: совпадает с годом в секциях обновления (Обновлено YYYY-MM-DD), и что даты не старше 1 года",
+      "output_handling": {
+        "exit_code_0": "dates_consistent — proceed to next check",
+        "exit_code_1": "inconsistencies_found — report with suggestion: review and correct dates using current system date"
+      },
+      "note": "Command in lint.sh uses $WIKI_DIR arg, not hardcoded 'wiki/'"
+    },
+    {
+      "check_id": "8",
+      "name": "broken_link_auto_resolve",
       "description": "Найди битые ссылки через unified-pass (единый walk), попробуй auto-fix через fuzzy-match (score>=80%), report agent_review_required для оставшихся. Unified-pass replaces 3 separate script calls with 1 shared walk.",
       "command": "./scripts/unified-pass.sh --quiet --skip-meta --skip-crosslinks --auto",
       "output_handling": {
@@ -131,41 +131,28 @@
       }
     },
     {
-      "check_id": "8",
-      "name": "file_rename_or_delete_validation",
-      "description": "Проверяет, что после rename/move/delete всех файлов в wiki все бэклинки исправлены. Сканит все файлы на старые пути.",
-      "pre_condition": {
-        "command": "git diff --name-only HEAD~1..HEAD | grep wiki/",
-        "if_no_changes_found": "SKIP_LINT"
+      "check_id": "9",
+      "name": "detect_contradiction_deep_scan",
+      "description": "Глубокий анализ противоречий между страницами wiki через Python-скрипт. Считает frontmatter dates, извлекает ключевые факты из каждой страницы, строит матрицу конфликтов.",
+      "command": "./scripts/detect-contradications.sh --quiet",
+      "output_handling": {
+        "exit_code_0": "no_contradictions_found — proceed to next check",
+        "exit_code_1": "potential_contradictions_detected — parse JSON: potential_contradictions count + conflicts[] array"
       },
       "actions": [
         {
-          "condition": "rename_or_move_detected",
-          "old_path": "<old_path>",
-          "new_path": "<new_path>",
-          "note": "link-validator на OLD_PATH — запускается через scripts/lint.sh"
+          "action": "parse_json_output",
+          "command": "python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get(\"potential_contradictions\",0))' <<< output"
         },
         {
-          "condition": "delete_detected",
-          "deleted_file": "<path>",
-          "note": "link-validator на DELETED_FILE — запускается через scripts/lint.sh"
+          "condition": "conflicts_count > 0",
+          "note": "Agent review required — apply DR-1/DR-2 из decision-rules.md к каждому конфликту"
         }
       ],
-      "output_handling": {
-        "exit_code_0": "no_broken_links — proceed",
-        "exit_code_1": "broken_links_found — parse JSON from stdout, report with auto-fixable count and apply fixes"
-      },
-      "schema_ref": "AGENTS.md#auto_fix_protocol",
-      "post_check": {
-        "command": "./scripts/rebuild-meta.sh",
-        "schema_ref": "AGENTS.md#meta_rebuild_path",
-        "note": "Canonical path defined in AGENTS.md. Do not hardcode absolute paths.",
-        "action_on_success": "CONTINUE_TO_NEXT_CHECK",
-        "action_on_failure": "LOG_WARNING_AND_PROCEED"
-      }
+      "schema_ref": "process-query.json#contradiction_resolution_flow"
     },
     {
-      "check_id": "9",
+      "check_id": "10",
       "name": "text_similarity_scan",
       "description": "Сканит все wiki-страницы на n-gram overlap ≥90%. Detects copy-paste chains. Script: text-similarity.sh --scan-all",
       "pre_condition": {

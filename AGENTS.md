@@ -874,14 +874,21 @@ cd /path/to/loomana && ./scripts/lint.sh --skip-checks 3,5
 {
   "timestamp": "YYYY-MM-DDTHH:MM:SS",
   "wiki_dir": "wiki/",
-  "checks_run": 7,
+  "checks_run": 11,
   "issues_found": {
     "contradictions": 0,
     "orphan_pages": 3,
+    "orphan_paths": [],
     "new_sources_unprocessed": 5,
     "duplicate_titles": 0,
     "date_inconsistencies": 0,
-    "broken_links": 2
+    "broken_links": 2,
+    "auto_repaired_links": 1,
+    "agent_review_required": 0,
+    "agent_review_details": [],
+    "contradictions_deep": 0,
+    "text_similarity_overlaps": 0,
+    "hot_cache_stale": false
   },
   "total_issues": 10,
   "status": "ISSUES_FOUND"
@@ -891,13 +898,17 @@ cd /path/to/loomana && ./scripts/lint.sh --skip-checks 3,5
 ### Checks выполняемые скриптом
 | Check ID | Название | Скрипт | Результат |
 |----------|----------|--------|-----------|
-| 1 | Contradictions | Soft scan `## Обновлено` | Agent review required |
-| 2 | Orphan pages | `orphan-pages.sh` | List of orphans |
-| 3 | New sources | `check-new-sources.sh` | Unprocessed packages list |
-| 4 | Knowledge gaps | — | Skipped (soft check) |
-| 5 | Duplicate titles | `duplicate-titles.sh` | Count of duplicates |
-| 6 | Date consistency | `date-consistency.sh` | Inconsistencies count |
-| 7 | Broken links | `link-validator.sh --full` | JSON of broken links |
+| 1 | Contradictions (soft) | `## Обновлено` grep | Pages count for agent review |
+| 2 | Orphan pages | `orphan-pages.sh` | Count + paths of orphaned wiki pages |
+| 3 | Knowledge gaps | — | Skipped (agent review required) |
+| 4 | New sources available | `check-new-sources.sh --max 10` | NEW: package list |
+| 5 | New topics proposal | — | Skipped (requires external sources) |
+| 6 | Mechanical linting | `duplicate-titles.sh` + frontmatter checks | Duplicate count, missing fields |
+| 7 | Date consistency | `date-consistency.sh` | Inconsistencies count |
+| 8 | Broken links auto-resolve | `unified-pass.sh --auto` | JSON: broken_links[] + auto_repaired + agent_review_required |
+| 9 | Contradictions deep scan | `detect-contradications.sh` | potential_contradictions count + conflicts[] |
+| 10 | Text similarity scan | `text-similarity.sh --scan-all` | matches[] with similarity_score, file1, file2 |
+| 11 | Hot cache stale check | `check-wiki-changes.sh` | WIKI CHANGES DETECTED / no changes
 
 ### Почему это важно
 - **Не блокирует agent turn**: lint работает отдельно, не требует inline выполнения

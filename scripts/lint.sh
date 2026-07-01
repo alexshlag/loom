@@ -49,11 +49,22 @@ TOTAL_ISSUES=$((TOTAL_ISSUES + CONTRADICTIONS))
 
 # --- Check 2: Orphan pages ---
 ORPHAN_COUNT=0
+ORPHAN_PATHS=""
 if [[ "$SKIP_CHECKS" != *",2,"* ]]; then
   local_orphans=""
   safe_run "./scripts/orphan-pages.sh $WIKI_DIR ${PROJECT_ROOT}/meta/backlinks.json" local_orphans "0 1" || true
   if echo "$local_orphans" | grep -q "Orphan pages found"; then
     ORPHAN_COUNT=$(echo "$local_orphans" | grep -oE '[0-9]+' | head -1) || ORPHAN_COUNT=0
+    # Extract orphan paths (indented lines after 'Orphan pages found')
+    ORPHAN_PATHS_JSON=$(echo "$local_orphans" | python3 -c '
+import sys,json
+lines = sys.stdin.read().split("\n")
+paths = []
+for line in lines:
+    if line.startswith("    ") and "no backlinks" not in line.lower():
+        paths.append(line.strip())
+print(json.dumps(paths))
+' 2>/dev/null) || ORPHAN_PATHS_JSON="[]"
   fi
 fi
 TOTAL_ISSUES=$((TOTAL_ISSUES + ORPHAN_COUNT))
@@ -183,6 +194,7 @@ cat <<EOF | grep -v "^="
   "issues_found": {
     "contradictions": ${CONTRADICTIONS},
     "orphan_pages": ${ORPHAN_COUNT},
+    "orphan_paths": ${ORPHAN_PATHS_JSON:-"[]"},
     "new_sources_unprocessed": ${NEW_SOURCES},
     "duplicate_titles": ${DUPLICATE_TITLES},
     "date_inconsistencies": ${DATE_ISSUES},
