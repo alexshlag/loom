@@ -10,9 +10,12 @@ PATTERN=""
 MAX_MATCHES=$DEFAULT_MAX
 BROKEN_COUNT=0
 AUTO_MODE=false
-
+BATCH_FILES=(
+)
 # Parse arguments — flexible order: flags can come before/after wiki_dir
-# Usage: link-validator.sh [--full|--auto] [wiki_dir?] [target_file?]
+# Usage:
+#   link-validator.sh [--full|--auto] [wiki_dir?] [target_file?]
+#   link-validator.sh --batch file1.md file2.md ...
 FILE_TARGET=""
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -20,15 +23,21 @@ while [[ $# -gt 0 ]]; do
     --auto|-a) AUTO_MODE=true; MODE="full-auto"; shift;;
     --max) MAX_MATCHES="$2"; shift 2;;
     --file|-f) FILE_TARGET="$2"; shift 2;;
+    --batch) MODE="batch"; shift;;
     *)
-      if [[ -d "$1" ]]; then
+      if [[ "$MODE" == "batch" ]]; then
+        BATCH_FILES+=("$1")
+      elif [[ -d "$1" ]]; then
         # Directory arg: treat as wiki_dir override
         WIKI_DIR="$1"
+      elif [[ -f "$1" && "$1" =~ \.md$ ]]; then
+        # File target (looks like a .md file)
+        FILE_TARGET="$1"
       elif [[ -n "$FILE_TARGET" && "$MODE" == "full" ]] || [[ -z "$FILE_TARGET" && "$MODE" != "" ]]; then
         # Second positional arg after mode is always a file target
         FILE_TARGET="$1"
       elif [[ "$MODE" == "" ]]; then
-        # First positional arg before any flag: wiki_dir
+        # First positional arg before any flag: wiki_dir (but not .md file)
         WIKI_DIR="$1"
         MODE="full"
       else
@@ -259,6 +268,26 @@ check_file() {
 }
 
 # --- Main execution ---
+if [[ "$MODE" == "batch" ]]; then
+  if [[ ${#BATCH_FILES[@]} -eq 0 ]]; then
+    echo "[!] batch mode requires at least one file argument. Use --batch - to read from stdin." >&2
+    exit 1
+  fi
+  # Support reading file list from stdin: link-validator.sh --batch - < filelist.txt
+  if [[ ${#BATCH_FILES[@]} -eq 1 && "${BATCH_FILES[0]}" == "-" ]]; then
+    BATCH_FILES=()
+    while IFS= read -r line; do
+      [[ -n "$line" ]] && BATCH_FILES+=("$line")
+    done
+    echo "[*] Received ${#BATCH_FILES[@]} files from stdin" >&2
+  fi
+
+  echo "[*] Scanning ${#BATCH_FILES[@]} files for broken internal links (auto-repair: $([ "$AUTO_MODE" = true ] && echo enabled || echo disabled))" >&2
+  for file in "${BATCH_FILES[@]}"; do
+    [[ -f "$file" ]] || { echo "[!] File not found: $file" >&2; continue; }
+    check_file "$file"
+  done
+fi
 
 if [[ "$MODE" == "full" || "$MODE" == "full-auto" ]]; then
   if [[ -n "$FILE_TARGET" ]]; then

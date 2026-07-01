@@ -14,9 +14,10 @@ trap 'rm -f "${META_DIR}/registry.json.tmp" "${META_DIR}/backlinks.json.tmp" "${
 mkdir -p "$META_DIR"
 
 # ─── Incremental Update Detection (MEDIUM-4 optimization) ──────
-CHANGED_FILES=""
 ALL_FILES=$(find "$WIKI_DIR" -name "*.md" -type f ! -path "*/meta/*" 2>/dev/null | wc -l)
 
+FULL_REBUILD=false
+CHANGED_FILES=""
 if [[ -f "$TIMESTAMP_FILE" ]]; then
     CHANGED_FILES=$(find "$WIKI_DIR" -name "*.md" -type f ! -path "*/meta/*" -newer "$TIMESTAMP_FILE" 2>/dev/null || true)
     if [[ -z "$CHANGED_FILES" ]]; then
@@ -25,6 +26,9 @@ if [[ -f "$TIMESTAMP_FILE" ]]; then
     fi
     CHANGED_COUNT=$(echo "$CHANGED_FILES" | wc -l)
     echo "[*] Incremental mode: ${CHANGED_COUNT} changed files (of ${ALL_FILES} total)" >&2
+else
+    FULL_REBUILD=true
+    echo "[*] Full rebuild (no timestamp found)" >&2
 fi
 
 INDEX_ONLY=false
@@ -32,9 +36,10 @@ if [[ "${1:-}" == "--index-only" ]]; then
   INDEX_ONLY=true; shift; echo "Skipping registry.json and backlinks.json (--index-only mode)" >&2
 fi
 
-CHANGED_LIST=$(echo "$CHANGED_FILES" | tr '\n' ',' || true)
-if [[ -z "$CHANGED_LIST" ]]; then
+if [[ "$FULL_REBUILD" == "true" ]]; then
     CHANGED_LIST="/all"
+else
+    CHANGED_LIST=$(echo "$CHANGED_FILES" | tr '\n' ',' || true)
 fi
 
 # ─── 1. registry.json (skip if --index-only) ──────────────
@@ -74,12 +79,14 @@ try:
 except Exception:
     pass
 
+full_rebuild = (changed_str == '/all')
+
 def should_process(filepath):
-    if changed_str == '/all':
+    if full_rebuild:
         return True
     return filepath in [f.strip() for f in changed_str.split(',')]
 
-pages = list(existing_registry.values())
+pages = [] if full_rebuild else list(existing_registry.values())
 for root, dirs, files in os.walk(wiki_dir):
     if 'meta' in root or 'raw' in root:
         continue
@@ -135,23 +142,23 @@ sys.path.insert(0, "${SCRIPT_DIR}")
 wiki_dir = "${WIKI_DIR}"
 meta_path = "${META_DIR}/backlinks.json"
 changed_str = "${CHANGED_LIST}"
+full_rebuild = (changed_str == '/all')
 
 def resolve_target(path):
     cleaned = path.lstrip('/').lstrip('./') if not path.startswith('../') else path
-    if '/' in cleaned:
-        return cleaned.replace('/', '-').replace('.', '-')
-    return cleaned.replace(' ', '').replace('-', '_').title()
+    return cleaned.replace('/', '-').replace('.', '-')
 
 existing_backlinks = {}
-try:
-    with open(meta_path) as f:
-        data = json.load(f)
-        existing_backlinks = dict(data.get('backlinks', {}))
-except Exception:
-    pass
+if not full_rebuild:
+    try:
+        with open(meta_path) as f:
+            data = json.load(f)
+            existing_backlinks = dict(data.get('backlinks', {}))
+    except Exception:
+        pass
 
 def should_process(filepath):
-    if changed_str == '/all':
+    if full_rebuild:
         return True
     return filepath in [f.strip() for f in changed_str.split(',')]
 

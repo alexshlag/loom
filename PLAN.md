@@ -19,7 +19,13 @@
 ✅ Issue #10: Created scripts/utilities/common.sh with unified log_error() + safe_run()
 ✅ Issues #16, #18, #19, #20: All fixed (link validator limits, validate-path guards, mktemp)
 
+### ✅ Completed this session:
+✅ Phase 23 Step 1: link-validator.sh --batch now supports --auto flag and stdin (--batch -)
+✅ ID-генерация в rebuild-meta.sh: resolve_target для bare filenames unified с registry (bug fix)
+✅ Инкрементальная логика rebuild-meta.sh: no timestamp → full rebuild, а не stale incremental
+
 ### Next batch of tasks:
+- [ ] Phase 23 Step 2: Создать `scripts/unified-pass.sh` как **оркестратор** (один walk → 3 consumer-функции: validate_links + collect_metadata + discover_crosslinks). Не monolithic merge, а shared walk + dispatch.
 - [ ] Add trap handlers to orphan-pages.sh, check-new-sources.sh, duplicate-titles.sh, date-consistency.sh (Issue #11)
 - [ ] Refactor Python scripts to use logging module instead of print() (Issue #10)
 
@@ -74,7 +80,7 @@ P12 (logging standard), P13 (trap handlers), P15 (minor fixes).
 **Этапы реализации:**
 | Step | Task | Effort | Status |
 |------|------|--------|--------|
-| **1** | `--batch` mode в `link-validator.sh` — принимает список файлов, один pass validation | Low | ⬜ Next |
+| **1** | `--batch` mode в `link-validator.sh` — принимает список файлов, один pass validation | Low | ✅ Done |
 | **2** | Создать `scripts/unified-pass.sh` — single walk по wiki, three analyses in one pass. Outputs: broken_links JSON + crosslink_candidates JSON. | Medium | ⬜ After step 1 passes testing |
 | **3** | Интегрировать в lint/ingest workflows — заменить 3 отдельных вызова на 1 unified call. Удалить дублирующиеся atomarные скрипты. | High | ⬜ After steps 1-2 validated |
 
