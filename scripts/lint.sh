@@ -25,6 +25,9 @@ done
 
 WIKI_DIR="${1:-$PROJECT_ROOT/wiki}"
 
+# Normalize SKIP_CHECKS for exact ID matching: comma-pad each ID
+SKIP_CHECKS=",${SKIP_CHECKS// /},"
+
 # Trap cleanup for any temp files on abort — no || true needed, this is best-effort
 trap 'rm -f /tmp/lint_*.json /tmp/overlap_result.json 2>/dev/null' EXIT
 
@@ -36,7 +39,7 @@ TOTAL_ISSUES=0
 
 # --- Check 1: Contradictions (read all pages, compare facts) ---
 CONTRADICTIONS=0
-if [[ ! "$(echo "$SKIP_CHECKS" | grep -o '1')" == "1" ]]; then
+if [[ "$SKIP_CHECKS" != *",1,"* ]]; then
   CONTRADICTION_PAGES=$({ grep -r "^## Обновлено" "$WIKI_DIR/" --include="*.md" -l 2>/dev/null | head -20; } || true)
   if [ -n "$CONTRADICTION_PAGES" ]; then
     CONTRADICTIONS=$(echo "$CONTRADICTION_PAGES" | wc -l)
@@ -46,7 +49,7 @@ TOTAL_ISSUES=$((TOTAL_ISSUES + CONTRADICTIONS))
 
 # --- Check 2: Orphan pages ---
 ORPHAN_COUNT=0
-if [[ ! "$(echo "$SKIP_CHECKS" | grep -o '2')" == "2" ]]; then
+if [[ "$SKIP_CHECKS" != *",2,"* ]]; then
   local_orphans=""
   safe_run "./scripts/orphan-pages.sh $WIKI_DIR ${PROJECT_ROOT}/meta/backlinks.json" local_orphans "0 1" || true
   if echo "$local_orphans" | grep -q "Orphan pages found"; then
@@ -56,11 +59,11 @@ fi
 TOTAL_ISSUES=$((TOTAL_ISSUES + ORPHAN_COUNT))
 
 # --- Check 3: Knowledge gaps (soft check, agent review) ---
-echo "[✓] Check 3/9: knowledge_gaps — skipped (soft check, agent review required)" >&2
+echo "[✓] Check 3/10: knowledge_gaps — skipped (soft check, agent review required)" >&2
 
 # --- Check 4: New sources available ---
 NEW_SOURCES=0
-if [[ ! "$(echo "$SKIP_CHECKS" | grep -o '3')" == "3" ]]; then
+if [[ "$SKIP_CHECKS" != *",4,"* ]]; then
   local_new_sources=""
   safe_run "./scripts/check-new-sources.sh --max 10 ${PROJECT_ROOT}/raw/sources ${PROJECT_ROOT}/tracking/raw_registry.json" local_new_sources "0 1" || true
   if echo "$local_new_sources" | grep -q '^NEW:'; then
@@ -69,11 +72,11 @@ if [[ ! "$(echo "$SKIP_CHECKS" | grep -o '3')" == "3" ]]; then
 fi
 
 # --- Check 5: New topics proposal (soft check) ---
-echo "[✓] Check 5/9: new_topics_proposal — skipped (requires external sources)" >&2
+echo "[✓] Check 5/10: new_topics_proposal — skipped (requires external sources)" >&2
 
 # --- Check 6: Mechanical linting (frontmatter, duplicate titles) ---
 DUPLICATE_TITLES=0
-if [[ ! "$(echo "$SKIP_CHECKS" | grep -o '5')" == "5" ]]; then
+if [[ "$SKIP_CHECKS" != *",6,"* ]]; then
   local_dup=""
   safe_run "./scripts/duplicate-titles.sh $WIKI_DIR" local_dup || true
   if echo "$local_dup" | grep -q "Duplicate"; then
@@ -84,7 +87,7 @@ TOTAL_ISSUES=$((TOTAL_ISSUES + DUPLICATE_TITLES))
 
 # --- Check 7: Date consistency ---
 DATE_ISSUES=0
-if [[ ! "$(echo "$SKIP_CHECKS" | grep -o '6')" == "6" ]]; then
+if [[ "$SKIP_CHECKS" != *",7,"* ]]; then
   local_date=""
   safe_run "./scripts/date-consistency.sh $WIKI_DIR" local_date "0 1" || true
   if echo "$local_date" | grep -q "Inconsistencies found"; then
@@ -97,7 +100,7 @@ TOTAL_ISSUES=$((TOTAL_ISSUES + DATE_ISSUES))
 BROKEN_LINKS=0
 AUTO_REPAIRED=0
 AGENT_REVIEW_REQUIRED_JSON="[]"
-if [[ ! "$(echo "$SKIP_CHECKS" | grep -o '7')" == "7" ]]; then
+if [[ "$SKIP_CHECKS" != *",8,"* ]]; then
   local_up_out=""
   safe_run "./scripts/unified-pass.sh --quiet --skip-meta --skip-crosslinks --auto" local_up_out || true
 
@@ -131,7 +134,7 @@ fi
 
 # --- Check 9: Contradiction deep scan (Python-based) ---
 CONTRADICTIONS_DEEP=0
-if [[ ! "$(echo "$SKIP_CHECKS" | grep -oE ',?8,')" == ",8," ]]; then
+if [[ "$SKIP_CHECKS" != *",9,"* ]]; then
   local_deep=""
   safe_run "./scripts/detect-contradications.sh --quiet" local_deep "0 1" || true
   # Parse JSON with fallback for malformed output
@@ -140,10 +143,11 @@ if [[ ! "$(echo "$SKIP_CHECKS" | grep -oE ',?8,')" == ",8," ]]; then
     CONTRADICTIONS_DEEP=$local_dc
   fi
 fi
+TOTAL_ISSUES=$((TOTAL_ISSUES + CONTRADICTIONS_DEEP))
 
 # --- Check 10: Text similarity (n-gram overlap scan) ---
 TEXT_SIMILARITY_MATCHES=0
-if [[ ! "$(echo "$SKIP_CHECKS" | grep -oE ',?9,')" == ",9," ]]; then
+if [[ "$SKIP_CHECKS" != *",10,"* ]]; then
   # text-similarity writes logs to stdout — redirect stderr for clean JSON output
   local_sim=$(bash ./scripts/text-similarity.sh --scan-all --threshold 90 2>/dev/null) || true
   if echo "$local_sim" | python3 -c 'import json,sys; d=json.load(sys.stdin); sys.exit(0 if len(d.get("matches",[]))==0 else 1)' 2>/dev/null; then
