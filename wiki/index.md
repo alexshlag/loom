@@ -3,10 +3,13 @@
 
 ## Сущности
 * [AI Factory](entities/ai-factory.md) — Stack-agnostic CLI tool and skill system for AI-powered development.
+* [API Platform](entities/api-platform.md) — # API Platform API Platform — фреймворк для создания гипермедийных REST и GraphQL API.
 * [Andrej Karpathy](entities/andrej-karpathy.md) — AI Researcher, автор LLM Wiki pattern (LLM-powered personal knowledge base).
+* [Ibexa DXP](entities/ibexa-dxp.md) — # Ibexa DXP Ibexa DXP (Digital Experience Platform) — enterprise-grade CMS + commerce platform на базе Symfony.
 * [Loomana — Wiki System Documentation](entities/loomana.md) — ### 1. Raw Sources (`raw/`) — Immutable ### 2.
 * [Nvidia](entities/nvidia.md) — # Nvidia Американская технологическая корпорация, лидер в области разработки графических процессоров (GPU), аппаратных ускорителей для искусственного 
 * [Pi Coding Agent](entities/pi-coding-agent.md) — Минимальный терминальный код-агент (harness), расширяемый через TypeScript-расширения, skills, prompt templates и темы.
+* [Sylius](entities/sylius.md) — # Sylius Sylius — open-source eCommerce framework на базе Symfony Full Stack.
 * [Symfony](entities/symfony.md) — # Symfony Symfony — высокопроизводительный PHP веб-фреймворк с открытым исходным кодом, созданный SensioLabs.
 
 ## Концепции
@@ -25,7 +28,9 @@
 * [Routing System & Controllers](concepts/routing-system.md) — # Routing System & Controllers Routing System — компонент Symfony, который маппит incoming URLs к application code (controller actions).
 * [Security System (AuthN & AuthZ)](concepts/security-system.md) — # Security System (AuthN & AuthZ) Symfony Security — comprehensive security system для web applications, включающий аутентификацию (кто пользователь) 
 * [Service Container & Dependency Injection](concepts/service-container.md) — # Service Container & Dependency Injection Service Container — центральный механизм Symfony, который централизует создание и управление объектами (ser
+* [Sonata Admin Bundle](concepts/sonata-admin-bundle.md) — # Sonata Admin Bundle Sonata Admin — пакет (bundle) для Symfony, генерирующий admin panels и CRUD interfaces.
 * [Symfony AI Component](concepts/symfony-ai.md) — # Symfony AI Component Symfony AI — set of components integrating LLM capabilities into PHP applications.
+* [Symfony Deployment & Production Setup](concepts/symfony-deployment.md) — # Symfony Deployment & Production Setup Symfony deployment requires a fully-featured web server (Nginx or Apache), PHP 8.
 * [Symfony Flex & Recipes](concepts/symfony-flex.md) — # Symfony Flex & Recipes Symfony Flex — Composer plugin that intercepts package installation and automatically configures bundles/packages via predefi
 * [Temporal Decay in Compounding Knowledge Base](concepts/temporal-decay-in-wiki.md) — # Temporal Decay in Compounding Knowledge Base **Temporal decay (времянное устаревание)** — проблема в compounding knowledge base, когда страницы wiki
 * [Testing Strategy & Best Practices](concepts/testing-strategy.md) — # Testing Strategy & Best Practices Symfony testing integrates with PHPUnit for comprehensive test coverage.
@@ -61,7 +66,7 @@
 
 
 ---
-*Created: auto-generated | Last updated: 2026-07-01 18:43*
+*Created: auto-generated | Last updated: 2026-07-01 23:48*
 
 ## Хронология
 | Дата | Событие |

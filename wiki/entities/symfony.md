@@ -76,6 +76,13 @@ your_project/
 - [Hexagonal Architecture](concepts/hexagonal-architecture.md) — паттерн организации кода для Symfony 7+
 - [Doctrine ORM Integration](concepts/doctrine-orm.md) — работа с БД
 - [Symfony Flex](concepts/symfony-flex.md) — автоматизация установки пакетов
+- [Deployment & Production Setup](concepts/symfony-deployment.md) — системные требования, конфигурация сервера, performance tuning
+
+### Экосистемные проекты (Symphony-based)
+- [API Platform](entities/api-platform.md) — REST/GraphQL API фреймворк поверх Symfony
+- [Sylius](entities/sylius.md) — open-source eCommerce framework на Symfony
+- [Sonata Admin Bundle](concepts/sonata-admin-bundle.md) — admin panel generator для Symfony projects
+- [Ibexa DXP](entities/ibexa-dxp.md) — enterprise CMS + commerce platform на Symfony
 
 ### Взаимное влияние
 - Symfony UX → Stimulus + Turbo определяют подход к фронтенду

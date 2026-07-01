@@ -1,7 +1,8 @@
 {
-  "last_updated": "2026-07-01T16:XX:XX+03",
+  "last_updated": "2026-07-01T23:XX:XX+03",
   "current_mode": "query",
-  "focus_node": "LOOM vs claude-obsidian — completed comparison update",
+  "execution_mode": "silent",
+  "focus_node": "Symfony ecosystem — created API Platform, Sylius, Sonata Admin Bundle, Ibexa DXP pages with crosslinks",
   "open_pages": [],
   "dead_ends": [],
   "broken_links_resolved": [
@@ -35,26 +36,18 @@
     }
   ],
   "query_summary": {
-    "intent": "Сравнительный анализ LOOM vs claude-obsidian — обновление wiki страницы с учётом новых данных",
+    "intent": "Symfony ecosystem — какие технологии и проекты связаны с Symfony",
     "pages_read": [
-      "wiki/entities/loomana.md",
-      "wiki/snapshot.md",
-      "wiki/comparisons/loom-vs-claude-obsidian.md",
-      "wiki/index.md",
-      "wiki/hot.md",
-      "AGENTS.md (claude-obsidian)",
-      "CLAUDE.md (claude-obsidian)",
-      "skills/wiki-ingest/SKILL.md (claude-obsidian)"
+      "wiki/entities/symfony.md",
+      "wiki/concepts/symfony-ai.md",
+      "web_search: API Platform, Sylius, Sonata Admin Bundle, Ibexa DXP"
     ],
     "key_findings": [
-      "claude-obsidian: 15 skills, cross-platform Agent Skills spec (Codex/OpenCode compatible)",
-      "Transport abstraction layer: CLI → MCP → filesystem fallback chain",
-      "Mode routing: LYT/PARA/Zettelkasten/Generic через .vault-meta/mode.json + wiki-mode.py",
-      "Advisory locking: per-file granularity, 60s staleness, cross-process release",
-      "Delta tracking: .raw/.manifest.json hash-based, skip unchanged sources",
-      "Canvas visual layer + Obsidian Bases (.base files)",
-      "DragonScale Mechanism 1 (wiki-fold) и Mechanism 2 (address assignment c-XXXXXX)",
-      "LOOM выигрывает в depth: evidence grading, contradiction cascade, dynamic search scoring"
+      "Созданы 4 страницы: API Platform (REST/GraphQL), Sylius (eCommerce), Sonata Admin (admin panels), Ibexa DXP (enterprise CMS+commerce)",
+      "Все связаны с Symfony через bundles/components/DI",
+      "API Platform ↔ Sylius: headless commerce через REST/GraphQL",
+      "Ibexa + API Platform: GraphQL schema generation из content types",
+      "Sonata Admin: используется в Sylius/Ibexa для enterprise admin customization"
     ]
   },
   "next_steps_todo": [

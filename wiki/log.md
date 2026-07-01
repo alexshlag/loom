@@ -367,3 +367,24 @@
   - AGENTS.md updated with Batch Ingest Trigger section
   - Working memory updated: Phase 13.2 complete, next = Phase 14 (Wiki Sources Structure)
 ## [2026-07-01] schema-fix | Fixed broken schema_refs in process-query.json, process-ingest.json, process-lint.json. Added 6 missing headings to AGENTS.md.
+## [2026-07-01] ingest | Created wiki/concepts/symfony-deployment.md — Symfony deployment requirements, production setup checklist
+
+## [2026-07-01] ingest | Symfony ecosystem — created API Platform, Sylius, Sonata Admin Bundle, Ibexa DXP pages with crosslinks
+
+### Created files
+- `wiki/entities/api-platform.md` — REST/GraphQL API фреймворк поверх Symfony (JSON-LD/Hydra/OpenAPI)
+- `wiki/entities/sylius.md` — open-source eCommerce framework на Symfony (headless, BDD-first)
+- `wiki/concepts/sonata-admin-bundle.md` — admin panel generator для Symfony (inspired by Django Admin)
+- `wiki/entities/ibexa-dxp.md` — enterprise CMS + commerce platform на Symfony
+
+### Crosslinks established
+- API Platform ↔ Sylius: headless commerce через REST/GraphQL APIs
+- API Platform ↔ Ibexa DXP: GraphQL schema generation из content types
+- Sonata Admin ↔ Syulus/Ibexa: enterprise admin customization
+- All pages linked to symfony.md entity page
+
+### Validation
+- auto-crosslink.sh confirmed crosslinks for all 4 files (score ≥ 4)
+- unified-pass.sh: 0 broken links, 0 auto-repaired
+- rebuild-meta.sh --index-only: updated index with new entries
+

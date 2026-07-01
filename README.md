@@ -1,23 +1,10 @@
-# Loomana
-### Where sources become wiki
+# Loomana: Where sources become llm-wiki
 
 ## Что это такое
 
-Это **LLM-powered personal knowledge base** — база знаний, которая растёт с каждым источником и вопросом. Внутреннее название: `loom` (полное имя: `Loomana`). Вместо стандартного RAG (где LLM каждый раз заново извлекает фрагменты документов), здесь знания **компилируются один раз** и **поддерживаются актуальными**.
+Это **LLM-powered personal knowledge base** — база знаний, которая растёт с каждым источником и вопросом. Полное имя проекта: `Loomana`; короткое название: `loom`.
 
 *Идея: [Andrej Karpathy](https://karpathy.ai/). Референс: [LLM Wiki gist](https://gist.github.com/karpathy/ed8f284379605148297b7a8be01eb580).*
-
-### LLM Wiki vs RAG
-
-| | RAG / NotebookLM | LLM Wiki Pattern |
-|--|------------------|------------------|
-| Знания каждый запрос | 🔴 Rediscover from scratch | 🟢 Compounding (растёт) |
-| Cross-references | ❌ Нет | ✅ Явные ссылки |
-| Contradictions | ❌ Не ловит | ✅ Flagging при каждом ingest |
-| Сложные вопросы | 5+ документов каждый раз | Wiki уже синтезировала ответы |
-
-**Когда использовать:** долгосрочный research, deep-dive за недели/месяцы, team internal wiki.
-**Когда не нужен:** ad-hoc queries, one-shot analysis, когда есть готовая база.
 
 ---
 
