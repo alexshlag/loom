@@ -388,3 +388,16 @@
 - unified-pass.sh: 0 broken links, 0 auto-repaired
 - rebuild-meta.sh --index-only: updated index with new entries
 
+
+## [2026-07-01] ingest | EasyAdmin Bundle — новый concept page, update Sonata Admin comparison
+
+- Created `wiki/concepts/easyadmin-bundle.md` — comprehensive overview of EasyAdmin 5.x
+  - Architecture: Dashboard + CRUD Controllers + Design System + Fields
+  - Core pattern: AbstractCrudController extends Symfony AbstractController
+  - EasyAdmin 5: PHP>=8.2, Symfony>=6.4/7.x/8.x support
+  - Ecosystem position: most popular (~12k GitHub stars), official Symfony docs
+- Updated `wiki/concepts/sonata-admin-bundle.md` with current landscape comparison table
+  - EasyAdmin now marked as "Most popular choice" — recommended for standard CRUD
+  - Sonata repositioned as "Niche enterprise" — for complex custom admin interfaces
+  - Added crosslink between Sonata ↔ EasyAdmin concepts
+- Verified links: 0 broken, 0 auto-repaired

@@ -18,6 +18,7 @@
 * [Cache System](concepts/cache-system.md) — # Cache System Symfony Cache component provides PSR-6 and PSR-16 compliant caching with advanced features: tag-based invalidation, cache stampede prot
 * [Dependency Injection в Symfony](concepts/symfony-dependency-injection.md) — # Dependency Injection в Symfony Dependency Injection (DI) — паттерн проектирования, позволяющий внедрять зависимости объекта извне.
 * [Doctrine ORM Integration](concepts/doctrine-orm.md) — # Doctrine ORM Integration Doctrine ORM — object-relational mapper для PHP, интегрированный в Symfony через DoctrineBridge.
+* [EasyAdmin Bundle](concepts/easyadmin-bundle.md) — # EasyAdmin Bundle EasyAdmin — пакет (bundle) для Symfony, генерирующий admin backends. Создаёт CRUD-интерфейсы автоматически из entity моделей.
 * [Event Dispatcher](concepts/event-dispatcher.md) — # Event Dispatcher Event Dispatcher — компонент Symfony, который обеспечивает decoupled communication между компонентами системы через события.
 * [Harness-Aware Wiki Setup Flow](concepts/harness-aware-setup.md) — # Harness-Aware Wiki Setup Flow Идея автоматической настройки wiki-контекста для конкретного harness (Pi, Claude Code, Cursor и т.д.).
 * [Hexagonal Architecture & Clean Patterns in Symfony](concepts/hexagonal-architecture.md) — # Hexagonal Architecture & Clean Patterns in Symfony Hexagonal Architecture (Ports & Adapters) — architectural pattern that keeps business logic separ
@@ -66,7 +67,7 @@
 
 
 ---
-*Created: auto-generated | Last updated: 2026-07-01 23:48*
+*Created: auto-generated | Last updated: 2026-07-01 23:58*
 
 ## Хронология
 | Дата | Событие |

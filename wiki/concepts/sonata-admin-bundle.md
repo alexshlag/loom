@@ -3,8 +3,8 @@ tags: [concept, admin, cms, symfony-bundle]
 date: 2026-07-01
 type: documentation
 category: concept
-sources: [web_search]
-related: [wiki/entities/symfony.md, wiki/concepts/service-container.md, wiki/entities/sylius.md, wiki/entities/ibexa-dxp.md]
+sources: [web_search, wiki/concepts/easyadmin-bundle.md]
+related: [wiki/entities/symfony.md, wiki/concepts/service-container.md, wiki/entities/sylius.md, wiki/entities/ibexa-dxp.md, wiki/concepts/easyadmin-bundle.md]
 ---
 
 # Sonata Admin Bundle
@@ -69,11 +69,11 @@ preBatch / postBatch      → batch operations
 | `SonataClassificationBundle` | Category/tag management |
 
 ### Alternative Admin Solutions
-| Solution | Pros | Cons |
-|----------|------|------|
-| **Symfony Maker** | Simple, quick CRUD generation | Basic UI only |
-| **EasyAdmin** | Modern UI, zero-config admin | Less flexible than Sonata |
-| **Sonata AdminBundle** | Full customization, mature ecosystem | Steeper learning curve, older codebase |
+| Solution | Pros | Cons | Position (2026) |
+|----------|------|------|------------------|
+| **Symfony Maker** | Simple, quick CRUD generation | Basic UI only | Quick prototyping |
+| **EasyAdmin** | Modern UI, zero-config admin, official Symfony docs, active development (~12k GitHub stars) | Less flexible for complex scenarios | **Most popular choice** — recommended for standard CRUD |
+| **Sonata AdminBundle** | Full customization, mature ecosystem | Steeper learning curve, older codebase | **Niche enterprise** — для сложных кастомных админок |
 
 ## Связи
 
@@ -86,5 +86,11 @@ preBatch / postBatch      → batch operations
 - **→ Sylius**: может использовать Sonata Admin для custom admin interfaces (вместо Sylius SUA)
 - **→ Ibexa DXP**: enterprise admin customization через Sonata bundles
 - **→ API Platform**: REST API + Sonata Admin = traditional admin + headless API combo
+
+### Сравнение с EasyAdmin
+См. [EasyAdmin Bundle](concepts/easyadmin-bundle.md) — текущий лидер по популярности для стандартных CRUD задач. Sonata выигрывает в:
+- Сложные bulk actions и batch operations
+- Enterprise-level кастомизация UI/UX
+- Сложные relations и composite entities
 
 > Canonical: `docs.sonata-project.org` — официальная документация
