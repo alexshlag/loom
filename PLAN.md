@@ -21,7 +21,7 @@
 
 ### Phase 13.2: Batch Ingest Workflow ✅ COMPLETED (2026-07-01)
 **Цель**: Cross-reference между новыми источниками + bulk-update index/hot/log.
-**Статус**: Завершён, задачи перенесены в issues.md как resolved. Связано: `issues.md#30`
+**Статус:** Завершён, задачи перенесены в issues.md как resolved. Связано: `issues.md#30`
 
 ---
 
@@ -49,7 +49,7 @@ wiki/**/*.md: sources: ["raw/corrected/SRC-*/file.md"]
 | **4** | Update process-ingest.json: add post-processing step after capture | ✅ Done | Step 0.5_corrected_copy: agent reads original → creates corrected copy in raw/corrected/ + delta check Step 0_delta_check |
 | **5** | Update AGENTS.md: delta tracking integration rules | ✅ Done (Phase 23) | Document manifest.json generation + contradiction resolution flow |
 
-**Зависимости**: Sequential (1→2→3→4→5). Все шаги завершены.
+**Зависимости:** Sequential (1→2→3→4→5). Все шаги завершены.
 
 **Результат:**
 | Component | Status | Notes |
@@ -65,35 +65,24 @@ wiki/**/*.md: sources: ["raw/corrected/SRC-*/file.md"]
 |-----------|--------|-------|
 | process-lint.json check_id=12 | ✅ Added | Source manifest backfill detection — scans unprocessed/stale + wiki references |
 | process-ingest.json Step 0.5_backfill | ✅ Added | Backflow for existing wiki pages referencing raw/sources/ without corrected copies |
+| All sources backfilled | ✅ Done (2026-07-01) | SRC-2025-06-24-002 (2 pages), SRC-2026-06-25-SYMFONY-001 (15+ pages) — corrected copies created + frontmatter updated |
 
-**Текущие unprocessed источники (найдены check_id=12):**
-| Source | Wiki Pages Referencing | Status |
-|--------|----------------------|--------|
-| SRC-2025-06-24-002/nixos-python-wiki.md | 2 pages (python-nixos-development, syntheses/python-nixos) | **unprocessed** |
-| SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md | 10+ pages (concepts/*, entities/symfony.md) | **unprocessed** |
-
-> **Canonical**: `AGENTS.md#raw_corrected_zone` — canonical source for raw/corrected/ zone rules.
-> **Schema refs**: `process-ingest.json#step_0_delta_check`, `process-lint.json#check_id_12`, `process-ingest.json#step_0.5_backfill`
-**Связано**: `issues.md#29`, `AGENTS.md#raw_corrected_zone`
+> **Canonical:** `AGENTS.md#raw_corrected_zone` — canonical source for raw/corrected/ zone rules.
+> **Schema refs:** `process-ingest.json#step_0_delta_check`, `process-lint.json#check_id_12`, `process-ingest.json#step_0.5_backfill`
+**Связано:** `issues.md#29`, `AGENTS.md#raw_corrected_zone`
 
 ---
 
 ## 🔄 Pending Feature Phases (from original roadmap)
 
-### Phase 29: Raw Corrected Zone → COMPLETED ✅ 2026-07-01
-**Цель**: Добавить zone `raw/corrected/` для agent-writable processed copies, обеспечить delta tracking и correct source referencing.
-**Статус**: Завершён, перенесено в Phase 29 Implementation Plan выше. Связано: `issues.md#29`
-
----
-
 ### Phase 13: Wiki Page Templates Schema (#H4) 🥈
 **Цель**: Единый, полный, не-разрозненный набор per-type format descriptions для всех типов wiki pages.
-**Связан с**: `issues.md#H4`
-**Приоритет**: Medium — требуется before any new ingest or synthesis creation
+**Связан с:** `issues.md#H4`
+**Приоритет:** Medium — требуется before any new ingest or synthesis creation
 
 ### Phase 12.2: Auto-Extract Assumptions 🥉
 **Цель**: Агент автоматически экстрагирует assumptions из источников (источники с weak evidence помечать)
-**Приоритет**: Future
+**Приоритет:** Future
 
 ---
 
@@ -102,13 +91,12 @@ wiki/**/*.md: sources: ["raw/corrected/SRC-*/file.md"]
 | Phase | Description | Priority |
 |-------|-------------|----------|
 | **S5** | Search analytics → popularity boost in `score_page()`. Read meta/search_analytics.json → add +frequency_boost to pages that appeared in popular queries. Soft signal only — never filters results. | High |
-| **Local Indexes** | `index.md` в каждой категории для линейного поиска вместо O(n²) + root index → краткий формат (categories + links only). **Depends**: F1 research on unique file naming before implementation. | High |
+| **Local Indexes** | `index.md` в каждой категории для линейного поиска вместо O(n²) + root index → краткий формат (categories + links only). **Depends:** F1 research on unique file naming before implementation. | High |
 | Graph-Based Crosslinks | `auto-crosslink.sh` rewrite с shared-source analysis и scoring | Medium |
 | Wiki Scalability (1000+ pages) | Optimizations: ripgrep, incremental rebuild, skip full rebuild >100 pages | Medium |
 
-
-
 ---
+
 
 ### Phase 29 Deep-Dive Analysis — Summary
 
@@ -137,7 +125,7 @@ wiki/**/*.md: sources: ["raw/corrected/SRC-*/file.md"]
 
 ## ✅ Schema Migration — Dialog.md → AGENTS.md + process-файлы (Phase 12.4)
 
-**Status**: ✅ **COMPLETED** (06-29) — all rules embedded in AGENTS.md / process files.
+**Status:** ✅ **COMPLETED** (06-29) — all rules embedded in AGENTS.md / process files.
 > Note: `dialog.md` has been removed after migration. All references are now inline/embedded in target files.
 
 ### Completed actions:
@@ -158,4 +146,5 @@ wiki/**/*.md: sources: ["raw/corrected/SRC-*/file.md"]
 
 ---
 
-*Last update: 2026-07-01 | Phase 13.3 Schema Refs Migration Fix completed, Phase 29 Delta Tracking fully implemented. Pending: Phase 12.2 (auto-extract assumptions), S5 (search analytics).*
+*Last update: 2026-07-01 | Phase 13.3 Schema Refs Migration Fix completed, Phase 29 Delta Tracking fully implemented (backflow done). Pending: Phase 12.2 (auto-extract assumptions), S5 (search analytics).*
+
