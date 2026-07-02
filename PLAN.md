@@ -31,6 +31,21 @@
 
 **Связано**: `issues.md#37-38`
 
+### Phase 14 (Full): Schema Optimization & Architecture Refinement — Workflow Cleanup ✅ COMPLETED (2026-07-02)
+**Цель**: Исправить структурные аномалии в process-файлах после schema cleanup.
+
+**Результат:**
+| Step | Task | Status |
+|------|------|--------|
+| **1** | Исправлены битые schema_refs (7 cases) → все refs valid | ✅ Done |
+| **2** | Устранен duplicate step_id "0.5" в process-query.json (`query_intent_decoder` vs `new_sources_quick_check`) | ✅ Done — renamed to 0.76 |
+| **3** | Добавлены descriptions для steps 8a/8b (integration_new_page, integration_update_existing_page) | ✅ Done |
+| **4** | Обновлен stale trigger reference (`step_05` → `step_076`) | ✅ Done |
+
+**Validation:** ✅ All JSON valid. ✅ No duplicate IDs. ✅ All steps documented.
+
+**Связано**: `issues.md#40`, `issues.md#41`
+
 ---
 
 ### Phase 13.4: Section Template System ✅ COMPLETED (2026-07-01)
@@ -64,6 +79,22 @@ wiki/templates/comparison-template.json
 
 ### Phase 13.2: Batch Ingest Workflow ✅ COMPLETED (2026-07-01)
 **Цель**: Cross-reference между новыми источниками + bulk-update index/hot/log.
+
+---
+
+### Phase 14 (Full): Schema Cleanup & Consolidation 🆕
+**Цель**: Восстановить чистую архитектуру инструкций после хаоса, вызванного некорректной рекурсией слабой LLM модели.
+**Контекст**: Временная модель удалила дубликаты из AGENTS.md при создании новых файлов (ARCHITECTURE.md, DOCUMENTATION.md, TEMPLATES.md, WORK_MODES.md), но создала битые ссылки и потеряла информацию. Состояние восстановлено — теперь нужно убрать артефакты.
+
+**Этапы:**
+| Step | Task | Decision Criteria |
+|------|------|-------------------|
+| **1** | Verify AGENTS.md has all content from files to delete (ARCHITECTURE.md, DOCUMENTATION.md, TEMPLATES.md, WORK_MODES.md) | Compare each file section-by-section. If missing → restore before deletion |
+| **2** | Delete new instruction files from root directory | Remove 4 .md files once verified AGENTS.md is complete |
+| **3** | Audit process-*.json for broken schema_refs | Each case analyzed individually — fix or log as issue |
+| **4** | Restore overall logic consistency | Check for remaining duplicates/anomalies, write found issues to issues.md |
+
+**Status:** ⬜ Open — awaiting execution.
 
 ---
 
@@ -140,4 +171,4 @@ wiki/**/*.md: sources: ["raw/corrected/SRC-*/file.md"]
 
 ---
 
-*Last update: 2026-07-02 | Phase 14 Schema Optimization planned, Phase 13.3 completed.*
+*Last update: 2026-07-02 | Phase 14 (Full) Schema Cleanup planned, Phase 13.3 completed.*

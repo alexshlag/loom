@@ -2,7 +2,65 @@
 
 ---
 
-## 🚨 Live Issues (требуют решения)
+## ✅ Resolved Today/Recently
+
+### Issue #40: Broken Schema References After Cleanup ✅ FIXED (2026-07-02)
+**Проблема**: После удаления ARCHITECTURE.md, TEMPLATES.md, WORK_MODES.md и создания rules/ — в process-файлах обнаружены битые schema_ref ссылки.
+
+**Найдено 4 битых ссылки + 3 несемантичных:**
+
+| # | File | Line | Broken Ref | Problem |
+|---|------|------|------------|---------|
+| 1 | process-query.json | L926 | `process-ingest.json#step_3a` | step_3a не существует (в AGENTS.md: нет, в process-ingest.json: step_3_analysis) |
+| 2 | process-lint.json | L218 | `AGENTS.md#raw_corrected_zone` | Anchor mismatch — заголовок содержит эмодзи и скобки (`## 📂 Raw Corrected Zone`) |
+| 3 | process-lint.json | L222 | `AGENTS.md#non-blocking-lint` | Anchor mismatch — заголовок с суффиксом `(Phase 3)` |
+| 4 | process-lint.json | L127 | `process-lint.json#rebuild_meta_trigger` | Self-ref на nonexistent section (inline description, no named section) |
+
+**Несемантичные ссылки:**
+
+| # | File | Line | Ref | Problem |
+|---|------|------|-----|---------|
+| 5 | process-query.json | L932 | `AGENTS.md` | Bare ref без anchor — слишком широкий, ссылается на весь файл |
+| 6 | process-query.json | L926 (part) | `process-ingest.json#step_3b` | Аналогично: step_3b не существует как anchor |
+
+**Решение**: Прочитать RULES.md для алгоритма поиска связей, затем исправить каждый case.
+
+✅ **Fix applied (2026-07-02):**
+| Case | Before → After | Action |
+|------|----------------|--------|
+| 1 | `process-ingest.json#step_3a` → description inline, ref removed | RULES.md Step 3: rule implemented inline in process-ingest.json |
+| 2 | `AGENTS.md#raw_corrected_zone` → `rules/delta_tracking.json` | RULES.md Step 1: found exact match in rules/ |
+| 3 | `AGENTS.md#non-blocking-lint` → `rules/non_blocking_lint.json` | RULES.md Step 1: found exact match in rules/ |
+| 4 | `process-lint.json#rebuild_meta_trigger` → ref removed, inline note kept | RULES.md Step 3: rule is script command, no external ref needed |
+| 5 | `AGENTS.md` bare ref → `AGENTS.md#overview` | Added semantic anchor for precise targeting |
+| 6 | `process-ingest.json#step_3b` → description inline, ref removed | Same as Case 1 |
+
+**Additional fixes found during audit:**
+- Removed self-ref `process-query.json#broken_link_awareness` (self-reference within same file)
+- Fixed missing `rules/` prefix on decision-rules.md refs: L553/L808 → `rules/decision-rules.md`
+- Fixed Cyrillic anchors: L124, L941 `#git-конвенции` → `AGENTS.md#git-conventions`
+- Fixed underscore→hyphen: process-ingest.json L605 `template_co_evolution` → `template-co-evolution-process`
+
+**Validation:** ✅ All JSON files validated. ✅ All referenced files exist.
+
+👉 **Canonical**: `RULES.md`, `process-*.json`
+
+### Issue #41: Process Workflow Anomalies 🔴 FIXED (Found & Resolved 2026-07-02)
+**Проблема**: Duplicate step_id "0.5", missing descriptions for steps 8a/8b, stale trigger references.
+
+**Fix applied:**
+| Case | Before -> After | Action |
+|------|----------------|--------|
+| A1 | `new_sources_quick_check` step_id `"0.5"` -> `"0.76"` | Removed duplicate with `query_intent_decoder` |
+| B1 | `step_8a_new_page` description MISSING -> added 2-sentence instruction + conditional logic note | Added full integration instructions |
+| B2 | `step_8b_update_existing_page` description MISSING -> added 3-sentence instruction + conditional branching note | Added update workflow details |
+| C1 | Trigger `"new_sources_detected_in_step_05"` -> `"new_sources_detected_in_step_076"` | Updated to match renamed step_id |
+
+**Validation:** ✅ All JSON valid. ✅ No duplicate IDs. ✅ All steps have descriptions.
+
+👉 **Canonical**: `process-*.json`
+
+---
 
 ### Issue #39: Context Bloat & Architecture Optimization (HIGH) 🆕
 **Проблема**: `AGENTS.md` содержит слишком много технических деталей (правила Git, политики языков, архитектура памяти), что ведет к раздуванию контекста и снижению эффективности агента.

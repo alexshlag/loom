@@ -231,11 +231,10 @@
             "condition": "link references protected zone (raw/, meta/) — DO NOT auto-fix, flag for review"
           }
         ]
-      },
-      "schema_ref": "process-query.json#broken_link_awareness"
+      }
     },
     {
-      "step_id": "0.5",
+      "step_id": "0.76",
       "name": "new_sources_quick_check",
       "description": "Быстрая проверка raw/sources на новые пакеты (--quick). Кэширует timestamp, чтобы не стучать каждый раз. Полную проверку с деталями делает lint.",
       "actions": [
@@ -259,7 +258,7 @@
         }
       ],
       "post_task_notification": {
-        "trigger": "new_sources_detected_in_step_05",
+        "trigger": "new_sources_detected_in_step_076",
         "timing": "after_main_query_result_delivery",
         "message_template": "[!] Обнаружены новые материалы в raw/sources/. Обработать и добавить в wiki?"
       }
@@ -550,7 +549,7 @@
           "format": "- **YYYY-MM-DD**: Обновлено с [старое] → [новое]"
         }
       },
-      "decision_rules_schema_ref": "decision-rules.md"
+      "decision_rules_schema_ref": "rules/decision-rules.md"
     },
     {
       "step_id": "2.3",
@@ -805,7 +804,7 @@
         ],
         "rule": "AGENT_MUST_WRITE_WM_AFTER_EACH_QUERY"
       },
-      "decision_rules_schema_ref": "decision-rules.md"
+      "decision_rules_schema_ref": "rules/decision-rules.md"
     }
   ],
   "post_search_flow": {
@@ -922,14 +921,13 @@
       }
     ],
     "integration_with_process_ingest": {
-      "description": "web_ingest_flow использует существующие шаги process-ingest (steps 3a/3b), не дублирует логику",
-      "schema_ref": "process-ingest.json#step_3a, process-ingest.json#step_3b"
+      "description": "web_ingest_flow использует существующие шаги process-ingest (step_3_analysis, step_4_corrected_copy), не дублирует логику"
     }
   },
   "log_format": {
     "query_record": "## [YYYY-MM-DD] query | Вопрос о RAG vs классических БД"
   },
-  "schema_ref": "AGENTS.md",
+  "schema_ref": "AGENTS.md#overview",
   "inherits_from": [
     "guardrails",
     "search_priority",
@@ -939,7 +937,7 @@
   ],
   "references": {
     "page_templates_and_metadata": "AGENTS.md",
-    "link_types_reference": "AGENTS.md#git-конвенции"
+    "link_types_reference": "AGENTS.md#git-conventions"
   },
   "error_handling": {
     "schema_ref": "rules/error_handling.json"

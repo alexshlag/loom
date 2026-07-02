@@ -335,6 +335,7 @@
     {
       "step_id": "step_8a_new_page",
       "name": "integration_new_page",
+      "description": "Создать НОВУЮ wiki-страницу из source, полученного в step_3_analysis. Взаимоисключающая ветка от step_6_discussion: если page_type=entity/concept/notes/meeting/project → создать страницу с frontmatter + sections по template.json. Если page_type=synthesis → применить DR-4 (novel_inference check). Выполняется ТОЛЬКО если condition='source_is_new_entity_or_concept' И не существует существующей страницы для обновления.",
       "condition": "source_is_new_entity_or_concept (из step_6_discussion.branching)",
       "pre_check": {
         "command": "./scripts/validate-path.sh wiki/${PAGE_PATH}.md",
@@ -373,6 +374,7 @@
     {
       "step_id": "step_8b_update_page",
       "name": "integration_update_existing_page",
+      "description": "Обновить СУЩЕСТВУЮЩУЮ wiki-страницу новыми фактами из source. Взаимоисключающая ветка от step_6_discussion: выполняется ТОЛЬКО если condition='source_updates_existing_entity_or_concept'. Читать страницу → identify_additions_and_changes → append к разделу '## Обновлено [date] — новое уточнение' с форматом '- **YYYY-MM-DD**: Обновлено с [старое] → [новое]'. Сохранить old_info, не перезаписывать существующие секции.",
       "condition": "source_updates_existing_entity_or_concept (из step_6_discussion.branching)",
       "pre_check": {
         "command": "./scripts/validate-path.sh ${EXISTING_PAGE_PATH}",
@@ -602,6 +604,6 @@
         "trigger": "when agent detects structural improvement opportunity for wiki pages"
       }
     ],
-    "rule": "Never auto-modify templates — always user-approved changes per AGENTS.md#template_co_evolution"
+    "rule": "Never auto-modify templates — always user-approved changes per AGENTS.md#template-co-evolution-process"
   }
 }

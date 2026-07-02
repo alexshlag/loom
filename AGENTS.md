@@ -219,6 +219,15 @@ related: []
 
 ---
 
+### 6. Agent Rules & Conventions (`rules/`)
+
+- Директория технических спецификаций и «нишевых» инструкций, вынесенных из AGENTS.md для снижения контекстного бloat.
+- Формат: **JSON предпочтителен** (машинно-читаемый), но допустимы `.md` файлы когда структура требует текстового описания.
+- Содержит правила: `protected_zones.json`, `error_handling.json`, `execution_contract.json`, `link_conventions.json`, `search_strategy.json` и другие.
+- AGENTS.md содержит ссылки (`schema_ref`) на эти файлы вместо дублирования — агент читает правило только когда ему нужно его применение.
+
+---
+
 ## 🔁 External Sources Update Policy (Issues #1-3 resolved)
 
 ### Issue #1: Как часто обновлять wiki из внешних источников?
@@ -551,6 +560,59 @@ related: [] # связанные wiki-страницы (wiki-relative paths)
 
 ---
 
+### EXECUTION CONTRACT — Proposal → Action, Never Stop at "Давай запущу?"
+
+- **Rule**: Agent never stops after proposing a plan or asking permission to execute.
+  - User says _what_ they want. Agent decides _how_ to do it and acts immediately.
+  - Phrases like "Давай запущу веб-поиск?" → proposed, didn't execute → dead_end marker.
+  - Correct pattern: propose plan (optional) → **immediately execute** → report results.
+- **When to ask user**: Only for schema-patch proposals (structural wiki changes), novel insight pages requiring approval, or ambiguous intent where context is unclear.
+- **Never ask permission for execution actions**: web_search, file reading, git commits, script runs, link repairs — these are agent's autonomous domain.
+- **Pattern recognition**:
+
+| Trap pattern                                                | Why it happens                                                                                                                 | Fix                                                                            |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| Proposed A/B → "Давай запущу...?" → stop                    | Agent-mode: presentation instead of execution. Question phrase = request permission, but AGENTS.md requires autonomous action. | Execute immediately after proposing. Report results, not approval.             |
+| Complex query → read WM/log/AGENTS.md → propose plan → stop | Agent prepares context → doesn't act                                                                                           | Read context (allowed) → execute tool calls (required)                         |
+| New topic → unsure → offer discussion → stop                | Uncertainty triggers "let's discuss" instead of action                                                                         | Ask ONE clarifying question, then execute regardless. No loops on uncertainty. |
+
+**Canonical**: `AGENTS.md#execution_contract` — agent acts, user decides direction.
+
+---
+
+## 🔧 Error Handling Protocol
+
+При обнаружении любой ошибки, противоречия или dead end — **не зависать**, а следовать шагам:
+
+### 4-step loop
+
+1. **Detect & Log** `[!]` → См. `process-query.json#error_handling.logging_actions`
+   Записать в log.md с типом [error], описанием и контекстом. Всегда append (`>>`), never overwrite.
+2. **Analyze** → Краткий анализ: что пошло не так, почему инструкция сломалась (не просто «ошибка», а корень проблемы)
+3. **Resolve** → Выбрать стратегию:
+
+- `local-fix`: проблема локальная (путь, ссылка, логика) → исправить самостоятельно
+- `schema-patch`: противоречие в Schema/AGENTS.md → предложить патч пользователю на review
+- `source-conflict`: два источника говорят противоположное → отметить как `CONFLICT` на странице и продолжить
+- `dead-end`: подход не работает (например, grep дал шум) → документировать причину, сменить стратегию
+
+4. **Continue** → Двигаться дальше по task, не застревая на сломанной инструкции
+
+### Примеры применения
+
+| Ситуация                                    | Действие                                                                               |
+| ------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `git add *` заблокирован guardrails         | `[!] Log: protected zone blocked` → `local-fix: switch to git add wiki/`               |
+| fetch_content вернул обрезанный markdown    | `[!] Log: truncation detected` → `local-fix: fallback web_search + get_search_content` |
+| Новая команда несовместима с текущей Schema | `[!] Log: schema conflict` → `schema-patch: предложить патч AGENTS.md`                 |
+| Grep дал >100 совпадений без смысла         | `[!] Log: grep noise` → `dead-end: switch to index.md`                                 |
+
+### Правило
+
+> **Ошибка ≠ стоп.** Каждый error — сигнал к действию, а не причина зависать. Агент фиксирует, анализирует, решает и двигается дальше.
+
+---
+
 ## 📂 Raw Corrected Zone (`raw/corrected/`)
 
 ### Architecture: Original → Corrected → Wiki
@@ -570,9 +632,262 @@ Layer 3 (reference): wiki/**.md sources: [] → links to Layer 2
 3. **Naming convention**: `{original_filename}.md` or `_extracted-{filename}` for processed variants.
 4. **Wiki references corrected copies**: `sources: ["raw/corrected/SRC-*/<filename>.md"]` — never direct to originals.
 
+### Guardrails (validate-path.sh):
+
+```bash
+PROTECTED_PATTERNS=("meta/")
+ALLOWED_WRITE_ZONES=("raw/corrected/" "wiki/" "tracking/")  # ← agent rw zone added
+```
+
+**Usage in ingest flow**: Agent calls `scripts/raw-correct.sh --add "path" content` to write corrected copies (never direct writes).
+
+> Schema ref: `process-ingest.json#step_4_corrected_copy` — full workflow.
+
+---
+
+### Phase 3: Non-blocking Lint
+
+- **Entry point**: `scripts/lint.sh` — единый скрипт для всех lint-checks
+- **Не блокирует agent turn**: запускается отдельно (можно по cron)
+- **Output**: stdout = JSON отчёт, stderr = human-readable summary
+- **Process-lint.json** ссылается на этот скрипт вместо inline выполнения отдельных проверок
+- **Schema ref**: `AGENTS.md#non-blocking-lint`
+
+## 🔗 Link Conventions & Auto-Fix
+
+### Post-Operation Link Validation
+
+**Rule**: Only check new files after create/update — never full wiki scan in ingest.
+
+> Specific commands, auto-fix policy, and validation triggers defined in `process-ingest.json#step_9_post_checks`.
+
+- **Internal format**: `[text](wiki-relative-path.md)`
+- **Prohibited patterns**: `./` — never use dot-relative paths
+- **Cross-category exception**: `../` allowed for cross-category links (e.g. from concepts/ to entities/) as long as target exists under wiki/
+
+### External Links Standard (EXT-LINK-V1)
+
+External links must use canonical http/https URLs. Never link to `raw/**` or `../**`.
+
+**Prohibited patterns**: `[text](raw/**)` — never link to raw/. `[text](../**)` — relative paths prohibited.
+
+**Unavailability check policy**:
+
+- Without internet: skip network probes
+- With internet: log broken URLs (404/timeouts) → inform user, do NOT auto-remove
+
+> Full workflow: `process-ingest.json#external_source_policy`, `process-query.json#broken_link_awareness`.
+
+### Crosslink Discovery
+
+**Architecture: Script Suggests, Agent Decides**
+
+Скрипт делает черновой score-based анализ и предлагает кандидатов. Агент принимает финальное решение на основе семантического понимания.
+
+| Layer                      | Who                 | What                                       | Output                                            |
+| -------------------------- | ------------------- | ------------------------------------------ | ------------------------------------------------- |
+| **Discovery** (blackboard) | `auto-crosslink.sh` | Score-based candidate generation           | JSON list of candidates with scores & match types |
+| **Decision** (judgment)    | Agent               | Semantic validation + contextual reasoning | Final crosslinks to write                         |
+
+**Rule**: never auto-write crosslinks from script output alone. Script output = suggestion, not command.
+
+**Scoring levels:**
+
+- H1 title match: +3 points
+- Shared sources: +2 base + diminishing factor (+1 for each additional shared source)
+- Frontmatter related field: +4 points
+
+**Thresholds:**
+| Score | Action |
+|-------|--------|
+| ≥ 5 | Strong candidate — suggest crosslink with confidence |
+| 3–4 | Weak signal — suggest review, agent decides |
+| < 3 | Ignore (below noise floor) |
+
+**System file exclusion:**
+
+- Wiki system files excluded automatically: `log.md`, `issues.md`, `timeline.md`, `overview.md`, `snapshot.md`, `index.md`, `hot.md`
+- Root-level system files excluded from scoring: `AGENTS.md`, `context.md`, `PLAN.md` (appear in most pages but NOT wiki content)
+
+**Usage pattern:**
+
+```bash
+# After creating/updating a wiki page
+./scripts/auto-crosslink.sh <path> --max-results 5
+```
+
+Script returns ≤5 candidates sorted by score. Agent reviews each, validates semantic relevance, and writes crosslinks if appropriate.
+
+> Schema ref: `AGENTS.md#crosslink_discovery` — canonical source for crosslink rules.
+
+---
+
+## 🤫 Silent-Only Output Contract
+
+### Rule: Agent shows only final results
+
+**Принцип**: Пользователь получает **только финальный ответ**. Все промежуточные операции (grep, find, bash scripts, web_search) идут в `wiki/log.md` через append —  
+ пользователь их не видит.
+
+### Что запрещено показывать пользователю
+
+| Запрещено                | Пример                                     |
+| ------------------------ | ------------------------------------------ |
+| Bash stdout/stderr       | grep output, script results, file listings |
+| Intermediate search data | web_search snippets до финального синтеза  |
+| "Thinking aloud"         | «думаю нужно сделать X...»                 |
+
+### Что разрешено показывать
+
+| Разрешено                | Пример                                               |
+| ------------------------ | ---------------------------------------------------- |
+| Финальный ответ/синтез   | Готовый ответ с источниками                          |
+| Созданные файлы          | Wiki-страницы с frontmatter и контентом              |
+| Ошибки + resolved action | `[!] Contradiction → resolved: 7.x LTS uses PHP 8.2` |
+
+### Trigger для verbose mode
+
+Пользователь может явно запросить промежуточные шаги: `"verbose", "debug mode"` — в этом режиме агент показывает grep/find results, но **только на один turn**. После  
+ возвращается к silent.
+
+> Canonical: `AGENTS.md#silent_output_contract`
+
+## ⚙️ Execution Modes
+
+Агент управляет двумя независимыми режимами:
+
+| Флаг             | Значения                       | Где хранится                                                  |
+| ---------------- | ------------------------------ | ------------------------------------------------------------- |
+| `current_mode`   | `query` / `ingest` / `project` | working_memory.json (определяет **что** делает агент)         |
+| `execution_mode` | `silent` / `verbose`           | working_memory.json (определяет **как** показывает результат) |
+
+**Правила:**
+
+- Default: `execution_mode = "silent"`. Не выводит пользователю рассуждения агента, вызванные команды и результаты их выполнения. Показывает только финальный ответ.
+- Trigger: пользователь явно просит `"verbose"`, `"debug mode"`, `"покажи шаги"` → агент ставит `"verbose"` в WM и работает один turn.
+- Auto-reset: после verbose-answer агент сбрасывает на `"silent"`.
+- Явный reset: пользователь говорит `"quiet", "silent", "тише"` → мгновенный сброс.
+
+> Canonical: `AGENTS.md#execution_modes`
+
+---
+
+## 🛡 Rules & Guardrails
+
+### Guardrails Reference
+
+Guardrails enforcement через `scripts/validate-path.sh`. Для схем проверки путей и protected zones — см. `process-ingest.json` (capture flow validation).
+
+#### Schema References
+
+- `process-ingest.json` references this for capture flow validation
+- `scripts/validate-path.sh` implements the actual guardrails
+
+### Fetch Content Truncation Handling
+
+```json
+{
+  "fetch_content_truncation": {
+    "condition": "response_markdown_contains '[Content truncated...]' or output is visibly cut off mid-sentence",
+    "primary_action": "fallback to web_search(query) + get_search_content(responseId) for complete coverage",
+    "logging_verbose_template": [
+      "[!] Fetch truncation detected in X.md, length ~{N} chars",
+      "[✓] Fallback activated: web_search + get_search_content called"
+    ]
+  }
+}
+```
+
+### Protected Zones
+
+```json
+{
+  "protected_zones": {
+  "raw/**": {"owner": "user", "access": "read-only via capture flow"},
+  "raw/corrected/": {"rule_id": "RAW-CORRECTED-V1", "owner": "agent", "access": "full read/write for processed copies (scripts/raw-correct.sh)"},
+  "wiki/**": {"owner": "agent", "access": "full read/write/manage"},
+  "meta/**": {"rule": "auto-generated", "files": ["registry.json", "backlinks.json"], "rebuild_command": "./scripts/rebuild-meta.sh"},
+  "tracking/": {"rule_id": "TRACKING-V1", "owner": "agent", "access": "full read/write for ingest registry files", "note": "raw_registry.json, similarity_index.json и другие tracking-файлы. Agent пишет напрямую."}
+  },
+  "zone_def1": {
+  "rule_id": "ZONE-DEF1",
+  "raw/**": {"owner": "user", "access": "read-only via capture flow"},
+  "raw/corrected/": {"owner": "agent", "access": "full read/write for processed copies (scripts/raw-correct.sh)"},
+  "wiki/**": {"owner": "agent", "access": "full read/write/manage"},
+  "tracking/": {"owner": "agent", "access": "full read/write for registry and tracking files"},
+  "implications": ["Agent manages all wiki links/structure. User controls raw/. Agent writes to raw/corrected/ and tracking/."
+  },
+  "meta_def1": {
+  "rule_id": "META-DEF1",
+  "rules": [
+  "NEVER edit meta files directly",
+  "All operations through scripts only"
+  ],
+  "protected_by": "validate-path.sh blocks direct write to meta/**"
+  },
+  "never_do": [
+  "directly_edit_protected_zones",
+  "skip_capture_flow_for_raw_sources",
+  "manually_modify_meta_files"
+  ]
+}
+```
+
+---
+
+### Delta Tracking (Phase 29)
+
+**Purpose**: Prevent waste of tokens on re-ingesting already-processed sources. Ensure contradiction resolution can trace back to original source.
+
+#### Manifest File (`raw/corrected/SRC-*/*/.manifest.json`):
+
+```json
+{
+  "original_path": "raw/SRC-001/pi-dev-docs-latest.md",
+  "corrected_path": "raw/corrected/SRC-001/pi-dev-docs-latest.md",
+  "hash_original": "sha256:abc123...",
+  "date_ingested": "2026-07-01",
+  "status": "processed"
+}
+```
+
+#### Workflow:
+
+| Step              | Action                                                                                       |
+| ----------------- | -------------------------------------------------------------------------------------------- |
+| **1. Capture**    | Agent saves original to `raw/SRC-*/*` (immutable)                                            |
+| **2. Hash check** | Calculate hash of original → check if `.manifest.json` exists with same hash                 |
+| **3a. Skip**      | If manifest exists AND corrected copy is up-to-date → skip re-ingest                         |
+| **3b. Process**   | If no manifest or stale → create corrected copy in `raw/corrected/`, write manifest, proceed |
+
+#### Contradiction Resolution:
+
+1. Agent detects contradiction → reads wiki page → gets `sources: ["raw/corrected/SRC-*/<file>.md"]`
+2. Reads `.manifest.json` for original_path + hash_original
+3. Re-reads raw/original (immutable) for comparison with current wiki facts
+4. Resolves based on cascade priority (code > docs, documented > assertion_only)
+
+> Schema ref: `process-ingest.json#step_4_corrected_copy`, `AGENTS.md#raw_corrected_zone`
+
+---
+
+## 🔍 Search Strategy
+
+> Canonical flow: `index_lookup → semantic_search → wiki-search.sh` — полный алгоритм в `process-query.json#search_priority_details`.
+> **Fallback**: `meta/search-index.json` — structured index with keywords/tags/first-sentences for fast lookup.
+> **System files excluded**: См. `process-query.json#step_1.system_files_exclusion`.
+
+---
+
 ## **Schema Reference**: `AGENTS.md#compounding_workflow` → Full workflow defined in [process-query.json](process-query.json). Compounding decision logic is query-specific.
 
-> Canonical: `AGENTS.md#raw_corrected_zone`
+## 📅 Date Convention Rule
+
+- Frontmatter `date` = **current system date** (never derive from source filename / git commit dates)
+- Log entries: `## [YYYY-MM-DD] action | description`
+- Timestamps in JSON: ISO-8601 `YYYY-MM-DDTHH:MM:SS+TZ`
+
+> Enforced by: `lint.sh check_id=6` (date_consistency_check).
 
 ---
 
@@ -593,3 +908,134 @@ Process files inherit from AGENTS.md via `schema_ref` (never duplicate rules).
 
 ---
 
+## 🔧 Auto-Rebuild Metadata
+
+### Meta Rebuild Path
+
+#### Canonical: `scripts/rebuild-meta.sh [--index-only]`
+
+- Full rebuild: `./scripts/rebuild-meta.sh` (registry + backlinks)
+- Index only: `./scripts/rebuild-meta.sh --index-only` (index.md H1+first sentences)
+
+`./scripts/rebuild-meta.sh` → rebuilds all meta files (`registry.json` + `backlinks.json` + `index.md`)
+
+`--index-only` flag → rebuilds only `wiki/index.md` (H1 headers + first sentences per category)
+
+**Trigger points**: After any wiki edit in Ingest / Query / Lint processes.
+
+> Full integration flow: `process-ingest.json#step_3a` (full), `process-query.json#post_check`, `process-lint.json#check_id_7`
+
+---
+
+## 📄 Auto-update Index
+
+`./scripts/rebuild-meta.sh --index-only` → rebuilds `wiki/index.md` (H1 headers + first sentences per category)
+
+**Trigger**: Ingest process after create_page/update_existing. Lint after link_validation.
+
+> Logic details: script parses wiki/\*_/_.md, groups by subdirectory, sorts alphabetically.
+
+## 🔄 Non-blocking Lint (Phase 3)
+
+`scripts/lint.sh` — автономный скрипт lint-аудита, который не блокирует agent turn.
+
+### Когда вызывается
+
+| Процесс            | Триггер                                                                                      |
+| ------------------ | -------------------------------------------------------------------------------------------- |
+| **Самостоятельно** | `./scripts/lint.sh [--quiet] [--skip-checks ID1,ID2]` — можно запустить отдельно или по cron |
+| **Process-lint**   | Вместо inline lint → вызывать `./scripts/lint.sh --quiet`                                    |
+
+### Как использовать
+
+```bash
+# Полная проверка (stdout = JSON отчёт, stderr = human-readable)
+cd /path/to/loomana && ./scripts/lint.sh
+
+# Тихий режим (только JSON на stdout, без вывода в stderr)
+cd /path/to/loomana && ./scripts/lint.sh --quiet
+
+# Пропуск конкретных проверок
+cd /path/to/loomana && ./scripts/lint.sh --skip-checks 3,5
+```
+
+### Output формат (JSON на stdout)
+
+```json
+{
+  "timestamp": "YYYY-MM-DDTHH:MM:SS",
+  "wiki_dir": "wiki/",
+  "checks_run": 11,
+  "issues_found": {
+    "contradictions": 0,
+    "orphan_pages": 3,
+    "orphan_paths": [],
+    "new_sources_unprocessed": 5,
+    "duplicate_titles": 0,
+    "date_inconsistencies": 0,
+    "broken_links": 2,
+    "auto_repaired_links": 1,
+    "agent_review_required": 0,
+    "agent_review_details": [],
+    "contradictions_deep": 0,
+    "text_similarity_overlaps": 0,
+    "hot_cache_stale": false
+  },
+  "total_issues": 10,
+  "status": "ISSUES_FOUND"
+}
+```
+
+### Checks выполняемые скриптом
+
+| Check ID | Название                  | Скрипт                                     | Результат                                                    |
+| -------- | ------------------------- | ------------------------------------------ | ------------------------------------------------------------ |
+| 1        | Contradictions (soft)     | `## Обновлено` grep                        | Pages count for agent review                                 |
+| 2        | Orphan pages              | `orphan-pages.sh`                          | Count + paths of orphaned wiki pages                         |
+| 3        | Knowledge gaps            | —                                          | Skipped (agent review required)                              |
+| 4        | New sources available     | `check-new-sources.sh --max 10`            | NEW: package list                                            |
+| 5        | New topics proposal       | —                                          | Skipped (requires external sources)                          |
+| 6        | Mechanical linting        | `duplicate-titles.sh` + frontmatter checks | Duplicate count, missing fields                              |
+| 7        | Date consistency          | `date-consistency.sh`                      | Inconsistencies count                                        |
+| 8        | Broken links auto-resolve | `unified-pass.sh --auto`                   | JSON: broken_links[] + auto_repaired + agent_review_required |
+| 9        | Contradictions deep scan  | `detect-contradications.sh`                | potential_contradictions count + conflicts[]                 |
+| 10       | Text similarity scan      | `text-similarity.sh --scan-all`            | matches[] with similarity_score, file1, file2                |
+| 11       | Hot cache stale check     | `check-wiki-changes.sh`                    | WIKI CHANGES DETECTED / no changes                           |
+
+### Почему это важно
+
+- **Не блокирует agent turn**: lint работает отдельно, не требует inline выполнения
+- **Масштабируемость**: можно запускать по cron (например, каждые 4 часа)
+- **Single entry point**: все проверки в одном скрипте → простой вызов из любого процесса
+- **JSON output для machine parsing**: stdout = структурированный отчёт, stderr = человеко-читаемый
+
+### Cron example (optional)
+
+```bash
+# crontab -e — автоматический lint каждые N часов
+0 */4 * * * cd /path/to/loomana && ./scripts/lint.sh --quiet >> logs/lint.log 2>&1
+```
+
+---
+
+## 🎯 Dynamic Priority + Relevance Scoring (Phase 5)
+
+`scripts/wiki-search.sh --dynamic "query"` — динамический порядок категорий по query intent.
+
+**Query Intent Analysis**:
+
+- Entity keywords → `entities/`, `concepts/`, `syntheses/` priority
+- Comparison keywords (`vs`, `compared to`) → `comparisons/`, `syntheses/`, `concepts/` priority
+- Concept keywords → `concepts/`, `syntheses/`, `entities/` priority
+- Fallback: static priority (syntheses→concepts→entities)
+
+**Relevance Scoring**:
+
+1. Position weight: query in H1 = +3, body = +1 per occurrence
+2. Frequency weight: total occurrences × 1
+3. Backlink weight: mentions in other wiki pages × 5
+4. Category bonus: earlier priority category gets +10×(max_priority - index)
+
+**Usage**: `./scripts/wiki-search.sh --dynamic "query"` — results sorted by combined score descending.
+
+> Full workflow: `AGENTS.md#smart_search_priority` → extended with dynamic intent analysis.

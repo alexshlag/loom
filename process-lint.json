@@ -121,10 +121,9 @@
         "exit_code_0": "all_links_valid — proceed to next check",
         "exit_code_1": "broken_links_found — parse JSON: broken_links[] + auto_repaired + agent_review_required[]"
       },
-      "reference": "AGENTS.md#link-conventions",
+      "reference": "rules/link_conventions.json",
       "post_check": {
         "command": "./scripts/rebuild-meta.sh --index-only (if auto_repaired > 0)",
-        "schema_ref": "process-lint.json#rebuild_meta_trigger",
         "note": "Auto-triggered from lint.sh when AUTO_REPAIRED > 0"
       }
     },
@@ -171,7 +170,7 @@
         "exit_code_0": "no_overlaps — proceed",
         "exit_code_1": "overlaps_found — report count + pairs, agent applies decision rules"
       },
-      "schema_ref": "decision-rules.md"
+      "schema_ref": "rules/decision-rules.md"
     },
     {
       "check_id": "11",
@@ -215,11 +214,11 @@
           "note": "Lint не делает actions — только report + prompt. Интеграция через step_2_delta_check в process-ingest.json"
         }
       ],
-      "schema_ref": "AGENTS.md#raw_corrected_zone",
+      "schema_ref": "rules/delta_tracking.json",
       "lint_policy": "Soft-only: lint.sh prints detection results, does NOT create corrected copies or modify wiki pages. User decides → Ingest process handles processing."
     }
   ],
-  "schema_ref": "AGENTS.md#non-blocking-lint",
+  "schema_ref": "rules/non_blocking_lint.json",
   "primary_command": {
     "description": "Основной entry point для lint — автономный скрипт, не блокирующий agent turn",
     "command": "./scripts/lint.sh [--quiet] [--skip-checks ID1,ID2] [wiki_dir]",
@@ -239,8 +238,8 @@
       "related"
     ]
   },
-  "git_conventions_reference": "AGENTS.md#git-конвенции",
-  "templates_reference": "AGENTS.md#шаблоны",
+  "git_conventions_reference": "AGENTS.md#git-conventions",
+  "templates_reference": "AGENTS.md#page-templates",
   "inherits_from": [
     "guardrails",
     "logging_templates"
