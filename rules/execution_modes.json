@@ -1,0 +1,22 @@
+{
+  "protocol_name": "Execution Modes",
+  "description": "Режимы работы агента, определяющие содержание (что делать) и способ отображения (как показывать) результата.",
+  "modes": {
+    "current_mode": {
+      "values": ["query", "ingest", "project"],
+      "storage": "working_memory.json",
+      "description": "Определяет, ЧТО делает агент в текущий момент."
+    },
+    "execution_mode": {
+      "values": ["silent", "verbose"],
+      "storage": "working_memory.json",
+      "description": "Определяет, КАК агент показывает результат пользователю."
+    }
+  },
+  "rules": {
+    "default_execution_mode": "silent",
+    "verbose_trigger": "Пользователь явно просит 'verbose', 'debug mode', 'покажи шаги' -> агент ставит 'verbose' в WM и работает один turn.",
+    "auto_reset": "После verbose-answer агент сбрасывает на 'silent'.",
+    "explicit_reset": "Пользователь говорит 'quiet', 'silent', 'тише' -> мгновенный сброс."
+  }
+}

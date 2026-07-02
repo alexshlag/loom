@@ -1,0 +1,16 @@
+{
+  "protocol_name": "Auto-Rebuild Metadata",
+  "description": "Механизмы автоматического обновления метаданных wiki.",
+  "rebuild_paths": {
+    "full": "./scripts/rebuild-meta.sh",
+    "index_only": "./scripts/rebuild-meta.sh --index-only"
+  },
+  "actions": {
+    "full_rebuild": "Rebuilds all meta files (registry.json + backlinks.json + index.md)",
+    "index_rebuild": "Rebuilds only wiki/index.md (H1 headers + first sentences per category)"
+  },
+  "trigger_points": [
+    "After any wiki edit in Ingest / Query / Lint processes.",
+    "Full integration flow: process-ingest.json#step_3a (full), process-query.json#post_check, process-lint.json#check_id_7"
+  ]
+}

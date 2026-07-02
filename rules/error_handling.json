@@ -1,0 +1,53 @@
+{
+  "protocol_name": "Error Handling Protocol",
+  "description": "Инструкции для агента при обнаружении ошибок, противоречий или dead end ситуаций.",
+  "steps": {
+    "loop": [
+      {
+        "step": 1,
+        "action": "Detect & Log [!]",
+        "details": "Записать в log.md с типом [error], описанием и контекстом. Всегда append (>>), never overwrite.",
+        "reference": "process-query.json#error_handling.logging_actions"
+      },
+      {
+        "step": 2,
+        "action": "Analyze",
+        "details": "Краткий анализ: что пошло не так, почему инструкция сломалась (не просто «ошибка», а корень проблемы)"
+      },
+      {
+        "step": 3,
+        "action": "Resolve",
+        "strategies": {
+          "local-fix": "проблема локальная (путь, ссылка, логика) -> исправить самостоятельно",
+          "schema-patch": "противоречие в Schema/AGENTS.md -> предложить патч пользователю на review",
+          "source-conflict": "два источника говорят противоположное -> отметить как CONFLICT на странице и продолжить",
+          "dead-end": "подход не работает (например, grep дал шум) -> документировать причину, сменить стратегию"
+        }
+      },
+      {
+        "step": 4,
+        "action": "Continue",
+        "details": "Двигаться дальше по task, не застревая на сломанной инструкции"
+      }
+    ],
+    "examples": [
+      {
+        "situation": "git add * заблокирован guardrails",
+        "action": "[!] Log: protected zone blocked -> local-fix: switch to git add wiki/"
+      },
+      {
+        "situation": "fetch_content вернул обрезанный markdown",
+        "action": "[!] Log: truncation detected -> local-fix: fallback web_search + get_search_content"
+      },
+      {
+        "situation": "Новая команда несовместима с текущей Schema",
+        "action": "[!] Log: schema conflict -> schema-patch: предложить патч AGENTS.md"
+      },
+      {
+        "situation": "Grep дал >100 совпадений без смысла",
+        "action": "[!] Log: grep noise -> dead-end: switch to index.md"
+      }
+    ],
+    "golden_rule": "Ошибка ≠ стоп. Каждый error — сигнал к действию, а не причина зависать. Агент фиксирует, анализирует, решает и двигается дальше."
+  }
+}

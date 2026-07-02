@@ -1,0 +1,10 @@
+{
+  "protocol_name": "Date Convention Rule",
+  "description": "Правила использования дат в метаданных и логах.",
+  "rules": {
+    "frontmatter_date": "Текущая дата системы в формате YYYY-MM-DD (никогда не берется из имени файла или даты коммита источника).",
+    "log_entries": "## [YYYY-MM-DD] action | description",
+    "json_timestamps": "ISO-8601 YYYY-MM-DDTHH:MM:SS+TZ"
+  },
+  "enforcement": "lint.sh check_id=6 (date_consistency_check)"
+}

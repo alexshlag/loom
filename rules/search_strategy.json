@@ -1,0 +1,7 @@
+{
+  "protocol_name": "Search Strategy",
+  "description": "Алгоритм поиска информации в wiki.",
+  "canonical_flow": "index_lookup → semantic_search → wiki-search.sh",
+  "fallback": "meta/search-index.json (структурированный индекс с ключевыми словами/тегами/первыми предложениями для быстрого поиска)",
+  "exclusions": "System files excluded as per process-query.json#step_1.system_files_exclusion"
+}

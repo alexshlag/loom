@@ -77,14 +77,6 @@
 ### Issue #25: `check_id` Numbering Inconsistency (LOW) 🆕
 **Проблема**: `lint.sh` комментарии пишут `Check 4/9` для check_id=3, `Check 5/9` для check_id=5. Нумерация не совпадает с AGENTS.md и process-lint.json.
 
-### Issue #33: AGENTS.md Optimization ✅ RESOLVED (2026-07-02)
-**Цель**: Уменьшение объема контекста и упрощение структуры манифеста.
-**Действия**:
-- Удаление дубликатов блоков Schema Reference и Schema Inheritance.
-- Удаление технически детализированного блока Non-blocking Lint (перенос в документацию скриптов).
-- Очистка структуры для улучшения фокусировки LLM на правилах поведения.
-**Результат**: Сокращение объема AGENTS.md, повышение читаемости и эффективности обработки инструкций.
-
 ### Issue #8: Syntheses Special Handling ⚠️ PARTIAL FIX
 **Проблема**: `syntheses/` — аналитические синтезы, не должны обрабатываться как обычные страницы wiki.
 
@@ -145,6 +137,14 @@
 - Immutable originals + corrected copies + manifests
 - Delta tracking, hash-based deduplication, backflow for contradiction resolution
 
+### Issue #33: AGENTS.md Optimization ✅ RESOLVED (2026-07-02)
+**Цель**: Уменьшение объема контекста и упрощение структуры манифеста.
+**Действия**:
+- Удаление дубликатов блоков Schema Reference и Schema Inheritance.
+- Удаление технически детализированного блока Non-blocking Lint (перенос в документацию скриптов).
+- Очистка структуры для улучшения фокусировки LLM на правилах поведения.
+**Результат**: Сокращение объема AGENTS.md, повышение читаемости и эффективности обработки инструкций.
+
 ### Delta Tracking + Backflow ✅ COMPLETED (2026-07-01)
 **Phase 29:** `scripts/rebuild-source-manifest.sh` created; raw-correct.sh exists; validate-path.sh updated; process-ingest.json Step 2 (step_2_delta_check) added; **backflow completed**: 3 sources now have corrected copies + manifests.
 
@@ -161,5 +161,4 @@
 
 ---
 
-*Last update: 2026-07-01 | Live: #16, #5/#9, #11, #12, #18, #27, #28, #22, #23, #24, #25, #26, #8, #31, #13. Resolved today: Delta Tracking + Backflow (Phase 29), Issue #32, Section Template System.*
-
+*Last update: 2026-07-02 | Live: #39, #5/#9, #11, #12, #18, #27, #28, #22, #23, #24, #25, #8, #31, #13. Resolved today: Issue #33 (AGENTS.md Optimization), Phase 29 Delta Tracking, Section Template System.*

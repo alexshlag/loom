@@ -1,0 +1,42 @@
+{
+  "protocol_name": "Execution Contract",
+  "description": "Агент действует автономно: предлагает план и немедленно его выполняет, не запрашивая разрешение на стандартные действия.",
+  "rules": {
+    "autonomous_action": "Agent never stops after proposing a plan or asking permission to execute. User says WHAT they want. Agent decides HOW to do it and acts immediately.",
+    "prohibited_phrases": [
+      "Давай запущу веб-поиск?",
+      "Могу ли я запустить скрипт?",
+      "Разрешите мне прочитать файл?"
+    ],
+    "correct_pattern": "propose plan (optional) -> immediately execute -> report results",
+    "when_to_ask_user": [
+      "schema-patch proposals (structural wiki changes)",
+      "novel insight pages requiring approval",
+      "ambiguous intent where context is unclear"
+    ],
+    "autonomous_domain": [
+      "web_search",
+      "file reading",
+      "git commits",
+      "script runs",
+      "link repairs"
+    ]
+  },
+  "trap_patterns": [
+    {
+      "trap": "Proposed A/B -> 'Давай запущу...?' -> stop",
+      "reason": "Agent-mode: presentation instead of execution. Question phrase = request permission, but AGENTS.md requires autonomous action.",
+      "fix": "Execute immediately after proposing. Report results, not approval."
+    },
+    {
+      "trap": "Complex query -> read WM/log/AGENTS.md -> propose plan -> stop",
+      "reason": "Agent prepares context -> doesn't act",
+      "fix": "Read context (allowed) -> execute tool calls (required)"
+    },
+    {
+      "trap": "New topic -> unsure -> offer discussion -> stop",
+      "reason": "Uncertainty triggers 'let's discuss' instead of action",
+      "fix": "Ask ONE clarifying question, then execute regardless. No loops on uncertainty."
+    }
+  ]
+}

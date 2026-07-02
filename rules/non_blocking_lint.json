@@ -1,0 +1,13 @@
+{
+  "protocol_name": "Non-blocking Lint",
+  "description": "Механизм периодической проверки здоровья wiki, который не блокирует работу агента.",
+  "entry_points": {
+    "manual": "./scripts/lint.sh [--quiet] [--skip-checks ID1,ID2]",
+    "cron": "0 */4 * * * cd /path/to/loomana && ./scripts/lint.sh --quiet >> logs/lint.log 2>&1"
+  },
+  "output_format": {
+    "stdout": "JSON отчёт",
+    "stderr": "human-readable summary"
+  },
+  "checks_summary": "Включает проверку противоречий, сиротских страниц, разрывов в знаниях, новых источников, механических ошибок, согласованности дат, битых ссылок, глубокого сканирования противоречий, текстового сходства и устаревания горячего кэша."
+}

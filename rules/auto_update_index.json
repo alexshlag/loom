@@ -1,0 +1,7 @@
+{
+  "protocol_name": "Auto-update Index",
+  "description": "Правила автоматического обновления wiki/index.md.",
+  "command": "./scripts/rebuild-meta.sh --index-only",
+  "trigger": "Ingest process after create_page/update_existing. Lint after link_validation.",
+  "logic_details": "Script parses wiki/*/__.md, groups by subdirectory, sorts alphabetically."
+}
