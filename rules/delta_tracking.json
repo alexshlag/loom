@@ -1,0 +1,57 @@
+{
+  "protocol_name": "Delta Tracking",
+  "description": "Механизм отслеживания изменений источников для предотвращения re-ingest уже обработанных файлов.",
+  "canonical_source": {
+    "script": "scripts/rebuild-source-manifest.sh",
+    "manifest_file": "meta/source-manifest.json"
+  },
+  "steps": [
+    {
+      "step_id": "0_delta_check",
+      "name": "delta_tracking_hash_check",
+      "description": "Проверка хешей оригинального файла против существующих corrected копий — предотвращает re-ingest уже обработанных источников.",
+      "actions": [
+        {
+          "action": "run_hash_check",
+          "command": "./scripts/rebuild-source-manifest.sh --scan-only",
+          "description": "Сканирует все источники, определяет что уже processed, что stale/unprocessed"
+        },
+        {
+          "action": "check_specific_source_status",
+          "note": "Если текущий ${SOURCE_PATH} имеет status=processed → пропустить re-ingest. Если unprocessed/stale → продолжить ingest flow.",
+          "on_skip_condition": "source_already_ingested AND corrected_copy_up_to_date",
+          "on_proceed_condition": "no_corrected_copy OR hash_mismatch OR source_is_new"
+        }
+      ],
+      "evaluation": [
+        {
+          "condition": "source_status == processed",
+          "action": "SKIP_INGEST — SOURCE_ALREADY_PROCESSED",
+          "note": "Уже есть corrected copy с актуальным хешем → перейти к Step 2 (discussion)"
+        },
+        {
+          "condition": "source_status == unprocessed OR stale",
+          "action": "PROCEED_TO_ANALYSIS",
+          "note": "Нужен новый/обновлённый ingest — продолжить к Step 1 (source_analysis)"
+        }
+      ]
+    }
+  ],
+  "manifest_structure": {
+    "original_path": "raw/sources/SRC-XXXX/YYYY.md",
+    "corrected_path": "raw/corrected/SRC-XXXX/YYYY.md",
+    "hash_original": "sha256:abc123...",
+    "date_ingested": "2026-07-01",
+    "status": "processed | stale | unprocessed"
+  },
+  "contradiction_resolution": {
+    "priority": "Use corrected copy from manifest for contradiction detection. If hash mismatch → source changed, re-ingest required.",
+    "flow": [
+      "Read manifest.json for source",
+      "Compare hash_original with current file",
+      "If match → use existing corrected copy",
+      "If mismatch → flag as stale, proceed to ingest"
+    ]
+  }
+}
+echo "✅ Created rules/delta_tracking.json"

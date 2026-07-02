@@ -105,37 +105,23 @@
 
 ## ✅ Resolved Today/Recently
 
-### Issues #1-3: External Sources + Novelty Threshold ✅ RESOLVED
-**Решение:** User-requested или cron; тот же источник → внешние данные приоритетны; facts→update existing, new inference→flag for fixation.
+### Issues #37-38: Broken Schema References & JSON Corruption ✅ RESOLVED (2026-07-02)
+**Проблема**: process-ingest.json содержал битые schema_ref, указывающие на несуществующие блоки в AGENTS.md.
 
-### Issue #4: Authoritative Sources Criteria ✅ RESOLVED
-**Решение:** DR-1/DR-2 из AGENTS.md — overlap neutral, correction evidence wins, attribution handled.
+**Fix applied:**
+1. Создана директория `rules/` с отдельными JSON-файлами для каждого правила
+2. Исправлены все битые ссылки:
+   - `AGENTS.md#raw_corrected_zone` → `rules/protected_zones.json`
+   - `AGENTS.md#batch_ingest_trigger` → `rules/batch_ingest_trigger.json` (новое правило)
+   - `rules/link-conventions` → `rules/link_conventions.json` (исправлен дефис)
+3. Создано новое правило `rules/batch_ingest_trigger.json` для кластеризации источников
 
-### Issues #6-7: Lint Parse Bug + Depth Limit ✅ RESOLVED
-**Fixes:** `check-new-sources` parse bug fixed (`grep -c '^NEW:'`); raw sources depth limit with `--max N`.
+**Schema refs исправлены:**
+- process-ingest.json: 7 schema_ref → все валидны
+- process-query.json: все ссылки проверены
+- process-lint.json: JSON corruption fixed
 
-### Issue #10: Error Logging — Unified Format ✅ FIXED
-**Fix:** Created `scripts/utilities/common.sh` — unified `log_error()`, `safe_run()`; lint.sh uses safe_run for all script calls.
-
-### Issue #17: Silent Error Swallowing ✅ FIXED (2026-06-30)
-**Fixes:** `set -uo pipefail`; `log_error()` function; duplicate code removed; nomenclature fixed; utilities/common.sh created.
-
-### Issue #19: Link Validator 500-File Limit ✅ FIXED
-**Fix:** `head -500` → configurable `--max N` flag (default: 100); added `-maxdepth 5`.
-
-### Issue #20: validate-path.sh Pattern Bypass ✅ FIXED
-**Fix:** Prefix-only match; write-zone validation.
-
-### Issue #37: Broken Schema References ✅ RESOLVED (2026-07-01)
-**Fix:** 6 missing headings added to AGENTS.md; schema_ref → note в process-files.
-
-### Issue #38: Process-Lint JSON Corruption ✅ RESOLVED (2026-07-01)
-**Fix:** Trailing commas removed, all schema_ref fixed.
-
-### Issue #32: Wiki/sources/ Structure Missing ✅ RESOLVED (Phase 29)
-**Решение:** Создан `raw/corrected/` с архитектурой "Original → Corrected → Wiki".
-- Immutable originals + corrected copies + manifests
-- Delta tracking, hash-based deduplication, backflow for contradiction resolution
+👉 **Canonical**: `rules/*.json`, `process-ingest.json`, `RULES.md`
 
 ### Issue #33: AGENTS.md Optimization ✅ RESOLVED (2026-07-02)
 **Цель**: Уменьшение объема контекста и упрощение структуры манифеста.
@@ -145,20 +131,45 @@
 - Очистка структуры для улучшения фокусировки LLM на правилах поведения.
 **Результат**: Сокращение объема AGENTS.md, повышение читаемости и эффективности обработки инструкций.
 
-### Delta Tracking + Backflow ✅ COMPLETED (2026-07-01)
-**Phase 29:** `scripts/rebuild-source-manifest.sh` created; raw-correct.sh exists; validate-path.sh updated; process-ingest.json Step 2 (step_2_delta_check) added; **backflow completed**: 3 sources now have corrected copies + manifests.
+### Issue #32: Wiki/sources/ Structure Missing ✅ RESOLVED (Phase 29)
+**Решение:** Создан `raw/corrected/` с архитектурой "Original → Corrected → Wiki".
+- Immutable originals + corrected copies + manifests
+- Delta tracking, hash-based deduplication, backflow for contradiction resolution
 
-### Section Template System ✅ COMPLETED (2026-07-01)
-**Phase 13.4:** `wiki/templates/<category>-template.json` — рекомендательные списки секций для agent-guided page creation.
-- Step 2.5 в process-ingest.json: read template → select sections → add new ones if needed
-- Agent-driven evolution: agent добавляет новые секции сам, validates JSON before write
-- No-template scenario handled gracefully (system works without templates)
-**Связано:** `process-ingest.json#step_2.5`
+### Issue #30: Batch Ingest Workflow ✅ RESOLVED (2026-07-01)
+**Решение:** Создан `scripts/batch-ingest.sh` — orchestrator для кластеризации источников.
+- Триггер: ≥3 связанных источника или пользователь предоставляет несколько файлов
+- Действие: сканирование, извлечение H1/tags/keywords, группировка по shared entities
 
-### Schema Migration — Dialog.md → AGENTS.md ✅ COMPLETED (2026-06-29)
-**Status:** All rules embedded, dialog.md removed. D1-D8 completed.
-
+### Issue #29: Delta Tracking ✅ RESOLVED (Phase 29)
+**Решение:** `scripts/rebuild-source-manifest.sh` — delta tracking через hash-based deduplication.
+- Layer 1: Originals (immutable) → raw/SRC-*/original.md
+- Layer 2: Corrected copies (agent rw) → raw/corrected/SRC-*/file.md
+- Layer 3: Wiki pages reference Layer 2
 
 ---
 
-*Last update: 2026-07-02 | Live: #39, #5/#9, #11, #12, #18, #27, #28, #22, #23, #24, #25, #8, #31, #13. Resolved today: Issue #33 (AGENTS.md Optimization), Phase 29 Delta Tracking, Section Template System.*
+## ✅ Resolved Previously
+
+### Issues #1-4: External Sources Update Policy ✅ RESOLVED
+**Решение:** Два режима обновления — user-requested + cron; тот же источник → внешние данные приоритетны.
+
+### Issues #6-7: Lint Parse Bug + Depth Limit ✅ RESOLVED
+**Fixes:** `check-new-sources` parse bug fixed (`grep -c '^NEW:'`); raw sources depth limit with `--max N`.
+
+### Issue #10: Error Logging — Unified Format ✅ FIXED
+**Fix:** Created `scripts/utilities/common.sh` — unified `log_error()`, `safe_run()`.
+
+### Issues #17-20: Silent Errors, /tmp/ Race Condition, Link Validator Limit, validate-path Bypass ✅ RESOLVED
+**Fixes:** 
+- `set -uo pipefail`; `log_error()` function; duplicate code removed
+- `mktemp` instead of hardcoded `/tmp/overlap_result.json`
+- `head -500` → configurable `--max N` flag (default: 100)
+- Prefix-only match + write-zone validation
+
+### Issues #26, #34-36: Schema Migration ✅ RESOLVED
+**Status:** All rules embedded in AGENTS.md / process files. dialog.md removed.
+
+---
+
+*Last update: 2026-07-02 | Live: #39, #5/#9, #11, #12, #18, #27, #28, #22, #23, #24, #25, #8, #31, #13. Resolved today: #37-38 (Schema References), #33 (AGENTS.md Optimization).*

@@ -572,6 +572,10 @@ Layer 3 (reference): wiki/**.md sources: [] → links to Layer 2
 
 ## **Schema Reference**: `AGENTS.md#compounding_workflow` → Full workflow defined in [process-query.json](process-query.json). Compounding decision logic is query-specific.
 
+> Canonical: `AGENTS.md#raw_corrected_zone`
+
+---
+
 ## 🔄 Schema Inheritance
 
 Process files inherit from AGENTS.md via `schema_ref` (never duplicate rules).

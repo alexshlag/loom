@@ -1,0 +1,38 @@
+{
+  "protocol_name": "Batch Ingest Trigger",
+  "description": "Кластеризация нескольких источников перед обработкой.",
+  "trigger_conditions": {
+    "automatic": "agent_receives_3_or_more_related_sources OR user_provides_multiple_files",
+    "manual": "user_explicitly_requests_batch_processing"
+  },
+  "actions": [
+    {
+      "action": "run_batch_scanner",
+      "command": "./scripts/batch-ingest.sh --scan",
+      "description": "Скрипт сканирует все файлы, извлекает H1/tags/keywords, группирует по shared entities"
+    },
+    {
+      "action": "receive_cluster_manifest",
+      "format": "JSON {clusters: [{id, name, sources: [], shared_keywords}], total_sources: N}",
+      "description": "Получение кластеризованных результатов от скрипта"
+    },
+    {
+      "action": "present_clusters_to_user",
+      "description": "Агент показывает кластеризованные результаты для принятия решения о batch processing"
+    }
+  ],
+  "evaluation": [
+    {
+      "condition": "clusters_count == 0 OR not_applicable",
+      "note": "no_batch_needed — proceed to step_6_discussion with individual sources"
+    },
+    {
+      "condition": "clusters_count > 0 AND user_confirms_batch",
+      "action": "PROCEED_TO_BATCH_PROCESSING"
+    }
+  ],
+  "canonical_source": {
+    "wiki_section": "AGENTS.md#batch_ingest_trigger",
+    "script": "./scripts/batch-ingest.sh"
+  }
+}

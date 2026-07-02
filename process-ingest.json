@@ -13,7 +13,7 @@
   ],
   "external_source_policy": {
     "description": "Canonical external source rules (EXT-RES1). Referenced by step_3_analysis — не отдельный шаг, а правила для применения агентом.",
-    "schema_ref": "AGENTS.md#link-conventions",
+    "schema_ref": "rules/link_conventions.json",
     "rules": [
       {
         "rule_id": "EXT-RES1",
@@ -43,7 +43,7 @@
       "description": "Backflow для существующих wiki-страниц, ссылающихся на raw/sources/ без corrected copies. Триггерится из process-lint.json check_id=12, не входит в ingest flow.",
       "trigger_condition": "lint_check_12_reports_unprocessed_sources_with_wiki_references",
       "target_process": "process-lint.json",
-      "schema_ref": "AGENTS.md#raw_corrected_zone",
+      "schema_ref": "rules/protected_zones.json",
       "note": "Не шаг ингеста. См. process-lint.json для полного workflow."
     }
   },
@@ -70,7 +70,6 @@
       "step_id": "step_2_delta_check",
       "name": "delta_tracking_hash_check",
       "description": "Проверка хешей оригинального файла против существующих corrected копий — предотвращает re-ingest уже обработанных источников.",
-      "schema_ref": "AGENTS.md#delta_tracking",
       "actions": [
         {
           "action": "run_hash_check",
@@ -183,7 +182,7 @@
       "step_id": "step_4_corrected_copy",
       "name": "create_corrected_copy_or_skip",
       "description": "После source analysis — создать corrected copy в raw/corrected/SRC-*/* через scripts/raw-correct.sh, если её ещё нет.",
-      "schema_ref": "AGENTS.md#raw_corrected_zone",
+      "schema_ref": "rules/protected_zones.json",
       "actions": [
         {
           "action": "read_original_and_analyze",
@@ -212,7 +211,7 @@
       "name": "batch_ingest_trigger",
       "description": "Если агент получает N+ связанных источников → запускает batch-ingest.sh для кластеризации перед discussion.",
       "condition": "multiple_sources_detected OR user_provides_multiple_files",
-      "schema_ref": "AGENTS.md#batch_ingest_trigger",
+      "schema_ref": "rules/batch_ingest_trigger.json",
       "actions": [
         {
           "action": "run_batch_scanner",
@@ -416,7 +415,7 @@
           "action": "run_text_similarity_scan",
           "command": "./scripts/text-similarity.sh --scan-all --threshold 90 --verbose",
           "description": "Сканирует wiki на overlap с новой/обновлённой страницей (DR-1/DR-2).",
-          "schema_ref": "decision-rules.md",
+          "schema_ref": "rules/decision-rules.md",
           "evaluation": [
             {
               "condition": "matches_count == 0",
@@ -540,7 +539,12 @@
           "action": "update_working_memory",
           "field": "open_pages",
           "operation": "set",
-          "value": [{"path": "${SOURCE_PATH}", "status": "reading"}]
+          "value": [
+            {
+              "path": "${SOURCE_PATH}",
+              "status": "reading"
+            }
+          ]
         }
       ]
     },
@@ -585,10 +589,9 @@
     ],
     "note": "Этот режим экономит время, но требует доверия к автономным решениям агента."
   },
-  "decision_rules_schema_ref": "decision-rules.md",
+  "decision_rules_schema_ref": "rules/decision-rules.md",
   "error_handling": {
-    "description": "При обнаружении любой ошибки, противоречия или dead end — следовать 4-step loop из AGENTS.md#error_handling_protocol.",
-    "schema_ref": "AGENTS.md#error_handling_protocol"
+    "schema_ref": "rules/error_handling.json"
   },
   "schema_evolution": {
     "description": "Template Co-evolution Process — агент предлагает улучшения через [schema-patch] в log.md. User должен approve → agent commit update.",

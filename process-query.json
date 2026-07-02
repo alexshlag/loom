@@ -5,43 +5,7 @@
     "wiki_dir": "wiki/",
     "always_loaded": true,
     "search_priority_details": {
-      "description": "Критерии достаточности поиска по wiki",
-      "category_priority": [
-        {
-          "priority": 1,
-          "category": "syntheses/",
-          "reason": "FAQ summary pages — compiled answers from multiple sources"
-        },
-        {
-          "priority": 2,
-          "category": "concepts/",
-          "reason": "Abstract ideas and principles"
-        },
-        {
-          "priority": 3,
-          "category": "entities/",
-          "reason": "Concrete identified objects"
-        }
-      ],
-      "fallback_chain": [
-        {
-          "method": "index_lookup",
-          "condition": ">= 2 совпадений из index.md",
-          "action": "STOP"
-        },
-        {
-          "method": "wiki_recall",
-          "condition": ">= 3 совпадений из semantic search",
-          "action": "STOP"
-        },
-        {
-          "method": "wiki_search_script",
-          "command": "./scripts/wiki-search.sh --dynamic \"${USER_QUERY}\" wiki/ --max 15",
-          "description": "Умный grep по приоритетным категориям (syntheses→concepts→entities) с fallback на полный grep. Результат: строки 'path/to/file.md:matched_line'",
-          "action": "FALLBACK"
-        }
-      ],
-      "stop_if_any_results": false
+      "schema_ref": "rules/search_strategy.json"
     },
     "compounding_decision_logic": {
       "description": "Когда ответ компандится как новая страница wiki",
@@ -75,9 +39,7 @@
       ],
       "note": "Compounding workflow rules in AGENTS.md under Synthesis section",
       "syntheses_special_handling": {
-        "rule": "DR-4: Never auto-create synthesis without explicit fixation flag. Synthesis = new logical inference (A + B → C), not just fact collection.",
-        "condition": "page_type == 'synthesis'",
-        "agent_prompt": "Evaluate: Does the answer contain a NEW logical inference that wasn't explicitly stated in any source? If yes → propose synthesis page. If no → suggest updating existing entity/concept or creating notes."
+        "schema_ref": "rules/error_handling.json"
       }
     },
     "grep_contract": {
@@ -281,9 +243,7 @@
           "action": "run_script",
           "command": "./scripts/check-new-sources.sh --quick raw/sources/ tracking/raw_registry.json",
           "exit_code_handling": {
-            "0": "no_new_sources — continue to step 1",
-            "1": "new_sources_found — set new_sources_pending=true in working_memory.json, notify user after answer",
-            "2": "cached_skip (<1 hour since last check) — skip notification, continue to step 1"
+            "schema_ref": "rules/error_handling.json"
           }
         },
         {
@@ -329,13 +289,7 @@
         }
       ],
       "semantic_search_layer": {
-        "action": "wiki_recall(query: \"${USER_QUERY}\", max_results: 5)",
-        "description": "После index.md вызови wiki_recall для семантического поиска по смыслу, а не по ключевым словам. Оцени количество результатов для определения достаточности.",
-        "result_handling": {
-          "if_results_found": "ADD_TO_RELEVANT_PAGES_LIST",
-          "if_no_results": "PROCEED_TO_GREP_FALLBACK"
-        },
-        "trigger": "after_index_read"
+        "schema_ref": "rules/search_strategy.json"
       },
       "fallback_chain": {
         "priority_order": [
@@ -440,7 +394,9 @@
         "mermaid_diagram",
         "other"
       ],
-      "search_strategy_schema_ref": "AGENTS.md#search_priority_schema",
+      "search_strategy_schema_ref": {
+        "schema_ref": "rules/search_strategy.json"
+      },
       "contradiction_resolution_flow": {
         "description": "Cascade-based алгоритм: Code Reality > Live State > Documentation (evidence_grade). Старый flow (authoritative_source → temporal_conflict → user_review) полностью заменён.",
         "logging_actions": [
@@ -471,7 +427,9 @@
           },
           {
             "priority": 3,
-            "strategy": "evidence_grade (documented > corroborated > assertion_only)",
+            "strategy": {
+              "schema_ref": "rules/search_strategy.json"
+            },
             "description": "Authoritative docs win only when no code_reality or live_state available.",
             "note": "This is the ONLY layer where domain authority matters",
             "source_layer": "documentation"
@@ -480,17 +438,23 @@
         "resolution_priority": [
           {
             "priority": 1,
-            "strategy": "code_reality",
+            "strategy": {
+              "schema_ref": "rules/search_strategy.json"
+            },
             "condition": "source_layer == code && source exists in repository"
           },
           {
             "priority": 2,
-            "strategy": "live_state",
+            "strategy": {
+              "schema_ref": "rules/search_strategy.json"
+            },
             "condition": "timestamp < threshold AND source_layer != code"
           },
           {
             "priority": 3,
-            "strategy": "evidence_grade_docs",
+            "strategy": {
+              "schema_ref": "rules/search_strategy.json"
+            },
             "condition": "source_layer == documentation && evidence_grade > assertion_only",
             "sub_priority": [
               {
@@ -509,7 +473,9 @@
           },
           {
             "priority": 4,
-            "strategy": "human_override",
+            "strategy": {
+              "schema_ref": "rules/search_strategy.json"
+            },
             "condition": "agent_confidence < threshold OR conflicting cascade priorities"
           }
         ],
@@ -575,7 +541,9 @@
         },
         "post_resolution_verification": {
           "re_read_updated_pages": true,
-          "optional_web_search_if_high_stakes": true
+          "optional_web_search_if_high_stakes": {
+            "schema_ref": "rules/search_strategy.json"
+          }
         },
         "history_tracking": {
           "append_to": "## Обновлено [date] — новое уточнение",
@@ -659,26 +627,7 @@
         }
       ],
       "search_strategy": {
-        "priority": [
-          {
-            "method": "keyword_search_via_index_json",
-            "target": "meta/search-index.json",
-            "pattern": "${SEARCH_QUERY}",
-            "description": "Search by keywords/tags/first_sentence from search-index.json. Fast fallback when wiki-search.sh is unavailable.",
-            "note": "Only used as fallback — prefer grep_recursive/index_lookup/wiki-search.sh"
-          },
-          {
-            "method": "grep_recursive",
-            "target": "wiki/**/${PAGE_TYPE}/**",
-            "pattern": "${SEARCH_QUERY}"
-          },
-          {
-            "method": "index_lookup",
-            "target": "wiki/index.md",
-            "category": "${PAGE_TYPE}"
-          }
-        ],
-        "fallback": "Если поиск не нашёл страниц → proceed to create_new_page"
+        "schema_ref": "rules/search_strategy.json"
       }
     },
     {
@@ -781,7 +730,6 @@
       ],
       "post_check": {
         "command": "./scripts/rebuild-meta.sh",
-        "note": "Meta rebuild via scripts/rebuild-meta.sh — canonical path defined in AGENTS.md under Auto-Rebuild Metadata section",
         "note": "Canonical path defined in AGENTS.md. Do not hardcode absolute paths.",
         "action_on_success": "PROCEED_TO_LOG_AND_INDEX_UPDATE",
         "action_on_failure": "LOG_WARNING_AND_PROCEED"
@@ -851,8 +799,7 @@
             "command": "./scripts/check-wiki-changes.sh || true",
             "description": "После записи WM — проверить, были ли изменения в wiki/ за сессию. Если да → агент обновляет wiki/hot.md вручную.",
             "output_handling": {
-              "exit_code_0": "changes_detected — agent updates hot.md with session summary",
-              "exit_code_1": "no_changes — proceed, hot.md is current"
+              "schema_ref": "rules/error_handling.json"
             }
           }
         ],
@@ -862,76 +809,7 @@
     }
   ],
   "post_search_flow": {
-    "description": "Последовательность действий после пустого результата wiki-search (до web_search)",
-    "order": [
-      {
-        "step": 1,
-        "name": "check_raw_sources",
-        "action": "run_script: ./scripts/check-new-sources.sh --quick raw/sources/ tracking/raw_registry.json",
-        "description": "Проверить, есть ли новые необработанные пакеты в raw/, релевантные запросу"
-      },
-      {
-        "step": 2,
-        "name": "if_raw_has_relevant_sources",
-        "condition": "new_sources_found && topic_match",
-        "action": "notify_user: 'Обнаружены новые материалы по этой теме в raw/. Добавить в wiki?'",
-        "description": "Предложить пользователю обработать найденные пакеты"
-      },
-      {
-        "step": 3,
-        "name": "web_availability_check",
-        "action": "check if web_search tool is available in system",
-        "output_field": "web_search_available",
-        "description": "Проверить доступность интернет-поиска перед предложением веб-агента"
-      },
-      {
-        "step": 4,
-        "name": "if_web_available",
-        "condition": "web_search_available == true",
-        "actions": [
-          "run web_search(query)",
-          "format_answer_with_source: 'Данные из интернета, ещё нет в wiki.'",
-          "ask_user: 'Добавить это в wiki или вопрос одноразовый?'"
-        ],
-        "error_handling": {
-          "web_search_timeout_or_error": [
-            {
-              "log": "'[!] web_search failed, falling back to manual access offer'"
-            },
-            {
-              "fallback_to_step_5_if_web_failed": true
-            },
-            {
-              "notify_user": "Web search unavailable at the moment. Can you provide a source URL?"
-            }
-          ]
-        },
-        "post_user_response": {
-          "user_saves_to_wiki": [
-            "execute web_ingest_flow (see below)",
-            "after_fixation: deliver final answer + confirm page created"
-          ],
-          "user_one_off": [
-            "deliver_answer_only",
-            "exit clean — no tracking, no meta updates"
-          ],
-          "user_declines": [
-            "acknowledge_decision",
-            "exit clean"
-          ]
-        }
-      },
-      {
-        "step": 5,
-        "name": "if_web_unavailable",
-        "condition": "web_search_available == false",
-        "actions": [
-          "notify: 'В wiki нет ответа. Могу поискать через ваш интернет, если предоставите доступ.'",
-          "optional: 'Могу дать ответ из собственных знаний — но это не данные из wiki, а моя интерпретация. Предупрежу вас об этом.'"
-        ],
-        "description": "Сообщить о недоступности web + предложить ручной доступ или ответ из своих знаний"
-      }
-    ]
+    "schema_ref": "rules/search_strategy.json"
   },
   "web_ingest_flow": {
     "description": "Переход от web_search к созданию wiki-страницы: capture → integrate через существующие скрипты",
@@ -958,35 +836,7 @@
           }
         ],
         "error_handling": {
-          "mkdir_failure": [
-            {
-              "log": "'[!] mkdir failed for raw/sources/SRC-{date}-{hash}/'"
-            },
-            {
-              "report_disk_space_issue": true
-            },
-            {
-              "halt_and_notify": "Cannot create directory — check disk space or permissions."
-            }
-          ],
-          "write_permission_denied": [
-            {
-              "log": "'[!] Write permission denied to raw/sources/.'"
-            },
-            {
-              "action": "HALT_AND_REPORT",
-              "message": "Cannot write to raw/sources/. Check permissions or disk space."
-            }
-          ],
-          "disk_full_or_quota_exceeded": [
-            {
-              "log": "'[!] Disk full — cannot write web content to raw/.'"
-            },
-            {
-              "action": "HALT_AND_REPORT",
-              "message": "Disk space insufficient. Cannot capture source. Please free up space or move sources."
-            }
-          ]
+          "schema_ref": "rules/error_handling.json"
         }
       },
       {
@@ -1092,50 +942,6 @@
     "link_types_reference": "AGENTS.md#git-конвенции"
   },
   "error_handling": {
-    "description": "При обнаружении любой ошибки, противоречия или dead end — не зависать. Следовать 4-step loop.",
-    "steps": [
-      {
-        "step": 1,
-        "name": "detect_and_log",
-        "action": "append_to_log"
-      },
-      {
-        "step": 2,
-        "name": "analyze"
-      },
-      {
-        "step": 3,
-        "name": "resolve"
-      },
-      {
-        "step": 4,
-        "name": "continue"
-      }
-    ],
-    "logging_actions": [
-      {
-        "action": "append_to_log",
-        "format": "## [YYYY-MM-DD] error | <description>: <context>",
-        "trigger": "immediately after detecting error/dead-end/conflict"
-      }
-    ],
-    "resolution_strategies": [
-      {
-        "type": "local-fix",
-        "description": "Исправить самостоятельно"
-      },
-      {
-        "type": "schema-patch",
-        "description": "Предложить патч AGENTS.md на review"
-      },
-      {
-        "type": "source-conflict",
-        "description": "Отметить как CONFLICT на странице и продолжить"
-      },
-      {
-        "type": "dead-end",
-        "description": "Документировать причину, сменить стратегию"
-      }
-    ]
+    "schema_ref": "rules/error_handling.json"
   }
 }
