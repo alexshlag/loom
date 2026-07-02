@@ -1,4 +1,13 @@
-# PLAN: Wiki Improvement Roadmap
+### Phase 14: Schema Optimization & Architecture Refinement 🆕
+**Цель**: Реализация рекомендаций по упрощению манифеста и разделению данных (Architecture Refinement).
+**Этапы:**
+1. **Conceptual Grouping**: Объединение разрозненных архитектурных слоев (Raw, Wiki, Assets) в единый блок "Knowledge Architecture".
+2. **Error Handling Abstraction**: Замена детальных описаний каждой ошибки в AGENTS.md на высокоуровневую стратегию "Detect → Log → Resolve → Continue", со ссылками на `process-*.json`.
+3. **Technical Detail Extraction**: Вынос специфических технических правил (например, детали парсинга JSON или специфических флагов bash) в директорию `rules/` (например, `rules/lint_details.json`).
+4. **Verification**: Проверка того, что агент сохраняет способность выполнять сложные операции, несмотря на упрощение описаний.
+
+**Статус:** ⬜ Open — планируется обсуждение и утверждение этапов.
+**Связь**: `issues.md#33`
 
 ---
 
