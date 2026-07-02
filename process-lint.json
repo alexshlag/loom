@@ -212,7 +212,7 @@
           "condition": "unprocessed_count > 0 OR stale_count > 0",
           "action_name": "REPORT_AND_PROMPT_USER",
           "output_format": "UNPROCESSED/SOURCE: {source_path} → {corrected_base}. Found {N} wiki pages referencing this source. Ask user: backfill corrected copies? (y/n)",
-          "note": "Lint не делает actions — только report + prompt. Интеграция через Step 0_delta_check в process-ingest.json"
+          "note": "Lint не делает actions — только report + prompt. Интеграция через step_2_delta_check в process-ingest.json"
         }
       ],
       "schema_ref": "AGENTS.md#raw_corrected_zone",

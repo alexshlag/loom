@@ -8,49 +8,50 @@
     },
     {
       "condition": "source_layer_unknown",
-      "evaluation": [
-        {
-          "exit_code": 0,
-          "action": "CLASSIFY_SOURCE"
-        }
-      ]
+      "action": "CLASSIFY_SOURCE"
     }
   ],
+  "external_source_policy": {
+    "description": "Canonical external source rules (EXT-RES1). Referenced by step_3_analysis — не отдельный шаг, а правила для применения агентом.",
+    "schema_ref": "AGENTS.md#link-conventions",
+    "rules": [
+      {
+        "rule_id": "EXT-RES1",
+        "core_rule": "External links → canonical http/https URLs. Never raw/** or ../**.",
+        "exceptions": [
+          {
+            "field": "frontmatter sources[]",
+            "reason": "Metadata only, not clickable"
+          },
+          {
+            "field": "descriptive text",
+            "reason": "raw/** in prose = documentation, not link"
+          }
+        ],
+        "canonical_patterns": {
+          "github_specific_file": "https://github.com/{owner}/{repo}/blob/{branch}/{path}",
+          "doc_site_root": "https://{domain}/en/latest/ or /manual/",
+          "article_page": "https://{domain}/{specific-page}"
+        },
+        "rule": "Use most specific URL matching content granularity. Repo root = only if covering entire project.",
+        "exception_local_only": "Link to raw/ required when no external URL exists"
+      }
+    ]
+  },
+  "cross_process_triggers": {
+    "backfill_existing_wiki_references": {
+      "description": "Backflow для существующих wiki-страниц, ссылающихся на raw/sources/ без corrected copies. Триггерится из process-lint.json check_id=12, не входит в ingest flow.",
+      "trigger_condition": "lint_check_12_reports_unprocessed_sources_with_wiki_references",
+      "target_process": "process-lint.json",
+      "schema_ref": "AGENTS.md#raw_corrected_zone",
+      "note": "Не шаг ингеста. См. process-lint.json для полного workflow."
+    }
+  },
   "steps": [
     {
-      "step_id": "0_delta_check",
-      "name": "delta_tracking_hash_check",
-      "description": "Проверка хешей оригинального файла против существующих corrected копий — предотвращает re-ingest уже обработанных источников. Schema ref: AGENTS.md#raw_corrected_zone",
-      "schema_ref": "AGENTS.md#delta_tracking",
-      "actions": [
-        {
-          "action": "run_hash_check",
-          "command": "./scripts/rebuild-source-manifest.sh --scan-only",
-          "description": "Сканирует все источники, определяет что уже processed, что stale/unprocessed"
-        },
-        {
-          "action": "check_specific_source_status",
-          "note": "Если текущий ${SOURCE_PATH} имеет status=processed → пропустить re-ingest. Если unprocessed/stale → продолжить ingest flow.",
-          "on_skip_condition": "source_already_ingested AND corrected_copy_up_to_date",
-          "on_proceed_condition": "no_corrected_copy OR hash_mismatch OR source_is_new"
-        }
-      ],
-      "evaluation": [
-        {
-          "condition": "source_status == processed",
-          "action": "SKIP_INGEST — SOURCE_ALREADY_PROCESSED",
-          "note": "Уже есть corrected copy с актуальным хешем → перейти к Step 2 (discussion)"
-        },
-        {
-          "condition": "source_status == unprocessed OR stale",
-          "action": "PROCEED_TO_ANALYSIS",
-          "note": "Нужен новый/обновлённый ingest — продолжить к Step 1 (source_analysis)"
-        }
-      ]
-    },
-    {
-      "step_id": "0",
+      "step_id": "step_1_guardrails",
       "name": "guardrails_validation",
+      "description": "Валидация пути источника через guardrails — первый шаг всегда.",
       "command": "./scripts/validate-path.sh ${SOURCE_PATH}",
       "evaluation": [
         {
@@ -66,57 +67,41 @@
       ]
     },
     {
-      "step_id": "1.5",
-      "name": "external_source_policy",
-      "description": "Canonical external source rules (EXT-RES1) with ingest-specific hooks for manifest creation and registry updates.",
-      "rules": [
+      "step_id": "step_2_delta_check",
+      "name": "delta_tracking_hash_check",
+      "description": "Проверка хешей оригинального файла против существующих corrected копий — предотвращает re-ingest уже обработанных источников.",
+      "schema_ref": "AGENTS.md#delta_tracking",
+      "actions": [
         {
-          "rule_id": "EXT-RES1",
-          "core_rule": "External links → canonical http/https URLs. Never raw/** or ../**.",
-          "exceptions": [
-            {
-              "field": "frontmatter sources[]",
-              "reason": "Metadata only, not clickable"
-            },
-            {
-              "field": "descriptive text",
-              "reason": "raw/** in prose = documentation, not link"
-            }
-          ],
-          "canonical_patterns": {
-            "github_specific_file": "https://github.com/{owner}/{repo}/blob/{branch}/{path}",
-            "doc_site_root": "https://{domain}/en/latest/ or /manual/",
-            "article_page": "https://{domain}/{specific-page}"
-          },
-          "rule": "Use most specific URL matching content granularity. Repo root = only if covering entire project.",
-          "ingest_flow": [
-            {
-              "step": 1,
-              "action": "classify source: external_url or local_only"
-            },
-            {
-              "step": 2,
-              "action": "extract canonical URL → replace raw/ link"
-            }
-          ],
-          "exception_local_only": "Link to raw/ required when no external URL exists",
-          "ingest_hooks": [
-            {
-              "hook": "create_src_id_and_manifest",
-              "path": "tracking/raw_manifests/SRC-{timestamp}-{ID}.json"
-            },
-            {
-              "hook": "add_to_raw_registry",
-              "command": "update tracking/raw_registry.json with ingested_sources array"
-            }
-          ]
+          "action": "run_hash_check",
+          "command": "./scripts/rebuild-source-manifest.sh --scan-only",
+          "description": "Сканирует все источники, определяет processed/stale/unprocessed"
+        },
+        {
+          "action": "check_specific_source_status",
+          "note": "Если ${SOURCE_PATH} имеет status=processed → пропустить re-ingest. Если unprocessed/stale → продолжить.",
+          "on_skip_condition": "source_already_ingested AND corrected_copy_up_to_date",
+          "on_proceed_condition": "no_corrected_copy OR hash_mismatch OR source_is_new"
         }
       ],
-      "schema_ref": "AGENTS.md#link-conventions"
+      "evaluation": [
+        {
+          "condition": "source_status == processed",
+          "action": "HALT_AND_LOG",
+          "note": "Уже есть corrected copy с актуальным хешем → ingest не требуется. Логируем и завершаем."
+        },
+        {
+          "condition": "source_status == unprocessed OR stale",
+          "action": "PROCEED_TO_ANALYSIS",
+          "note": "Нужен новый/обновлённый ingest — продолжить к step_3_analysis."
+        }
+      ]
     },
     {
-      "step_id": "1",
+      "step_id": "step_3_analysis",
       "name": "source_analysis",
+      "description": "Анализ источника: чтение, классификация, извлечение фактов, evidence_grade, проверка на противоречия, repair ссылок.",
+      "external_policy_applied": "Применяй правила из external_source_policy (EXT-RES1) при обработке ссылок.",
       "actions": [
         {
           "action": "read_file",
@@ -124,7 +109,7 @@
           "purpose": "extract_key_theses"
         },
         {
-          "action": "classify_source",
+          "action": "CLASSIFY_SOURCE",
           "types": [
             "entity",
             "concept",
@@ -174,7 +159,7 @@
         {
           "action": "raw_source_link_repair",
           "command": "./scripts/raw-link-repair.sh ${SOURCE_PATH} --dry-run",
-          "description": "Автоматически преобразует все относительные markdown-ссылки в raw-источнике на GitHub permalinks.",
+          "description": "Автоматически преобразует относительные markdown-ссылки в raw-источнике на GitHub permalinks.",
           "rules": [
             {
               "pattern": "relative paths like ./file.md or ../README.md → https://github.com/owner/repo/blob/<branch>/file.md",
@@ -189,16 +174,16 @@
           "log_to": "manifest.json under 'link_repairs': [{original, repaired, count}]",
           "schema_ref": "scripts/raw-link-repair.py"
         }
-      ]
+      ],
+      "working_memory": {
+        "note": "После анализа — обновить working_memory.json: focus_node = 'анализирую ${SOURCE_NAME}', open_pages = [{path: '${SOURCE_PATH}', status: 'reading'}]"
+      }
     },
     {
-      "step_id": "0.5_corrected_copy",
+      "step_id": "step_4_corrected_copy",
       "name": "create_corrected_copy_or_skip",
-      "description": "После source analysis — агент читает оригинал, понимает что нужно исправить (ссылки, OCR-ошибки), создаёт corrected copy в raw/corrected/SRC-*/* через scripts/raw-correct.sh.",
-      "pre_condition": {
-        "after_step": "1",
-        "purpose": "create corrected copy after reading and analyzing original"
-      },
+      "description": "После source analysis — создать corrected copy в raw/corrected/SRC-*/* через scripts/raw-correct.sh, если её ещё нет.",
+      "schema_ref": "AGENTS.md#raw_corrected_zone",
       "actions": [
         {
           "action": "read_original_and_analyze",
@@ -206,8 +191,8 @@
         },
         {
           "action": "check_existing_corrected_copy",
-          "command": "test -f \"raw/corrected/SRC-*/*/.manifest.json\"",
-          "description": "Проверить, существует ли уже corrected copy для этого источника"
+          "command": "find raw/corrected/SRC-* -name '.manifest.json' 2>/dev/null | head -1",
+          "description": "Проверить через find, существует ли уже corrected copy для этого источника (test -f не раскрывает glob)."
         },
         {
           "action": "create_corrected_if_missing",
@@ -218,58 +203,16 @@
         {
           "action": "skip_if_already_exists",
           "condition": "corrected_copy_exists AND up_to_date",
-          "note": "Уже есть processed версия → перейти к шагу 2 (discussion)"
+          "note": "Уже есть processed версия → перейти к step_5_batch_trigger"
         }
-      ],
-      "schema_ref": "AGENTS.md#raw_corrected_zone"
+      ]
     },
     {
-      "step_id": "0.5_backfill",
-      "name": "backfill_existing_wiki_references",
-      "description": "Backflow для существующих wiki-страниц, которые ссылаются на raw/sources/ но не имеют corrected copies (pre-Phase 23 legacy). Ловится через check_id=12 в process-lint.json.",
-      "trigger_condition": "lint_check_12_reports_unprocessed_sources_with_wiki_references",
-      "actions": [
-        {
-          "action": "find_wiki_pages_by_source_reference",
-          "description": "Найти все wiki-страницы, которые ссылаются на unprocessed source в frontmatter sources[] (grep -l 'raw/sources/SRC-*' wiki/**/*.md)",
-          "output_format": "JSON [{wiki_page_path, matching_sources: [raw/sources/...]}]"
-        },
-        {
-          "action": "create_corrected_copy_for_each",
-          "note": "Для каждого unprocessed source: создать corrected copy в raw/corrected/SRC-*/* через scripts/raw-correct.sh --add"
-        },
-        {
-          "action": "generate_manifest_json",
-          "command": "./scripts/rebuild-source-manifest.sh",
-          "description": "Создать .manifest.json для каждого corrected copy с hash_original + status=processed"
-        },
-        {
-          "action": "update_wiki_frontmatter_sources",
-          "note": "Для каждой найденной wiki-страницы: заменить sources: [\"raw/sources/SRC-*/*.md\"] на sources: [\"raw/corrected/SRC-*/*.md\"]"
-        }
-      ],
-      "post_operations": [
-        {
-          "trigger": "backfill_complete",
-          "command": "./scripts/rebuild-source-manifest.sh",
-          "description": "Обновить centralized manifest после создания всех corrected copies"
-        },
-        {
-          "trigger": "frontmatter_updated",
-          "note": "Перезаписать meta/backlinks.json и meta/registry.json через rebuild-meta.sh"
-        }
-      ],
-      "schema_ref": "AGENTS.md#raw_corrected_zone"
-    },
-    {
-      "step_id": "1.5_batch",
+      "step_id": "step_5_batch_trigger",
       "name": "batch_ingest_trigger",
-      "description": "Если агент получает/обнаруживает N+ связанных источников → запускает batch-ingest.sh для кластеризации перед discussion.",
+      "description": "Если агент получает N+ связанных источников → запускает batch-ingest.sh для кластеризации перед discussion.",
       "condition": "multiple_sources_detected OR user_provides_multiple_files",
-      "pre_condition": {
-        "after_step": 1,
-        "purpose": "cluster after individual source analysis"
-      },
+      "schema_ref": "AGENTS.md#batch_ingest_trigger",
       "actions": [
         {
           "action": "run_batch_scanner",
@@ -287,20 +230,24 @@
       ],
       "evaluation": [
         {
-          "condition": "clusters_count == 0",
-          "note": "no_batch_needed — proceed to step_2 (discussion) with individual sources"
+          "condition": "clusters_count == 0 OR not_applicable",
+          "note": "no_batch_needed — proceed to step_6_discussion with individual sources"
         },
         {
           "condition": "clusters_count > 0 AND user_confirms_batch",
           "action": "PROCEED_TO_BATCH_PROCESSING"
         }
-      ],
-      "schema_ref": "AGENTS.md#batch_ingest_trigger"
+      ]
     },
     {
-      "step_id": "2",
+      "step_id": "step_6_discussion",
       "name": "discussion_with_user",
+      "description": "Обсуждение с пользователем: summary анализа, предложение создать/обновить страницы.",
       "actions": [
+        {
+          "action": "set_working_memory",
+          "note": "Установить current_mode=ingest, focus_node='обсуждаю с пользователем ${SOURCE_NAME}'"
+        },
         {
           "action": "present_summary",
           "content": "key_theses_from_analysis"
@@ -315,7 +262,14 @@
       "evaluation": [
         {
           "user_confirmed": true,
-          "action": "PROCEED_TO_INTEGRATION"
+          "action": "DETERMINE_INTEGRATION_TYPE",
+          "description": "Определить, создавать новую страницу (step_8a_new_page) или обновлять существующую (step_8b_update_page).",
+          "branching": {
+            "condition": "source_is_new_entity_or_concept AND no_existing_page_to_update",
+            "target": "step_8a_new_page",
+            "condition_alt": "source_updates_existing_entity_or_concept",
+            "target_alt": "step_8b_update_page"
+          }
         },
         {
           "user_rejected": true,
@@ -325,7 +279,7 @@
       ]
     },
     {
-      "step_id": "2.5",
+      "step_id": "step_7_template",
       "name": "template_read_and_section_selection",
       "description": "Агент читает соответствующий template.json из wiki/templates/ для формирования структуры страницы. Template — рекомендательный, не обязательный.",
       "rules": [
@@ -368,31 +322,21 @@
         }
       ],
       "agent_instructions": {
-        "what_is_template_json": "wiki/templates/<category>-template.json — рекомендательный список названий секций для страниц определённой категории. Не обязательный, не ограничивающий.",
-        "purpose": "Обеспечивает единообразные названия секций в однотипных документах. Agent получает baseline, но может его игнорировать или расширять.",
-        "required_fields": ["category", "version", "updated"],
-        "editable_fields": {
-          "sections[]": "Agent может добавлять новые секции, удалять (deprecated) или менять порядок. Если новая секция придумана — agent обязан добавить её в массив.",
-          "agent_discretion": "Если рекомендованная секция не применима к конкретному источнику — агент пропускает её. Если не хватает подходящей секции — придумывает и добавляет в template.json"
-        },
+        "purpose": "Обеспечивает единообразные названия секций в однотипных документах.",
         "how_to_use": [
           "1. Before creating/updating wiki page → read wiki/templates/<category>-template.json",
           "2. Review recommended sections, select applicable ones for this source",
           "3. If new section needed → add to sections[] in template.json before writing the wiki page",
           "4. Validate JSON syntax after edit → fix any parse errors immediately"
         ],
-        "validation_rule": "Валидный JSON — обязательное условие write(). Если синтаксис сломался при редактировании → agent читает файл, находит ошибку (пропущенная запятая, лишняя скобка и т.д.), исправляет и retry write",
-        "no_template_scenario": "Если файла шаблона нет для категории — агент создаёт страницу без рекомендаций. Система работает полностью.",
-        "examples_of_missing_templates": [
-          "wiki/templates/deployment-template.json (может не существовать)",
-          "wiki/templates/meeting-template.json (агент всё равно создаст meeting-страницу)"
-        ]
+        "validation_rule": "Валидный JSON — обязательное условие write().",
+        "no_template_scenario": "Если шаблона нет для категории — агент создаёт страницу без рекомендаций."
       }
     },
     {
-      "step_id": "3a",
+      "step_id": "step_8a_new_page",
       "name": "integration_new_page",
-      "condition": "source_is_new_entity_or_concept",
+      "condition": "source_is_new_entity_or_concept (из step_6_discussion.branching)",
       "pre_check": {
         "command": "./scripts/validate-path.sh wiki/${PAGE_PATH}.md",
         "expected_exit_code": 0,
@@ -419,44 +363,18 @@
           ]
         }
       ],
-      "post_check": {
-        "command": "./scripts/rebuild-meta.sh",
-        "action_on_success": "CONTINUE_TO_LINK_VALIDATION",
-        "action_on_failure": "LOG_WARNING_AND_PROCEED"
-      },
-      "post_operations": [
+      "post_actions": [
         {
-          "trigger": "page_created",
-          "command": "./scripts/unified-pass.sh --quiet --skip-meta --skip-crosslinks",
-          "note": "Full walk link validation via unified-pass (shared walk). Replaces separate link-validator.sh call. Output is JSON to stdout."
-        },
-        {
-          "trigger": "page_created_after_validation",
-          "command": "./scripts/auto-crosslink.sh \"${NEW_PAGE_PATH}\" --include-root 2>/dev/null || true",
-          "output_format": "json[{path, score, match_types}]",
-          "note": "Multi-level crosslink discovery: H1 title (+3) → shared sources (+5) → frontmatter related (+4). Results sorted by score."
-        },
-        {
-          "trigger": "auto_add_backlinks_from_crosslink_results",
-          "description": "Parse auto-crosslink JSON output, add backlinks to pages with score >= 5. Low scores (3-4) are informational only — suggest manual review.",
-          "threshold_score": 5,
-          "action_if_high_score_found": "Add [[path]] to related/mentions section in high-score page if not already present"
-        },
-        {
-          "trigger": "update_source_manifest",
-          "command": "./scripts/rebuild-source-manifest.sh",
-          "description": "Обновить centralized manifest после создания corrected copy и wiki страницы. delta tracking теперь актуален."
-        },
-        {
-          "trigger": "post_integration_complete",
-          "command": "./scripts/git-auto-commit.sh"
+          "action": "update_working_memory",
+          "note": "Обновить open_pages: [{path: 'wiki/${PAGE_PATH}.md', status: 'created'}]"
         }
-      ]
+      ],
+      "note": "Пост-операции (rebuild-meta, link validation, crosslink) выполняются в step_9_post_checks — единый поток для 8a и 8b."
     },
     {
-      "step_id": "3b",
+      "step_id": "step_8b_update_page",
       "name": "integration_update_existing_page",
-      "condition": "source_updates_existing_entity_or_concept",
+      "condition": "source_updates_existing_entity_or_concept (из step_6_discussion.branching)",
       "pre_check": {
         "command": "./scripts/validate-path.sh ${EXISTING_PAGE_PATH}",
         "expected_exit_code": 0,
@@ -476,108 +394,85 @@
           "append_section": "## Обновлено [date] — новое уточнение"
         }
       ],
-      "post_check": {
-        "command": "./scripts/rebuild-meta.sh",
-        "action_on_success": "CONTINUE_TO_4",
-        "action_on_failure": "LOG_WARNING_AND_PROCEED"
-      },
-      "post_operations": [
+      "post_actions": [
         {
-          "trigger": "page_updated_with_new_facts",
-          "command": "./scripts/unified-pass.sh --quiet --skip-meta --skip-crosslinks",
-          "note": "Full walk link validation via unified-pass (shared walk). Replaces separate link-validator.sh call. Output is JSON to stdout."
-        },
-        {
-          "trigger": "page_updated_after_validation",
-          "command": "./scripts/auto-crosslink.sh \"${NEW_CONCEPT_OR_ENTITY}\" --include-root 2>/dev/null || true",
-          "output_format": "json[{path, score, match_types}]",
-          "note": "Multi-level crosslink discovery: H1 title (+3) → shared sources (+5) → frontmatter related (+4). Results sorted by score."
-        },
-        {
-          "trigger": "auto_add_backlinks_from_crosslink_results",
-          "description": "Parse auto-crosslink JSON output, add backlinks to pages with score >= 5. Low scores (3-4) are informational only — suggest manual review.",
-          "threshold_score": 5,
-          "action_if_high_score_found": "Add [[path]] to related/mentions section in high-score page if not already present"
-        },
-        {
-          "trigger": "update_source_manifest",
-          "command": "./scripts/rebuild-source-manifest.sh",
-          "description": "Обновить centralized manifest после обновления wiki страницы. delta tracking теперь актуален."
-        },
-        {
-          "trigger": "post_integration_complete",
-          "command": "./scripts/git-auto-commit.sh"
+          "action": "update_working_memory",
+          "note": "Обновить open_pages: [{path: '${EXISTING_PAGE_PATH}', status: 'updated'}]"
         }
-      ]
+      ],
+      "note": "Пост-операции (rebuild-meta, link validation, crosslink) выполняются в step_9_post_checks — единый поток для 8a и 8b."
     },
     {
-      "step_id": "3c",
-      "name": "post_integration_overlap_scan",
-      "description": "Сканит wiki на overlap с новой/обновлённой страницей. Применяет DR-1/DR-2 из decision-rules.md.",
-      "pre_condition": {
-        "condition": "new_page_created OR page_updated",
-        "trigger_after_step": "step_3b"
-      },
+      "step_id": "step_9_post_checks",
+      "name": "post_integration_checks",
+      "description": "Единый шаг пост-интеграционных проверок: overlap scan, crosslink discovery, link validation. Заменяет разрозненные post_operations из 3a/3b и дублирующие шаги 3d/6.",
       "actions": [
+        {
+          "action": "rebuild_metadata",
+          "command": "./scripts/rebuild-meta.sh",
+          "description": "Обновить registry.json, backlinks.json после создания/обновления страницы."
+        },
         {
           "action": "run_text_similarity_scan",
-          "command": "TMP_OVERLAP=$(mktemp); ./scripts/text-similarity.sh --scan-all --threshold 90 --verbose > \"$TMP_OVERLAP\"; echo \"$TMP_OVERLAP\"",
-          "output_file": "$TMP_OVERLAP"
+          "command": "./scripts/text-similarity.sh --scan-all --threshold 90 --verbose",
+          "description": "Сканирует wiki на overlap с новой/обновлённой страницей (DR-1/DR-2).",
+          "schema_ref": "decision-rules.md",
+          "evaluation": [
+            {
+              "condition": "matches_count == 0",
+              "action": "PROCEED_TO_CROSSLINK"
+            },
+            {
+              "condition": "matches_count > 0",
+              "note": "Agent review required — apply DR-1/DR-2 из decision-rules.md к каждому overlap."
+            }
+          ]
         },
         {
-          "action": "parse_matches_from_json",
-          "description": "Из JSON output извлечь matches[] → для каждого pair: similarity_score, file1, file2"
-        }
-      ],
-      "evaluation": [
-        {
-          "condition": "matches_count == 0",
-          "action": "PROCEED_TO_CROSS_LINK_UPDATE",
-          "note": "no_overlaps — proceed to step_4 (cross_link_update)"
+          "action": "run_link_validation",
+          "command": "./scripts/unified-pass.sh --quiet --skip-meta --skip-crosslinks",
+          "description": "Проверить только новые/изменённые файлы (не full wiki scan).",
+          "evaluation": [
+            {
+              "condition": "broken_links_found AND auto_fixable (case/path mismatch)",
+              "action": "AUTO_FIX_BROKEN_LINKS",
+              "note": "Can resolve autonomously: rewrite to correct path"
+            },
+            {
+              "condition": "broken_links_found AND NOT auto_fixable",
+              "action_name": "REPORT_TO_USER_WITH_OPTIONS",
+              "options": [
+                "create_new_page",
+                "remove_broken_link",
+                "mark_as_todo"
+              ],
+              "fallback_message": "[!] Broken link detected in new page. Cannot auto-fix."
+            }
+          ]
         },
         {
-          "condition": "matches_count > 0",
-          "note": "Agent review required — apply DR-1/DR-2 из decision-rules.md к каждому overlap. Read existing pages from matches[].file1, compare with new page, proceed to cross_link_update after evaluation."
-        }
-      ],
-      "schema_ref": "decision-rules.md"
-    },
-    {
-      "step_id": "3d",
-      "name": "cross_link_update",
-      "actions": [
-        {
-          "action": "run_auto_crosslink",
-          "command": "./scripts/auto-crosslink.sh '${NEW_PAGE_PATH}' --include-root 2>/dev/null || true",
-          "output_format": "json_array[{path, score, match_types}]",
-          "description": "Multi-level crosslink discovery: H1 title (+3) → shared sources (+5) → frontmatter related (+4). Sorted by score descending."
+          "action": "run_crosslink_discovery",
+          "command": "./scripts/auto-crosslink.sh \"${NEW_PAGE_PATH}\" --include-root 2>/dev/null || true",
+          "description": "Multi-level crosslink discovery: H1 title (+3) → shared sources (+5) → frontmatter related (+4). Results sorted by score.",
+          "post_action": {
+            "description": "Parse JSON output, add backlinks to pages with score >= 5. Low scores (3-4) are informational only.",
+            "threshold_score": 5,
+            "action_if_high_score_found": "Add [[path]] to related/mentions section in high-score page if not already present",
+            "action_for_low_score": "propose_manual_link_creation_for_low_score_pages"
+          }
         },
         {
-          "action": "parse_crosslink_results",
-          "threshold_score": 5,
-          "description": "Only add backlinks for pages with score >= 5 (significant match). Lower scores are informational only."
-        },
-        {
-          "action": "add_backlinks_to_high_score_pages",
-          "condition": "score_ge_5",
-          "format": "Add [[wiki-relative-path]] to related/mentions section if not already present"
-        },
-        {
-          "action": "handle_syntheses_special_case",
-          "rule": "syntheses treated as special category per DR-4. Auto-crosslink distinguishes synthesis from entity/concept via scoring. Never auto-create synthesis without explicit fixation flag.",
-          "condition": "page_type == 'synthesis'"
-        },
-        {
-          "action": "mark_orphan_if_no_high_score_matches",
-          "suggestion": "propose_manual_link_creation_for_low_score_pages",
-          "note": "Low score matches (3-4) may be weak connections — suggest manual review rather than auto-add"
+          "action": "update_source_manifest",
+          "command": "./scripts/rebuild-source-manifest.sh",
+          "description": "Обновить centralized manifest. delta tracking теперь актуален."
         }
       ]
     },
     {
-      "step_id": "3e",
+      "step_id": "step_10_register_source",
       "name": "register_source_ingested",
-      "description": "После успешного создания/обновления страницы — добавь ID raw-пакета в tracking/raw_registry.json, исключив его из будущих проверок новых источников. Сбрось new_sources_pending marker.",
+      "description": "Добавить ID raw-пакета в tracking/raw_registry.json, исключив его из будущих проверок новых источников. Сбросить new_sources_pending marker.",
+      "note": "tracking/ — директория вне guardrails validate-path.sh. Агент пишет напрямую.",
       "actions": [
         {
           "action": "update_json_file",
@@ -592,8 +487,9 @@
       ]
     },
     {
-      "step_id": "4",
+      "step_id": "step_11_log",
       "name": "log_registration",
+      "description": "Запись в wiki/log.md о выполненном ингесте. После всех проверок, перед перестроением index.md.",
       "pre_check": {
         "command": "./scripts/validate-path.sh wiki/log.md",
         "expected_exit_code": 0,
@@ -612,67 +508,67 @@
       ]
     },
     {
-      "step_id": "5",
+      "step_id": "step_12_index",
       "name": "auto_update_index",
+      "description": "Перестроить wiki/index.md. Последний шаг — после всех изменений и проверок, чтобы index был актуален.",
       "command": "./scripts/rebuild-meta.sh --index-only",
       "actions": [
         {
           "action_type": "auto_generate_from_wiki_pages"
         }
       ],
-      "note": "Полностью заменяет ручной update_index. Автоматически перестраивает index.md из всех wiki-страниц по категориям (entities→concepts→comparisons→syntheses→...)."
-    },
-    {
-      "step_id": "6",
-      "name": "post_operation_link_validation",
-      "condition": "any_path_change_or_new_page_created",
-      "description": "После создания/обновления wiki-страницы — проверить только новые файлы, НЕ сканировать весь wiki. Легковесная проверка.",
-      "actions": [
-        {
-          "action": "run_link_validator_on_new_files_only",
-          "command": "./scripts/unified-pass.sh --quiet --skip-meta --skip-crosslinks",
-          "description": "Full walk link validation via unified-pass (shared walk). Replaces separate link-validator.sh call."
-        },
-        {
-          "condition": "broken_links_found AND auto_fixable (case/path mismatch)",
-          "action_name": "auto_fix_broken_links",
-          "note": "Can resolve autonomously: rewrite to correct path"
-        },
-        {
-          "condition": "broken_links_found AND NOT auto_fixable",
-          "action_name": "report_to_user_with_options",
-          "options": [
-            "create_new_page",
-            "remove_broken_link",
-            "mark_as_todo"
-          ],
-          "fallback_message": "[!] Broken link detected in new page. Cannot auto-fix."
-        }
-      ],
-      "output_handling": {
-        "exit_code_0": "no_broken_links — proceed to next step",
-        "exit_code_1": "broken_links_found — report with options (create/remove/defer)"
-      },
-      "rules": [
-        {
-          "rule_name": "do_not_run_full_wiki_scan_in_ingest"
-        },
-        {
-          "rule_name": "only_check_new_file_broken_links"
-        }
-      ],
-      "note": "Post-operation link validation defined in AGENTS.md under Link Conventions — only new files check"
+      "working_memory": {
+        "note": "По завершении — очистить open_pages из working_memory.json, восстановить current_mode на предыдущее значение."
+      }
     }
   ],
-  "note": "Guardrails defined in AGENTS.md under Rules section — implemented via validate-path.sh",
-  "inherits_from": [
-    "guardrails",
-    "date_convention",
-    "logging_templates"
-  ],
-  "note": "Guardrails are defined in AGENTS.md. This file references them rather than duplicating.",
-  "strict_rules": {
-    "capture_first_integrate_second": "Сначала сохрани оригинал в raw/, затем создай/обнови wiki-страницу."
+  "working_memory_hooks": {
+    "on_start": {
+      "description": "При старте ингеста — установить рабочий контекст в working_memory.json",
+      "actions": [
+        {
+          "action": "update_working_memory",
+          "field": "current_mode",
+          "value": "ingest"
+        },
+        {
+          "action": "update_working_memory",
+          "field": "focus_node",
+          "value": "ingesting ${SOURCE_NAME}"
+        },
+        {
+          "action": "update_working_memory",
+          "field": "open_pages",
+          "operation": "set",
+          "value": [{"path": "${SOURCE_PATH}", "status": "reading"}]
+        }
+      ]
+    },
+    "on_complete": {
+      "description": "По завершении ингеста — очистить временные данные, восстановить режим",
+      "actions": [
+        {
+          "action": "update_working_memory",
+          "field": "open_pages",
+          "operation": "clear"
+        },
+        {
+          "action": "update_working_memory",
+          "field": "next_steps_todo",
+          "operation": "remove_completed"
+        },
+        {
+          "action": "update_working_memory",
+          "field": "current_mode",
+          "operation": "restore_previous"
+        },
+        {
+          "action": "update_working_memory",
+          "field": "focus_node",
+          "operation": "clear"
+        }
+      ]
+    }
   },
   "batch_mode": {
     "trigger": "user_specifies_batch_processing",
@@ -691,51 +587,8 @@
   },
   "decision_rules_schema_ref": "decision-rules.md",
   "error_handling": {
-    "description": "При обнаружении любой ошибки, противоречия или dead end — не зависать. Следовать 4-step loop.",
-    "steps": [
-      {
-        "step": 1,
-        "name": "detect_and_log",
-        "action": "append_to_log"
-      },
-      {
-        "step": 2,
-        "name": "analyze"
-      },
-      {
-        "step": 3,
-        "name": "resolve"
-      },
-      {
-        "step": 4,
-        "name": "continue"
-      }
-    ],
-    "logging_actions": [
-      {
-        "action": "append_to_log",
-        "format": "## [YYYY-MM-DD] error | <description>: <context>",
-        "trigger": "immediately after detecting error/dead-end/conflict"
-      }
-    ],
-    "resolution_strategies": [
-      {
-        "type": "local-fix",
-        "description": "Исправить самостоятельно"
-      },
-      {
-        "type": "schema-patch",
-        "description": "Предложить патч AGENTS.md на review"
-      },
-      {
-        "type": "source-conflict",
-        "description": "Отметить как CONFLICT на странице и продолжить"
-      },
-      {
-        "type": "dead-end",
-        "description": "Документировать причину, сменить стратегию"
-      }
-    ]
+    "description": "При обнаружении любой ошибки, противоречия или dead end — следовать 4-step loop из AGENTS.md#error_handling_protocol.",
+    "schema_ref": "AGENTS.md#error_handling_protocol"
   },
   "schema_evolution": {
     "description": "Template Co-evolution Process — агент предлагает улучшения через [schema-patch] в log.md. User должен approve → agent commit update.",

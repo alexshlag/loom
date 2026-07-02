@@ -190,7 +190,7 @@ related: []
   - `next_steps_todo`: удалять задачи со статусом `completed` или которые больше не актуальны
   - `broken_links_resolved`: **не удалять** — это audit trail, добавляет новую запись сверху
   - `open_pages`, `dead_ends`: чистить после закрытия сессии (dismiss всех прочитанных)
-  - Пример: если агент выполнил задачу "link-validator.sh --full", он должен удалить её из `next_steps_todo` перед write()
+  - Пример: если агент выполнил задачу "unified-pass.sh --full", он должен удалить её из `next_steps_todo` перед write()
 - Не дублирует wiki — хранит только метаданные сессии (не сами страницы)
 
 **Формат**:
@@ -627,12 +627,12 @@ Layer 3 (reference): wiki/**.md sources: [] → links to Layer 2
 
 ```bash
 PROTECTED_PATTERNS=("meta/")
-ALLOWED_WRITE_ZONES=("raw/corrected/" "wiki/")  # ← agent rw zone added
+ALLOWED_WRITE_ZONES=("raw/corrected/" "wiki/" "tracking/")  # ← agent rw zone added
 ```
 
 **Usage in ingest flow**: Agent calls `scripts/raw-correct.sh --add "path" content` to write corrected copies (never direct writes).
 
-> Schema ref: `process-ingest.json#step_0.5_corrected_copy` — full workflow.
+> Schema ref: `process-ingest.json#step_4_corrected_copy` — full workflow.
 
 ---
 
@@ -648,19 +648,13 @@ ALLOWED_WRITE_ZONES=("raw/corrected/" "wiki/")  # ← agent rw zone added
 
 ### Post-Operation Link Validation
 
-После создания/обновления wiki-страницы: проверять **только новые файлы**, НЕ сканировать весь wiki. Команда: `./scripts/unified-pass.sh --quiet --skip-meta`. broken_links → auto-fix (case/path mismatch) или report для ручного решения.
-
 **Rule**: Only check new files after create/update — never full wiki scan in ingest.
-**Command**: `./scripts/unified-pass.sh --quiet --skip-meta`
+
+> Specific commands, auto-fix policy, and validation triggers defined in `process-ingest.json#step_9_post_checks`.
 
 - **Internal format**: `[text](wiki-relative-path.md)`
 - **Prohibited patterns**: `./` — never use dot-relative paths
 - **Cross-category exception**: `../` allowed for cross-category links (e.g. from concepts/ to entities/) as long as target exists under wiki/
-- **Validation trigger**: after create/update/rename/delete → run `./scripts/link-validator.sh --full`
-- **Auto-fix policy**:
-  - High confidence (case/path mismatch): script auto-fix
-  - Medium confidence (fuzzy_score 70–95%): agent fix + create missing page if needed
-  - Low confidence (<70%): user escalation
 
 ### External Links Standard (EXT-LINK-V1)
 
@@ -673,7 +667,7 @@ External links must use canonical http/https URLs. Never link to `raw/**` or `..
 - Without internet: skip network probes
 - With internet: log broken URLs (404/timeouts) → inform user, do NOT auto-remove
 
-> Full workflow: `process-ingest.json#step_1.5.external_source_policy`, `process-query.json#broken_link_awareness`.
+> Full workflow: `process-ingest.json#external_source_policy`, `process-query.json#broken_link_awareness`.
 
 ### Crosslink Discovery
 
@@ -803,14 +797,16 @@ Guardrails enforcement через `scripts/validate-path.sh`. Для схем п
   "raw/**": {"owner": "user", "access": "read-only via capture flow"},
   "raw/corrected/": {"rule_id": "RAW-CORRECTED-V1", "owner": "agent", "access": "full read/write for processed copies (scripts/raw-correct.sh)"},
   "wiki/**": {"owner": "agent", "access": "full read/write/manage"},
-  "meta/**": {"rule": "auto-generated", "files": ["registry.json", "backlinks.json"], "rebuild_command": "./scripts/rebuild-meta.sh"}
+  "meta/**": {"rule": "auto-generated", "files": ["registry.json", "backlinks.json"], "rebuild_command": "./scripts/rebuild-meta.sh"},
+  "tracking/": {"rule_id": "TRACKING-V1", "owner": "agent", "access": "full read/write for ingest registry files", "note": "raw_registry.json, similarity_index.json и другие tracking-файлы. Agent пишет напрямую."}
   },
   "zone_def1": {
   "rule_id": "ZONE-DEF1",
   "raw/**": {"owner": "user", "access": "read-only via capture flow"},
   "raw/corrected/": {"owner": "agent", "access": "full read/write for processed copies (scripts/raw-correct.sh)"},
   "wiki/**": {"owner": "agent", "access": "full read/write/manage"},
-  "implications": ["Agent manages all wiki links/structure. User controls raw/. Agent writes to raw/corrected/."
+  "tracking/": {"owner": "agent", "access": "full read/write for registry and tracking files"},
+  "implications": ["Agent manages all wiki links/structure. User controls raw/. Agent writes to raw/corrected/ and tracking/."
   },
   "meta_def1": {
   "rule_id": "META-DEF1",
@@ -862,7 +858,7 @@ Guardrails enforcement через `scripts/validate-path.sh`. Для схем п
 3. Re-reads raw/original (immutable) for comparison with current wiki facts
 4. Resolves based on cascade priority (code > docs, documented > assertion_only)
 
-> Schema ref: `process-ingest.json#step_0.5_corrected_copy`, `AGENTS.md#raw_corrected_zone`
+> Schema ref: `process-ingest.json#step_4_corrected_copy`, `AGENTS.md#raw_corrected_zone`
 
 ---
 

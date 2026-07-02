@@ -8,6 +8,7 @@
 * [Clippy](entities/rust-clippy.md) — # Clippy Clippy is a collection of lints (static analysis checks) to catch common mistakes and improve Rust code.
 * [Ibexa DXP](entities/ibexa-dxp.md) — # Ibexa DXP Ibexa DXP (Digital Experience Platform) — enterprise-grade CMS + commerce platform на базе Symfony.
 * [Loomana — Wiki System Documentation](entities/loomana.md) — ### 1. Raw Sources (`raw/`) — Immutable ### 2.
+* [Node.js](entities/nodejs.md) — Node.js — это runtime для выполнения JavaScript-кода вне браузера.
 * [Nvidia](entities/nvidia.md) — # Nvidia Американская технологическая корпорация, лидер в области разработки графических процессоров (GPU), аппаратных ускорителей для искусственного 
 * [Pi Coding Agent](entities/pi-coding-agent.md) — Минимальный терминальный код-агент (harness), расширяемый через TypeScript-расширения, skills, prompt templates и темы.
 * [Sylius](entities/sylius.md) — # Sylius Sylius — open-source eCommerce framework на базе Symfony Full Stack.
@@ -68,7 +69,7 @@
 
 
 ---
-*Created: auto-generated | Last updated: 2026-07-02 02:35*
+*Created: auto-generated | Last updated: 2026-07-02 03:25*
 
 ## Хронология
 | Дата | Событие |

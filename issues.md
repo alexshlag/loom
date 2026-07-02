@@ -139,7 +139,7 @@
 - Delta tracking, hash-based deduplication, backflow for contradiction resolution
 
 ### Delta Tracking + Backflow ✅ COMPLETED (2026-07-01)
-**Phase 29:** `scripts/rebuild-source-manifest.sh` created; raw-correct.sh exists; validate-path.sh updated; process-ingest.json Step 0_delta_check added; **backflow completed**: 3 sources now have corrected copies + manifests.
+**Phase 29:** `scripts/rebuild-source-manifest.sh` created; raw-correct.sh exists; validate-path.sh updated; process-ingest.json Step 2 (step_2_delta_check) added; **backflow completed**: 3 sources now have corrected copies + manifests.
 
 ### Section Template System ✅ COMPLETED (2026-07-01)
 **Phase 13.4:** `wiki/templates/<category>-template.json` — рекомендательные списки секций для agent-guided page creation.

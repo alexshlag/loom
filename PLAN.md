@@ -46,7 +46,7 @@ wiki/**/*.md: sources: ["raw/corrected/SRC-*/file.md"]
 | **1** | API design `scripts/rebuild-source-manifest.sh` | ✅ Done | --add <path> content, --scan, --check <path>, hash_original + status:processed |
 | **2** | Update `validate-path.sh`: add raw/corrected/ to ALLOWED_WRITE_ZONES | ✅ Done (Phase 23) | Script bypasses guardrails internally via validate_path() check |
 | **3** | Create `scripts/raw-correct.sh` safe write wrapper | ✅ Done (Phase 23) | Validates path prefix, JSON format for .json files |
-| **4** | Update process-ingest.json: add post-processing step after capture | ✅ Done | Step 0.5_corrected_copy: agent reads original → creates corrected copy in raw/corrected/ + delta check Step 0_delta_check |
+| **4** | Update process-ingest.json: add post-processing step after capture | ✅ Done | Step 4 (step_4_corrected_copy): agent reads original → creates corrected copy in raw/corrected/ + delta check Step 2 (step_2_delta_check) |
 | **5** | Update AGENTS.md: delta tracking integration rules | ✅ Done (Phase 23) | Document manifest.json generation + contradiction resolution flow |
 
 **Зависимости:** Sequential (1→2→3→4→5). Все шаги завершены.
@@ -57,18 +57,18 @@ wiki/**/*.md: sources: ["raw/corrected/SRC-*/file.md"]
 | `scripts/rebuild-source-manifest.sh` | ✅ Created | Python-based, handles hash comparison and manifest generation |
 | `scripts/raw-correct.sh` | ✅ Exists | Safe write wrapper with path validation |
 | `validate-path.sh` | ✅ Updated | raw/corrected/ in ALLOWED_WRITE_ZONES |
-| process-ingest.json Step 0_delta_check | ✅ Added | Hash-based deduplication before ingest |
+| process-ingest.json Step 2 (step_2_delta_check) | ✅ Added | Hash-based deduplication before ingest |
 | process-ingest.json post_operations (Step 3a/3b) | ✅ Updated | Rebuild manifest after page creation/update |
 
 **Backfill Detection & Flow (Phase 29 extension):**
 | Component | Status | Notes |
 |-----------|--------|-------|
 | process-lint.json check_id=12 | ✅ Added | Source manifest backfill detection — scans unprocessed/stale + wiki references |
-| process-ingest.json Step 0.5_backfill | ✅ Added | Backflow for existing wiki pages referencing raw/sources/ without corrected copies |
+| process-ingest.json cross_process_triggers (backfill_existing_wiki_references) | ✅ Added | Backflow for existing wiki pages referencing raw/sources/ without corrected copies. Триггерится из process-lint.json, не входит в ingest flow. |
 | All sources backfilled | ✅ Done (2026-07-01) | SRC-2025-06-24-002 (2 pages), SRC-2026-06-25-SYMFONY-001 (15+ pages) — corrected copies created + frontmatter updated |
 
 > **Canonical:** `AGENTS.md#raw_corrected_zone` — canonical source for raw/corrected/ zone rules.
-> **Schema refs:** `process-ingest.json#step_0_delta_check`, `process-lint.json#check_id_12`, `process-ingest.json#step_0.5_backfill`
+> **Schema refs:** `process-ingest.json#step_2_delta_check`, `process-lint.json#check_id_12`, `process-ingest.json#cross_process_triggers.backfill_existing_wiki_references`
 **Связано:** `issues.md#29`, `AGENTS.md#raw_corrected_zone`
 
 ---

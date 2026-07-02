@@ -402,3 +402,4 @@
   - Added crosslink between Sonata ↔ EasyAdmin concepts
 - Verified links: 0 broken, 0 auto-repaired
 ## [2026-07-02] ingest | Clippy Rust lint tool from raw/sources/SRC-test-entity-001/rust-clippy.md
+## [2026-07-02] ingest | nodejs entity created from https://nodejs.org/en/about
