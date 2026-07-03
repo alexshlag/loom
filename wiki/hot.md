@@ -23,6 +23,7 @@ related: []
 
 ## Active Session Context
 - **Topic**: Ingest algorithms comparative research — analyzing pi-llm-wiki and claude-obsidian approaches
+- **User query intent**: Analyze ingest algorithms from pi-llm-wiki and claude-obsidian, create wiki article with improvements
 - **Pages read**: `wiki/research/ingest-algorithms-comparison.md` (created), `wiki/concepts/natural-memory.md`, `wiki/entities/symfony.md`, `wiki/entities/api-platform.md`
 - **Key findings**: Same as above — key architectural improvements for wiki
 

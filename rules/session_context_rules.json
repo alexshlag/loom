@@ -1,0 +1,86 @@
+{
+  "rule_name": "Session Context Management",
+  "description": "Глобальное правило сохранения контекста сессии в hot.md. Не зависит от режима работы — применяется при любом взаимодействии пользователя.",
+  "memory_layers": {
+    "working_memory.json": {
+      "role": "Оперативная память текущей сессии",
+      "lifecycle": "turn → turn, чистится при dismissal/compaction"
+    },
+    "hot.md": {
+      "role": "Срез активного проекта и вопросов между сессиями. Выживает compact через restore-hot-cache.sh.",
+      "lifecycle": "межсессийно, обновляется при каждом важном действии"
+    },
+    "log.md": {
+      "role": "Append-only летопись всех действий wiki",
+      "lifecycle": "навсегда, agent читает через grep (последние 10-20 записей)"
+    }
+  },
+
+  "save_triggers": [
+    {
+      "trigger_id": "user_message_received",
+      "description": "Сразу после получения вопроса/задачи пользователя — агент записывает суть запроса в hot.md.",
+      "rule_id": "HOT-SAVE-QUERY-V1"
+    },
+    {
+      "trigger_id": "action_completed",
+      "description": "После завершения действия или ответа — агент обновляет hot.md: summary что сделано + использованные wiki-страницы.",
+      "rule_id": "HOT-SAVE-ACTION-V1"
+    }
+  ],
+
+  "write_algorithm": {
+    "step_1_capture_user_query": {
+      "description": "Агент записывает вопрос/задачу пользователя в hot.md сразу при получении (не дожидаясь конца сессии).",
+      "rule_id": "HOT-SAVE-QUERY-V1",
+      "fields_to_write": [
+        "query_intent — суть вопроса или задачи",
+        "project_context — WORK_MODE: project если применимо",
+        "timestamp — текущее время"
+      ],
+      "hot_section": "Active Session Context → topic, query_intent"
+    },
+
+    "step_2_update_after_action": {
+      "description": "После завершения действия или ответа — агент обновляет hot.md: summary что сделано + использованные wiki-страницы.",
+      "rule_id": "HOT-SAVE-ACTION-V1",
+      "fields_to_write": [
+        "action_summary — краткое описание выполненного действия или ответа",
+        "wiki_pages_used — список прочитанных/созданных wiki-страниц",
+        "key_findings — ключевые выводы из обсуждения"
+      ],
+      "hot_section": "Active Session Context → pages read, key findings"
+    }
+  },
+
+  "read_algorithm": {
+    "session_start": {
+      "description": "При старте сессии агент читает hot.md для восстановления контекста предыдущей работы.",
+      "rule_id": "HOT-LOAD-V1",
+      "steps": [
+        {"step": 1, "action": "read working_memory.json → focus_node, next_steps_todo"},
+        {"step": 2, "action": "restore-hot-cache.sh → прочитать Active Project и Session Context из hot.md"}
+      ]
+    },
+
+    "log_context_reading": {
+      "description": "Agent читает log.md при старте сессии для понимания контекста предыдущих обсуждений.",
+      "rule_id": "HOT-LOG-READ-V1",
+      "pattern": "grep -m 20 \"\" wiki/log.md | tail -20 (не cat — только релевантные записи)"
+    }
+  },
+
+  "hot_structure": {
+    "sections": [
+      {"name": "Active Project (WORK_MODE: project)", "fields": ["project name", "focus node", "related wiki pages", "key findings", "next steps"]},
+      {"name": "Active Session Context", "fields": ["topic", "query_intent", "pages read", "key findings"]},
+      {"name": "System State", "fields": ["active threads (phase statuses)", "recent changes"]}
+    ]
+  },
+
+  "golden_rules": [
+    "Agent записывает в hot.md сразу — не дожидаясь конца сессии.",
+    "Hot.md содержит срез, а не полную ленту. Дублирование log.md запрещено.",
+    "Working memory может быть обрезан при compact — но restore-hot-cache.sh восстановит hot.md."
+  ]
+}

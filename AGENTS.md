@@ -547,6 +547,16 @@ Session end:
 
 > Canonical: `AGENTS.md#three_layer_memory_model`
 
+### Session Context Management (Global Rule)
+
+Агент сохраняет контекст сессии в hot.md **сразу при каждом действии** — не дожидаясь конца сессии, когда агент отключён.
+
+- **Глобальное правило**: `rules/session_context_rules.json` определяет алгоритм сохранения и чтения контекста.
+- **Триггеры**: 1) вопрос получен → записать суть запроса; 2) ответ/действие завершены → записать summary + использованные wiki-страницы.
+- **Чтение при старте сессии**: `restore-hot-cache.sh` → прочитать hot.md для контекста активного проекта/вопроса.
+
+> Schema ref: `rules/session_context_rules.json`. Canonical: `AGENTS.md#session_context_management`
+
 ### CONTEXT_BUBBLE & GREP CONTRACT
 
 ### 📝 Grep Contract
