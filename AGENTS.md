@@ -854,7 +854,8 @@ Guardrails enforcement через `scripts/validate-path.sh`. Для схем п
   "raw/corrected/": {"rule_id": "RAW-CORRECTED-V1", "owner": "agent", "access": "full read/write for processed copies (scripts/raw-correct.sh)"},
   "wiki/**": {"owner": "agent", "access": "full read/write/manage"},
   "meta/**": {"rule": "auto-generated", "files": ["registry.json", "backlinks.json"], "rebuild_command": "./scripts/rebuild-meta.sh"},
-  "tracking/": {"rule_id": "TRACKING-V1", "owner": "agent", "access": "full read/write for ingest registry files", "note": "raw_registry.json, similarity_index.json и другие tracking-файлы. Agent пишет напрямую."}
+  "tracking/": {"rule_id": "TRACKING-V1", "owner": "agent", "access": "full read/write for ingest registry files", "note": "raw_registry.json, similarity_index.json и другие tracking-файлы. Agent пишет напрямую."},
+  ".vault-meta/": {"rule": "gitignored-system", "files": ["locks/", ".wiki-lock.meta"], "owner": "agent", "access": "read/write for system state only", "note": "Не коммитится в git — содержит системные файлы блокировок и логи агента."}
   },
   "zone_def1": {
   "rule_id": "ZONE-DEF1",
@@ -879,6 +880,24 @@ Guardrails enforcement через `scripts/validate-path.sh`. Для схем п
   ]
 }
 ```
+
+#### `.vault-meta/` — системные файлы агента
+
+Системная папка, которая **не коммитится в git** (.gitignore). Содержит:
+
+| Файл/Папка | Назначение |
+|-----------|------------|
+| `locks/` | Временные директории для блокировок (wiki-lock.sh) |
+| `.wiki-lock.meta` | Состояние блокировки мета-слоя |
+| `hook.log` | Лог авто-коммитов (git-auto-commit.sh) |
+| `auto-commit.disabled` | Флаг отключения auto-commit |
+
+**Правила:**
+- Agent может читать и писать в эту папку для управления системным состоянием
+- **Никогда не коммитить** — это runtime state, не project artifact
+- При поломке: проверить целостность блокировок (`ls .vault-meta/locks/`), удалить stale locks если нужно
+
+> Canonical: `AGENTS.md#vault_meta` — agent must understand this zone when debugging lock corruption or auto-commit failures.
 
 ---
 
