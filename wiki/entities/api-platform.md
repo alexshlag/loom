@@ -54,7 +54,8 @@ composer require api-platform/symfony
 
 API Platform поддерживает headless подход:
 - Backend отдаёт только API (JSON-LD/Hydra + GraphQL)
-- Frontend на Next.js/Vue/React получает данные через REST или GraphQL
+- Frontend (Next.js, Vue, React) требует Node.js runtime для SSR и build pipeline
+- [Node.js](entities/nodejs.md) — runtime для JavaScript frontend stack
 - Mercure для real-time updates через Server-Sent Events
 
 ## Связи

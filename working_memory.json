@@ -1,60 +1,22 @@
 {
-  "last_updated": "2026-07-01T23:XX:XX+03",
-  "current_mode": "query",
-  "execution_mode": "silent",
-  "focus_node": "Symfony ecosystem — created API Platform, Sylius, Sonata Admin Bundle, Ibexa DXP pages with crosslinks",
-  "open_pages": [],
+  "last_updated": "2026-07-03T21:50:00+04:00",
+  "current_mode": "project",
+  "focus_node": "Ingest algorithms comparative research — completed, article created",
+  "open_pages": [{"path": "wiki/research/ingest-algorithms-comparison.md", "status": "created"}],
   "dead_ends": [],
-  "broken_links_resolved": [
-    {
-      "file": "scripts/link-validator.sh",
-      "change": "Fixed path resolution for ../ links — now resolves against file's directory, not WIKI_DIR",
-      "rule_applied": "Relative paths with ../* must be resolved using dirname(file) + realpath -m",
-      "timestamp": "2026-06-30T17:XX:XX+03"
-    },
-    {
-      "file": "wiki/entities/ai-factory.md",
-      "change": "Removed invalid source path from frontmatter — sources field must not reference non-existent raw/github/",
-      "rule_applied": "EXT-LINK-V1: Never link to or source from raw/** unless files exist on disk.",
-      "timestamp": "2026-06-30T17:XX:XX+03"
-    },
-    {
-      "file": "wiki/syntheses/python-nixos-development-environments.md",
-      "change": "Fixed broken link to NixOS Wiki external URL",
-      "rule_applied": "DR-EX1 (External Links Standard)",
-      "timestamp": "2026-06-28T17:10:00+03"
-    }
-  ],
-  "architectural_decisions": [
-    {
-      "id": "AD-001",
-      "topic": "Delta tracking placement",
-      "decision": "source-manifest.json → meta/ (alongside registry, backlinks). Agent writes via script only.",
-      "reasoning": "raw/** is protected for agent writes. meta/ uses existing pattern: rebuild through scripts (rebuild-meta.sh), not direct edit.",
-      "date": "2026-06-30",
-      "status": "resolved"
-    }
-  ],
   "query_summary": {
-    "intent": "Symfony ecosystem — какие технологии и проекты связаны с Symfony",
-    "pages_read": [
-      "wiki/entities/symfony.md",
-      "wiki/concepts/symfony-ai.md",
-      "web_search: API Platform, Sylius, Sonata Admin Bundle, Ibexa DXP"
-    ],
+    "intent": "Analyze ingest algorithms from pi-llm-wiki and claude-obsidian, create wiki article with improvements",
+    "pages_read": ["/tmp/pi-github-repos/zosmaai/pi-llm-wiki/extensions/llm-wiki/lib/ingest-worker.ts", "/tmp/pi-github-repos/AgriciDaniel/claude-obsidian/skills/wiki-ingest/SKILL.md", "/tmp/pi-github-repos/AgriciDaniel/claude-obsidian/agents/wiki-ingest.md"],
     "key_findings": [
-      "Созданы 4 страницы: API Platform (REST/GraphQL), Sylius (eCommerce), Sonata Admin (admin panels), Ibexa DXP (enterprise CMS+commerce)",
-      "Все связаны с Symfony через bundles/components/DI",
-      "API Platform ↔ Sylius: headless commerce через REST/GraphQL",
-      "Ibexa + API Platform: GraphQL schema generation из content types",
-      "Sonata Admin: используется в Sylius/Ibexa для enterprise admin customization"
+      "wiki-lock.sh (advisory locking) — critical for parallel safety",
+      "Background synthesis + deterministic commit — high reliability improvement",
+      "Real-time contradiction callouts — prevents silent overwrites",
+      "Mode-aware routing and address assignment — future-proofing"
     ]
   },
   "next_steps_todo": [
-    {
-      "task": "Consider implementing IF priorities from comparison: mode routing, transport abstraction, advisory locking",
-      "priority": "medium",
-      "status": "pending"
-    }
+    {"task": "Implement wiki-lock.sh (Phase 1: Critical) — flock-based advisory locks per-file", "priority": "critical"},
+    {"task": "Add real-time contradiction callouts to process-ingest.json#step_3_analysis", "priority": "high"},
+    {"task": "Create scripts/ingest-worker.sh with background synthesis (Phase 2: High)", "priority": "high"}
   ]
 }

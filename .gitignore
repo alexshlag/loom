@@ -22,3 +22,4 @@ logs/*.log
 
 # Similarity cache — large file, regenerated automatically
 tracking/similarity_cache.json
+.vault-meta/

@@ -78,10 +78,11 @@ your_project/
 - [Symfony Flex](concepts/symfony-flex.md) — автоматизация установки пакетов
 - [Deployment & Production Setup](concepts/symfony-deployment.md) — системные требования, конфигурация сервера, performance tuning
 
-### Экосистемные проекты (Symphony-based)
+### Экосистемные проекты (Symfony-based)
 - [API Platform](entities/api-platform.md) — REST/GraphQL API фреймворк поверх Symfony
 - [Sylius](entities/sylius.md) — open-source eCommerce framework на Symfony
-- [Sonata Admin Bundle](concepts/sonata-admin-bundle.md) — admin panel generator для Symfony projects
+- [EasyAdmin Bundle](concepts/easyadmin-bundle.md) — zero-config admin backend, самый популярный выбор для стандартных CRUD задач
+- [Sonata Admin Bundle](concepts/sonata-admin-bundle.md) — enterprise-level admin с глубокой кастомизацией
 - [Ibexa DXP](entities/ibexa-dxp.md) — enterprise CMS + commerce platform на Symfony
 
 ### Взаимное влияние

@@ -33,7 +33,8 @@ related: [wiki/syntheses/python-nixos-development-environments.md]
 
 ### 4. Альтернативные менеджеры пакетов
 * **venv** — `nix-shell -p python3 --command "python -m venv .venv"`
-* **uv** — быстрый менеджер на Rust, заменяющий pip/pip-tools/poetry/pyenv/virtualenv
+* **uv** — быстрый менеджер на Rust, replaces pip/pip-tools/poetry/pyenv/virtualenv
+* [Clippy](entities/rust-clippy.md) — linting tool для Rust, демонстрирует подход static analysis в compile-time
 * **poetry & poetry2nix** — создание Nix-derivation из pyproject.toml
 * **micromamba** — изолированные среды conda с FHS-обёрткой
 * **conda** — нативный менеджер conda в NixOS через `conda-shell`
@@ -80,6 +81,13 @@ environment.systemPackages = with pkgs; [
 > - **Синтез** — структурированный анализ способов с выводами
 > Обе страницы согласованы, дублирование намеренное для разных целей чтения.
 
+## Updated [2026-07-03] — shared source note
+- **Group key**: `date:2025-06-24` (contradictions_deep scan)
+- **Finding**: Pages using same SRC-2025-06-24 sources may have version drift if source updates
+- **Resolution**: Reconciliation note (#H2) already documents shared relationship with syntheses page
+- **Cleanup**: Removed duplicate entries from Updates section (Installing Multiple Versions x2, Performance x2)
+- **Source:** `detect-contradications.sh` contradiction group `date:2025-06-24`
+
 ## Обновления (2026-06-24)
 * Добавлено: **R packages в Python через rpy2** — секция про R integration
 * Добавлено: **Nix shell (new command line)** — `nix shell --impure --expr '(import <nixpkgs> {}).python3.withPackages(...)'`
@@ -88,7 +96,6 @@ environment.systemPackages = with pkgs; [
 * Добавлено: **Special Modules (GNOME)** — GObject introspection с wrapGAppsHook
 * Добавлено: **Debug Build** — enableDebug = true override для Python-пакетов
 * Добавлено: **Installing Multiple Versions** — lib.meta.lowPrio/highPrio без конфликтов
-* Добавлено: **Performance** — 30-40% regression на синтетических бенчмарках, в реальном мире минимально (pylint scan: 5.5%)
 * Добавлено: **Installing Multiple Versions** — lib.meta.lowPrio/highPrio без конфликтов
 * Добавлено: **Performance** — 30-40% regression на синтетических бенчмарках, в реальном мире минимально (pylint scan: 5.5%)
 
