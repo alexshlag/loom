@@ -409,6 +409,28 @@
       "description": "Единый шаг пост-интеграционных проверок: overlap scan, crosslink discovery, link validation. Заменяет разрозненные post_operations из 3a/3b и дублирующие шаги 3d/6.",
       "actions": [
         {
+          "action": "acquire_page_lock",
+          "command": "bash scripts/wiki-lock.sh acquire ${NEW_PAGE_PATH}",
+          "description": "Advisory lock prevents silent corruption from parallel writes. Returns 0 (success), 75 (held, retry needed), or 4 (path validation error). Stale locks auto-reap after 60s.",
+          "schema_ref": "FEATURES_PLAN.md#1-advisory-locking",
+          "evaluation": [
+            {
+              "condition": "exit_code == 0",
+              "action": "PROCEED_TO_NEXT_ACTION"
+            },
+            {
+              "condition": "exit_code == 75",
+              "action": "RETRY_AFTER_2_SECONDS",
+              "note": "Lock held — wait 2s and retry. If still held, log warning but continue (agent judgment)."
+            },
+            {
+              "condition": "exit_code != 0 && exit_code != 75",
+              "action": "LOG_ERROR_AND_CONTINUE",
+              "note": "Path validation error — check path format, continue with caution."
+            }
+          ]
+        },
+        {
           "action": "rebuild_metadata",
           "command": "./scripts/rebuild-meta.sh",
           "description": "Обновить registry.json, backlinks.json после создания/обновления страницы."
@@ -466,6 +488,11 @@
           "action": "update_source_manifest",
           "command": "./scripts/rebuild-source-manifest.sh",
           "description": "Обновить centralized manifest. delta tracking теперь актуален."
+        },
+        {
+          "action": "release_page_lock",
+          "command": "bash scripts/wiki-lock.sh release ${NEW_PAGE_PATH}",
+          "description": "Release advisory lock acquired at start of post_checks. Idempotent — safe to call even if acquire failed (rm -f)."
         }
       ]
     },
