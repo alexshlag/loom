@@ -517,6 +517,36 @@ related: [] # связанные wiki-страницы (wiki-relative paths)
 
 Эти контракты определяют, как агент управляет памятью и читает файлы через bash.
 
+### Three-Layer Memory Model
+
+Wiki использует три слоя памяти — каждый закрывает свою роль, не дублируя друг друга:
+
+| Файл | Роль | Живёт | Читаю/пишу |
+|------|------|-------|------------|
+| **working_memory.json** | Оперативная память *текущей* сессии — focus_node, open_pages, next_steps_todo. Периодически перезаписывается (turn → turn). | Коротко: одна сессия. Чистится при dismissal/compaction. | Agent записывает каждый turn. |
+| **hot.md** | Срез *активного проекта и вопросов* — на чём остановились, какие wiki-страницы были полезны, ключевые выводы из обсуждений. Выживает компакцию через restore-hot-cache.sh. | Долгосрочно: между сессиями. Обновляется при end-of-session или когда важная задача закрыта. | Agent записывает срез, не полную ленту. |
+| **log.md** | Append-only летопись всех действий и изменений wiki. Хронологическая лента. | Навсегда. Не переписывается, только append. | Agent append'ит каждую запись. |
+
+**Как они взаимодействуют:**
+```
+Session start:
+  ├── read working_memory.json → restore focus_node, next_steps_todo
+  ├── restore-hot-cache.sh → прочитать hot.md для контекста активного проекта/вопроса
+  └── grep log.md последние записи → понять о чём был разговор раньше
+
+Session end:
+  ├── write_to_working_memory → обновить WM (next_steps_todo, open_pages)
+  └── write_session_context_to_hot.md → записать срез в hot.md
+```
+
+**Что должно быть в каждом файле:**
+
+- **working_memory.json**: `current_mode`, `focus_node`, `open_pages`, `next_steps_todo`, `dead_ends`, `query_summary`.
+- **hot.md**: `Active Project` (WORK_MODE: project) — project name, focus node, related wiki pages, key findings, next steps. `Active Session Context` (WORK_MODE: query/discussion) — topic, pages read, key findings. `System State` — Active Threads как сейчас.
+- **log.md**: `[YYYY-MM-DD] type | description`, sources, append-only. Agent читает при старте сессии для контекста предыдущих обсуждений (grep последние 10-20 записей).
+
+> Canonical: `AGENTS.md#three_layer_memory_model`
+
 ### CONTEXT_BUBBLE & GREP CONTRACT
 
 ### 📝 Grep Contract
@@ -534,15 +564,29 @@ related: [] # связанные wiki-страницы (wiki-relative paths)
 - **GREP CONTRACT**: используем только разрешённые паттерны bash (см. `process-query.json#grep_contract`).
   > Canonical: `process-query.json#grep_contract`.
 
+### Log.md Read Pattern
+
+Agent читает log.md при старте сессии для понимания контекста предыдущих обсуждений:
+- **Правило**: Agent использует grep (не cat) для чтения последних записей — не более 10-20 строк.
+- **Когда читать**: При start session, если `working_memory.json` пустой или stale (>30 days без обновлений).
+- **Как читать**: `grep -m 20 "" wiki/log.md | tail -20` для последних записей. Или по ключевым словам: `grep -m 10 "project_name" wiki/log.md`.
+- **Цель**: Понять о чём был разговор, какие проекты велись, в каком контексте остановились.
+- **Не читать весь log**: Это ~250+ строк, дорого по токенам. Только релевантные записи.
+
+> Canonical: `AGENTS.md#log_read_pattern`
+
 ### CONTEXT COMPACTION HANDLING
 
-- Компакция контекста выбрасает injected content, включая hot.md.
+- Компакция контекста выбрасает injected content (tool results, pages read) из текущего turn.
 - **После компакции** → агент обязан вызвать:
   ```bash
   bash scripts/restore-hot-cache.sh || true
   ```
-- Это восстановит фактовый контекст wiki, который был потеряен при compact.
-  > Canonical: `AGENTS.md#context_compaction_handling`.
+- Это восстановит `hot.md` из файла — слой долговременной памяти, который переживает compact.
+- **Важно**: Working memory (focus_node, next_steps_todo) может быть обрезан в WM.json при compact. Но `hot.md` содержит срез проекта/сессии и восстанавливается через restore-hot-cache.sh.
+  > Canonical: `AGENTS.md#context_compaction_handling`
+
+### LOG_APPEND_ONLY — wiki/log.md never overwritten, always appended
 
 ### LOG_APPEND_ONLY — wiki/log.md never overwritten, always appended
 
@@ -707,7 +751,8 @@ External links must use canonical http/https URLs. Never link to `raw/**` or `..
 
 **System file exclusion:**
 
-- Wiki system files excluded automatically: `log.md`, `issues.md`, `timeline.md`, `overview.md`, `snapshot.md`, `index.md`, `hot.md`
+- Wiki system files excluded automatically: `log.md`, `issues.md`, `timeline.md`, `overview.md`, `snapshot.md`, `index.md`
+- **hot.md**: больше не исключается — содержит Active Project и Session Context, которые нужны для поиска:
 - Root-level system files excluded from scoring: `AGENTS.md`, `context.md`, `PLAN.md` (appear in most pages but NOT wiki content)
 
 **Usage pattern:**

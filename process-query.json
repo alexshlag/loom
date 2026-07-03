@@ -268,7 +268,7 @@
       "name": "search",
       "description": "Сначала обратись к index.md, затем используй wiki_recall для семантического поиска релевантных страниц. Используй критерии уверенности для определения достаточности поиска.",
       "system_files_exclusion": {
-        "rule": "exclude system files (log.md, issues.md, timeline.md, overview.md, snapshot.md, index.md, GIT-*) from semantic search results",
+        "rule": "exclude system files (log.md, issues.md, timeline.md, overview.md, snapshot.md, index.md, GIT-*) from semantic search results. hot.md NOT excluded — contains Active Project and Session Context.",
         "action_if_found_in_results": "FILTER_OUT: remove from final matches array before presenting to user"
       },
       "actions": [
@@ -766,7 +766,7 @@
         }
       ],
       "finalization": {
-        "description": "Обязательный финальный шаг — записать состояние в working_memory.json перед завершением сессии, затем проверить актуальность hot.md",
+        "description": "Обязательный финальный шаг — записать состояние в working_memory.json, затем сохранить срез проекта/сессии в hot.md",
         "actions": [
           {
             "action": "write_to_working_memory",
@@ -794,15 +794,12 @@
             ]
           },
           {
-            "action": "check_hot_cache_staleness",
-            "command": "./scripts/check-wiki-changes.sh || true",
-            "description": "После записи WM — проверить, были ли изменения в wiki/ за сессию. Если да → агент обновляет wiki/hot.md вручную.",
-            "output_handling": {
-              "schema_ref": "rules/error_handling.json"
-            }
+            "action": "write_session_context_to_hot", 
+            "description": "После записи WM — агент сохраняет срез проекта/сессии в wiki/hot.md. Active Project: focus node, related wiki pages, key findings, next steps. Active Session Context: topic, pages read, key findings. Не дублировать log.md — только суть.",
+            "rule": "AGENT_MUST_WRITE_HOT_AFTER_EACH_QUERY"
           }
         ],
-        "rule": "AGENT_MUST_WRITE_WM_AFTER_EACH_QUERY"
+        "rule": "AGENT_MUST_WRITE_WM_AND_HOT_AFTER_EACH_QUERY"
       },
       "decision_rules_schema_ref": "rules/decision-rules.md"
     }
