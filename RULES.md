@@ -115,3 +115,53 @@ ls rules/*.json | xargs -I{} basename {} .json
 # Исправить дефисы в именах файлов
 sed -i 's/link-conventions/link_conventions/g' process-ingest.json
 ```
+
+---
+
+## 8.1 GIT WORKFLOW — Commit после каждой задачи
+
+### Правило:
+**После успешного завершения задачи и проверки работы wiki обновлять информацию в документах разработки (issues.md, PLAN.md и FEATURES_PLAN.md), после чего делать общий `git add -A` и `git commit`.**
+
+### Алгоритм:
+
+1. **Выполнил задачу → проверил работоспособность**
+2. **Обновили документацию:**
+   - `issues.md` — отметь закрытые/открытые баги, добавь фиксы
+   - `PLAN.md` — обнови статусы фаз (в твоей задаче это FEATURES_PLAN.md)
+3. **Git-операция:**
+   ```bash
+   git add -A  # ← общий, не через скрипт
+   git commit -m "<type> | <scope>: <description>"
+   ```
+
+### Почему так:
+- `git add -A` автоматически игнорирует `.gitignore`, но собирает все отслеживаемые файлы.
+- **Никогда** не используй `git add *` — это соберёт системный мусор (`.tmp`, `.swp`, логи).
+- Коммит должен быть после каждого значимого изменения, а не накоплением в конце сессии.
+
+### Формат комита:
+```
+<type> | <scope>: <description>
+```
+
+| Тип       | Описание                                    |
+|-----------|---------------------------------------------|
+| `feat`    | Новая функциональность                      |
+| `fix`     | Исправление бага                            |
+| `refactor`| Рефакторинг без изменения поведения         |
+| `schema`  | Изменение schema/AGENTS.md/process-*.json   |
+| `lint`    | Улучшение линтинга/валидации                |
+| `ingest`  | Ингест нового источника                     |
+| `query`   | Ответ на вопрос, обновление wiki по query   |
+
+**Пример:**
+```
+feat | ingest-architecture: advisory locking (wiki-lock.sh) prevents silent corruption
+fix    | schema: resolve broken refs in process-ingest.json
+schema | update FEATURES_PLAN.md with Phase 1 status
+```
+
+### Исключения:
+- Системные файлы (`.vault-meta/`, `tracking/`) — не добавляй в комит, если они не относятся к функциональности.
+- Временные файлы (.tmp, .swp) — игнорируются автоматически через `.gitignore`.

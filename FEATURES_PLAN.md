@@ -13,11 +13,17 @@ Research-driven initiative based on **[ingest algorithms comparison](wiki/resear
 
 ---
 
+## 📍 Current Status
+
+**Last updated**: 2026-07-03 | **Active phase**: Phase 1 (Critical fixes) | **Completed**: Advisory Locking ✅
+
+---
+
 ## 📊 Priority Matrix
 
 | Feature | Priority | Complexity | Impact | Status |
 |---------|----------|------------|--------|--------|
-| 1. Advisory Locking | 🔴 Critical | Medium | Prevents silent corruption from parallel writes | ⬜ Pending |
+| 1. Advisory Locking | 🔴 Critical | Medium | Prevents silent corruption from parallel writes | ✅ **Implemented** (Phase 1) |
 | 2. Real-time Contradiction Flagging | 🟡 High | Low | Prevents silent overwrites (data loss prevention) | ⬜ Pending |
 | 3. Background Synthesis & Deterministic Commit | 🟠 High | Medium | Non-blocking ingest, better UX + testability | ⬜ Pending |
 | 4. Mode-Aware Routing | 🟢 Medium | Low | Future-proof for PARA/LYT/Zettelkasten | ⬜ Backlog |
@@ -38,26 +44,36 @@ Per-file advisory locking with:
 - **Age-based staleness**: crashed writer unblocks automatically after 60 seconds
 - **Cross-process release**: simple `rm -f`, no PID tracking needed
 
-### Implementation Plan
+---
 
+### ✅ Implementation Complete (2026-07-03)
+
+**Commit**: `9673e25 feat | ingest-architecture: advisory locking (wiki-lock.sh) prevents silent corruption`
+
+**What was implemented:**
+
+1. **Copied** `scripts/wiki-lock.sh` from reference implementation → integrated into project
+2. **Added to process-ingest.json** in step_9_post_checks:
+   - `acquire_page_lock` — first action (before rebuild-meta, link validation)
+   - `release_page_lock` — last action (after all post-checks complete)
+3. **Evaluation rules** for lock acquisition:
+   - exit_code == 0 → proceed
+   - exit_code == 75 → retry after 2s (lock held)
+   - error code → log warning, continue with caution
+4. **Documented** in AGENTS.md: usage pattern, exit codes table, integration description
+
+**Verification:**
 ```bash
-# Step 1: Copy wiki-lock.sh from reference implementation
-cp /tmp/pi-github-repos/AgriciDaniel/claude-obsidian/scripts/wiki-lock.sh scripts/wiki-lock.sh
-
-# Step 2: Integrate into ingest flow (process-ingest.json)
-# Add acquire → write → release pattern before every page write
+# Test acquire → release cycle
+bash scripts/wiki-lock.sh acquire wiki/entities/pi-coding-agent.md  # ✅ Success
+sleep 1
+bash scripts/wiki-lock.sh peek wiki/entities/pi-coding-agent.md      # Shows holder info
+bash scripts/wiki-lock.sh release wiki/entities/pi-coding-agent.md   # ✅ Released
 ```
 
-**Schema integration**: Modify `process-ingest.json` steps to wrap writes with:
-```json
-{
-  "action": "acquire_lock",
-  "tool_call": "bash scripts/wiki-lock.sh acquire wiki/entities/Person.md"
-}
-```
+**Dependencies:** None — self-contained, no external dependencies.
 
-### Dependencies
-- No external dependencies — single script, self-contained
+**Status**: Implemented and tested. Ready for production use in ingest flows.
 
 ---
 
