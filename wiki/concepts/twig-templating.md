@@ -1,7 +1,7 @@
 ---
 tags: [twig, php-templates, template-inheritance, cacheable-blocks, symfony]
-date: 2026-06-25
-sources: [raw/corrected/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md]
+date: 2026-07-05
+sources: [raw/corrected/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md, raw/corrected/SRC-2026-07-05-TwigOfficial/twig-homepage.md]
 related: [wiki/entities/symfony.md]
 ---
 
@@ -14,6 +14,47 @@ This page explores Twig Templating as a key concept in our knowledge base.
 ## Определение
 
 Twig — flexible, fast, secure PHP template engine used by Symfony. Compiles templates down to optimized PHP code with minimal overhead. Provides autoescaping for XSS protection, sandbox mode, and powerful templating syntax.
+
+## Ключевые особенности (по [twig.symfony.com](https://twig.symfony.com/))
+
+### Три столпа
+
+| Столп | Описание |
+|-------|----------|
+| **Fast** | Twig компилирует шаблоны в оптимизированный PHP-код. Overhead по сравнению с raw PHP — минимальный. |
+| **Secure** | Sandbox mode для оценки недоверенного шаблонного кода. Позволяет использовать Twig как template language, когда пользователи могут менять дизайн шаблона. |
+| **Flexible** | Гибкий lexer и parser позволяют определять кастомные теги, фильтры и создавать собственную DSL. |
+
+### Почему лучше PHP как шаблонизатор?
+
+PHP сам по себе — шаблонизатор, но без эволюции современных фич:
+- **Concise**: Twig синтаксис значительно короче, чем output escaping в чистом PHP
+- **Template-oriented syntax**: shortcuts для common patterns (default text при итерации по пустому массиву)
+- **Full Featured**: multiple inheritance, blocks, autoescaping — всё из коробки
+- **Easy to learn**: syntax оптимизирована для дизайнеров, не мешает работе
+
+### Архитектурные преимущества
+
+- **Extensibility**: open architecture → кастомные tags, filters, functions, operators → собственная DSL
+- **Unit tested**: stable library ready for large projects
+- **Documented**: online book + full API documentation
+- **Clean error messages**: при syntax problem — filename + line number для удобства дебага
+
+### Безопасность (Security Features)
+
+1. **Automatic output escaping** — включается глобально или на уровне блока
+2. **Sandboxing** — ограниченный set tags, filters, object methods; можно включить globally или локально для отдельных шаблонов
+
+### Экосистема
+
+Twig используется множеством Open-Source проектов:
+- Symfony, Drupal8, eZPublish, phpBB, Matomo, OroCRM
+- Фреймворки с поддержкой: Slim, Yii, Laravel, Codeigniter
+
+### Системные требования
+
+Twig 3.x требует **PHP 8.1+** для работы.
+
 
 ## Core Principles
 

@@ -49,3 +49,7 @@ related: []
 **Status**: ✅ Search strategy fixed in process-query.json — replaced pseudo-actions with wiki-search.sh --dynamic commands. English-only enforced across all instructions.
 **Changes applied**: AGENTS.md#Search Contract added, RULES.md language rule added, 3 Cyrillic constraints → English, 6 pseudo-actions → structured steps.
 **Next**: Phase 14 (AGENTS.md compaction) + Phase 15 (Tagging System).
+
+## Recent Changes — 2026-07-05
+- **twig-templating.md** updated: added official twig.symfony.com features (Fast/Secure/Flexible, PHP comparison, ecosystem)
+- **index.md** rebuilt via rebuild-meta.sh --index-only

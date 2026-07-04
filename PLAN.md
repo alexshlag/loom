@@ -10,6 +10,68 @@
 
 ---
 
+### Phase 14.5: Logic Restoration — Cascade Priority & Contradiction Resolution Flow 🆕 P0
+**Цель**: Восстановить полную логику разрешения противоречий, которая была потеряна при compacting Phase 14.
+**Проблема**: `rules/search_strategy.json#cascade_priority` → битая ссылка. Agent не может разрешать противоречия.
+**Решение**: Создать `rules/contradiction_resolution.json` с полной cascade logic + update all schema_refs.
+
+| # | Task | Output | Status |
+|---|------|--------|--------|
+| 1 | Extract full contradiction_resolution_flow from git history (b25b642^) → structure it into JSON | rules/contradiction_resolution.json | ⬜ Pending |
+| 2 | Create file with: cascade_order, evidence_grade_sub_priority, temporal_decay, arbitration_layer, resolution_actions | rules/contradiction_resolution.json content | ⬜ Pending |
+| 3 | Update process-query.json: change `rules/search_strategy.json#cascade_priority` → `rules/contradiction_resolution.json` | Fixed schema_ref | ⬜ Pending |
+| 4 | Update process-lint.json: replace all `search_strategy.json#cascade_priority` refs with new file | Fixed (2 instances) | ⬜ Pending |
+| 5 | Verify: agent can now follow contradiction_resolution_flow end-to-end without dead ends | Test run | ⬜ Pending |
+
+**Содержимое rules/contradiction_resolution.json** (восстановлено из git):
+```json
+{
+  "protocol_name": "Contradiction Resolution Flow",
+  "description": "Cascade-based algorithm: Code Reality > Live State > Documentation (evidence_grade)",
+  "agent_prompt": "При разрешении противоречия:\n1. Определите тип факта: objective или subjective\n2. Если objective → cascade priority, user override ЗАПРЕЩЁН\n3. Если subjective → user override ДОПУСКАЕТСЯ\n4. Применяй cascade: priority 1 (code) > priority 2 (live) > priority 3 (docs with evidence_grade)\n5. Для documentation: documented(1) > corroborated(2) > assertion_only(3)",
+  "cascade_order": [
+    { "priority": 1, "source_layer": "code_reality", "description": "Code compiles or not — deterministic, always wins" },
+    { "priority": 2, "source_layer": "live_state", "description": "API returns X right now — ephemeral but observable" },
+    { "priority": 3, "source_layer": "documentation", "strategy": {"schema_ref": "rules/search_strategy.json"}, "description": "Authoritative docs only when no code/live available" }
+  ],
+  "evidence_grade_sub_priority": [
+    { "grade": "documented", "weight": 1 },
+    { "grade": "corroborated", "weight": 2 },
+    { "grade": "assertion_only", "weight": 3 }
+  ],
+  "fallback_chain": [
+    { "condition": "multiple_sources_same_priority", "action": "evidence_grade_sub_priority" },
+    { "condition": "same_evidence_and_priority", "action": "temporal_decay (most recent wins)" },
+    { "condition": "still_ambiguous_after_temporal", "action": "human_override → flag CONFLICT in answer" }
+  ],
+  "resolution_actions": [
+    { "when": "contradiction_resolved_via_cascade", "action": "add_update_section_to_old_page" },
+    { "when": "conflicting_priorities OR multiple live_state", "action": "create_comparison_page" },
+    { "when": "not_resolved (human_override)", "action": "note_in_answer with CONFLICT tag" }
+  ],
+  "arbitration_layer": {
+    "fact_types": [
+      { "type": "objective", "user_override_allowed": false, "examples": ["2+2=4", "code compiles", "API status codes"] },
+      { "type": "subjective", "user_override_allowed": true, "examples": ["opinions", "historical claims without proof", "interpretations"] }
+    ],
+    "resolution_logic": {
+      "step_1": "classify as objective or subjective",
+      "step_2_if_objective": "apply cascade priority. User override → REJECTED",
+      "step_3_if_subjective": "user_override_accepted → apply user decision"
+    }
+  },
+  "history_tracking": { "append_to": "## Обновлено [date] — новое уточнение" }
+}
+```
+
+**Проверка успешности**: 
+- ✅ Все schema_refs point to existing files
+- ✅ Agent can follow contradiction_resolution_flow without dead ends
+- ✅ cascade_order + evidence_grade + fallback_chain are all defined
+- ✅ No more `rules/search_strategy.json#cascade_priority` references → broken
+
+---
+
 ## 🔄 Pending Tasks (Next Steps)
 
 ### Phase 15: Tagging System Quality & Guidelines 🆕 P0
