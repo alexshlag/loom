@@ -96,7 +96,16 @@ AGENTS.md и process-файлы (`process-ingest.json`, `process-query.json`, `p
 - **Output**: каждый consumer может писать JSON в stdout и/или файлы
 - **System file exclusion**: единый список, определяется в начале скрипта
 
-> Цель: устранить 3 независимых полных walk по wiki при каждом ingest/lint.
+> Цель: устранить 3 независимых полных walk поwiki при каждом ingest/lint.
+
+### Memory Sync on Schema Changes (RULES.md#9)
+
+When modifying system files (AGENTS.md, RULES.md, process-*.json, PLAN.md, FEATURES_PLAN.md):
+1. `focus_node` = current development task name
+2. `next_steps_todo` = remaining tasks from same phase (filter completed)
+3. Update hot.md Active Project with Phase status + what was done
+
+> See: [rules/session_context_rules.json](rules/session_context_rules.json) for write_algorithm.
 
 ---
 
