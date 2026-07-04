@@ -67,39 +67,55 @@ if [[ -z "$QUERY" ]]; then
     exit 1
 fi
 
-# ─── Default priority categories ──────────────────────
-DEFAULT_PRIORITY=("syntheses" "concepts" "entities" "comparisons" "notes" "meetings" "projects" "bibliography" "resources")
+# ─── Read canonical category order from rules/categories.json (once) ─────────
+CATEGORY_ORDER=$(python3 -c '
+import json, sys, os
+script_dir = os.path.dirname(os.path.abspath("__file__"))
+cat_file = script_dir + "/../rules/categories.json"
+try:
+    with open(cat_file) as f: cat_data = json.load(f)
+except Exception:
+    cat_data = {"categories": []}
+order = " ".join(c["key"] for c in cat_data.get("categories", []))
+print(order if order else "syntheses concepts entities comparisons notes meetings projects bibliography resources")
+') || CATEGORY_ORDER="syntheses concepts entities comparisons notes meetings projects bibliography resources"
+echo "[*] Category order: $CATEGORY_ORDER" >&2
 
-# ─── Dynamic Priority: Query Intent Analysis (Phase 5) ──
+
+# Dynamic Priority: Query Intent Analysis (Phase 5)
+# Uses CATEGORY_ORDER computed at script start
 get_dynamic_priority() {
     local query="$1"
-    
+
+    # Entity keyword matches → full canonical order
     if echo "$query" | grep -qiE '^(openai|langchain|symfony|pi-coding-agent|gpt-4|llama|nvidia|anthropic|google gemini|azure)$'; then
-        echo "entities concepts syntheses comparisons notes meetings projects bibliography resources"
+        echo "$CATEGORY_ORDER"
         return
     fi
-    
+    # PascalCase → likely entity name
     if echo "$query" | grep -qE '[A-Z][a-z]+[A-Z]'; then
-        echo "entities concepts syntheses comparisons notes meetings projects bibliography resources"
+        echo "$CATEGORY_ORDER"
         return
     fi
-    
+    # Acronym detection
     if echo "$query" | grep -qE '\b[A-Z]{2,}\b' && [[ ${#query} -lt 30 ]]; then
-        echo "entities concepts syntheses comparisons notes meetings projects bibliography resources"
+        echo "$CATEGORY_ORDER"
         return
     fi
-    
+    # Comparison keywords → comparisons first
     if echo "$query" | grep -qiE '(vs|compared\s+to|versus|comparison|alternative|difference)'; then
-        echo "comparisons syntheses concepts entities notes meetings projects bibliography resources"
+        local others=$(echo "$CATEGORY_ORDER" | tr ' ' '\n' | grep -v '^comparisons$')
+        echo "comparisons $others"
         return
     fi
-    
+    # Concept keywords → concepts first
     if echo "$query" | grep -qiE '(principle|methodology|theory|concept|framework|pattern|architecture|design|model|approach|strategy|paradigm)'; then
-        echo "concepts syntheses entities comparisons notes meetings projects bibliography resources"
+        local others=$(echo "$CATEGORY_ORDER" | tr ' ' '\n' | grep -v '^concepts$')
+        echo "concepts $others"
         return
     fi
-    
-    echo "${DEFAULT_PRIORITY[*]}"
+    # Default → canonical order
+    echo "$CATEGORY_ORDER"
 }
 
 # ─── Relevance Scoring (Phase 5 + S5 integration) ──────────────────────
@@ -201,7 +217,7 @@ if [[ "$DYNAMIC" == "true" ]]; then
     
     FINAL_CATEGORY_ORDER="$CATEGORY_ORDER"
 else
-    CATEGORY_ORDER="${DEFAULT_PRIORITY[*]}"
+    # Static mode: use already-computed CATEGORY_ORDER (canonical order from JSON)
     FINAL_CATEGORY_ORDER="$CATEGORY_ORDER"
 fi
 

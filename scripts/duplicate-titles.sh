@@ -12,15 +12,29 @@ WIKI_DIR="${1:-$PROJECT_ROOT/wiki}"
 
 echo "[*] Checking for duplicate titles..." >&2
 
+# Read categories from canonical source
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_ROOT="$SCRIPT_DIR/../"
+WIKI_DIR="${1:-$PROJECT_ROOT/wiki}"
+
+echo "[*] Checking for duplicate titles..." >&2
+
 python3 << PYEOF
-import os, re, sys
+import os, re, sys, json
 
 wiki_dir = "${WIKI_DIR}"
-
-CATEGORIES = ['entities', 'concepts', 'comparisons', 'syntheses', 
-              'notes', 'meetings', 'projects', 'bibliography', 'resources']
+cat_file = os.path.join("$(cd "$(dirname "$0")" && pwd)", "..", "rules", "categories.json")
+CATEGORIES = []
+try:
+    with open(cat_file) as f: cat_data = json.load(f)
+    CATEGORIES = [c["key"] for c in cat_data.get("categories", [])]
+except Exception:
+    # Fallback if JSON unavailable
+    CATEGORIES = ['entities', 'concepts', 'comparisons', 'syntheses',
+                  'notes', 'meetings', 'projects', 'bibliography', 'resources']
 
 SYSTEM_FILES = {'index.md', 'log.md', 'timeline.md', 'snapshot.md'}
+
 
 # Hash-set: title -> [file_paths]
 title_map = {}  # {category: {title: [paths]}}

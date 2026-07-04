@@ -229,21 +229,29 @@ sys.path.insert(0, "${SCRIPT_DIR}")
 wiki_dir = "${WIKI_DIR}"
 index_path = os.path.join(wiki_dir, 'index.md')
 
-CATEGORIES = {
-    'entities': 'Сущности',
-    'concepts': 'Концепции',
-    'comparisons': 'Сравнения',
-    'syntheses': 'Синтезы',
-    'overviews': 'Обзоры',
-    'notes': 'Заметки',
-    'meetings': 'Встречи',
-    'projects': 'Проекты',
-    'bibliography': 'Библиография',
-    'resources': 'Ресурсы'
-}
+# Read categories from canonical source (rules/categories.json)
+cat_file = os.path.join(os.environ.get("SCRIPT_DIR", "scripts"), "..", "rules", "categories.json")
+try:
+    with open(cat_file) as f:
+        cat_data = json.load(f)
+    CATEGORY_ORDER = [c["key"] for c in cat_data.get("categories", [])]
+    # Build label lookup: key -> {lang: display_name}
+    CATEGORIES_LABELS_RAW = {}
+    for c in cat_data.get("categories", []):
+        labels = c.get("label", {})
+        lang = os.environ.get("LOCALE", "en")
+        CATEGORIES_LABELS_RAW[c["key"]] = labels.get(lang, labels.get("en", c["key"].title()))
+except Exception:
+    # Fallback to hardcoded if JSON unavailable
+    CATEGORY_ORDER = ['entities', 'concepts', 'comparisons', 'syntheses', 'overviews', 'notes', 'meetings', 'projects', 'bibliography', 'resources']
+    CATEGORIES_LABELS_RAW = {'entities': 'Сущности', 'concepts': 'Концепции', 'comparisons': 'Сравнения', 'syntheses': 'Синтезы', 'overviews': 'Обзоры', 'notes': 'Заметки', 'meetings': 'Встречи', 'projects': 'Проекты', 'bibliography': 'Библиография', 'resources': 'Ресурсы'}
 
-CATEGORY_ORDER = ['entities', 'concepts', 'comparisons', 'syntheses', 'overviews', 
-                 'notes', 'meetings', 'projects', 'bibliography', 'resources']
+# CATEGORIES dict for backward compat with existing code patterns
+def _cat_label(k):
+    raw = CATEGORIES_LABELS_RAW.get(k, k.title())
+    return raw if isinstance(raw, str) else raw.get(lang, raw.get('en', k.title()))
+
+CATEGORIES = {k: _cat_label(k) for k in CATEGORY_ORDER}
 
 def extract_summary(content):
     # Parse tags from frontmatter

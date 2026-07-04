@@ -1,0 +1,15 @@
+{
+  "version": "1.0",
+  "categories": [
+    { "key": "entities",       "label": { "en": "Entities",         "ru": "Сущности" },        "description": "Конкретные идентифицируемые объекты (люди, компании, технологии)" },
+    { "key": "concepts",       "label": { "en": "Concepts",          "ru": "Концепции" },         "description": "Абстрактные идеи, принципы, методологии" },
+    { "key": "comparisons",    "label": { "en": "Comparisons",       "ru": "Сравнения" },         "description": "Сравнительный анализ сущностей и концептов" },
+    { "key": "syntheses",      "label": { "en": "Syntheses",        "ru": "Синтезы" },          "description": "Глубокий анализ, объединяющий несколько источников/страниц" },
+    { "key": "overviews",      "label": { "en": "Overviews",         "ru": "Обзоры" },            "description": "Страницы обобщённых данных (timeline.md, overview.md)" },
+    { "key": "notes",          "label": { "en": "Notes",             "ru": "Заметки" },           "description": "Личные заметки, транскрипты встреч, наблюдения" },
+    { "key": "meetings",       "label": { "en": "Meetings",          "ru": "Встречи" },           "description": "Встречи с решениями" },
+    { "key": "projects",       "label": { "en": "Projects",          "ru": "Проекты" },           "description": "Проекты со статусом и вехами" },
+    { "key": "bibliography",   "label": { "en": "Bibliography",      "ru": "Библиография" },      "description": "Книги, статьи, исследования" },
+    { "key": "resources",      "label": { "en": "Resources",         "ru": "Ресурсы" },           "description": "Инструменты, плагины, библиотеки" }
+  ]
+}
