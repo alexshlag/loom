@@ -2,6 +2,14 @@
 
 ---
 
+## ⚡ Priority Task — IMMEDIATE
+
+### Phase 14: Schema Optimization & Architecture Refinement 🔴 P0
+**Цель**: Реализация рекомендаций по упрощению манифеста и разделению данных.
+**Статус**: 🟥 **HIGH PRIORITY** — requires session refresh before implementation.
+
+---
+
 ## 🔄 Pending Phases (Next Steps)
 
 ### Phase 15: Tagging System Quality & Guidelines 🆕
