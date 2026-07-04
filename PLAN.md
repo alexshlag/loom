@@ -4,9 +4,9 @@
 
 ## ⚡ Current Task — ACTIVE
 
-### Phase 14: Compact Rules & Process Files ✅ COMPLETED (2026-07-04)
-**Цель**: Уменьшить context window process-файлов и RULES.md.
-**Статус:** ✅ **COMPLETED** (ca6914b)
+### Phase 14: Compact Rules & Process Files 🟥 IN PROGRESS
+**Цель**: Уменьшить context window AGENTS.md + process-файлов. Проверить, что агент сохраняет способность выполнять сложные операции.
+**Статус:** 🟥 **IN PROGRESS** — DONE: RULES.md (-57%), process files (-75%). PENDING: AGENTS.md compaction + testing.
 
 ---
 
@@ -57,8 +57,6 @@
 ---
 
 ## ✅ Completed (Archived)
-
-- **Phase 14 Compact Rules**: process files -75%, RULES.md -57% (`ca6914b`, `d826d00`)
 - **Phase 13.4 Section Template System**: JSON templates in `wiki/templates/` (2026-07-01)
 - **Phase 29 Delta Tracking**: hash-based deduplication via `scripts/rebuild-source-manifest.sh` (2026-07-01)
 - **Batch Ingest Workflow**: `scripts/batch-ingest.sh` orchestrator (2026-07-01)

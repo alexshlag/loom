@@ -533,3 +533,9 @@
 
 Current task: Phase 15 (Tagging System). Next pending: Phase 15.1 (Aliases).
 
+## [2026-07-05] schema | Corrected Phase 14 status — still IN PROGRESS (AGENTS.md pending, testing needed)
+
+* Moved Phase 14 from "Completed" back to Active Tasks in PLAN.md
+* AGENTS.md compaction + post-refactor tests are PENDING
+* Working memory updated: focus_node = AGENTS.md compacting
+
