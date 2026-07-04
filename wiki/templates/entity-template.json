@@ -10,5 +10,14 @@
     "Usage Examples",
     "History / Evolution",
     "Related Pages"
+  ],
+  "recommended_frontmatter": [
+    "tags",
+    "date",
+    "type",
+    "category",
+    "aliases",
+    "sources",
+    "related"
   ]
 }

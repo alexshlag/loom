@@ -109,20 +109,10 @@
         },
         {
           "action": "CLASSIFY_SOURCE",
-          "types": [
-            "entity",
-            "concept",
-            "notes",
-            "meeting",
-            "project"
-          ],
+          "types": ["entity", "concept", "notes", "meeting", "project"],
           "source_layer_classification": {
             "description": "Classify each source for Reality Layer cascade priority",
-            "options": [
-              "code_reality",
-              "live_state",
-              "documentation"
-            ],
+            "options": ["code_reality", "live_state", "documentation"],
             "rules": [
               {
                 "condition": "file_is_code_or_github_issue_or_pr",
@@ -177,6 +167,43 @@
       "working_memory": {
         "note": "После анализа — обновить working_memory.json: focus_node = 'анализирую ${SOURCE_NAME}', open_pages = [{path: '${SOURCE_PATH}', status: 'reading'}]"
       }
+    },
+    {
+      "step_id": "step_3b_aliases_extract",
+      "name": "auto_extract_aliases_for_frontmatter",
+      "description": "Автоматическое извлечение aliases (discoverability synonyms) для frontmatter страницы. Анализирует title, description, known product names, author references, bilingual variants — заполняет aliases[] field перед созданием/обновлением wiki-страницы.",
+      "actions": [
+        {
+          "action": "extract_from_title",
+          "description": "Parse H1 page title → extract variations, synonyms (e.g., 'Symfony Framework' → ['Symfony', 'symfony framework', 'full-stack framework'])"
+        },
+        {
+          "action": "extract_from_source_content",
+          "description": "Scan source for product names, author references, common aliases mentioned in text"
+        },
+        {
+          "action": "apply_tag_guidelines_recommendation",
+          "description": "Read rules/tag-guidelines.json#aliases_system. Apply bilingual variants if source is bilingual."
+        },
+        {
+          "action": "set_aliases_in_frontmatter",
+          "output": "aliases: [extracted_alias1, extracted_alias2, ...]"
+        }
+      ],
+      "rules": [
+        {
+          "rule_id": "ALIAS-SOURCES",
+          "description": "Extract from: 1) Page title variations; 2) Product/author names in source; 3) Bilingual variants; 4) Common search synonyms."
+        },
+        {
+          "rule_id": "ALIAS-FORMATTING",
+          "description": "Format as YAML array. Never use architecture terms — only user-searchable terms."
+        },
+        {
+          "rule_id": "ALIAS-MINIMAL",
+          "description": "Minimum 2-3 aliases per page (see rules/tag-guidelines.json#aliases_system). Never empty for pages with ≥5 domain tags."
+        }
+      ]
     },
     {
       "step_id": "step_4_corrected_copy",
@@ -363,6 +390,8 @@
           ]
         }
       ],
+      "schema_ref": "rules/structural_requirements.json",
+      "structural_note": "Смотри rules/structural_requirements.json#FIRST-BLOCK-V1 — H1 + body_text mandatory before first ##. Agent применяет правило при create/update страниц.",
       "post_actions": [
         {
           "action": "update_working_memory",

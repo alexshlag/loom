@@ -216,6 +216,13 @@
       ],
       "schema_ref": "rules/delta_tracking.json",
       "lint_policy": "Soft-only: lint.sh prints detection results, does NOT create corrected copies or modify wiki pages. User decides → Ingest process handles processing."
+    },
+    {
+      "check_id": "SSR-1",
+      "name": "structural_requirements_check",
+      "description": "Проверяет новые/обновлённые страницы на наличие body_text между H1 и первым ##. Нарушение → log warning, agent fix.",
+      "command": "./scripts/lint.sh --skip-checks ALL",
+      "schema_ref": "rules/structural_requirements.json"
     }
   ],
   "schema_ref": "rules/non_blocking_lint.json",
@@ -229,21 +236,12 @@
   },
   "lint_script_path": "scripts/lint.sh",
   "frontmatter_schema": {
-    "required": [
-      "tags",
-      "date",
-      "sources"
-    ],
-    "optional": [
-      "related"
-    ]
+    "required": ["tags", "date", "sources"],
+    "optional": ["related"]
   },
   "git_conventions_reference": "AGENTS.md#git-conventions",
   "templates_reference": "AGENTS.md#page-templates",
-  "inherits_from": [
-    "guardrails",
-    "logging_templates"
-  ],
+  "inherits_from": ["guardrails", "logging_templates"],
   "agent_read_instructions": {
     "rule": "Agent MUST read AGENTS.md before executing any lint checks.",
     "reason": "AGENTS.md contains the latest schema, rules, and conventions. Process files inherit from AGENTS.md — always refresh context before starting.",

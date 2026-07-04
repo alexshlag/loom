@@ -3,7 +3,10 @@ tags: [ rag, knowledge-base, llm, compounding-knowledge]
 date: 2026-06-25
 sources: [raw/llm-wiki.md]
 related: []
+aliases: ["LLM Wiki Pattern", "Karpathy wiki", "compounding knowledge base"]
 ---
+
+
 
 # LLM Wiki Pattern — Incremental Knowledge Base Building
 

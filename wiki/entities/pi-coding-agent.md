@@ -3,7 +3,10 @@ tags: [coding-agent, terminal-ui, typescript-extension, llm-agency, nodejs-sdk]
 date: 2026-06-24
 sources: [raw/corrected/SRC-2025-06-24-001/pi-dev-docs-latest.md]
 related: []
+aliases: ["Pi Coding Agent", "pi-llm-wiki", "terminal agent"]
 ---
+
+
 
 # Pi Coding Agent
 
@@ -67,4 +70,3 @@ curl -fsSL https://pi.dev/install.sh | sh
 ## Новые связи (2026-06-24)
 * [AI Factory vs Pi — Category Distinction](concepts/ai-factory-vs-pi.md) — различение категорий: AI Factory = workflow schema, Pi = harness runtime
 * [Andrej Karpathy](entities/andrej-karpathy.md) — автор LLM Wiki Pattern, источник идеи compounding wiki
-

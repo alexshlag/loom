@@ -438,3 +438,6 @@
   - Added ≥3 domain-specific tags to: pi-coding-agent.md, andrej-karpathy.md, service-container.md, symfony-dependency-injection.md, event-dispatcher.md, twig-templating.md, ai-factory-vs-pi.md
   - Removed generic type-tags (researcher/ai-scientist → machine-learning/deep-learning etc., architecture-pattern → workflow-schema etc.)
   - All entity/concept pages now comply with tag-guidelines.json ≥3 domain tags rule
+
+## [2026-07-04] fix | rebuild-meta.sh — Fixed smart truncation of summary text (avoid cutting on [\ or ") and aliases parsing (quote artifacts from split(,))
+## [2026-07-04] fix | lint.sh Check 14 — Fixed trailing comma bug in heredoc JSON output (STRUCTURAL_VIOLATOR_JSON)

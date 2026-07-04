@@ -9,5 +9,14 @@
     "How It Works",
     "Examples / Application",
     "Related Pages"
+  ],
+  "recommended_frontmatter": [
+    "tags",
+    "date",
+    "type",
+    "category",
+    "aliases",
+    "sources",
+    "related"
   ]
 }

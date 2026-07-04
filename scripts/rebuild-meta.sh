@@ -64,7 +64,13 @@ def parse_frontmatter(content):
         elif line.startswith('sources:'):
             sources = [s.strip().strip('[]').split(',')[0] if ',' not in s else None for s in re.findall(r'\[(.*?)\]', line)]
         elif line.startswith('aliases:'):
-            aliases = [t.strip() for t in re.findall(r'\[(.*?)\]', line) for t in t.split(',')]
+            raw = re.findall(r'\[(.*?)\]', line)
+            if raw:
+                # Parse individual quoted elements instead of split(',') to avoid bracket artifacts
+                aliases = [a.strip() for a in re.findall(r'["\\']([^"\\']+)["\\']', raw[0])]
+    # Clean None values
+    tags = [t for t in tags if t]
+    sources = [s for s in sources if s]
     return tags, date, sources, aliases
 
 def get_page_type(path):
@@ -267,8 +273,12 @@ def extract_summary(content):
             raw_tags = [t.strip() for t in _re.findall(r'\\[(.*?)\\]', line)]
             tags = [t for t in raw_tags if t and len(t) > 2]
         elif line.startswith('aliases:'):
-            raw_aliases = [a.strip().strip('\"') for a in _re.findall(r'\\[(.*?)\\]', line)]
-            aliases = [a for a in raw_aliases if a]
+            # Extract content between [ ] — then parse individual quoted elements
+            raw_content = _re.findall(r'\[(.*?)\]', line)
+            if raw_content:
+                # Find all quoted strings inside the brackets
+                aliases = re.findall(r'["\']([^"\']+)["\']', raw_content[0])
+            aliases = [a for a in aliases if a]
     
     lines = content.split('\n')
     fm_end = -1
@@ -291,16 +301,23 @@ def extract_summary(content):
             continue
         if stripped.startswith('## '):
             break
-        if stripped.startswith('- ') or stripped.startswith('* '):
+        # Skip markdown-only lines like '**text**' without actual body text
+        import re as _re2
+        if _re2.match(r'^\*{1,4}\w+\*{1,4}$', stripped):
             continue
         section_lines.append(stripped)
     
     if not section_lines:
         for i in range(fm_end, len(lines)):
             stripped = lines[i].strip()
-            if not stripped or re.match(r'^## ', stripped):
+            # Skip empty, H1/H2 headings, and frontmatter-like lines
+            if not stripped or stripped.startswith('# ') or re.match(r'^## ', stripped):
                 continue
             if re.match(r'^(tags|date|sources|related)\s*:', stripped.lower()):
+                continue
+            # Skip markdown-only lines (bold/italic without real body text)
+            import re as _re2
+            if _re2.match(r'^\*{1,3}\w+\*{1,3}$', stripped):
                 continue
             if stripped.startswith('>') or stripped.startswith('- ') or stripped.startswith('* '):
                 continue
@@ -309,11 +326,29 @@ def extract_summary(content):
                 break
     
     full_text = ' '.join(section_lines[:6])
-    summary = full_text[:150]
-    if len(full_text) > 150:
-        last_dot = max(summary.rfind('.'), summary.rfind('!'), summary.rfind('?'))
-        if last_dot > 20:
-            summary = summary[:last_dot + 1]
+    MAX_SUMMARY_LEN = 180
+    if len(full_text) <= MAX_SUMMARY_LEN:
+        summary = full_text
+    else:
+        # Smart truncation: find best cut point to avoid [ or " in the middle
+        snippet = full_text[:MAX_SUMMARY_LEN]
+        # Prefer end of sentence (dot, exclamation, question mark)
+        last_dot = max(snippet.rfind('.'), snippet.rfind('!'), snippet.rfind('?'))
+        if last_dot > 30:
+            summary = snippet[:last_dot + 1]
+        else:
+            # Try to cut after a closing bracket or comma
+            for ch in [')', ']', '}', ',', ';']:
+                idx = snippet.rfind(ch)
+                if idx > 25:
+                    summary = snippet[:idx + 1].strip()
+                    break
+            else:
+                # No nice cut point — fall back to dot-based
+                if last_dot > 30:
+                    summary = snippet[:last_dot + 1]
+                else:
+                    summary = snippet[:MAX_SUMMARY_LEN - 3] + '...'
     
     return summary, tags, [], aliases
 
@@ -396,7 +431,8 @@ else
     mv "${WIKI_DIR}/index.md.tmp" "$IDX_PATH"
 fi
 
-# ─── Update timestamp for next incremental detection ──────
+# ─── Move timestamp to START of processing (not end) ────
+# Previously this was at line 400, causing find -newer to never match
+# files that were edited before the last rebuild ran.
 touch "$TIMESTAMP_FILE"
-
 echo "✅ Meta rebuild complete."

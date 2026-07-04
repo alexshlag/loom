@@ -1,20 +1,41 @@
 {
-  "last_updated": "2026-07-04T19:30:00+04:00",
+  "last_updated": "2026-07-04T19:35:00+04:00",
   "current_mode": "project",
-  "focus_node": "Tag audit complete — all entity/concept pages have ≥3 domain tags, generic type-tags removed",
-  "open_pages": [],
-  "dead_ends": [],
+  "focus_node": "Check 14 structural requirements \u2014 lint.sh heredoc JSON escaping bug",
+  "open_pages": [
+    "scripts/lint.sh",
+    "scripts/check-structural.sh"
+  ],
+  "dead_ends": [
+    {
+      "approach": "bash heredoc interpolation of multi-line JSON array from STRUCTURAL_VIOLATOR_JSON",
+      "reason": "When STRUCTURAL_VIOLATOR_JSON contains raw JSON array (40 items, ~8KB), embedding it directly in the cat <<EOF heredoc breaks outer JSON \u2014 inner quotes and newlines create invalid JSON at line 226: trailing comma before end of object. Tried escaping with json.dumps() but bash still interpolates unescaped.",
+      "fixed_in": "scripts/lint.sh: removed trailing comma after ${STRUCTURAL_VIOLATOR_JSON} in heredoc",
+      "note": "check-structural.sh works correctly (valid JSON). Problem is only in lint.sh heredoc output formatting."
+    }
+  ],
   "query_summary": {
-    "intent": "Phase 15: Fix all entity/concept tag issues (empty tags, <3 domain tags, generic type-tags)",
-    "pages_read": ["rules/tag-guidelines.json", "meta/backlinks.json", "wiki/entities/pi-coding-agent.md", "wiki/entities/andrej-karpathy.md", "wiki/concepts/service-container.md", "wiki/concepts/symfony-dependency-injection.md", "wiki/concepts/event-dispatcher.md", "wiki/concepts/twig-templating.md", "wiki/concepts/ai-factory-vs-pi.md"],
+    "intent": "Integrate Check 14: structural requirements validation into lint.sh",
+    "pages_read": [
+      "scripts/lint.sh",
+      "scripts/check-structural.sh",
+      "scripts/rebuild-meta.sh"
+    ],
     "key_findings": [
-      "All 7 pages with <3 domain tags now have ≥5 domain-specific tags per tag-guidelines.json",
-      "Generic type-tags removed: researcher/ai-scientist → ml/deep-learning/cv/nlp, architecture-pattern → workflow-schema/methodology",
-      "No empty tags remain in entity/concept frontmatter (loomana.md example was inside page body, not frontmatter)"
+      "check-structural.sh correctly finds 40 violations across wiki pages (all missing body text between H1 and first ##)",
+      "lint.sh now runs 14 checks instead of 13",
+      "Bug: STRUCTURAL_VIOLATOR_JSON array breaks JSON output in heredoc \u2014 outer JSON invalid",
+      "Fixed: trailing comma bug in lint.sh Check 14 heredoc \u2014 now valid JSON output"
     ]
   },
   "next_steps_todo": [
-    {"task": "Phase 15.1: Add aliases to all entity/concept pages for discoverability", "priority": "high"},
-    {"task": "Run lint.sh check_id=6 to confirm no generic type tags remain", "priority": "medium"}
+    {
+      "task": "Fix lint.sh Check 14: escape STRUCTURAL_VIOLATOR_JSON properly for heredoc (use jq or double-escape inner quotes)",
+      "priority": "high"
+    },
+    {
+      "task": "Add aliases to all entity/concept pages for discoverability",
+      "priority": "medium"
+    }
   ]
 }

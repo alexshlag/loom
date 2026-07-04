@@ -95,6 +95,7 @@ empty_count=0
 non_en_count=0
 generic_count=0
 xr_count=0
+aliases_missing=0
 
 all_pages=$(find "$WIKI_DIR/entities" "$WIKI_DIR/concepts" "$WIKI_DIR/syntheses" "$WIKI_DIR/comparisons" -name "*.md" 2>/dev/null | sort)
 
@@ -113,6 +114,15 @@ while IFS= read -r f; do
     if [[ -z "$tag_content" ]] || ! echo "$tag_content" | grep -qP '[a-z]'; then
         ((empty_count++)) || true
         continue
+    fi
+    
+    # Count tags for aliases_missing check (high search-potential pages need aliases)
+    tag_num=$(echo "${my_tags[@]}" | tr ' ' '\n' | grep -c '.' || true)
+    if [[ "$tag_num" -ge 5 ]]; then
+        alias_line=$(head -10 "$f" | grep '^aliases:' 2>/dev/null || true)
+        if [[ -z "$alias_line" ]] || [[ "$alias_line" == *"aliases: []"* ]] || [[ "$alias_line" == *"aliases:" ]]; then
+            ((aliases_missing++)) || true
+        fi
     fi
     
     IFS=',' read -ra my_tags <<< "$tag_content"
@@ -234,9 +244,10 @@ cat <<EOF
     "empty_tags": ${empty_count},
     "non_en_tags": ${non_en_count},
     "generic_type_tags": ${generic_count},
-    "xr_gaps": ${xr_count}
+    "xr_gaps": ${xr_count},
+    "aliases_missing": ${aliases_missing}
   },
-  "total_issues": $((empty_count + non_en_count + generic_count + xr_count)),
+  "total_issues": $((empty_count + non_en_count + generic_count + xr_count + aliases_missing)),
   "status": "$([ $((empty_count + non_en_count + generic_count + xr_count)) -eq 0 ] && echo 'CLEAN' || echo 'ISSUES_FOUND')"
 }
 EOF
@@ -251,11 +262,10 @@ Issues found:
 - Non-English tags (TAG-P6): ${non_en_count}
 - Generic type duplicates (TAG-P1): ${generic_count}
 - Cross-reference gaps (TAG-P3): ${xr_count}
-
-Total: $((empty_count + non_en_count + generic_count + xr_count)) issues
+- Missing aliases for high-potential pages (≥5 tags): ${aliases_missing}
 
 $(if $FIX_MODE; then echo "Fix mode enabled — auto-fix applied."; fi)
 ERRSUMMARY
 fi
 
-exit $([ "$((empty_count + non_en_count + generic_count + xr_count))" -eq 0 ] && echo 0 || echo 1)
+exit $([ "$((empty_count + non_en_count + generic_count + xr_count + aliases_missing))" -eq 0 ] && echo 0 || echo 1)

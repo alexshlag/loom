@@ -266,6 +266,20 @@ FMEOF
 fi
 TOTAL_ISSUES=$((TOTAL_ISSUES + MISSING_FM))
 
+
+# --- Check 14: Structural requirements — body text between H1 and first ## ---
+STRUCTURAL_VIOLATIONS=0; STRUCTURAL_VIOLATOR_JSON='[]'
+if [[ "$SKIP_CHECKS" != *",14,"* ]]; then
+    structural_output=$(bash "${SCRIPT_DIR}/check-structural.sh" "$WIKI_DIR" 2>/dev/null || true)
+    if [ -n "$structural_output" ] && [ "$structural_output" != '[]' ]; then
+        STRUCTURAL_VIOLATIONS=$(echo "$structural_output" | python3 -c "import sys,json;print(len(json.load(sys.stdin)))")
+        # Escape JSON for safe heredoc insertion by reading from temp file
+        echo "$structural_output" > /tmp/lint_structural.json
+        STRUCTURAL_VIOLATOR_JSON=$(cat /tmp/lint_structural.json)
+    fi
+fi
+TOTAL_ISSUES=$((TOTAL_ISSUES + STRUCTURAL_VIOLATIONS))
+
 # D7: Rebuild meta index after tag auto-fixes AND frontmatter insertions
 if [[ $FIX_ITER -gt 0 ]] || [[ $MISSING_FM -gt 0 ]]; then
     echo "[*] Rebuilding meta index..." >&2
@@ -277,7 +291,7 @@ cat <<EOF | grep -v "^="
 {
   "timestamp": "$(date +%Y-%m-%dT%H:%M:%S)",
   "wiki_dir": "${WIKI_DIR#/}",
-  "checks_run": 13,
+  "checks_run": 14,
   "issues_found": {
     "contradictions": ${CONTRADICTIONS},
     "orphan_pages": ${ORPHAN_COUNT},
@@ -296,7 +310,9 @@ cat <<EOF | grep -v "^="
     "tag_non_en": ${TAG_NON_EN},
     "tag_generic": ${TAG_GENERIC},
     "tag_xr_gaps": ${TAG_XR_GAPS},
-    "missing_frontmatter": ${MISSING_FM}
+    "missing_frontmatter": ${MISSING_FM},
+    "structural_violations": ${STRUCTURAL_VIOLATIONS},
+    "structural_violator_paths": ${STRUCTURAL_VIOLATOR_JSON}
   },
   "total_issues": ${TOTAL_ISSUES},
   "status": "$([ $TOTAL_ISSUES -eq 0 ] && echo 'CLEAN' || echo 'ISSUES_FOUND')"
@@ -307,7 +323,7 @@ EOF
 if [ "$QUIET" = true ]; then
   : # no-op: silent mode — suppress human-readable output
 else
-  echo "[✓] Checks run: 13" >&2
+  echo "[✓] Checks run: 14" >&2
   echo "[!] Total issues found: ${TOTAL_ISSUES}" >&2
 fi
 

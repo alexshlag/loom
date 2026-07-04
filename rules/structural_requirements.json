@@ -1,0 +1,19 @@
+{
+  "rule_id": "FIRST-BLOCK-V1",
+  "name": "H1 + body_text mandatory before first ##",
+  "description": "Каждая новая wiki-страница должна содержать 1-2 предложения описания (body text) между H1 заголовком и первым подзаголовком (##). Это гарантирует, что rebuild-meta.sh / extract_summary() всегда найдёт чистый текст для summary.",
+  "pattern": [
+    "# Entity/Concept Name",
+    "",
+    "Entity description — one or two sentences that define it in plain language."
+  ],
+  "validation_rules": [
+    {
+      "rule": "no_body_text_between_h1_and_first_subheading → HALT_AND_FIX: agent must add a summary paragraph before any ## sections"
+    },
+    {
+      "rule": "body_text_must_not_be_markdown_only — lines like '**text**' or '*italic*' do not count as body text"
+    }
+  ],
+  "agent_instruction": "При создании новой страницы: после frontmatter и H1 сразу пиши 1-2 предложения описания. Затем → ## Определение, далее секции по шаблону."
+}

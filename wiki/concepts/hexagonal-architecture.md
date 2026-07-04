@@ -3,7 +3,10 @@ tags: [ architecture, hexagonal, clean-architecture, domain-driven-design]
 date: 2026-06-25
 sources: [raw/corrected/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md]
 related: [wiki/entities/symfony.md, wiki/concepts/symfony-dependency-injection.md]
+aliases: ["Hexagonal Architecture", "Ports and Adapters", "DDD architecture"]
 ---
+
+
 
 # Hexagonal Architecture & Clean Patterns in Symfony
 
