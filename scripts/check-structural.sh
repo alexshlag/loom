@@ -19,8 +19,10 @@ wiki_dir = os.environ.get('WIKI_DIR', './wiki')
 violations = []
 
 for root, dirs, files in os.walk(wiki_dir):
-    # Skip system directories
+    # Skip system directories and root level (system files)
     if 'meta' in root or 'raw' in root or '.vault-meta' in root:
+        continue
+    if root == wiki_dir:  # Skip system files at root level (hot.md, index.md, log.md, overview.md, snapshot.md)
         continue
     for fname in sorted(files):
         if not fname.endswith('.md'):
