@@ -2,6 +2,35 @@
 
 ## Active Project
 
+**Focus**: Phase 14 Schema Optimization — Compact rules implementation & memory sync bridge rule  
+**Status**: 🟥 **P0 Priority** — requires session refresh before full implementation.
+
+### Key Findings
+- Implemented 6 compact principles (Р01-Р06) in RULES.md#9 based on Anthropic/Claude/AgentPatterns research
+- Phase 14 marked as P0 priority task in PLAN.md with `.pi/skills/compact/SKILL.md` integration
+- Added memory sync bridge rule to AGENTS.md Code Conventions — dev-process → wiki-agent-memory
+- Compact skill ready for automated verbose JSON → constraints refactoring
+
+### What Was Changed
+1. **RULES.md#9**: Added 6 compact rules (Р01-Р06) with schema_ref, progressive disclosure, recency bias
+2. **PLAN.md Phase 14**: Updated stages list + marked as P0 priority task
+3. **AGENTS.md Code Conventions**: Added memory sync bridge rule — dev-process → wiki-agent-memory
+
+## Active Session Context
+
+**Topic**: Compact instruction principles implementation for agent context optimization  
+**Resolution**: Research-backed compact rules implemented; memory sync bridge added to AGENTS.md  
+**Result**: 6 principles defined (Р01-Р06), compact skill created, Phase 14 marked P0 — awaiting session refresh for full implementation
+
+## Next Steps
+1. Session refresh required before starting Phase 14 implementation (agent needs context reset)
+2. Apply `.pi/skills/compact/SKILL.md` to existing verbose process files → constraints + if_broken format
+3. Test compact skill on process-ingest.json / process-query.json after session update
+
+---
+
+## Active Project
+
 **Focus**: Context Management System — Phase 32 (ALL rules Transient)  
 **Status**: Implemented v2.0 context-scopes.json with ALL rules as Transient
 
