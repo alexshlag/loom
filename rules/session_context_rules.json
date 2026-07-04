@@ -1,121 +1,42 @@
 {
-  "rule_name": "Session Context Management",
-  "description": "Глобальное правило сохранения контекста сессии в hot.md. Не зависит от режима работы — применяется при любом взаимодействии пользователя.",
+  "rule_name": "session_context_management",
+  "rule_id": "SCM-V1",
+
   "memory_layers": {
-    "working_memory.json": {
-      "role": "Оперативная память текущей сессии",
-      "lifecycle": "turn → turn, чистится при dismissal/compaction"
-    },
-    "hot.md": {
-      "role": "Срез активного проекта и вопросов между сессиями. Выживает compact через restore-hot-cache.sh.",
-      "lifecycle": "межсессийно, обновляется при каждом важном действии"
-    },
-    "log.md": {
-      "role": "Append-only летопись всех действий wiki",
-      "lifecycle": "навсегда, agent читает через grep (последние 10-20 записей)"
-    }
+    "working_memory.json": {"lifecycle": "turn → turn"},
+    "hot.md": {"lifecycle": "inter-session, updated on every important action"},
+    "log.md": {"lifecycle": "append-only"}
   },
 
   "save_triggers": [
-    {
-      "trigger_id": "user_message_received",
-      "description": "Сразу после получения вопроса/задачи пользователя — агент записывает суть запроса в hot.md.",
-      "rule_id": "HOT-SAVE-QUERY-V1"
-    },
-    {
-      "trigger_id": "action_completed",
-      "description": "После завершения действия или ответа — агент обновляет hot.md: summary что сделано + использованные wiki-страницы.",
-      "rule_id": "HOT-SAVE-ACTION-V1"
-    },
-    {
-      "trigger_id": "wiki_page_modified",
-      "description": "При любом создании или обновлении wiki-страницы — агент обязан записать summary изменений в System State секцию hot.md (pages modified, what changed).",
-      "rule_id": "HOT-WIKI-CHANGES-V1"
-    },
-    {
-      "trigger_id": "page_created_or_updated",
-      "description": "После любого create/update wiki-страницы через ingest/query — агент ОБЯЗАТЕЛЬНО обновляет working_memory.json: focus_node, next_steps_todo (auto-cleanup), и hot.md System State. Это правило НЕ зависит от режима — применяется к каждому wiki-операции.",
-      "rule_id": "WM-SYNC-AFTER-WIKI-V1"
-    }
+    {"trigger_id": "user_message_received",        "rule_id": "HOT-SAVE-QUERY-V1",         "fields": ["query_intent", "project_context", "timestamp"]},
+    {"trigger_id": "action_completed",              "rule_id": "HOT-SAVE-ACTION-V1",        "fields": ["action_summary", "wiki_pages_used", "key_findings"]},
+    {"trigger_id": "wiki_page_modified",            "rule_id": "HOT-WIKI-CHANGES-V1",       "fields": ["pages_modified", "changes_summary", "sources_added"]},
+    {"trigger_id": "page_created_or_updated",       "rule_id": "WM-SYNC-AFTER-WIKI-V1",     "fields": ["focus_node", "next_steps_todo (auto-cleanup)", "query_summary"]}
   ],
 
   "write_algorithm": {
-    "step_1_capture_user_query": {
-      "description": "Агент записывает вопрос/задачу пользователя в hot.md сразу при получении (не дожидаясь конца сессии).",
-      "rule_id": "HOT-SAVE-QUERY-V1",
-      "fields_to_write": [
-        "query_intent — суть вопроса или задачи",
-        "project_context — WORK_MODE: project если применимо",
-        "timestamp — текущее время"
-      ],
-      "hot_section": "Active Session Context → topic, query_intent"
-    },
-
-    "step_2_update_after_action": {
-      "description": "После завершения действия или ответа — агент обновляет hot.md: summary что сделано + использованные wiki-страницы.",
-      "rule_id": "HOT-SAVE-ACTION-V1",
-      "fields_to_write": [
-        "action_summary — краткое описание выполненного действия или ответа",
-        "wiki_pages_used — список прочитанных/созданных wiki-страниц",
-        "key_findings — ключевые выводы из обсуждения"
-      ],
-      "hot_section": "Active Session Context → pages read, key findings"
-    },
-
-    "step_3_wiki_page_modified": {
-      "description": "При создании/обновлении wiki-страницы — агент записывает summary изменений в System State секцию hot.md.",
-      "rule_id": "HOT-WIKI-CHANGES-V1",
-      "fields_to_write": [
-        "pages_modified — список изменённых/созданных wiki-страниц (paths)",
-        "changes_summary — краткое описание что изменилось в каждой странице",
-        "sources_added — новые источники если были добавлены"
-      ],
-      "hot_section": "System State → Recent Changes section", "priority": "immediate" 
-    },
-
-    "step_4_working_memory_sync": {
-      "description": "После create/update wiki-страницы — агент ОБЯЗАТЕЛЬНО обновляет working_memory.json и hot.md. Применяется к любому режиму.",
-      "rule_id": "WM-SYNC-AFTER-WIKI-V1",
-      "fields_to_write": [
-        "focus_node — имя текущей задачи (обновляется после завершения)",
-        "next_steps_todo — auto-cleanup: удалить completed задачи, добавить новые шаги",
-        "query_summary — intent + pages_read + key_findings"
-      ],
-      "hot_section": "System State → Recent Changes section",
-      "priority": "immediate",
-      "golden_rule": "Never append to JSON files. Read entire WM.json → modify in memory → write back complete document." 
-    }
+    "step_1_capture_user_query":   {"rule_id": "HOT-SAVE-QUERY-V1",         "hot_section": "Active Session Context → topic, query_intent"},
+    "step_2_update_after_action":  {"rule_id": "HOT-SAVE-ACTION-V1",        "hot_section": "Active Session Context → pages read, key findings"},
+    "step_3_wiki_page_modified":   {"rule_id": "HOT-WIKI-CHANGES-V1",       "hot_section": "System State → Recent Changes section", "priority": "immediate"},
+    "step_4_working_memory_sync":  {"rule_id": "WM-SYNC-AFTER-WIKI-V1",     "hot_section": "System State → Recent Changes section", "priority": "immediate"}
   },
 
   "read_algorithm": {
-    "session_start": {
-      "description": "При старте сессии агент читает hot.md для восстановления контекста предыдущей работы.",
-      "rule_id": "HOT-LOAD-V1",
-      "steps": [
-        {"step": 1, "action": "read working_memory.json → focus_node, next_steps_todo"},
-        {"step": 2, "action": "restore-hot-cache.sh → прочитать Active Project и Session Context из hot.md"}
-      ]
-    },
-
-    "log_context_reading": {
-      "description": "Agent читает log.md при старте сессии для понимания контекста предыдущих обсуждений.",
-      "rule_id": "HOT-LOG-READ-V1",
-      "pattern": "grep -m 20 \"\" wiki/log.md | tail -20 (не cat — только релевантные записи)"
-    }
+    "session_start":           {"rule_id": "HOT-LOAD-V1",         "steps": [{"step": 1, "action": "read working_memory.json"}, {"step": 2, "action": "restore-hot-cache.sh read Active Project + Session Context"}]},
+    "log_context_reading":     {"rule_id": "HOT-LOG-READ-V1",     "pattern": "grep -m 20 '' wiki/log.md | tail -20 (NEVER cat)"}
   },
 
-  "hot_structure": {
-    "sections": [
-      {"name": "Active Project (WORK_MODE: project)", "fields": ["project name", "focus node", "related wiki pages", "key findings", "next steps"]},
-      {"name": "Active Session Context", "fields": ["topic", "query_intent", "pages read", "key findings"]},
-      {"name": "System State", "fields": ["active threads (phase statuses)", "recent_changes: wiki page paths + summary of modifications"]}
-    ]
-  },
+  "constraints": [
+    "NEVER wait until session end to write hot.md — write immediately after action",
+    "NEVER duplicate log.md content in hot.md — only summary slice",
+    "NEVER append to JSON files — read entire file → modify → write complete document"
+  ],
 
   "golden_rules": [
-    "Agent записывает в hot.md сразу — не дожидаясь конца сессии.",
-    "Hot.md содержит срез, а не полную ленту. Дублирование log.md запрещено.",
-    "Working memory может быть обрезан при compact — но restore-hot-cache.sh восстановит hot.md.",
-    "При создании/обновлении wiki-страницы → System State в hot.md ОБЯЗАТЕЛЬНО обновляется с summary изменений (rule HOT-WIKI-CHANGES-V1)."
+    {"rule_id": "IMMEDIATE_WRITE",       "value": "Write hot.md immediately, not at session end"},
+    {"rule_id": "SLICE_NOT_FULL_LOG",    "value": "hot.md = summary slice, never full log copy"},
+    {"rule_id": "RESTORE_ON_COMPACT",    "value": "restore-hot-cache.sh restores hot.md after compact"},
+    {"rule_id": "SYSTEM_STATE_ALWAYS",   "value": "System State section updated on every wiki create/update"}
   ]
 }

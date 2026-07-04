@@ -1,137 +1,72 @@
 {
-  "protocol_name": "Contradiction Resolution Flow",
-  "description": "Cascade-based algorithm: Code Reality > Live State > Documentation (evidence_grade). Replaces old authoritative_source → temporal_conflict → user_review flow.",
+  "protocol": "contradiction_resolution",
+  "rule_id": "CR-V1",
 
-  "agent_prompt": {
-    "steps": [
-      "Classify fact type: objective (math, code, physics) or subjective/ambiguous (opinions, historical claims without proof)",
-      "If objective → apply cascade priority. User override is REJECTED",
-      "If subjective → user override is ALLOWED (final say to user)",
-      "Apply cascade: priority 1 (code) > priority 2 (live) > priority 3 (docs with evidence_grade)",
-      "For documentation: documented(1) > corroborated(2) > assertion_only(3)",
-      "If agent_confidence < threshold → human_override",
-      "Example: GitHub issue (live_state, priority 2) > docs (documentation, priority 3)"
-    ],
-    "decision_rules_integration": {
-      "schema_ref": "rules/decision-rules.md",
-      "dr-1": "Script reports raw overlap only — do not change scores automatically",
-      "dr-2": "If B contains additions/deletions (correction) + evidence → evaluate correction, B > A on corrected claim",
-      "dr-3": "Attribution conflict → A wins original; B only reporter"
+  "agent_steps": {
+    "step_1": "classify_fact_type: objective | subjective",
+    "step_2_if_objective": "apply_cascade_priority. user_override = REJECTED",
+    "step_3_if_subjective": "user_override_accepted → apply_user_decision_to_wiki",
+    "step_4_cascade_order": {
+      "priority_1": "code_reality — deterministic, always wins",
+      "priority_2": "live_state — ephemeral but observable > documentation",
+      "priority_3": "documentation with evidence_grade — only when no code/live available"
+    },
+    "step_5_docs_priority": {
+      "documented": 1,
+      "corroborated": 2,
+      "assertion_only": 3
     }
   },
 
-  "type_classification": {
-    "rule": "Classify each source as documentation | code_reality | live_state (reality layer)",
-    "categories": [
-      {"layer": "code_reality", "description": "Machine-verifiable: code compiles, tests pass, API responses"},
-      {"layer": "live_state", "description": "Ephemeral but observable: current API status, server metrics, runtime state"},
-      {"layer": "documentation", "description": "Authoritative docs: blogs, manuals, articles — lowest priority"}
-    ]
+  "constraints": [
+    "NEVER user_override for objective facts",
+    "NEVER skip cascade_order — always apply priority_1 > priority_2 > priority_3",
+    "NEVER use documentation if code_reality or live_state exists"
+  ],
+
+  "resolution_flow": {
+    "priority_1_condition": "source_layer == 'code' && source_exists_in_repo",
+    "priority_2_condition": "timestamp < threshold AND source_layer != 'code'",
+    "priority_3_condition": "source_layer == 'documentation' AND evidence_grade > 'assertion_only'",
+    "priority_4_condition": "agent_confidence < threshold OR conflicting_priorities"
   },
-
-  "cascade_order": [
-    {
-      "priority": 1,
-      "source_layer": "code_reality",
-      "description": "Code compiles or not — deterministic, machine-verifiable. Always wins.",
-      "example": "GitHub issue shows infinite loop > docs say API works"
-    },
-    {
-      "priority": 2,
-      "source_layer": "live_state",
-      "description": "API returns X right now — ephemeral but observable. Wins over documentation."
-    },
-    {
-      "priority": 3,
-      "source_layer": "documentation",
-      "description": "Authoritative docs win only when no code_reality or live_state available.",
-      "note": "This is the ONLY layer where domain authority matters"
-    }
-  ],
-
-  "evidence_grade_sub_priority": [
-    {"grade": "documented", "weight": 1, "description": "Fact from authoritative source (official docs, project wiki, core maintainer blog)"},
-    {"grade": "corroborated", "weight": 2, "description": "Fact confirmed by 2+ independent sources"},
-    {"grade": "assertion_only", "weight": 3, "description": "Claim without confirmation or from weak source (generic blog, forum post)"}
-  ],
-
-  "resolution_priority": [
-    {
-      "priority": 1,
-      "condition": "source_layer == code && source exists in repository"
-    },
-    {
-      "priority": 2,
-      "condition": "timestamp < threshold AND source_layer != code"
-    },
-    {
-      "priority": 3,
-      "condition": "source_layer == documentation && evidence_grade > assertion_only",
-      "sub_priority": {"schema_ref": "#evidence_grade_sub_priority"}
-    },
-    {
-      "priority": 4,
-      "condition": "agent_confidence < threshold OR conflicting cascade priorities"
-    }
-  ],
 
   "fallback_chain": [
-    {"condition": "multiple_sources_same_priority", "action": "evidence_grade_sub_priority (lower weight wins)"},
-    {"condition": "same_evidence_and_priority", "action": "temporal_decay (most recent timestamp wins)"},
-    {"condition": "still_ambiguous_after_temporal_check", "action": "human_override → flag in answer with CONFLICT tag"}
+    {"condition": "same_priority", "action": "evidence_grade_sub_priority"},
+    {"condition": "same_evidence_and_priority", "action": "temporal_decay_most_recent_wins"},
+    {"condition": "still_ambiguous", "action": "human_override_FLAG_CONFLICT"}
   ],
 
   "resolution_actions": [
-    {"when": "contradiction_resolved_via_cascade", "action": "add_update_section_to_old_page"},
-    {"when": "conflicting_priorities OR multiple_live_state_sources", "action": "create_comparison_page_for_complex_conflicts"},
-    {"when": "not_resolved (human_override)", "action": "note_in_answer"}
+    {"when": "resolved_via_cascade", "action": "add_update_section_to_old_page"},
+    {"when": "conflicting_priorities", "action": "create_comparison_page_for_complex_conflicts"},
+    {"when": "not_resolved_human_override", "action": "note_in_answer"}
   ],
 
   "arbitration_layer": {
-    "description": "Arbitration layer: objective facts vs subjective claims. User override only for subjective.",
-    "fact_types": [
-      {
-        "type": "objective",
-        "examples": ["2+2=4", "code compiles/not", "API returns specific status code", "physical laws"],
-        "user_override_allowed": false,
-        "rule": "If fact is objective (math, code, empirical facts) → user cannot override. Agent gently recommends verification."
-      },
-      {
-        "type": "subjective",
-        "examples": ["expert opinions", "historical claims without proof", "source interpretations"],
-        "user_override_allowed": true,
-        "rule": "If fact is subjective/ambiguous → user has final say (highest authority). Agent applies user decision."
-      }
+    "objective_fact_types": [
+      "2+2=4",
+      "code_compiles_or_not",
+      "API_returns_specific_status_code",
+      "physical_laws"
     ],
-    "resolution_logic": {
-      "step_1": "classify conflict as objective or subjective",
-      "step_2_if_objective": "apply cascade priority. User override → REJECTED with gentle recommendation",
-      "step_3_if_subjective": "user_override_accepted → apply user decision to wiki"
-    }
+    "subjective_fact_types": [
+      "expert_opinions",
+      "historical_claims_without_proof",
+      "source_interpretations"
+    ],
+    "user_override_allowed_for_objective": false,
+    "user_override_allowed_for_subjective": true
   },
 
-  "logging_actions": [
-    {
-      "action": "append_to_log",
-      "format": "## [date] query | Question -> detected X contradictions, Y comparisons",
-      "trigger": "after contradiction detection, before answering user"
-    }
-  ],
-
-  "detection_output": {
-    "rule": "If contradictions found → add '## ⚠ Contradictions' section to answer before main content",
-    "include_in_answer_if_contradiction_found": true
-  },
+  "detection_output_rule": "IF contradictions_found → prepend '## Contradictions' section before main content",
 
   "post_resolution_verification": {
     "re_read_updated_pages": true,
-    "optional_web_search_if_high_stakes": {
-      "schema_ref": "rules/search_strategy.json"
-    }
+    "optional_web_search_if_high_stakes": {"schema_ref": "rules/search_strategy.json"}
   },
 
-  "history_tracking": {
-    "append_to": "## Обновлено [date] — новое уточнение",
-    "format": "- **YYYY-MM-DD**: Updated from [old] → [new]"
-  }
+  "decision_rules_integration": {"schema_ref": "rules/decision-rules.md"},
+
+  "if_broken": "STOP_GENERATION -> Classify fact type as objective or subjective -> Apply cascade priority -> Continue"
 }

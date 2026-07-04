@@ -144,12 +144,11 @@
     {
       "step_id": "step_9_post_checks",
       "name": "post_integration_checks",
-      "description": "Unified post-integration checks: lock → rebuild-meta → hot_cache_update → similarity scan → crosslinks.",
-      "actions": [
-        {"action_name": "acquire_page_lock"},
-        {"command": "./scripts/rebuild-meta.sh"},
-        {"action_name": "update_hot_with_wiki_changes", "rule_id": "HOT-WIKI-CHANGES-V1",
-         "description": "After rebuild-meta, summarize wiki changes (pages modified/created) in hot.md System State section."},
+      "step_9_post_checks": {
+        "actions": [
+          {"action_name": "acquire_page_lock"},
+          {"command": "./scripts/rebuild-meta.sh"},
+          {"action_name": "update_hot_with_wiki_changes", "rule_id": "HOT-WIKI-CHANGES-V1"},
         {"command": "./scripts/text-similarity.sh --scan-all --threshold 90"},
         {"command": "./scripts/unified-pass.sh --quiet --skip-meta --skip-crosslinks"},
         {"command": "./scripts/auto-crosslink.sh '${NEW_PAGE_PATH}' --include-root 2>/dev/null || true"},
@@ -187,7 +186,6 @@
     {
       "trigger": "on_complete",
       "rule_id": "WM-SYNC-AFTER-WIKI-V1",
-      "description": "After ingest completes → update WM + hot.md. Mandatory for all wiki operations.",
       "actions": [
         {"action_name": "update_working_memory", "fields": ["current_mode=restore_default", "focus_node", "next_steps_todo (auto-cleanup completed)"]},
         {"action_name": "write_session_context_to_hot", "rule_id": "HOT-WIKI-CHANGES-V1"}

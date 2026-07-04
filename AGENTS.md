@@ -107,15 +107,20 @@ Before EVERY git commit in development mode (AGENTS.md, RULES.md, process-\*.jso
 > This bridges dev-process → wiki-agent-memory: every git commit triggers memory update automatically — not conditional on schema changes.
 > Full guardrails enforced by `.git/hooks/pre-commit` + `scripts/validate-path.sh`.
 
-### Regular Wiki Operations Memory Sync (Non-Development)
+### Regular Wiki Operations Memory Sync
 
-После create/update wiki-страницы через ingest/query → ОБЯЗАТЕЛЬНО:
-1. Обновить working_memory.json: focus_node, next_steps_todo (auto-cleanup completed), query_summary
-2. Обновить hot.md System State Recent Changes с summary изменений
-3. Триггер: `page_created_or_updated` из session_context_rules.json
-4. Правило: **WM-SYNC-AFTER-WIKI-V1** — применяется к каждому wiki-операции, независимо от режима работы.
-
-> Этот механизм работает параллельно с Pre-commit Memory Sync Rule (который только для dev-mode). Оба правила могут срабатывать одновременно.
+```json
+{
+  "trigger": "page_created_or_updated",
+  "rule_id": "WM-SYNC-AFTER-WIKI-V1",
+  "steps": [
+    {"step": 1, "action": "update working_memory.json: focus_node + next_steps_todo (auto-cleanup) + query_summary"},
+    {"step": 2, "action": "update hot.md System State → Recent Changes with summary of wiki changes"}
+  ],
+  "scope": "applies to all wiki operations regardless of work_mode",
+  "note": "Works alongside Pre-commit Memory Sync Rule (dev-mode only) — both can trigger simultaneously"
+}
+```
 ---
 
 ## 🔄 Process Roles
