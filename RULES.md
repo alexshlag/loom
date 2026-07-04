@@ -118,6 +118,50 @@ sed -i 's/link-conventions/link_conventions/g' process-ingest.json
 
 ---
 
+## 9. КОМПАКТИЗАЦИЯ ИНСТРУКЦИЙ — Лаконичность без потери логики
+
+### Контекст
+LLM-агент имеет ограниченный контекстный window. Каждый токен в AGENTS.md и process-файлах конкурирует с реальными данными задачи. Исследования показывают, что 20–40% промптов — это noise, который не влияет на качество ответов, но стоит токенов.
+
+### Критические правила компактизации
+
+**Р01: Не дублировать уже существующие правила (schema_ref)**
+- Если правило есть в `rules/*.json`, `process-*.json` или AGENTS.md → используй только `schema_ref`
+- **Запрещено**: писать full description inline, если оно дублирует существующий файл
+- **Проверка перед добавлением**: «Есть ли это уже в rules/?» Если да → ссылка, не текст.
+
+**Р02: Не повторять один и тот же смысл в разных полях/секциях**
+- Каждое правило пишется ОДИН раз на один аспект
+- Если name/description/instruction говорят одно и то же — это **прозаическое повторение**, нужно убрать дубль
+- **Важно**: разные аспекты (что делает / какие ограничения / примеры) — это не дубль, это multi-layer specification, который полезен [AgentPatterns.ai](https://agentpatterns.ai/instructions/multi-layer-specification-redundancy/)
+
+**Р03: Стремиться к минимальному контексту без потери логики**
+- Убрать лишние слова, verbose списки (>5 элементов → вынести в references/)
+- Примеры и edge cases → в `rules/` или process-файлах, не держать в AGENTS.md
+- **Правило**: «Default assumption: agent already knows this» — если агент справится без объяснения базовых концепций → не пиши.
+
+**Р04: Process-specific детали → process-файлы (progressive disclosure)**
+- Инструкции для конкретного процесса хранить в соответствующем `process-*` файле
+- AGENTS.md → только schema_ref, не полные описания
+- **Принцип**: агент читает то, что нужно именно сейчас, а не всё подряд. Это [progressive disclosure](https://aipatternbook.com/progressive-disclosure).
+
+**Р05: Контракты → AGENTS.md, примеры → references/**
+- Обязательные правила (output contracts, validation steps) — в AGENTS.md
+- Примеры и edge cases — в `rules/` или process-файлах
+- **Проверка**: «Если агент забудет это правило, что сломается?» Если критично → в AGENTS.md. Если вспомнит из примера → в references/.
+
+**Р06: Самое важное правило — последнее (recency bias)**
+- LLM лучше запоминает то, что написано последним [llmbestpractices.com](https://llmbestpractices.com)
+- Критические контракты («никогда не делать X») должны быть в конце AGENTS.md или перед ними
+- **Паттерн**: после всех секций → «## Critical Contracts» — последние 3–5 правил, которые никогда нельзя нарушать.
+
+### Автоматизация проверки компактизации
+```bash
+# Найти verbose блоки (>30 строк) в AGENTS.md
+grep -n "^##" AGENTS.md | while read line; do echo "$line" | cut -d: -f1; done > /tmp/headings.txt
+```
+---
+
 ## 8.1 GIT WORKFLOW — Commit после каждой задачи
 
 ### Правило:

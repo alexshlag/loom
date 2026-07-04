@@ -26,7 +26,8 @@
 1. **Conceptual Grouping**: Объединение разрозненных архитектурных слоев (Raw, Wiki, Assets) в единый блок "Knowledge Architecture".
 2. **Error Handling Abstraction**: Замена детальных описаний каждой ошибки в AGENTS.md на высокоуровневую стратегию "Detect → Log → Resolve → Continue", со ссылками на `process-*.json`.
 3. **Technical Detail Extraction**: Вынос специфических технических правил (например, детали парсинга JSON или специфических флагов bash) в директорию `rules/`.
-4. **Verification**: Проверка того, что агент сохраняет способность выполнять сложные операции, несмотря на упрощение описаний.
+4. **Compact Rules Implementation**: Внедрение 6 правил компактизации инструкций из `RULES.md#9` — schema_ref вместо дублей, progressive disclosure, recency bias. Инструмент: `.pi/skills/compact/SKILL.md` для автоматического рефакторинга verbose JSON → constraints + if_broken.
+5. **Verification**: Проверка того, что агент сохраняет способность выполнять сложные операции, несмотря на упрощение описаний.
 
 **Статус:** ⬜ Open — планируется обсуждение и утверждение этапов.
 **Связь**: `issues.md#39`
