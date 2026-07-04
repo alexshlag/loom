@@ -1,5 +1,15 @@
 # Hot Cache — Активный Контекст
 
+---
+
+**System State → Recent Changes (2026-07-05)**
+- **Phase 14.5 completed**: Created rules/contradiction_resolution.json (137 lines) with full cascade priority logic
+- **Schema refs fixed**: Updated process-query.json + process-lint.json × 2 → all broken `search_strategy.json#cascade_priority` refs eliminated
+- **Memory sync added**: WM-SYNC-AFTER-WIKI-V1 trigger integrated into process-ingest.json and session_context_rules.json
+- **Files modified**: AGENTS.md, PLAN.md, issues.md, process-query.json, process-lint.json, rules/contradiction_resolution.json (new), rules/session_context_rules.json
+
+---
+
 ## Active Project
 
 **Focus**: Phase 14 Schema Cleanup — Consolidated duplicate Memory Sync rules

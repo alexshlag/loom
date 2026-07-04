@@ -1,23 +1,24 @@
 {
-  "last_updated": "2026-07-05T13:45:00+04:00",
+  "last_updated": "2026-07-05T14:30:00+04:00",
   "current_mode": "project",
-  "focus_node": "Phase 15 — Process-query → process-ingest routing fix",
+  "focus_node": "Phase 14.5 completed — cascade_priority restored, all schema_refs fixed",
   "open_pages": [
+    {"path": "rules/contradiction_resolution.json", "status": "created"},
     {"path": "process-query.json", "status": "updated"},
-    {"path": "AGENTS.md", "status": "pending_global_rule_check"}
+    {"path": "process-lint.json", "status": "updated"}
   ],
   "dead_ends": [],
   "query_summary": {
-    "intent": "Fix all wiki-write points in process-query.json to route through process-ingest.json",
-    "pages_read": ["process-query.json", "AGENTS.md"],
+    "intent": "Restore contradiction_resolution_flow logic lost during Phase 14 compacting",
+    "pages_read": ["AGENTS.md#contradiction_resolution", "process-query.json (before/after)", "process-lint.json", "RULES.md"],
     "key_findings": [
-      "Found 7+ direct wiki-write actions bypassing ingest flow",
-      "All replaced with PROPOSE_*_TO_USER + transition_after_confirm",
-      "Added step_2.7 mandatory gateway for web_search → user_confirm → process-ingest.json"
+      "Created rules/contradiction_resolution.json with full cascade logic (137 lines)",
+      "Fixed 3 broken schema_refs: search_strategy.json#cascade_priority → contradiction_resolution.json",
+      "Added WM-SYNC-AFTER-WIKI-V1 trigger to process-ingest.json and session_context_rules.json",
+      "All broken refs eliminated — agent can now follow complete resolution flow"
     ]
   },
   "next_steps_todo": [
-    {"task": "Verify AGENTS.md has global rule 'all wiki ops through process files'", "priority": "high"},
-    {"task": "Test query flow with web_search + confirm scenario", "priority": "medium"}
+    {"task": "Test contradiction_resolution_flow in runtime query scenario", "priority": "high"}
   ]
 }
