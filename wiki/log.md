@@ -451,3 +451,10 @@
 * Frontmatter updated: tags=[runtime,javascript,server-side,npm,nixos,nixpkgs]
 * Lint.sh validation passed — JSON output valid, 40 structural violations detected (system files + all concept pages missing body text before first ##)
 * hot.md refreshed with ingest summary + next steps
+
+## [2026-07-04] fix | Structural requirements — FIRST-BLOCK-V1 compliance achieved for content pages
+* Created scripts/structural-fix.py to auto-generate intro paragraphs between H1 and first ## section
+* Fixed 35 violations across entities/, concepts/, syntheses/, comparisons/ directories
+* Remaining 5 violations (hot.md, index.md, log.md, overview.md, snapshot.md) are system files — excluded from rule
+* lint.sh structural_violations: reduced from 40 to 5 (system files only)
+* All entity/concept/synthesis/comparison pages now comply with FIRST-BLOCK-V1: 1-2 sentence intro after H1 before ## sections
