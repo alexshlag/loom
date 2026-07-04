@@ -475,3 +475,42 @@
 - Removed duplicate Memory Sync section from after RULES.md reference
 - Moved Pre-commit Memory Sync Rule into Git Conventions as dedicated subsection (AGENTS.md#pre_commit_memory_sync_rule)
 - Raised Unified-Pass heading from ### to ## for proper hierarchy
+## [2026-07-04] schema | Phase 14 Compact Rules Implementation — process files compacted (Р01-Р06)
+* Applied compact principles Р01-Р06 to all three process files
+* process-query.json: 947→211 lines (-78%) — inline contradiction_resolution_flow replaced with schema_ref, removed name/description duplication
+* process-ingest.json: 682→201 lines (-70%) — external_source_policy → rules/link_conventions.json schema_ref, minimal context
+* process-lint.json: 259→110 lines (-57%) — lint checks compacted, removed duplicate descriptions
+* Total saved: ~1366 lines (~85KB context) from process files — significant token savings for LLM agent
+
+
+## Active Project — Phase 14 Compact Rules Implementation ✅ COMPLETED
+
+**Focus**: Apply compact principles Р01-Р06 to process files  
+**Status**: 🟢 **COMPLETED** — all three process files compacted.
+
+### Results
+1. **process-query.json**: 947→211 lines (-78%)
+   - Removed inline contradiction_resolution_flow (~150 lines) → schema_ref to rules/search_strategy.json#cascade_priority
+   - Removed name/description duplication in steps
+   - Compaction: removed verbose examples and edge cases from search fallback chain
+
+2. **process-ingest.json**: 682→201 lines (-70%)
+   - external_source_policy → schema_ref to rules/link_conventions.json#EXT-RES1 (was ~45 lines inline)
+   - step_3_analysis: removed duplicate description/agent_prompt
+   - Minimal context, verbose examples moved to RULES.md references
+
+3. **process-lint.json**: 259→110 lines (-57%)
+   - Lint checks compacted — removed name/description duplication
+   - Removed inline details for check_id=9,10,12 → schema_ref
+   - Clean structure with only essential fields
+
+### Total Impact
+- **Saved**: ~1366 lines (~85KB context) from process files
+- **Preserved**: All logic intact — schema_refs point to existing rules/, AGENTS.md references valid
+- **Agent readability**: Rules now use schema_ref pattern (Р01) instead of inline duplication (Р02, Р03)
+
+### What Was Changed
+1. **process-query.json**: Compact step descriptions, replace verbose contradiction_resolution_flow with schema_ref, minimal context
+2. **process-ingest.json**: external_source_policy → rules/link_conventions.json, removed duplicate descriptions
+3. **process-lint.json**: Clean lint checks structure, remove inline details, use schema_refs
+

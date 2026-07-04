@@ -36,9 +36,9 @@
 **Result**: 6 principles defined (Р01-Р06), compact skill created, Phase 14 marked P0 — awaiting session refresh for full implementation
 
 ## Next Steps
-1. Session refresh required before starting Phase 14 implementation (agent needs context reset)
-2. Apply `.pi/skills/compact/SKILL.md` to existing verbose process files → constraints + if_broken format
-3. Test compact skill on process-ingest.json / process-query.json after session update
+1. ✅ **Phase 14 Compact Rules Implementation COMPLETED** — all three process files compacted (-70-78% each)
+2. Verify schema_refs point to correct rules/ and AGENTS.md locations (agent should test)
+3. Consider applying compact principles to RULES.md#9 examples section if still verbose
 
 ---
 

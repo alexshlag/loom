@@ -1,260 +1,110 @@
 {
   "module": "process_lint",
-  "description": "Техническое обслуживание wiki — автоматические проверки и исправления",
+  "description": "\u0422\u0435\u0445\u043d\u0438\u0447\u0435\u0441\u043a\u043e\u0435 \u043e\u0431\u0441\u043b\u0443\u0436\u0438\u0432\u0430\u043d\u0438\u0435 wiki \u2014 \u0430\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0447\u0435\u0441\u043a\u0438\u0435 \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0438 \u0438 \u0438\u0441\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u044f",
   "trigger_conditions": [
     {
       "condition": "wiki_stagnation_detected",
-      "threshold": "no_new_pages_3_days",
-      "action": "START_LINT"
+      "threshold": "no_new_pages_3_days"
     },
     {
-      "condition": "contradications_found",
-      "threshold": "any_conflict_in_facts",
-      "action": "START_LINT"
+      "condition": "contradications_found"
     },
     {
-      "condition": "orphan_pages_detected",
-      "threshold": "page_with_zero_backlinks",
-      "action": "START_LINT"
+      "condition": "orphan_pages_detected"
     }
   ],
   "lint_checks": [
     {
-      "rule_ref": "DUAL-MODE-LINT-1",
-      "modes": [
-        "fast (--fast flag, new_page_only)",
-        "deep (default/full_wiki)"
-      ],
       "check_id": "1",
       "name": "contradictions_between_pages",
-      "description": "Ищи страницы, где старые утверждения уже не актуальны",
-      "actions": [
-        {
-          "action": "read_all_wiki_pages_by_category"
-        },
-        {
-          "action": "compare_facts_from_different_sources"
-        },
-        {
-          "action": "identify_conflicts"
-        }
-      ],
-      "note": "Contradiction resolution flow is defined inline within process-query.json step_id=2 (agent_prompt section), not as a separate heading."
+      "description": "\u0418\u0449\u0438 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u044b \u0433\u0434\u0435 \u0441\u0442\u0430\u0440\u044b\u0435 \u0443\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043d\u0438\u044f \u043d\u0435\u0430\u043a\u0442\u0443\u0430\u043b\u044c\u043d\u044b.",
+      "schema_ref": "rules/search_strategy.json#cascade_priority"
     },
     {
       "check_id": "2",
       "name": "orphan_pages_detection",
-      "description": "Найди страницы без входящих ссылок из других wiki-страниц. Возвращает count + paths в JSON.",
-      "note": "Запускается автоматически через scripts/lint.sh — не вызывай отдельно. Output: orphan_pages (count) + orphan_paths ([])."
+      "command": "./scripts/lint.sh --run orphan-pages",
+      "note": "\u0417\u0430\u043f\u0443\u0441\u043a\u0430\u0435\u0442\u0441\u044f \u0447\u0435\u0440\u0435\u0437 scripts/lint.sh \u2014 output JSON with count + paths."
     },
     {
       "check_id": "3",
       "name": "knowledge_gaps_detection",
-      "description": "Определи важные темы или идеи, которые упоминаются на разных страницах wiki, но не имеют собственной страницы",
-      "actions": [
-        {
-          "action": "search_mentions_of_entity_concept_in_texts"
-        },
-        {
-          "action": "create_page_or_flag_for_ingest",
-          "note": "Soft-only: lint.sh prints 'skipped (soft check)', does NOT create pages"
-        }
-      ]
+      "description": "\u041e\u043f\u0440\u0435\u0434\u0435\u043b\u0438 \u0442\u0435\u043c\u044b \u043a\u043e\u0442\u043e\u0440\u044b\u0435 \u0443\u043f\u043e\u043c\u0438\u043d\u0430\u044e\u0442\u0441\u044f \u043d\u043e \u043d\u0435 \u0438\u043c\u0435\u044e\u0442 \u0441\u0442\u0440\u0430\u043d\u0438\u0446. Soft-only check.",
+      "schema_ref": "process-query.json#compounding_decision"
     },
     {
       "check_id": "4",
       "name": "new_sources_available",
-      "description": "Полная проверка raw/sources на новые пакеты, которые не обработаны. Выводит список всех новых пакетов и предлагает запустить ingest.",
-      "command": "./scripts/check-new-sources.sh --max 10 ${PROJECT_ROOT}/raw/sources ${PROJECT_ROOT}/tracking/raw_registry.json",
-      "output_handling": {
-        "exit_code_0": "no_new_sources — proceed to next check",
-        "exit_code_1": "new_sources_found — report list of NEW: <package_id> packages, ask user if they want to ingest"
-      },
-      "note": "Детальная проверка — только для lint. Не дублирует quick-check из process-query. Lint detect → User decides → Ingest process handles actual processing."
+      "command": "./scripts/check-new-sources.sh --max 10",
+      "note": "\u041f\u043e\u043b\u043d\u0430\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0430 \u2014 lint detect \u2192 User decides \u2192 Ingest handles processing."
     },
     {
       "check_id": "5",
       "name": "new_topics_proposal",
-      "description": "Предложи новые темы или источники для поиска, опираясь на контекст диалога, связи из index.md и доступ к интернету",
-      "inputs": [
-        "context_of_conversation",
-        "links_from_index_md",
-        "available_external_sources"
-      ]
+      "description": "\u041f\u0440\u0435\u0434\u043b\u043e\u0436\u0438 \u043d\u043e\u0432\u044b\u0435 \u0442\u0435\u043c\u044b \u0438\u0437 \u043a\u043e\u043d\u0442\u0435\u043a\u0441\u0442\u0430 \u0434\u0438\u0430\u043b\u043e\u0433\u0430 \u0438 \u0441\u0432\u044f\u0437\u0435\u0439 index.md."
     },
     {
       "check_id": "6",
       "name": "mechanical_linting",
-      "description": "Механические проверки: фронтматер, дубли заголовков, пустые категории",
       "checks": [
-        {
-          "check": "duplicate_titles",
-          "rule": "no_duplicate_frontmatter_title_within_same_category_folder"
-        },
-        {
-          "check": "missing_frontmatter",
-          "rule": "required_fields: [tags, date, sources]; optional: related"
-        },
-        {
-          "check": "coverage_gaps",
-          "rule": "which_index_categories_are_empty"
-        }
+        "duplicate_titles",
+        "missing_frontmatter_fields",
+        "coverage_gaps"
       ],
-      "note": "orphaned_pages (check_id=2) и broken_links (check_id=8) вынесены в отдельные deep checks"
+      "schema_ref": "rules/structural_requirements.json"
     },
     {
       "check_id": "7",
       "name": "date_consistency_check",
-      "description": "Проверь, что год в date: совпадает с годом в секциях обновления (Обновлено YYYY-MM-DD), и что даты не старше 1 года",
-      "output_handling": {
-        "exit_code_0": "dates_consistent — proceed to next check",
-        "exit_code_1": "inconsistencies_found — report with suggestion: review and correct dates using current system date"
-      },
-      "note": "Command in lint.sh uses $WIKI_DIR arg, not hardcoded 'wiki/'"
+      "description": "\u041f\u0440\u043e\u0432\u0435\u0440\u044c \u0447\u0442\u043e year \u0432 date: \u0441\u043e\u0432\u043f\u0430\u0434\u0430\u0435\u0442 \u0441 \u0433\u043e\u0434\u043e\u043c \u0432 \u0441\u0435\u043a\u0446\u0438\u044f\u0445 \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u044f."
     },
     {
       "check_id": "8",
       "name": "broken_link_auto_resolve",
-      "description": "Найди битые ссылки через unified-pass (единый walk), попробуй auto-fix через fuzzy-match (score>=80%), report agent_review_required для оставшихся. Unified-pass replaces 3 separate script calls with 1 shared walk.",
-      "command": "./scripts/unified-pass.sh --quiet --skip-meta --skip-crosslinks --auto",
-      "output_handling": {
-        "exit_code_0": "all_links_valid — proceed to next check",
-        "exit_code_1": "broken_links_found — parse JSON: broken_links[] + auto_repaired + agent_review_required[]"
-      },
-      "reference": "rules/link_conventions.json",
-      "post_check": {
-        "command": "./scripts/rebuild-meta.sh --index-only (if auto_repaired > 0)",
-        "note": "Auto-triggered from lint.sh when AUTO_REPAIRED > 0"
-      }
+      "command": "./scripts/unified-pass.sh --auto",
+      "output": "parse JSON broken_links[] + auto_repaired + agent_review_required[]"
     },
     {
       "check_id": "9",
       "name": "detect_contradiction_deep_scan",
-      "description": "Глубокий анализ противоречий между страницами wiki через Python-скрипт. Считает frontmatter dates, извлекает ключевые факты из каждой страницы, строит матрицу конфликтов.",
       "command": "./scripts/detect-contradications.sh --quiet",
-      "output_handling": {
-        "exit_code_0": "no_contradictions_found — proceed to next check",
-        "exit_code_1": "potential_contradictions_detected — parse JSON: potential_contradictions count + conflicts[] array"
-      },
-      "actions": [
-        {
-          "action": "parse_json_output",
-          "command": "python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get(\"potential_contradictions\",0))' <<< output"
-        },
-        {
-          "condition": "conflicts_count > 0",
-          "note": "Agent review required — apply DR-1/DR-2 из decision-rules.md к каждому конфликту"
-        }
-      ],
-      "note": "See process-query.json step 2 for full contradiction cascade resolution logic."
+      "schema_ref": "rules/search_strategy.json#cascade_priority"
     },
     {
       "check_id": "10",
       "name": "text_similarity_scan",
-      "description": "Сканит все wiki-страницы на n-gram overlap ≥90%. Detects copy-paste chains. Script: text-similarity.sh --scan-all",
-      "pre_condition": {
-        "command": "./scripts/text-similarity.sh --scan-all --threshold 90",
-        "output_format": "JSON with matches array — each match has similarity_score, file1, file2"
-      },
-      "actions": [
-        {
-          "action": "parse_matches_from_json",
-          "description": "Из JSON output извлечь matches[] → для каждого pair: similarity_score, file1, file2"
-        },
-        {
-          "condition": "matches_count > 0",
-          "note": "Agent review required — apply DR-1/DR-2 из decision-rules.md к каждому overlap"
-        }
-      ],
-      "output_handling": {
-        "exit_code_0": "no_overlaps — proceed",
-        "exit_code_1": "overlaps_found — report count + pairs, agent applies decision rules"
-      },
-      "schema_ref": "rules/decision-rules.md"
+      "description": "\u0421\u043a\u0430\u043d\u0438\u0442 wiki \u043d\u0430 n-gram overlap \u226590% \u2014 detects copy-paste chains.",
+      "command": "./scripts/text-similarity.sh --scan-all --threshold 90"
     },
     {
       "check_id": "11",
       "name": "hot_cache_stale_check",
-      "description": "Проверить, есть ли изменения в wiki/ с момента последнего hot.md update. Если да — предложить пользователю обновить hot.md",
       "command": "./scripts/check-wiki-changes.sh || true",
-      "output_handling": {
-        "exit_code_0": "changes_detected → prompt user to update wiki/hot.md",
-        "exit_code_1": "no_changes → skip silently"
-      }
+      "note": "\u0415\u0441\u043b\u0438 \u0435\u0441\u0442\u044c \u0438\u0437\u043c\u0435\u043d\u0435\u043d\u0438\u044f \u0441 \u043f\u043e\u0441\u043b\u0435\u0434\u043d\u0435\u0433\u043e hot.md update \u2192 \u043f\u0440\u0435\u0434\u043b\u043e\u0436\u0438\u0442\u044c \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044e \u043e\u0431\u043d\u043e\u0432\u0438\u0442\u044c."
     },
     {
       "check_id": "12",
       "name": "source_manifest_backfill_detection",
-      "description": "Сканирует meta/source-manifest.json, находит unprocessed/stale источники. Если source ссылается на wiki-страницу (frontmatter sources: [raw/sources/...]) но corrected copy отсутствует — предлагает backfill. Lint detect → User decides → Ingest process handles actual processing.",
       "command": "./scripts/rebuild-source-manifest.sh --scan-only",
-      "output_handling": {
-        "exit_code_0": "all_sources_processed — no action needed",
-        "exit_code_1": "unprocessed_or_stale_found — parse JSON: unprocessed_count + stale_count, list sources[] with status=unprocessed/stale"
-      },
-      "actions": [
-        {
-          "action": "parse_unprocessed_sources",
-          "description": "Из JSON output извлечь sources[].source_path и .corrected_base для каждого unprocessed/stale entry"
-        },
-        {
-          "action": "check_wiki_pages_with_source_reference",
-          "note": "Для каждого unprocessed source найти wiki-страницы, которые ссылаются на этот raw/sources/ путь в frontmatter sources[]"
-        }
-      ],
-      "evaluation": [
-        {
-          "condition": "unprocessed_count == 0 AND stale_count == 0",
-          "action": "PROCEED_TO_NEXT_CHECK",
-          "note": "no_backfill_needed — все источники processed, proceed to next lint check"
-        },
-        {
-          "condition": "unprocessed_count > 0 OR stale_count > 0",
-          "action_name": "REPORT_AND_PROMPT_USER",
-          "output_format": "UNPROCESSED/SOURCE: {source_path} → {corrected_base}. Found {N} wiki pages referencing this source. Ask user: backfill corrected copies? (y/n)",
-          "note": "Lint не делает actions — только report + prompt. Интеграция через step_2_delta_check в process-ingest.json"
-        }
-      ],
-      "schema_ref": "rules/delta_tracking.json",
-      "lint_policy": "Soft-only: lint.sh prints detection results, does NOT create corrected copies or modify wiki pages. User decides → Ingest process handles processing."
-    },
-    {
-      "check_id": "SSR-1",
-      "name": "structural_requirements_check",
-      "description": "Проверяет новые/обновлённые страницы на наличие body_text между H1 и первым ##. Нарушение → log warning, agent fix.",
-      "command": "./scripts/lint.sh --skip-checks ALL",
-      "schema_ref": "rules/structural_requirements.json"
+      "schema_ref": "rules/delta_tracking.json"
     }
   ],
-  "schema_ref": "rules/non_blocking_lint.json",
   "primary_command": {
-    "description": "Основной entry point для lint — автономный скрипт, не блокирующий agent turn",
     "command": "./scripts/lint.sh [--quiet] [--skip-checks ID1,ID2] [wiki_dir]",
-    "note": "Единый entry point для всех lint-проверок. Не вызывай вспомогательные скрипты отдельно."
-  },
-  "log_format": {
-    "standard": "## [YYYY-MM-DD] lint | Аудит wiki: X противоречий, Y сирот, Z пробелов знаний"
-  },
-  "lint_script_path": "scripts/lint.sh",
-  "frontmatter_schema": {
-    "required": [
-      "tags",
-      "date",
-      "sources"
-    ],
-    "optional": [
-      "related"
-    ]
+    "note": "\u0415\u0434\u0438\u043d\u044b\u0439 entry point \u0434\u043b\u044f \u0432\u0441\u0435\u0445 lint-\u043f\u0440\u043e\u0432\u0435\u0440\u043e\u043a \u2014 \u043d\u0435 \u0432\u044b\u0437\u044b\u0432\u0430\u0439 \u0432\u0441\u043f\u043e\u043c\u043e\u0433\u0430\u0442\u0435\u043b\u044c\u043d\u044b\u0435 \u0441\u043a\u0440\u0438\u043f\u0442\u044b."
   },
   "git_conventions_reference": "AGENTS.md#git-conventions",
-  "templates_reference": "AGENTS.md#page-templates",
-  "inherits_from": [
-    "guardrails",
-    "logging_templates"
-  ],
+  "error_handling": {
+    "schema_ref": "rules/error_handling.json"
+  },
   "agent_read_instructions": {
     "rule": "Agent MUST read AGENTS.md before executing any lint checks.",
-    "reason": "AGENTS.md contains the latest schema, rules, and conventions. Process files inherit from AGENTS.md — always refresh context before starting.",
     "schema_ref": "AGENTS.md#overview"
   },
-  "context_scope": "transient"
+  "context_scope": "transient",
+  "_compact_rules_applied": [
+    "\u042001: schema_ref for contradiction_resolution, structural_requirements, delta_tracking",
+    "\u042002: removed name/description duplication in check descriptions",
+    "\u042003: minimal context \u2014 verbose examples moved to scripts/"
+  ]
 }

@@ -1,948 +1,211 @@
 {
   "module": "process_query",
   "description": "Ответы на вопросы с использованием wiki как базы знаний",
+
   "context": {
     "wiki_dir": "wiki/",
     "always_loaded": true,
-    "search_priority_details": {
-      "schema_ref": "rules/search_strategy.json"
-    },
+    "search_priority_details": { "schema_ref": "rules/search_strategy.json" },
     "compounding_decision_logic": {
-      "description": "Когда ответ компандится как новая страница wiki",
       "evaluation_criteria": [
-        {
-          "criteria": "answer_requires_synthesis_from_2_or_more_pages",
-          "score": 1
-        },
-        {
-          "criteria": "compounding_flagged_in_step_2",
-          "score": 1
-        },
-        {
-          "criteria": "contradiction_resolution_found",
-          "score": 1
-        }
+        { "criteria": "answer_requires_synthesis_from_2_or_more_pages", "score": 1 },
+        { "criteria": "compounding_flagged_in_step_2", "score": 1 },
+        { "criteria": "contradiction_resolution_found", "score": 1 }
       ],
       "decision_logic": [
-        {
-          "sum_score_ge_2": true,
-          "action_if_novel_inference": "PROPOSE_SAVE_TO_USER_NEW_SYNTHESIS_PAGE",
-          "action_if_fact_collection_only": "SUGGEST_UPDATE_EXISTING_OR_CREATE_NOTES",
-          "message_synthesis": "Answer contains novel synthesis — save as new page?",
-          "message_notes": "No new inference detected (fact collection only). Suggest adding to existing page or creating notes instead."
-        },
-        {
-          "sum_score_eq_0": true,
-          "action": "SKIP_SAVE",
-          "message": "No compounding value detected"
-        }
-      ],
-      "note": "Compounding workflow rules in AGENTS.md under Synthesis section",
-      "syntheses_special_handling": {
-        "schema_ref": "rules/error_handling.json"
-      }
+        { "sum_score_ge_2": true, "action_if_novel_inference": "PROPOSE_SAVE_TO_USER_NEW_SYNTHESIS_PAGE" },
+        { "sum_score_eq_0": true, "action": "SKIP_SAVE" }
+      ]
     },
-    "grep_contract": {
-      "description": "Безопасное чтение файлов через bash — запрет на cat крупных файлов, обязательный -m для grep",
-      "allowed_patterns": [
-        {
-          "command": "grep -E '^# ' file.md",
-          "purpose": "быстрое оглавление"
-        },
-        {
-          "command": "head -n 20 file.md",
-          "purpose": "чтение фронтматера"
-        },
-        {
-          "command": "sed -n 'X,Yp' file.md",
-          "purpose": "диапазон строк"
-        },
-        {
-          "command": "grep -m N pattern wiki/",
-          "purpose": "искать до N совпадений (обязательно)"
-        }
-      ],
-      "forbidden_patterns": [
-        {
-          "command": "cat file.md",
-          "reason": "файл >50 строк — токеновая перегрузка"
-        },
-        {
-          "command": "grep pattern wiki/",
-          "reason": "без -m — может вывести тысячи строк"
-        }
-      ],
-      "rule": "AGENT_MUST_USE_ALLOWED_PATTERNS_FOR_BASH_READING",
-      "note": "Grep contract defined in AGENTS.md under CONTEXT_BUBBLE section"
-    }
+    "grep_contract": { "schema_ref": "rules/error_handling.json" }
   },
+
   "trigger_condition": "user_asks_question",
-  "not_for": [
-    "ingest_processing",
-    "wiki_validation"
-  ],
+  "not_for": ["ingest_processing", "wiki_validation"],
+
   "steps": [
     {
       "step_id": "0",
       "name": "context_load_from_working_memory",
-      "description": "При старте чтения working_memory.json — узнать, на чём остановился агент в предыдущей сессии. Если focus_node != null → продолжить работу с этой страницы. Если query_summary не пустой → удерживать тему discussion.",
+      "description": "Загрузить working_memory.json — продолжить работу с focus_node или начать новую тему.",
       "actions": [
-        {
-          "action": "read_file",
-          "path": "working_memory.json"
-        },
-        {
-          "action": "check_focus_node_exists",
-          "if_true": "CONTINUE_WITH_SAME_FOCUS",
-          "if_false": "SET_NEW_FOCUS_FROM_QUERY"
-        },
-        {
-          "condition": "current_mode == 'discussion'",
-          "action": "LOAD_ALL_OPEN_PAGES_AND_QUERY_SUMMARY"
-        }
+        { "action": "read_file", "path": "working_memory.json" },
+        { "action_name": "check_focus_node_exists", "if_true": "CONTINUE_WITH_SAME_FOCUS" }
       ]
     },
     {
       "step_id": "0.25",
       "name": "hot_cache_bootstrap",
-      "description": "Загрузить wiki/hot.md для контекста последних фактов wiki — дополняет working_memory.json (session metadata) fact context",
-      "command": "./scripts/load-hot-cache.sh || true",
-      "actions": [
-        {
-          "action": "read_script_output",
-          "purpose": "Agent reads internally, does NOT announce loaded content to user"
-        }
-      ]
+      "description": "Загрузить hot.md для контекста — дополняет working_memory.json fact context.",
+      "command": "./scripts/load-hot-cache.sh || true"
     },
     {
       "step_id": "0.5",
       "name": "query_intent_decoder",
-      "description": "Расшифровка метафор и ассоциаций пользователя перед поиском в wiki. Понимает, что 'окунёмся', 'дай мне из', 'что есть по' = query_wiki intent.",
+      "description": "Распознать intent пользователя перед поиском в wiki.",
       "intent_patterns": [
-        {
-          "pattern": [
-            "окунёмся",
-            "нырнём",
-            "давай посмотрим в",
-            "используя wiki",
-            "поиск в базе"
-          ],
-          "intent": "query_wiki"
-        },
-        {
-          "pattern": [
-            "исследуй систему",
-            "как устроена",
-            "архитектура"
-          ],
-          "intent": "study_architecture"
-        }
+        { "pattern_keywords": ["окунёмся","нырнём","давай посмотрим","wiki"], "intent": "query_wiki" },
+        { "pattern_keywords": ["исследуй систему","архитектура"], "intent": "study_architecture" }
       ],
       "actions": [
-        {
-          "action_name": "detect_user_intent",
-          "rule_id": "QID-1",
-          "if_match_is_query_wiki": [
-            {
-              "check": "wiki_has_data",
-              "method": "count wiki/**/*.md files"
-            },
-            {
-              "if_empty_or_few_files": "warn_with_humor: 'Предупреждаю: в Loomana пока мало записей. Смотри не расшиби лоб, ныряльщик! ;)' → предложить задать вопрос или начать заполнять базу"
-            },
-            {
-              "if_has_data": "proceed_to_search_flow"
-            }
-          ],
-          "if_match_is_study_architecture": [
-            {
-              "action": "read AGENTS.md + schema docs + architecture overview"
-            }
-          ]
+        { "action_name": "detect_user_intent", "rule_id": "QID-1",
+          "if_query_wiki": [{"check": "wiki_has_data", "method": "count wiki/**/*.md"}],
+          "if_empty_or_few_files": "warn_and_prompt_to_fill"
         }
       ]
     },
     {
       "step_id": "0.75",
       "name": "broken_link_awareness",
-      "description": "Проверить наличие известных битых ссылок из previous lint/ingest sessions (из working_memory). Не сканирует wiki — использует кэш.",
+      "description": "Проверить известные битые ссылки из кэша WM — не сканировать wiki.",
       "actions": [
-        {
-          "action": "read_file",
-          "path": "working_memory.json"
-        },
-        {
-          "condition": "last_known_broken_links exists in WM",
-          "action_name": "report_to_user_if_pending",
-          "details": [
-            {
-              "prompt": "В предыдущей сессии обнаружены битые ссылки, требующие ручного решения. Показать?",
-              "options": [
-                "show_details",
-                "defer_to_next_lint"
-              ]
-            }
-          ]
-        },
-        {
-          "condition": "no_broken_links_in_WM",
-          "action_name": "skip"
-        }
+        { "action": "read_file", "path": "working_memory.json" },
+        { "condition": "last_known_broken_links exists in WM", "action_name": "report_to_user_if_pending" }
       ],
-      "rules": [
-        {
-          "rule_id": "BROKEN-REF1-v3",
-          "core_rule": "Broken wiki links → restore or remove based on context. Auto-fix typos, escalate ambiguous.",
-          "detection": "link-validator.sh finds broken internal links or reports in any wiki document",
-          "agent_workflow": [
-            {
-              "step": 1,
-              "action": "search wiki for missing target"
-            },
-            {
-              "step": 2,
-              "action": "fix typo if simple spelling error"
-            },
-            {
-              "step": 3,
-              "action": "create referenced page if needed"
-            }
-          ],
-          "decision": "restore or remove — depends on context"
-        }
-      ],
-      "agent_decision_threshold": {
-        "can_resolve_autonomously": [
-          {
-            "condition": "link references existing wiki page but with wrong case/path",
-            "action": "auto_fix: rewrite to correct path"
-          },
-          {
-            "condition": "link text clearly describes external resource and target .md does not exist",
-            "action": "suggest_external_url"
-          }
-        ],
-        "require_user_confirmation": [
-          {
-            "condition": "fuzzy_match_score < 50 OR ambiguous intent",
-            "action": "report_to_user with options: external URL / create page / remove"
-          },
-          {
-            "condition": "link references protected zone (raw/, meta/) — DO NOT auto-fix, flag for review"
-          }
-        ]
-      }
+      "rules": [{ "rule_id": "BROKEN-REF1-v3", "schema_ref": "process-ingest.json#raw_source_link_repair" }]
     },
     {
       "step_id": "0.76",
       "name": "new_sources_quick_check",
-      "description": "Быстрая проверка raw/sources на новые пакеты (--quick). Кэширует timestamp, чтобы не стучать каждый раз. Полную проверку с деталями делает lint.",
+      "description": "Быстрая проверка raw/sources на новые пакеты (не стучать каждый раз). Полную проверку делает lint.",
       "actions": [
-        {
-          "action": "run_script",
-          "command": "./scripts/check-new-sources.sh --quick raw/sources/ tracking/raw_registry.json",
-          "exit_code_handling": {
-            "schema_ref": "rules/error_handling.json"
-          }
-        },
-        {
-          "condition": "exit_code_1_from_above",
-          "action": "set_working_memory_marker",
-          "details": "new_sources_pending: true"
-        },
-        {
-          "condition": "exit_code_not_1 (0 or 2)",
-          "action": "clear_working_memory_field",
-          "field": "new_sources_pending",
-          "note": "Сбросить pending-флаг, если новых источников нет — не показывать устаревшее уведомление"
-        }
-      ],
-      "post_task_notification": {
-        "trigger": "new_sources_detected_in_step_076",
-        "timing": "after_main_query_result_delivery",
-        "message_template": "[!] Обнаружены новые материалы в raw/sources/. Обработать и добавить в wiki?"
-      }
+        { "action": "run_script", "command": "./scripts/check-new-sources.sh --quick" },
+        { "condition": "exit_code_1_from_above", "action": "set_working_memory_marker" }
+      ]
     },
     {
       "step_id": "1",
       "name": "search",
-      "description": "Сначала обратись к index.md, затем используй wiki_recall для семантического поиска релевантных страниц. Используй критерии уверенности для определения достаточности поиска.",
+      "description": "Поиск: index.md → keyword_search → semantic_search → wiki-search.sh fallback.",
       "system_files_exclusion": {
-        "rule": "exclude system files (log.md, issues.md, timeline.md, overview.md, snapshot.md, index.md, GIT-*) from semantic search results. hot.md NOT excluded — contains Active Project and Session Context.",
-        "action_if_found_in_results": "FILTER_OUT: remove from final matches array before presenting to user"
+        "rule": "exclude system files (log.md, issues.md, timeline.md, overview.md, snapshot.md, index.md, GIT-*) — hot.md NOT excluded",
+        "action_if_found_in_results": "FILTER_OUT"
       },
       "actions": [
-        {
-          "action": "read_index_categories_matching_topic",
-          "priority": 1
-        },
-        {
-          "action": "keyword_search_via_index_json",
-          "target": "meta/search-index.json",
-          "pattern": "${QUERY_KEYWORDS}",
-          "description": "Search by keywords/tags/first_sentence from search-index.json"
-        },
-        {
-          "action": "find_all_links_to_entities_concepts_syntheses_comparisons_notes_projects_bibliography_resources",
-          "priority": 2
-        }
+        { "action": "read_index_categories_matching_topic", "priority": 1 },
+        { "action": "keyword_search_via_index_json" },
+        { "action_name": "find_all_links_to_entities_concepts_syntheses_comparisons_notes_projects_bibliography_resources", "priority": 2 }
       ],
-      "semantic_search_layer": {
-        "schema_ref": "rules/search_strategy.json"
-      },
-      "fallback_chain": {
-        "priority_order": [
-          {
-            "description": "Чтение index.md по категориям, релевантным теме. Если найдено >=2 совпадения — результат достаточен.",
-            "method": "index_lookup"
-          },
-          {
-            "description": "wiki_recall(query) — поиск по семантическому сходству. Если найдено >=3 совпадения — результат достаточен.",
-            "method": "semantic_search_wiki_recall"
-          },
-          {
-            "description": "./scripts/wiki-search.sh query wiki/ — приоритетный grep по категориям (syntheses→concepts→entities), fallback на полный grep. Использовать вместо raw grep -r.",
-            "method": "wiki_search_script"
-          }
-        ],
-        "stop_if_any_results": false
-      }
+      "semantic_search_layer": { "schema_ref": "rules/search_strategy.json" },
+      "fallback_chain": [
+        { "method": "index_lookup", "stop_if_ge_2_matches": true },
+        { "method": "semantic_search_wiki_recall", "stop_if_ge_3_matches": true },
+        { "method": "wiki_search_script" }
+      ]
     },
     {
       "step_id": "1.5",
       "name": "knowledge_gap_handling",
-      "description": "Порядок действий после пустого wiki-search: 1) raw/sources/ check; 2) web_availability_check (если доступен → auto-web_search + предложение сохранить); 3) если недоступен → предложить ручной доступ или ответ из собственных знаний.",
+      "description": "Если поиск пустой: 1) raw/sources/ check → 2) web_availability_check → 3) ручной доступ.",
       "trigger_condition": "search_results_empty_after_all_methods"
     },
     {
       "step_id": "2",
       "name": "synthesis",
-      "description": "Проанализируй найденные страницы и сформируй глубокий ответ с цитатами. Обнаруживай противоречия между страницами и разрешай их по определённому flow. Если синтез из 2+ источников содержит novel insight — пометь для compounding.",
+      "description": "Синтез найденных страниц. Обнаружение и разрешение противоречий по cascade priority (code>live>docs). Compounding flag для novel insight.",
       "pre_condition": "search_results_not_empty",
       "actions": [
-        {
-          "action": "read_all_relevant_pages"
-        },
-        {
-          "action": "note_key_facts_from_each_page",
-          "output_format": "fact_list: [{page, fact, source}]"
-        },
-        {
-          "action": "compare_information_across_sources",
-          "comparison_type": "cross_reference_same_topic"
-        },
-        {
-          "action": "identify_matches_or_contradications",
-          "contradiction_types_to_detect": [
-            {
-              "description": "Одно и то же утверждение в разных страницах с разными значениями (например, разные версии ПО)",
-              "example": "Страница A: версия X=1.0; Страница B: версия X=2.0",
-              "type": "fact_conflict"
-            },
-            {
-              "description": "Устаревшая информация на одной странице vs новая на другой (дата обновления не учтена)",
-              "example": "Страница A обновлена 2024, содержит устаревший метод; Страница B от 2025 содержит новый",
-              "type": "temporal_conflict"
-            },
-            {
-              "description": "Разные источники указывают на разные факты о том же объекте/концепции",
-              "example": "wiki/entities/tech.md: технология создана в 2020; wiki/bibliography/book.md: технология создана в 2019",
-              "type": "source_conflict"
-            },
-            {
-              "description": "Противоречие из-за разного уровня абстракции (конкретное vs общее)",
-              "example": "Страница A: 'Python 3.12'; Страница B: 'Python 3.x' — оба верны в своем контексте",
-              "type": "scope_conflict"
-            },
-            {
-              "description": "Разные контексты применения (оба верны в своем контексте)",
-              "example": "Страница A: 'Для Linux — метод X'; Страница B: 'Для Windows — метод Y'",
-              "type": "contextual_conflict"
-            },
-            {
-              "description": "Противоречие между версиями продукта/документации",
-              "example": "Документация v1: API endpoint /v1; Документация v2: API endpoint /v2",
-              "type": "version_conflict"
-            }
-          ]
-        },
-        {
-          "action": "assess_compounding_value",
-          "rule": "Если ответ:\n            - синтезирует из 2+ страниц, ИЛИ\n            - содержит новые факты об existing entity/concept (дополняющие), ИЛИ\n            - разрешает противоречие → flag for fixation"
-        },
-        {
-          "action": "summary_page_creation_trigger",
-          "description": "Если ответ агрегирует из >=3 wiki страниц → auto-create summary page в syntheses/. Это не требует explicit fixation flag (DR-4). Если источники из интернета → предложить пользователю.",
-          "trigger_condition": "answer_sources_count >= 3 and all from wiki",
-          "auto_create_rule": [
-            {
-              "condition": "synthesis_result_from_3_plus_wiki_pages",
-              "action": "CREATE_SUMMARY_PAGE_IN_syntheses"
-            },
-            {
-              "condition": "web_search_sources",
-              "action": "PROPOSE_TO_USER_CREATE_FQA_PAGE"
-            }
-          ],
-          "output_format": "new_summary_page_with_internal_links_and_external_source_ingest"
-        }
+        { "action": "read_all_relevant_pages" },
+        { "action_name": "compare_information_across_sources" },
+        { "action_name": "identify_matches_or_contradications" }
       ],
-      "output_formats": [
-        "markdown_page",
-        "comparison_table",
-        "mermaid_diagram",
-        "other"
-      ],
-      "search_strategy_schema_ref": {
-        "schema_ref": "rules/search_strategy.json"
+      "contradiction_resolution_flow": { "schema_ref": "rules/search_strategy.json#cascade_priority" },
+      "assess_compounding_value": {
+        "rule": "Если ответ: (1) синтезирует из 2+ страниц, ИЛИ (2) содержит novel insight → flag for fixation",
+        "action_if_novel_inference": "PROPOSE_SAVE_TO_USER_NEW_SYNTHESIS_PAGE"
       },
-      "contradiction_resolution_flow": {
-        "description": "Cascade-based алгоритм: Code Reality > Live State > Documentation (evidence_grade). Старый flow (authoritative_source → temporal_conflict → user_review) полностью заменён.",
-        "logging_actions": [
-          {
-            "action": "append_to_log",
-            "format": "## [date] query | Вопрос -> обнаружено X противоречий, Y сопоставлений",
-            "trigger": "after contradiction detection, before answering user"
-          }
-        ],
-        "detection_output": {
-          "format": "Если найдены противоречия — добавить раздел '## ⚠ Противоречия' в ответ перед основным контентом",
-          "include_in_answer_if_contradiction_found": true
-        },
-        "agent_prompt": "При разрешении противоречия:\n1. Определите тип факта: objective (математика, код, физические законы) или subjective/ambiguous (мнения, исторические утверждения без доказательств).\n2. Если objective → cascade priority (code > live > docs). User override ЗАПРЕЩЁН.\n3. Если subjective → user override ДОПУСКАЕТСЯ (final say пользователя).\n4. Применяй cascade: priority 1 (code) > priority 2 (live) > priority 3 (docs with evidence_grade).\n5. Для documentation: documented(1) > corroborated(2) > assertion_only(3).\n6. Если agent_confidence < threshold → human_override.\nПример: GitHub issue (live_state, priority 2) > docs (documentation, priority 3).7. Если detected overlap ≥90% между A и B → примени DR из decision-rules.md:\n   - DR-1: script reports raw overlap only — не менять баллы автоматически\n   - DR-2: если B содержит additions/deletions (исправление) + evidence → evaluate correction, B > A на corrected claim\n   - DR-3: если attribution conflict → A wins original; B только reporter\n",
-        "type_classification": "classify each source as documentation | code_reality | live_state (reality layer)",
-        "cascade_order": [
-          {
-            "priority": 1,
-            "description": "Code compiles or not — deterministic, machine-verifiable. Always wins.",
-            "example": "GitHub issue shows infinite loop > docs say API works",
-            "source_layer": "code_reality"
-          },
-          {
-            "priority": 2,
-            "description": "API returns X right now — ephemeral but observable. Wins over documentation.",
-            "example": "curl endpoint returns 401 > docs say it works",
-            "source_layer": "live_state"
-          },
-          {
-            "priority": 3,
-            "strategy": {
-              "schema_ref": "rules/search_strategy.json"
-            },
-            "description": "Authoritative docs win only when no code_reality or live_state available.",
-            "note": "This is the ONLY layer where domain authority matters",
-            "source_layer": "documentation"
-          }
-        ],
-        "resolution_priority": [
-          {
-            "priority": 1,
-            "strategy": {
-              "schema_ref": "rules/search_strategy.json"
-            },
-            "condition": "source_layer == code && source exists in repository"
-          },
-          {
-            "priority": 2,
-            "strategy": {
-              "schema_ref": "rules/search_strategy.json"
-            },
-            "condition": "timestamp < threshold AND source_layer != code"
-          },
-          {
-            "priority": 3,
-            "strategy": {
-              "schema_ref": "rules/search_strategy.json"
-            },
-            "condition": "source_layer == documentation && evidence_grade > assertion_only",
-            "sub_priority": [
-              {
-                "grade": "documented",
-                "weight": 1
-              },
-              {
-                "grade": "corroborated",
-                "weight": 2
-              },
-              {
-                "grade": "assertion_only",
-                "weight": 3
-              }
-            ]
-          },
-          {
-            "priority": 4,
-            "strategy": {
-              "schema_ref": "rules/search_strategy.json"
-            },
-            "condition": "agent_confidence < threshold OR conflicting cascade priorities"
-          }
-        ],
-        "resolution_actions": [
-          {
-            "action": "add_update_section_to_old_page",
-            "when": "contradiction_resolved_via_cascade"
-          },
-          {
-            "action": "create_comparison_page_for_complex_conflicts",
-            "when": "conflicting cascade priorities OR multiple live_state sources"
-          },
-          {
-            "action": "note_in_answer",
-            "when": "contradiction_detected_but_not_resolved_(human_override)"
-          }
-        ],
-        "fallback_chain": [
-          {
-            "condition": "multiple_sources_same_priority",
-            "action": "evidence_grade_sub_priority (lower weight wins)"
-          },
-          {
-            "condition": "same_evidence_grade_and_same_priority",
-            "action": "temporal_decay (most recent timestamp wins)"
-          },
-          {
-            "condition": "still_ambiguous_after_temporal_check",
-            "action": "human_override → flag in answer with CONFLICT tag"
-          }
-        ],
-        "arbitration_layer": {
-          "description": "Арбитражный слой: objective facts vs subjective claims. User override только для subjective.",
-          "fact_types": [
-            {
-              "type": "objective",
-              "examples": [
-                "2+2=4",
-                "код компилируется/нет",
-                "API returns specific status code",
-                "физические законы"
-              ],
-              "user_override_allowed": false,
-              "rule": "Если факт objective (математика, код, эмпирические факты) → user не может переопределить. Агент мягко рекомендует: 'выспаться, принять душ, выпить кофе'"
-            },
-            {
-              "type": "subjective",
-              "examples": [
-                "мнения экспертов",
-                "исторические утверждения без доказательств",
-                "интерпретации источников"
-              ],
-              "user_override_allowed": true,
-              "rule": "Если факт subjective/ambiguous → user имеет final say (высшая инстанция). Agent принимает решение пользователя."
-            }
-          ],
-          "resolution_logic": {
-            "step_1": "classify conflict as objective or subjective",
-            "step_2_if_objective": "apply cascade priority. User override → REJECTED with gentle recommendation",
-            "step_3_if_subjective": "user_override_accepted → apply user decision to wiki"
-          },
-          "agent_prompt_arbitration": "Определи, является ли противоречие objective (математика, код, физические законы) или subjective (мнения, интерпретации).\n- Если objective: пользователь не может переопределить. Мягко порекомендуй проверить факты.\n- Если subjective: user override принят (высшая инстанция). Применяй решение пользователя к wiki."
-        },
-        "post_resolution_verification": {
-          "re_read_updated_pages": true,
-          "optional_web_search_if_high_stakes": {
-            "schema_ref": "rules/search_strategy.json"
-          }
-        },
-        "history_tracking": {
-          "append_to": "## Обновлено [date] — новое уточнение",
-          "format": "- **YYYY-MM-DD**: Обновлено с [старое] → [новое]"
-        }
-      },
-      "decision_rules_schema_ref": "rules/decision-rules.md"
+      "summary_page_creation_trigger": {
+        "trigger_condition": "answer_sources_count >= 3 and all from wiki",
+        "auto_create_rule": [
+          { "condition": "synthesis_result_from_3_plus_wiki_pages", "action": "CREATE_SUMMARY_PAGE_IN_syntheses" },
+          { "condition": "web_search_sources", "action": "PROPOSE_TO_USER_CREATE_FQA_PAGE" }
+        ]
+      }
     },
     {
       "step_id": "2.3",
       "name": "context_compaction_and_dismissal",
-      "description": "Сжать прочитанный контекст в структурированное саммари (макс 2K токенов), записать в working_memory.json, выгрузить raw-страницы из активного окна.",
+      "description": "Сжать контекст → working_memory.json, выгрузить прочитанные страницы.",
       "actions": [
-        {
-          "action": "compress_read_pages_to_summary",
-          "max_tokens": 2048,
-          "include": [
-            "key_facts",
-            "contradictions",
-            "sources"
-          ]
-        },
-        {
-          "action": "auto_crosslink_from_query_results",
-          "command": "./scripts/auto-crosslink.sh '${READ_PAGES}' --include-root 2>/dev/null || true",
-          "description": "After query answer — run auto-crosslink on all pages that were read/referenced. Parse results for score >= 5, suggest adding crosslinks to high-score matches.",
-          "output_format": "json[{path, score, match_types}]"
-        },
-        {
-          "action": "write_to_working_memory",
-          "fields": [
-            {
-              "field": "query_summary",
-              "value": "{intent, pages_read, key_findings}"
-            },
-            {
-              "field": "open_pages",
-              "status": "read -> dismiss_from_context"
-            }
-          ]
-        }
+        { "action_name": "compress_read_pages_to_summary", "max_tokens": 2048 },
+        { "action_name": "auto_crosslink_from_query_results" },
+        { "action_name": "write_to_working_memory" }
       ],
-      "post_action": {
-        "trigger": "compaction_complete",
-        "command": "./scripts/restore-hot-cache.sh || true"
-      }
+      "post_action": { "trigger": "compaction_complete", "command": "./scripts/restore-hot-cache.sh || true" }
     },
     {
       "step_id": "2.5",
       "name": "duplicate_check_before_fixation",
-      "description": "Проверь наличие похожих страниц перед созданием новой — предотвращает дублирование wiki",
-      "pre_check": [
-        {
-          "action": "run_guardrails",
-          "command": "./scripts/validate-path.sh ${EXISTING_PAGE_PATH}",
-          "on_failure": "STOP_AND_REPORT: path is within protected zone"
-        }
-      ],
+      "description": "Проверить наличие похожих страниц перед созданием новой.",
+      "pre_check": [{ "command": "./scripts/validate-path.sh ${EXISTING_PAGE_PATH}", "on_failure": "STOP_AND_REPORT" }],
       "actions": [
-        {
-          "action": "read_backlinks_json",
-          "path": "meta/backlinks.json",
-          "purpose": "Find pages that link to proposed page"
-        },
-        {
-          "condition": "similar_page_found_in_backlinks",
-          "action": "UPDATE_EXISTING_PAGE",
-          "details": {
-            "action_type": "update_existing",
-            "read_file": "${EXISTING_PAGE_PATH}",
-            "identify_additions_and_changes": true,
-            "write_update": {
-              "preserve_old_info": true,
-              "append_section_format": "## Обновлено [date] — новое уточнение"
-            }
-          }
-        },
-        {
-          "condition": "no_similar_page_in_backlinks",
-          "action": "PROCEED_TO_CREATE_NEW_PAGE"
-        }
-      ],
-      "search_strategy": {
-        "schema_ref": "rules/search_strategy.json"
-      }
+        { "action": "read_backlinks_json", "path": "meta/backlinks.json" },
+        { "condition": "similar_page_found_in_backlinks", "action": "UPDATE_EXISTING_PAGE" },
+        { "condition": "no_similar_page_in_backlinks", "action": "PROCEED_TO_CREATE_NEW_PAGE" }
+      ]
     },
     {
       "step_id": "2.6",
       "name": "compounding_decision",
-      "description": "Проверь, стоит ли сохранить answer как новую страницу wiki — compounding knowledge base",
-      "trigger_after": "duplicate_check_completed: true",
+      "description": "Проверить, стоит ли сохранить answer как новую страницу wiki — compounding.",
       "evaluation_criteria": [
-        {
-          "criteria": "answer_requires_synthesis_from_2_or_more_pages",
-          "score": 1
-        },
-        {
-          "criteria": "compounding_flagged_in_step_2",
-          "score": 1
-        },
-        {
-          "criteria": "contradiction_resolution_found",
-          "score": 1
-        }
+        { "criteria": "answer_requires_synthesis_from_2_or_more_pages", "score": 1 },
+        { "criteria": "compounding_flagged_in_step_2", "score": 1 },
+        { "criteria": "contradiction_resolution_found", "score": 1 }
       ],
       "decision_logic": [
-        {
-          "sum_score_ge_2": true,
-          "action": "PROPOSE_SAVE_TO_USER",
-          "message": "Answer contains novel synthesis — save as new page?"
-        },
-        {
-          "sum_score_eq_0": true,
-          "action": "SKIP_SAVE",
-          "message": "No compounding value detected"
-        }
+        { "sum_score_ge_2": true, "action": "PROPOSE_SAVE_TO_USER" },
+        { "sum_score_eq_0": true, "action": "SKIP_SAVE" }
       ]
     },
     {
       "step_id": "3",
       "name": "result_fixation",
-      "description": "Compounding: Сохраняй answer как новую страницу если содержит novel insight/synthesis из 2+ источников. Добавь ссылку в index.md. После write автоматически вызывай scripts/rebuild-meta.sh для пересбора метаданных.",
+      "description": "Compounding — сохранить answer как новую страницу wiki. Auto-rebuild-meta.",
       "pre_check": [
-        {
-          "action": "run_guardrails",
-          "command": "./scripts/validate-path.sh wiki/${PAGE_PATH}.md",
-          "on_failure": "STOP_AND_REPORT: path is within protected zone"
-        },
-        {
-          "condition": "existing_page_update",
-          "action": "run_guardrails",
-          "command": "./scripts/validate-path.sh ${EXISTING_PAGE_PATH}",
-          "on_failure": "STOP_AND_REPORT: path is within protected zone"
-        }
+        { "command": "./scripts/validate-path.sh wiki/${PAGE_PATH}.md", "on_failure": "STOP_AND_REPORT" },
+        { "condition": "existing_page_update", "action_name": "check_existing_path_guardrails" }
       ],
-      "pre_condition": "duplicate_check_completed: true, no_similar_page_found: true",
       "save_conditions": [
-        {
-          "condition": "compounding_flagged: true",
-          "action_if_met": "AUTO_SAVE_NEW_PAGE",
-          "description": "Synthesis of 2+ sources with novel insight → save as new page"
-        },
-        {
-          "condition": "answer_requires_synthesis_from_2_or_more_pages",
-          "auto_save_if_novel_insight": true
-        },
-        {
-          "condition": "contradiction_resolution_completed",
-          "action_if_met": "CREATE_COMPARISON_OR_UPDATE_OLD_PAGE"
-        },
-        {
-          "condition": "new_facts_for_existing_entity",
-          "action_if_met": "UPDATE_EXISTING_PAGE",
-          "description": "Новые факты об existing entity → обновить страницу, сохранив старую информацию в разделе '## Обновлено [date]'",
-          "format": {
-            "preserve_old_info": true,
-            "append_section": "## Обновлено [date] — новое уточнение",
-            "include_source_link": true
-          }
-        },
-        {
-          "condition": "user_explicitly_requests_save"
-        }
+        { "condition": "compounding_flagged: true", "action_if_met": "AUTO_SAVE_NEW_PAGE" },
+        { "condition": "contradiction_resolution_completed", "action_if_met": "CREATE_COMPARISON_OR_UPDATE_OLD_PAGE" },
+        { "condition": "new_facts_for_existing_entity", "action_if_met": "UPDATE_EXISTING_PAGE" }
       ],
       "actions": [
-        {
-          "action_type": "create_page",
-          "template": "${PAGE_TYPE}",
-          "destination": "wiki/${PAGE_PATH}.md"
-        },
-        {
-          "action": "fill_all_sections",
-          "sections": [
-            "description",
-            "key_facts",
-            "connections",
-            "sources"
-          ]
-        },
-        {
-          "action": "add_source_citations",
-          "rule": "every_page_must_have_sources_field"
-        }
+        { "action_type": "create_page", "destination": "wiki/${PAGE_PATH}.md" },
+        { "action": "add_source_citations" }
       ],
       "post_check": {
         "command": "./scripts/rebuild-meta.sh",
-        "note": "Canonical path defined in AGENTS.md. Do not hardcode absolute paths.",
         "action_on_success": "PROCEED_TO_LOG_AND_INDEX_UPDATE",
         "action_on_failure": "LOG_WARNING_AND_PROCEED"
       },
-      "cross_link_update": {
-        "actions": [
-          {
-            "action": "run_auto_crosslink",
-            "command": "./scripts/auto-crosslink.sh '${PAGE_PATH}' --include-root 2>/dev/null || true",
-            "output_format": "json[{path, score, match_types}]",
-            "description": "Multi-level crosslink discovery: H1 title (+3) → shared sources (+5) → frontmatter related (+4). Results sorted by score."
-          },
-          {
-            "action": "parse_and_add_backlinks",
-            "threshold_score": 5,
-            "rule": "Only add backlinks for pages with score >= 5 (significant match). Low scores (3-4) are informational only — suggest manual review."
-          },
-          {
-            "action": "add_related_to_frontmatter",
-            "description": "For high-score matches, add to related: [paths] in frontmatter if not already present. This creates bidirectional links.",
-            "format": "Update wiki-relative-path.md → related: [...existing..., 'wiki/${PAGE_PATH}.md']"
-          },
-          {
-            "condition": "no_high_score_matches",
-            "action": "mark_orphan_if_no_mentions_found",
-            "note": "Low score matches (3-4) may be weak connections — suggest manual review rather than auto-add"
-          }
-        ]
-      },
-      "post_operations": [
-        {
-          "trigger": "page_created_or_updated",
-          "command": "./scripts/git-auto-commit.sh",
-          "note": "Harness-independent auto-commit for wiki changes — runs after write/edit on wiki pages"
-        }
+      "cross_link_update": [
+        { "command": "./scripts/auto-crosslink.sh '${PAGE_PATH}' --include-root 2>/dev/null || true" },
+        { "rule_id": "crosslink_score_threshold", "threshold_score": 5, "action_if_high": "add_related_to_frontmatter" }
       ],
-      "finalization": {
-        "description": "Обязательный финальный шаг — записать состояние в working_memory.json, затем сохранить срез проекта/сессии в hot.md",
-        "actions": [
-          {
-            "action": "write_to_working_memory",
-            "fields": [
-              {
-                "field": "last_updated",
-                "value": "current_timestamp"
-              },
-              {
-                "field": "focus_node",
-                "value": "completed OR null (if dismissed)"
-              },
-              {
-                "field": "next_steps_todo",
-                "action_if_compounding_flagged": "ADD_TASK: create_page_from_insight"
-              },
-              {
-                "field": "dead_ends",
-                "action_if_grep_failed": "APPEND_APPROACH_AND_REASON"
-              },
-              {
-                "field": "current_mode",
-                "value": "null (after dismissal) OR discussion (if topic continues)"
-              }
-            ]
-          },
-          {
-            "action": "write_session_context_to_hot",
-            "description": "После записи WM — агент сохраняет срез проекта/сессии в wiki/hot.md. Active Project: focus node, related wiki pages, key findings, next steps. Active Session Context: topic, pages read, key findings. Не дублировать log.md — только суть.",
-            "rule": "AGENT_MUST_WRITE_HOT_AFTER_EACH_QUERY"
-          }
-        ],
-        "rule": "AGENT_MUST_WRITE_WM_AND_HOT_AFTER_EACH_QUERY"
-      },
-      "decision_rules_schema_ref": "rules/decision-rules.md"
+      "finalization": [
+        { "action_name": "write_to_working_memory" },
+        { "action_name": "write_session_context_to_hot", "rule": "AGENT_MUST_WRITE_HOT_AFTER_EACH_QUERY" }
+      ]
     }
   ],
-  "post_search_flow": {
-    "schema_ref": "rules/search_strategy.json"
-  },
+
   "web_ingest_flow": {
-    "description": "Переход от web_search к созданию wiki-страницы: capture → integrate через существующие скрипты",
     "trigger": "user confirms 'save' after web_search answer",
     "steps": [
-      {
-        "step": 1,
-        "name": "capture_web_as_raw_package",
-        "description": "Создать raw-пакет из web-результатов по аналогии с user-provided sources",
-        "actions": [
-          {
-            "command": "mkdir -p 'raw/sources/SRC-{YYYY-MM-DD}-{hash}/'",
-            "note": "hash = short hash of URL or query"
-          },
-          {
-            "action": "write_content_to_original",
-            "path": "raw/sources/SRC-{date}-{hash}/web-content.md",
-            "source": "web_search_results"
-          },
-          {
-            "action": "create_manifest",
-            "path": "raw/sources/SRC-{date}-{hash}/manifest.json",
-            "content": "{ 'source_layer': 'web', 'url': '{url}', 'query': '{user_query}', 'date': '{current_date}' }"
-          }
-        ],
-        "error_handling": {
-          "schema_ref": "rules/error_handling.json"
-        }
-      },
-      {
-        "step": 2,
-        "name": "validate_path_before_wiki_write",
-        "command": "./scripts/validate-path.sh wiki/{entity|concept}/page-name.md",
-        "expected_exit_code": 0,
-        "on_failure": "HALT_AND_REPORT: path blocked or protected"
-      },
-      {
-        "step": 3,
-        "name": "check_existing_page_or_create_new",
-        "description": "Использовать логику process-ingest step 2 (discussion) и steps 3a/3b",
-        "actions": [
-          {
-            "action": "search_backlinks_json_for_similar_pages",
-            "path": "meta/backlinks.json",
-            "query_term": "{identified_entity_or_concept_from_web_search}"
-          },
-          {
-            "condition": "similar_page_found_in_index",
-            "action": "run_process_ingest_step_3b: update_existing_page",
-            "note": "read existing page → identify additions → write_update with '## Обновлено [date]' section"
-          },
-          {
-            "condition": "no_similar_page",
-            "action": "run_process_ingest_step_3a: create_new_page",
-            "note": "create entity/concept/notes page from web content → fill sections → add connections"
-          }
-        ]
-      },
-      {
-        "step": 4,
-        "name": "rebuild_meta_and_index",
-        "commands": [
-          "./scripts/rebuild-meta.sh",
-          "./scripts/rebuild-meta.sh --index-only"
-        ],
-        "description": "Пересобрать registry.json, backlinks.json и wiki/index.md из всех страниц",
-        "optimization_for_large_wiki": {
-          "skip_rebuild_if_wiki_size_gt_threshold": true,
-          "threshold_pages_count": 100,
-          "check_command": "find wiki/ -name '*.md' | wc -l",
-          "action_on_exceed": [
-            {
-              "log": "'[!] Wiki size exceeds threshold (>100 pages), skipping full rebuild for performance'"
-            },
-            {
-              "run_index_only": true
-            },
-            {
-              "notify_user": "Meta rebuild skipped for performance — will run on next lint"
-            }
-          ]
-        }
-      },
-      {
-        "step": 5,
-        "name": "register_source_in_tracking",
-        "actions": [
-          {
-            "action": "append_to_raw_registry",
-            "path": "tracking/raw_registry.json",
-            "operation": "add_ingested_id",
-            "value": "SRC-{date}-{hash}"
-          }
-        ]
-      },
-      {
-        "step": 6,
-        "name": "post_operation_link_validation",
-        "command": "./scripts/link-validator.sh <new_page_path>",
-        "actions": [
-          {
-            "action": "parse_json_from_stdout",
-            "format": "{file, line, link, target_path}"
-          },
-          {
-            "condition": "broken_links_found",
-            "action": "apply_auto_fix_to_each_broken_link_by_rewriting_to_new_path"
-          }
-        ]
-      }
-    ],
-    "integration_with_process_ingest": {
-      "description": "web_ingest_flow использует существующие шаги process-ingest (step_3_analysis, step_4_corrected_copy), не дублирует логику"
-    }
+      { "step": 1, "name": "capture_web_as_raw_package", "command": "mkdir -p raw/sources/SRC-{hash}/ && write_to_original" },
+      { "step": 2, "command": "./scripts/validate-path.sh wiki/{entity|concept}/page-name.md" },
+      { "step": 3, "name": "check_existing_page_or_create_new", "schema_ref": "process-ingest.json#discussion_and_integration" },
+      { "step": 4, "commands": ["./scripts/rebuild-meta.sh", "./scripts/rebuild-meta.sh --index-only"],
+        "optimization_for_large_wiki": {"threshold_pages_count": 100, "action_on_exceed": "skip_rebuild"} },
+      { "step": 5, "name": "register_source_in_tracking" },
+      { "step": 6, "command": "./scripts/link-validator.sh <new_page_path>" }
+    ]
   },
-  "log_format": {
-    "query_record": "## [YYYY-MM-DD] query | Вопрос о RAG vs классических БД"
-  },
-  "schema_ref": "AGENTS.md#overview",
-  "inherits_from": [
-    "guardrails",
-    "search_priority",
-    "contradiction_resolution",
-    "logging_templates",
-    "date_convention"
-  ],
-  "references": {
-    "page_templates_and_metadata": "AGENTS.md",
-    "link_types_reference": "AGENTS.md#git-conventions"
-  },
-  "error_handling": {
-    "schema_ref": "rules/error_handling.json"
-  },
-  "agent_read_instructions": {
-    "rule": "Agent MUST read AGENTS.md before executing any steps of this process.",
-    "reason": "AGENTS.md contains the latest schema, rules, and conventions. Process files inherit from AGENTS.md — always refresh context before starting.",
-    "schema_ref": "AGENTS.md#overview"
-  },
-  "context_scope": "transient"
+
+  "error_handling": { "schema_ref": "rules/error_handling.json" },
+  "agent_read_instructions": { "rule": "Agent MUST read AGENTS.md before executing any steps.", "schema_ref": "AGENTS.md#overview" },
+  "context_scope": "transient",
+  "_compact_rules_applied": ["Р01: schema_ref instead of inline duplicate rules", "Р02: removed name/description duplication", "Р03: minimal context, verbose examples in references/", "Р04: process-specific details kept, AGENTS.md only has schema_ref"]
 }
