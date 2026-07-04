@@ -465,3 +465,9 @@
 * Updated AGENTS.md with Context Management section explaining persistent/transient/hybrid rules
 * Agent now knows which rules to keep in memory vs which to forget after process completes
 * Purpose: Reduce context bloat from ~86KB by separating session-wide rules from process-specific rules
+
+## [2026-07-04] schema | Phase 32: All Rules Transient — Zero Persistent Memory Required
+* Updated rules/context-scopes.json to v2.0 with ALL rules as Transient scope
+* Moved all persistent/hybrid rules (memory contract, execution contract, error handling, etc.) to Transient
+* Updated AGENTS.md Phase 31 → Phase 32: explained that auto-read mechanism eliminates need for Persistent rules
+* Result: Zero context bloat — agent reads fresh from source before every action via `agent_read_instructions` in process files
