@@ -1,27 +1,19 @@
 {
-  "last_updated": "2026-07-04T22:30:00+04:00",
+  "last_updated": "2026-07-04T23:15:00+04:00",
   "current_mode": "project",
-  "focus_node": "Phase 14 Compact Rules — process files fully compacted (English-only, clean JSON)",
+  "focus_node": "Phase 14 final cleanup — RULES.md compacted, dev-docs rule added",
   "open_pages": [
-    {"path": "process-query.json", "status": "updated"},
-    {"path": "process-ingest.json", "status": "updated"},
-    {"path": "process-lint.json", "status": "updated"}
+    {"path": "RULES.md", "status": "updated"},
+    {"path": "rules/schema-ref-examples.md", "status": "created"}
   ],
   "dead_ends": [],
   "query_summary": {
-    "intent": "Final compact pass on process files — English-only, no Unicode escapes",
-    "pages_read": [
-      "RULES.md#9",
-      ".pi/skills/compact/SKILL.md",
-      "process-query.json",
-      "process-ingest.json",
-      "process-lint.json"
-    ],
+    "intent": "Compact RULES.md, add dev-docs cleanup rule (delete closed tasks from PLAN/issues/FEATURES_PLAN)",
+    "pages_read": ["RULES.md"],
     "key_findings": [
-      "All three process files rewritten in English only (per instruction language rule)",
-      "No Unicode escapes — clean UTF-8 JSON",
-      "Total: 1888→475 lines (-75%), ~75KB context saved",
-      "_compact_rules_applied removed (developer notes unnecessary)"
+      "RULES.md: 211→90 lines (-57%) — removed verbose examples, external links",
+      "Schema ref examples moved to rules/schema-ref-examples.md",
+      "Dev-docs cleanup rule added: delete fully closed tasks after completion"
     ]
   },
   "next_steps_todo": []

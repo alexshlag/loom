@@ -520,3 +520,8 @@
 * Total: 1888→475 lines (-75%), ~75KB context saved
 * Removed _compact_rules_applied developer notes
 
+## [2026-07-04] schema | RULES.md compacted (211→90 lines, -57%), dev-docs cleanup rule added
+* Compact rules: removed verbose examples, links to external articles, commit format table
+* Schema ref examples moved to rules/schema-ref-examples.md
+* Added dev-docs cleanup rule: delete fully closed issues/tasks from PLAN.md/issues.md/FEATURES_PLAN.md after task completion
+
