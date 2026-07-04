@@ -9,14 +9,15 @@ related: []
 
 ## Active Project (WORK_MODE: project)
 - **Project**: Loomana wiki — tag audit + XR gap resolution
-- **Focus node**: Tag consistency across entity/concept pages, shared domain tags for crosslinks
+- **Status**: RESOLVED ✅
+- **Focus node**: Generic tags removed, symfony ↔ service-container connection strengthened
 - **Related wiki pages**: `wiki/entities/symfony.md`, `wiki/concepts/service-container.md`, `rules/tag-guidelines.json`
-- **Key findings**: 
-  - Added 15 bidirectional wikilinks (entities ↔ concepts)
-  - Found XR gap: symfony.md → service-container.md lacks shared domain tags
-  - TAG-P6 updated: non-English tag violation detected across 15 pages
-  - Total issues found: 37 (1 empty, 15 non-EN, 21 generic, 1 XR gap)
-- **Next steps**: Fix XR gaps, convert non-English tags to English equivalents, remove generic type tags
+- **Completed actions**: 
+  - XR gap closed: backlinks.json contains entities-symfony-md → concepts-service-container-md bidirectional links
+  - Generic 'tool' tag removed from ai-factory.md → replaced with obsidian-cli, cli-tool
+  - Generic 'tool' tag removed from rust-clippy.md → replaced with linting-tool
+  - Added autowiring + di-pattern domain tags to symfony.md for stronger semantic connection
+- **Next steps**: Verify all pages have ≥3 domain-specific tags per tag-guidelines.json
 
 ## Active Session Context
 - **Topic**: Complete tag audit — add wikilinks, fix XR gaps, update rules
