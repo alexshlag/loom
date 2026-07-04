@@ -79,11 +79,20 @@ AGENTS.md и process-файлы (`process-ingest.json`, `process-query.json`, `p
 - **[FEATURES_PLAN.md](FEATURES_PLAN.md)** — план реализации архитектурных улучшений на основе research (ingest algorithms comparison): advisory locking, background synthesis, contradiction flagging, mode-aware routing, address assignment.
 - **[issues.md](issues.md)** — реестр багов и известных проблем. Описываем найденные баги, фиксируем исправления. **Читай issues.md при ingest/query/lint** — чтобы не дублировать известные проблемы и знать об ограничениях системы.
 
----
-
-## 🛠 Code Conventions (Development)
+### 🛠 Code Conventions
 
 На период написания и отладки скриптов действует системный регламент разработки кода: [RULES.md](RULES.md).
+
+### Memory Sync on Schema Changes (RULES.md#9) — Bridge to Wiki Agent Memory
+
+When agent modifies system files (AGENTS.md, RULES.md, process-*.json, PLAN.md, FEATURES_PLAN.md), rules in `rules/` and/or scripts in `scripts/`: 
+1. Update working_memory.json: set `focus_node` = current development task name; filter completed tasks from `next_steps_todo`
+2. Update hot.md Active Project with Phase status + what was done
+3. See [rules/session_context_rules.json](rules/session_context_rules.json) for write_algorithm.
+
+> This is the bridge rule: dev-process → wiki memory system. Normal wiki triggers (user_message_received, action_completed) stay in session_context_rules.json.
+
+---
 
 ### Unified-Pass Architecture (Phase 23)
 
@@ -97,15 +106,6 @@ AGENTS.md и process-файлы (`process-ingest.json`, `process-query.json`, `p
 - **System file exclusion**: единый список, определяется в начале скрипта
 
 > Цель: устранить 3 независимых полных walk поwiki при каждом ingest/lint.
-
-### Memory Sync on Schema Changes (RULES.md#9)
-
-When modifying system files (AGENTS.md, RULES.md, process-*.json, PLAN.md, FEATURES_PLAN.md):
-1. `focus_node` = current development task name
-2. `next_steps_todo` = remaining tasks from same phase (filter completed)
-3. Update hot.md Active Project with Phase status + what was done
-
-> See: [rules/session_context_rules.json](rules/session_context_rules.json) for write_algorithm.
 
 ---
 
