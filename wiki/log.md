@@ -471,3 +471,7 @@
 * Moved all persistent/hybrid rules (memory contract, execution contract, error handling, etc.) to Transient
 * Updated AGENTS.md Phase 31 → Phase 32: explained that auto-read mechanism eliminates need for Persistent rules
 * Result: Zero context bloat — agent reads fresh from source before every action via `agent_read_instructions` in process files
+## [2026-07-04] schema | Phase 14 Schema Cleanup — Consolidated duplicate Memory Sync rules in AGENTS.md
+- Removed duplicate Memory Sync section from after RULES.md reference
+- Moved Pre-commit Memory Sync Rule into Git Conventions as dedicated subsection (AGENTS.md#pre_commit_memory_sync_rule)
+- Raised Unified-Pass heading from ### to ## for proper hierarchy

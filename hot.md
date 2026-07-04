@@ -2,6 +2,19 @@
 
 ## Active Project
 
+**Focus**: Phase 14 Schema Cleanup — Consolidated duplicate Memory Sync rules
+**Status**: 🟡 **In Progress** — schema cleanup in progress, commit pending.
+
+### Key Findings
+- Duplicate Memory Sync section removed from after RULES.md reference
+- Pre-commit Memory Sync Rule consolidated under Git Conventions (AGENTS.md#pre_commit_memory_sync_rule)
+- Unified-Pass heading raised to ## for proper hierarchy
+
+### What Was Changed
+1. **AGENTS.md**: Removed duplicate Memory Sync block (~9 lines), moved to Git Conventions subsection, fixed heading levels
+
+## Active Project
+
 **Focus**: Phase 14 Schema Optimization — Compact rules implementation & memory sync bridge rule  
 **Status**: 🟥 **P0 Priority** — requires session refresh before full implementation.
 

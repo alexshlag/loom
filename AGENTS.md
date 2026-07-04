@@ -83,18 +83,9 @@ AGENTS.md и process-файлы (`process-ingest.json`, `process-query.json`, `p
 
 На период написания и отладки скриптов действует системный регламент разработки кода: [RULES.md](RULES.md).
 
-### Memory Sync on Schema Changes (RULES.md#9) — Bridge to Wiki Agent Memory
-
-When agent modifies system files (AGENTS.md, RULES.md, process-*.json, PLAN.md, FEATURES_PLAN.md), rules in `rules/` and/or scripts in `scripts/`: 
-1. Update working_memory.json: set `focus_node` = current development task name; filter completed tasks from `next_steps_todo`
-2. Update hot.md Active Project with Phase status + what was done
-3. See [rules/session_context_rules.json](rules/session_context_rules.json) for write_algorithm.
-
-> This is the bridge rule: dev-process → wiki memory system. Normal wiki triggers (user_message_received, action_completed) stay in session_context_rules.json.
-
 ---
 
-### Unified-Pass Architecture (Phase 23)
+## Unified-Pass Architecture (Phase 23)
 
 `scripts/unified-pass.sh` — **оркестратор**, а не monolithic merge трёх скриптов:
 
@@ -117,6 +108,14 @@ When agent modifies system files (AGENTS.md, RULES.md, process-*.json, PLAN.md, 
 - Коммит **по запросу пользователя**: `git add -A; git commit -m "<type> | <scope>: <description>"`
 - `git add -A` — safe, ignores .gitignore automatically
 
+### Pre-commit Memory Sync Rule
+
+Before EVERY git commit in development mode (AGENTS.md, RULES.md, process-*.json, PLAN.md, FEATURES_PLAN.md changes):
+1. Update working_memory.json: set `focus_node` = current task name; filter completed tasks from `next_steps_todo`
+2. Update hot.md Active Project with Phase status + what was done
+3. See [rules/session_context_rules.json](rules/session_context_rules.json) for write_algorithm.
+
+> This bridges dev-process → wiki-agent-memory: every git commit triggers memory update automatically — not conditional on schema changes.
 > Full guardrails enforced by `.git/hooks/pre-commit` + `scripts/validate-path.sh`.
 
 ---
