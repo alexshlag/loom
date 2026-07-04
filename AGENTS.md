@@ -107,6 +107,15 @@ Before EVERY git commit in development mode (AGENTS.md, RULES.md, process-\*.jso
 > This bridges dev-process → wiki-agent-memory: every git commit triggers memory update automatically — not conditional on schema changes.
 > Full guardrails enforced by `.git/hooks/pre-commit` + `scripts/validate-path.sh`.
 
+### Regular Wiki Operations Memory Sync (Non-Development)
+
+После create/update wiki-страницы через ingest/query → ОБЯЗАТЕЛЬНО:
+1. Обновить working_memory.json: focus_node, next_steps_todo (auto-cleanup completed), query_summary
+2. Обновить hot.md System State Recent Changes с summary изменений
+3. Триггер: `page_created_or_updated` из session_context_rules.json
+4. Правило: **WM-SYNC-AFTER-WIKI-V1** — применяется к каждому wiki-операции, независимо от режима работы.
+
+> Этот механизм работает параллельно с Pre-commit Memory Sync Rule (который только для dev-mode). Оба правила могут срабатывать одновременно.
 ---
 
 ## 🔄 Process Roles
@@ -617,7 +626,7 @@ Wiki использует три слоя памяти — каждый закр
 | Файл                    | Роль                                                                                                                                                                       | Живёт                                                                                        | Читаю/пишу                              |
 | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | --------------------------------------- |
 | **working_memory.json** | Оперативная память _текущей_ сессии — focus_node, open_pages, next_steps_todo. Периодически перезаписывается (turn → turn).                                                | Коротко: одна сессия. Чистится при dismissal/compaction.                                     | Agent записывает каждый turn.           |
-| **hot.md**              | Срез _активного проекта и вопросов_ — на чём остановились, какие wiki-страницы были полезны, ключевые выводы из обсуждений. Выживает компакцию через restore-hot-cache.sh. | Долгосрочно: между сессиями. Обновляется при end-of-session или когда важная задача закрыта. | Agent записывает срез, не полную ленту. |
+| **hot.md**              | Срез _активного проекта и вопросов_ — на чём остановились, какие wiki-страницы были полезны, ключевые выводы из обсуждений. Выживает компакцию через restore-hot-cache.sh. | Долгосрочно: между сессиями. Обновляется при end-of-session, после важного действия **и** при любом изменении wiki-страниц. | Agent записывает срез, не полную ленту. |
 | **log.md**              | Append-only летопись всех действий и изменений wiki. Хронологическая лента.                                                                                                | Навсегда. Не переписывается, только append.                                                  | Agent append'ит каждую запись.          |
 
 **Как они взаимодействуют:**

@@ -11,7 +11,7 @@
   "lint_checks": [
     {"check_id": "1", "name": "contradictions_between_pages",
      "description": "Find pages where old claims are no longer accurate.",
-     "schema_ref": "rules/search_strategy.json#cascade_priority"},
+     "schema_ref": "rules/contradiction_resolution.json"},
     {"check_id": "2", "name": "orphan_pages_detection",
      "command": "./scripts/lint.sh --run orphan-pages",
      "note": "Runs via scripts/lint.sh — output JSON with count + paths."},
@@ -32,7 +32,7 @@
      "command": "./scripts/unified-pass.sh --auto"},
     {"check_id": "9", "name": "detect_contradiction_deep_scan",
      "command": "./scripts/detect-contradications.sh --quiet",
-     "schema_ref": "rules/search_strategy.json#cascade_priority"},
+     "schema_ref": "rules/contradiction_resolution.json"},
     {"check_id": "10", "name": "text_similarity_scan",
      "description": "Scan wiki for n-gram overlap ≥90% — detects copy-paste chains.",
      "command": "./scripts/text-similarity.sh --scan-all --threshold 90"},

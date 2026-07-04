@@ -71,6 +71,19 @@
 
 ---
 
+## ✅ Resolved Today/Recently (2026-07-05)
+
+### Issue #43: Cascade Priority & Contradiction Resolution Flow 🆕 RESOLVED
+**Проблема**: `rules/search_strategy.json#cascade_priority` — битая ссылка. Agent не мог разрешать противоречия.
+**Решение:** ✅ Создан `rules/contradiction_resolution.json` с полной логикой cascade order, evidence_grade_sub_priority, fallback_chain, arbitration_layer.
+**Fix applied:**
+- Created rules/contradiction_resolution.json (5952 bytes)
+- Updated process-query.json schema_ref → contradiction_resolution.json
+- Updated process-lint.json × 2 schema_refs → contradiction_resolution.json
+- All broken refs eliminated — agent can now follow complete resolution flow
+
+---
+
 ## ✅ Resolved Today/Recently (2026-07-04)
 
 ### Issues #37-41: Schema References & Process Workflow Anomalies ✅ FIXED
@@ -82,4 +95,4 @@
 
 ---
 
-*Last update: 2026-07-04 | Live: #39, #5/#9, #11, #12, #18, #27, #28, #22, #23, #24, #25, #8. Resolved today: #37-41.*
+*Last update: 2026-07-05 | Live: #39, #5/#9, #11, #12, #18, #27, #28, #22, #23, #24, #25, #8. Resolved today: #43.*

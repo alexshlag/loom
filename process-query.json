@@ -199,7 +199,7 @@
         }
       },
       "contradiction_resolution_flow": {
-        "schema_ref": "rules/search_strategy.json#cascade_priority"
+        "schema_ref": "rules/contradiction_resolution.json"
       },
       "assess_compounding_value": {
         "rule": "If answer: (1) synthesizes from 2+ pages, OR (2) contains novel insight → flag for fixation",
@@ -389,11 +389,19 @@
       ],
       "finalization": [
         {
-          "action_name": "write_to_working_memory"
+          "action_name": "write_to_working_memory",
+          "rule_id": "WM-SYNC-AFTER-WIKI-V1",
+          "fields_to_write": ["focus_node", "next_steps_todo (auto-cleanup)", "query_summary"]
         },
         {
           "action_name": "write_session_context_to_hot",
           "rule": "AGENT_MUST_WRITE_HOT_AFTER_EACH_QUERY"
+        },
+        {
+          "action_name": "update_hot_with_wiki_changes",
+          "condition": "IF wiki_page_created_or_updated_during_query",
+          "rule_id": "HOT-WIKI-CHANGES-V1",
+          "description": "If query resulted in new/updated wiki page → summarize changes in hot.md System State"
         }
       ]
     }

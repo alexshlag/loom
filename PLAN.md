@@ -17,11 +17,11 @@
 
 | # | Task | Output | Status |
 |---|------|--------|--------|
-| 1 | Extract full contradiction_resolution_flow from git history (b25b642^) → structure it into JSON | rules/contradiction_resolution.json | ⬜ Pending |
-| 2 | Create file with: cascade_order, evidence_grade_sub_priority, temporal_decay, arbitration_layer, resolution_actions | rules/contradiction_resolution.json content | ⬜ Pending |
-| 3 | Update process-query.json: change `rules/search_strategy.json#cascade_priority` → `rules/contradiction_resolution.json` | Fixed schema_ref | ⬜ Pending |
-| 4 | Update process-lint.json: replace all `search_strategy.json#cascade_priority` refs with new file | Fixed (2 instances) | ⬜ Pending |
-| 5 | Verify: agent can now follow contradiction_resolution_flow end-to-end without dead ends | Test run | ⬜ Pending |
+| 1 | Extract full contradiction_resolution_flow from git history (b25b642^) → structure it into JSON | rules/contradiction_resolution.json | ✅ Done |
+| 2 | Create file with: cascade_order, evidence_grade_sub_priority, temporal_decay, arbitration_layer, resolution_actions | rules/contradiction_resolution.json content | ✅ Done |
+| 3 | Update process-query.json: change `rules/search_strategy.json#cascade_priority` → `rules/contradiction_resolution.json` | Fixed schema_ref | ✅ Done |
+| 4 | Update process-lint.json: replace all `search_strategy.json#cascade_priority` refs with new file | Fixed (2 instances) | ✅ Done |
+| 5 | Verify: agent can now follow contradiction_resolution_flow end-to-end without dead ends | Test run | ⬜ Pending (requires runtime test) |
 
 **Содержимое rules/contradiction_resolution.json** (восстановлено из git):
 ```json
