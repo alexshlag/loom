@@ -243,5 +243,10 @@
   "inherits_from": [
     "guardrails",
     "logging_templates"
-  ]
+  ],
+  "agent_read_instructions": {
+    "rule": "Agent MUST read AGENTS.md before executing any lint checks.",
+    "reason": "AGENTS.md contains the latest schema, rules, and conventions. Process files inherit from AGENTS.md — always refresh context before starting.",
+    "schema_ref": "AGENTS.md#overview"
+  }
 }

@@ -633,5 +633,11 @@
     ],
     "rule": "Never auto-modify templates — always user-approved changes per AGENTS.md#template-co-evolution-process"
   },
-  "tag_guidelines_schema_ref": "rules/tag-guidelines.json"
+  "tag_guidelines_schema_ref": "rules/tag-guidelines.json",
+  "schema_ref": "AGENTS.md#overview",
+  "agent_read_instructions": {
+    "rule": "Agent MUST read AGENTS.md before executing any steps of this process.",
+    "reason": "AGENTS.md contains the latest schema, rules, and conventions. Process files inherit from AGENTS.md — always refresh context before starting.",
+    "schema_ref": "AGENTS.md#overview"
+  }
 }

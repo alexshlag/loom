@@ -192,6 +192,10 @@ related: []
   - Пример: если агент выполнил задачу "unified-pass.sh --full", он должен удалить её из `next_steps_todo` перед write()
 - Не дублирует wiki — хранит только метаданные сессии (не сами страницы)
 
+**Canonical rules source**: `rules/session_context_rules.json` определяет полный алгоритм работы с memory layers (working_memory.json, hot.md, log.md), save_triggers, и read_algorithm. Агент читает этот файл перед каждым действием с памятью.
+
+> Schema ref: `AGENTS.md#context_bridge`. Canonical: `rules/session_context_rules.json`.
+
 **Формат**:
 
 ```json
@@ -222,7 +226,7 @@ related: []
 
 - Директория технических спецификаций и «нишевых» инструкций, вынесенных из AGENTS.md для снижения контекстного бloat.
 - Формат: **JSON предпочтителен** (машинно-читаемый), но допустимы `.md` файлы когда структура требует текстового описания.
-- Содержит правила: `protected_zones.json`, `error_handling.json`, `execution_contract.json`, `link_conventions.json`, `search_strategy.json`, `tag-guidelines.json` и другие.
+- Содержит правила: `protected_zones.json`, `error_handling.json`, `execution_contract.json`, `link_conventions.json`, `search_strategy.json`, `tag-guidelines.json`, `session_context_rules.json` и другие.
 - AGENTS.md содержит ссылки (`schema_ref`) на эти файлы вместо дублирования — агент читает правило только когда ему нужно его применение.
 
 ---

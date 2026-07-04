@@ -794,7 +794,7 @@
             ]
           },
           {
-            "action": "write_session_context_to_hot", 
+            "action": "write_session_context_to_hot",
             "description": "После записи WM — агент сохраняет срез проекта/сессии в wiki/hot.md. Active Project: focus node, related wiki pages, key findings, next steps. Active Session Context: topic, pages read, key findings. Не дублировать log.md — только суть.",
             "rule": "AGENT_MUST_WRITE_HOT_AFTER_EACH_QUERY"
           }
@@ -938,5 +938,10 @@
   },
   "error_handling": {
     "schema_ref": "rules/error_handling.json"
+  },
+  "agent_read_instructions": {
+    "rule": "Agent MUST read AGENTS.md before executing any steps of this process.",
+    "reason": "AGENTS.md contains the latest schema, rules, and conventions. Process files inherit from AGENTS.md — always refresh context before starting.",
+    "schema_ref": "AGENTS.md#overview"
   }
 }
