@@ -458,3 +458,10 @@
 * Remaining 5 violations (hot.md, index.md, log.md, overview.md, snapshot.md) are system files — excluded from rule
 * lint.sh structural_violations: reduced from 40 to 5 (system files only)
 * All entity/concept/synthesis/comparison pages now comply with FIRST-BLOCK-V1: 1-2 sentence intro after H1 before ## sections
+
+## [2026-07-04] schema | Context Management — Persistent vs Transient Rules (Phase 31)
+* Created rules/context-scopes.json with scope definitions for all wiki rules
+* Added context_scope: transient metadata to process-ingest/query/lint.json files
+* Updated AGENTS.md with Context Management section explaining persistent/transient/hybrid rules
+* Agent now knows which rules to keep in memory vs which to forget after process completes
+* Purpose: Reduce context bloat from ~86KB by separating session-wide rules from process-specific rules

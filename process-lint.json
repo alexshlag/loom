@@ -236,15 +236,25 @@
   },
   "lint_script_path": "scripts/lint.sh",
   "frontmatter_schema": {
-    "required": ["tags", "date", "sources"],
-    "optional": ["related"]
+    "required": [
+      "tags",
+      "date",
+      "sources"
+    ],
+    "optional": [
+      "related"
+    ]
   },
   "git_conventions_reference": "AGENTS.md#git-conventions",
   "templates_reference": "AGENTS.md#page-templates",
-  "inherits_from": ["guardrails", "logging_templates"],
+  "inherits_from": [
+    "guardrails",
+    "logging_templates"
+  ],
   "agent_read_instructions": {
     "rule": "Agent MUST read AGENTS.md before executing any lint checks.",
     "reason": "AGENTS.md contains the latest schema, rules, and conventions. Process files inherit from AGENTS.md — always refresh context before starting.",
     "schema_ref": "AGENTS.md#overview"
-  }
+  },
+  "context_scope": "transient"
 }

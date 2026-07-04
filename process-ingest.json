@@ -109,10 +109,20 @@
         },
         {
           "action": "CLASSIFY_SOURCE",
-          "types": ["entity", "concept", "notes", "meeting", "project"],
+          "types": [
+            "entity",
+            "concept",
+            "notes",
+            "meeting",
+            "project"
+          ],
           "source_layer_classification": {
             "description": "Classify each source for Reality Layer cascade priority",
-            "options": ["code_reality", "live_state", "documentation"],
+            "options": [
+              "code_reality",
+              "live_state",
+              "documentation"
+            ],
             "rules": [
               {
                 "condition": "file_is_code_or_github_issue_or_pr",
@@ -668,5 +678,6 @@
     "rule": "Agent MUST read AGENTS.md before executing any steps of this process.",
     "reason": "AGENTS.md contains the latest schema, rules, and conventions. Process files inherit from AGENTS.md — always refresh context before starting.",
     "schema_ref": "AGENTS.md#overview"
-  }
+  },
+  "context_scope": "transient"
 }

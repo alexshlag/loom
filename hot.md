@@ -2,30 +2,26 @@
 
 ## Active Project
 
-**Focus**: Structural requirements fix — ALL wiki pages now have body text before first ## section  
-**Status**: Fixed 35 structural violations across entities/concepts/syntheses/comparisons. Remaining 5 violations are system files (hot.md, index.md, log.md, overview.md, snapshot.md) which don't require intro paragraphs.
+**Focus**: Context Management System — Persistent vs Transient Rules  
+**Status**: Implemented Phase 31 context management architecture
 
 ### Key Findings
-- check-structural.sh correctly finds structural violations — now 90% fixed
-- lint.sh runs 14 checks, JSON output valid (trailing comma bug fixed earlier)
-- All entity/concept pages now comply with FIRST-BLOCK-V1 rule: 1-2 sentence intro after H1
+- Created `rules/context-scopes.json` with scope definitions for all wiki rules
+- Added `context_scope: transient` to process-ingest/query/lint.json files
+- Updated AGENTS.md with Context Management section (Phase 31)
 
-### Fixed Pages (35 total)
-- entities/ — 6 pages updated with intro paragraphs
-- concepts/ — 20 pages updated  
-- syntheses/ — 2 pages updated
-- comparisons/ — 3 pages updated
-
-### System Files (No fix required)
-- hot.md, index.md, log.md, overview.md, snapshot.md — excluded from FIRST-BLOCK-V1 rule
+### What Was Fixed
+1. **Persistent Rules**: Memory contract, execution contract, error handling — always remembered
+2. **Transient Rules**: Process-specific steps — read only during process, forget after completion  
+3. **Hybrid Rules**: Page templates, link conventions — remember but read from source when needed
 
 ## Active Session Context
 
-**Topic**: Structural requirements fix for all wiki content pages  
-**Resolution**: Created scripts/structural-fix.py which automatically generates intro paragraphs based on page category and title  
-**Result**: 35 violations fixed, 5 remaining (system files) are expected behavior
+**Topic**: Context bloat reduction via persistent/transient rule separation  
+**Resolution**: Created rules/context-scopes.json and added context_scope metadata to process files  
+**Result**: Agent now knows which rules to keep in memory vs which to forget after process completes
 
 ## Next Steps
-1. Add aliases to entity/concept pages for discoverability
-2. Investigate crosslink path normalization in related: field
-3. Consider adding semantic search / BM25 retrieval for better query routing
+1. Test context management system — verify agent behavior with persistent/transient rules
+2. Add aliases to entity/concept pages for discoverability
+3. Investigate broken crosslink paths in related: field (~68 invalid references)

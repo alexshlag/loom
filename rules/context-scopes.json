@@ -1,0 +1,58 @@
+{
+  "version": "1.0",
+  "description": "Определяет scope (область видимости) для каждой группы правил wiki. Помогает агенту управлять контекстом сессии — знать какие правила помнить, а какие читать только на время процесса.",
+  "scopes": {
+    "persistent": {
+      "label": "Весь контекст сессии",
+      "rule": "Agent remembers these rules for entire session. Read once at session start. Never forget during session.",
+      "rules_to_include_in_context": [
+        {"id": "MEMORY_CONTRACT", "title": "Memory Architecture Contract", "section_ref": "AGENTS.md#memory_architecture_contract"},
+        {"id": "EXECUTION_CONTRACT", "title": "Execution Contract — Proposal → Action", "section_ref": "AGENTS.md#execution_contract"},
+        {"id": "ERROR_HANDLING", "title": "Error Handling Protocol — 4-step loop", "section_ref": "AGENTS.md#error_handling_protocol"},
+        {"id": "GIT_CONVENTIONS", "title": "Git Conventions", "section_ref": "AGENTS.md#git_conventions"},
+        {"id": "PROTECTED_ZONES", "title": "Protected Zones & Guardrails", "section_ref": "AGENTS.md#protected_zones"},
+        {"id": "SILENT_OUTPUT", "title": "Silent-Only Output Contract", "section_ref": "AGENTS.md#silent_output_contract"},
+        {"id": "EXECUTION_MODES", "title": "Execution Modes (silent/verbose)", "section_ref": "AGENTS.md#execution_modes"},
+        {"id": "NATURAL_MEMORY", "title": "Natural Memory Translation", "section_ref": "AGENTS.md#natural_memory_translation"},
+        {"id": "LOG_APPEND_ONLY", "title": "Log Append Only Rule", "section_ref": "AGENTS.md#log_append_only"}
+      ]
+    },
+    "transient": {
+      "label": "Только во время процесса (read → forget)",
+      "rule": "Agent reads these rules when entering process mode. After process completes, agent forgets them unless user explicitly asks to keep context.",
+      "rules_to_include_in_context": [
+        {"id": "INGEST_SPECIFICS", "title": "Ingest-specific steps: capture → integrate flow, corrected copy zone, delta tracking manifest", "source_file": "process-ingest.json"},
+        {"id": "QUERY_SPECIFICS", "title": "Query-specific: search priority, web_ingest_flow, compounding workflow logic", "source_file": "process-query.json"},
+        {"id": "LINT_SPECIFICS", "title": "Lint-specific: check IDs, cron setup, script usage patterns", "source_file": "process-lint.json"}
+      ]
+    },
+    "hybrid": {
+      "label": "Частичная persistence (read infrequently but remember)",
+      "rule": "Agent remembers these rules but reads them from source files only when needed. Don't keep in context unless actively working on that topic.",
+      "rules_to_include_in_context": [
+        {"id": "PAGE_TEMPLATES", "title": "Page Templates & Frontmatter structure", "source_file_rules": "wiki/templates/", "read_when": "creating/updating wiki pages"},
+        {"id": "LINK_CONVENTIONS", "title": "Link Conventions — basic rules remember, detailed auto-fix read from source", "source_file_rules": "process-ingest.json#external_source_policy"},
+        {"id": "CROSSLINK_DISCOVERY", "title": "Crosslink Discovery scoring system", "source_file_rules": "AGENTS.md#crosslink_discovery"},
+        {"id": "ADVISORY_LOCKING", "title": "Advisory Locking usage pattern for ingest", "source_file_rules": "scripts/wiki-lock.sh"}
+      ]
+    }
+  },
+  "agent_instructions": {
+    "session_start": [
+      "Read persistent rules from AGENTS.md — these are always in context.",
+      "Do NOT read transient rules at session start. Only read when entering process mode.",
+      "Hybrid rules: remember but don't keep full content in context. Read source only when actively working on that topic."
+    ],
+    "process_start": [
+      "When starting ingest → read process-ingest.json (transient rules).",
+      "When starting query → read process-query.json (transient rules).",
+      "When starting lint → read process-lint.json (transient rules).",
+      "After process completes → forget transient rules unless user asks to keep context."
+    ],
+    "forget_trigger": [
+      "Process completed → forget process-specific details.",
+      "User says 'done', 'clear context', or 'забь' → clear transient rules from memory.",
+      "Persistent rules never forgotten during session."
+    ]
+  }
+}

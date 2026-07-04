@@ -943,5 +943,6 @@
     "rule": "Agent MUST read AGENTS.md before executing any steps of this process.",
     "reason": "AGENTS.md contains the latest schema, rules, and conventions. Process files inherit from AGENTS.md — always refresh context before starting.",
     "schema_ref": "AGENTS.md#overview"
-  }
+  },
+  "context_scope": "transient"
 }
