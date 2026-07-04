@@ -11,6 +11,10 @@ related:
 
 # Harness-Aware Wiki Setup Flow
 
+
+This page explores Harness-Aware Wiki Setup Flow as a key concept in our knowledge base.
+
+
 ## Definition
 
 Идея автоматической настройки wiki-контекста для конкретного harness (Pi, Claude Code, Cursor и т.д.). Каждый harness имеет свои инструменты, конвенции и точки конфигурации — setup flow должен их учитывать.

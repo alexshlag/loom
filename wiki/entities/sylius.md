@@ -9,6 +9,10 @@ related: [wiki/entities/symfony.md, wiki/concepts/hexagonal-architecture.md, wik
 
 # Sylius
 
+
+Page covering Sylius — entity information, architecture details, and usage patterns.
+
+
 ## Definition
 
 [[Sylius]] — open-source eCommerce framework на базе [[Symfony Full Stack]]. Архитектурно построен на decoupled компонентах и bundles с сильным фокусом на тестирование (BDD workflow) и гибкость. Поддерживает headless подход через встроенный REST API. Работает поверх [[API Platform]] для headless API и использует [[hexagonal architecture]] для организации кода.

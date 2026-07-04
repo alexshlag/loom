@@ -9,6 +9,10 @@ related: [wiki/entities/symfony.md, wiki/concepts/sonata-admin-bundle.md]
 
 # EasyAdmin Bundle
 
+
+This page explores EasyAdmin Bundle as a key concept in our knowledge base.
+
+
 ## Definition
 
 EasyAdmin — пакет (bundle) для Symfony, генерирующий admin backends. Создаёт CRUD-интерфейсы автоматически из entity моделей. Бесплатный, быстрый, с полной документацией. Активно развивается: последняя стабильная версия `v5.1.0` (2026-06-20).

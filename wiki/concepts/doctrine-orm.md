@@ -7,6 +7,10 @@ related: [wiki/entities/symfony.md]
 
 # Doctrine ORM Integration
 
+
+This page explores Doctrine ORM Integration as a key concept in our knowledge base.
+
+
 ## Определение
 
 [[Doctrine ORM]] — object-relational mapper для PHP, интегрированный в [[Symfony]] через DoctrineBridge. Позволяет работать с database через PHP entities and repositories instead of raw SQL. Symfony recommends using PHP attributes for entity mapping metadata. Doctrine работает параллельно с [[service container]], который управляет зависимостями между entities и repositories.

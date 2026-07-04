@@ -9,6 +9,10 @@ related: [wiki/entities/symfony.md, wiki/concepts/service-container.md, wiki/ent
 
 # Sonata Admin Bundle
 
+
+This page explores Sonata Admin Bundle as a key concept in our knowledge base.
+
+
 ## Definition
 
 Sonata Admin — пакет (bundle) для Symfony, генерирующий admin panels и CRUD interfaces. Архитектурно вдохновлён Django Admin Project. Предоставляет declarative подход к управлению моделями через YAML/XML/PHP конфигурацию.

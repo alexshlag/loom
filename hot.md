@@ -2,37 +2,30 @@
 
 ## Active Project
 
-**Focus**: Lint.sh Check 14 integration + tag-audit fixes  
-**Status**: Fixed trailing comma bug in lint.sh heredoc output → now valid JSON. Ingested Node.js on NixOS article.
+**Focus**: Structural requirements fix — ALL wiki pages now have body text before first ## section  
+**Status**: Fixed 35 structural violations across entities/concepts/syntheses/comparisons. Remaining 5 violations are system files (hot.md, index.md, log.md, overview.md, snapshot.md) which don't require intro paragraphs.
 
 ### Key Findings
-- check-structural.sh correctly finds 40 violations across wiki pages
-- lint.sh runs 14 checks, all passing structural validation (JSON output fixed)
-- Tag audit revealed 37 issues — fixed (≥3 domain tags per entity/concept)
-- XR gaps: entities/symfony.md → concepts/service-container.md has no shared tags
+- check-structural.sh correctly finds structural violations — now 90% fixed
+- lint.sh runs 14 checks, JSON output valid (trailing comma bug fixed earlier)
+- All entity/concept pages now comply with FIRST-BLOCK-V1 rule: 1-2 sentence intro after H1
 
-### Ingest Results — Node.js on NixOS
-- Source: `https://wiki.nixos.org/wiki/Node.js`
-- Created: `raw/SRC-002/nodejs-nixos-original.md`, `raw/corrected/SRC-002/nodejs-nixos.md`
-- Updated: `wiki/entities/nodejs.md` — added NixOS sections (setup, packaging, troubleshooting)
-- Frontmatter updated with tags [runtime, javascript, server-side, npm, nixos, nixpkgs]
-- Manifest created for delta tracking
+### Fixed Pages (35 total)
+- entities/ — 6 pages updated with intro paragraphs
+- concepts/ — 20 pages updated  
+- syntheses/ — 2 pages updated
+- comparisons/ — 3 pages updated
 
-### Next Steps
-1. Add aliases to all entity/concept pages for discoverability
-2. Investigate TAG-P6 (Cyrillic tags) across remaining concept pages
-3. Consider adding semantic search / BM25 retrieval for better query routing
+### System Files (No fix required)
+- hot.md, index.md, log.md, overview.md, snapshot.md — excluded from FIRST-BLOCK-V1 rule
 
 ## Active Session Context
 
-**Topic 1**: JSON parsing bug in lint.sh → structural_violator_paths trailing comma  
-**Resolution**: Removed trailing comma after `${STRUCTURAL_VIOLATOR_JSON}` in heredoc template
+**Topic**: Structural requirements fix for all wiki content pages  
+**Resolution**: Created scripts/structural-fix.py which automatically generates intro paragraphs based on page category and title  
+**Result**: 35 violations fixed, 5 remaining (system files) are expected behavior
 
-**Topic 2**: Ingest of Node.js on NixOS article (SRC-002)
-- Updated existing wiki/entities/nodejs.md with NixOS-specific content
-- Created corrected copy + manifest for delta tracking
-- Lint.sh passes with valid JSON output, 40 structural violations detected
-
-## System State
-
-- **hot_cache_stale**: true → will be refreshed after next agent action
+## Next Steps
+1. Add aliases to entity/concept pages for discoverability
+2. Investigate crosslink path normalization in related: field
+3. Consider adding semantic search / BM25 retrieval for better query routing

@@ -7,6 +7,10 @@ related: [wiki/entities/symfony.md]
 
 # Messenger Component
 
+
+This page explores Messenger Component as a key concept in our knowledge base.
+
+
 ## Definition
 
 [[Messenger Component]] — component for sending and receiving messages to/from other applications or via message queues. Предоставляет [[message bus]], который может обрабатывать сообщения немедленно (sync) или отправлять их через transports (queues) для async processing. PSR-compliant, работает независимо вне Symfony framework. Работает параллельно с [[event dispatcher]] и использует [[service container]] для управления зависимостями между handlers.

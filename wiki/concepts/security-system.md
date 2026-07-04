@@ -7,6 +7,10 @@ related: [wiki/entities/symfony.md]
 
 # Security System (AuthN & AuthZ)
 
+
+This page explores Security System (AuthN & AuthZ) as a key concept in our knowledge base.
+
+
 ## Определение
 
 Symfony Security — comprehensive security system для web applications, включающий аутентификацию (кто пользователь) и авторизацию (что может делать). SecurityBundle предоставляет authentication providers, authorization voters, firewalls, password hashing. CSRF protection и secure session cookies включены по умолчанию.

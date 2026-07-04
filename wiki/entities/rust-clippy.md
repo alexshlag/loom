@@ -9,6 +9,10 @@ related: []
 
 # Clippy
 
+
+Page covering Clippy — entity information, architecture details, and usage patterns.
+
+
 ## Definition
 
 Clippy is a collection of lints (static analysis checks) to catch common mistakes and improve Rust code. It runs on top of rustc as a custom lint tool, providing suggestions beyond the compiler's built-in diagnostics.

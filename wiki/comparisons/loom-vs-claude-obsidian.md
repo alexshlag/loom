@@ -9,6 +9,10 @@ related: [wiki/concepts/natural-memory.md, wiki/entities/pi-coding-agent.md, wik
 
 # LOOM vs claude-obsidian — Сравнение двух реализаций LLM Wiki Companion
 
+
+Comparative analysis covering LOOM vs claude-obsidian — Сравнение двух реализаций LLM Wiki Companion across different contexts and implementations.
+
+
 ## Определение
 
 Сравнительный анализ двух проектов, основанных на одной идее — «LLM Wiki Companion» (persistent knowledge base managed by an AI agent). **LOOM** (`/home/andrew/projects/local_wiki/loom`) — рабочий продукт с реальным контентом и depth-обработкой знаний. **claude-obsidian** (`/home/andrew/.pi/agent/skills/claude-obsidian` / GitHub: `AgriciDaniel/claude-obsidian`) — фреймворк-плагин для Obsidian с breadth-архитектурой, cross-platform support и methodological modes.

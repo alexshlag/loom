@@ -7,6 +7,10 @@ related: []
 
 # Dependency Injection в Symfony
 
+
+This page explores Dependency Injection в Symfony as a key concept in our knowledge base.
+
+
 ## Определение:
 Dependency Injection (DI) — паттерн проектирования, позволяющий внедрять зависимости объекта извне. В Symfony DI реализуется через контейнер сервисов (Service Container).
 

@@ -9,6 +9,10 @@ related: [concepts/llm-wiki.md, syntheses/rag-vs-llm-wiki-pattern.md, comparison
 ---
 # Loomana — Wiki System Documentation
 
+
+Page covering Loomana — Wiki System Documentation — entity information, architecture details, and usage patterns.
+
+
 ## Что такое Loomana?
 
 **Loomana** (внутреннее имя `loom`) — это **LLM-powered personal knowledge base**, где знания компандятся с каждым новым источником и вопросом. Внутренняя философия: вместо стандартного RAG, который каждый раз заново извлекает фрагменты документов, здесь знания **компилируются один раз** и **поддерживаются актуальными**.

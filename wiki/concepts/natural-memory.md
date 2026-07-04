@@ -9,6 +9,10 @@ related: ["wiki/concepts/memory-architecture.md", "wiki/overview.md", "wiki/snap
 
 # Natural Memory Translation — Перевод машинных фактов в живую память
 
+
+This page explores Natural Memory Translation — Перевод машинных фактов в живую память as a key concept in our knowledge base.
+
+
 ## Definition
 Перевод машино-читаемых данных (даты, комиты, timestamps) в естественную форму, которую человек воспринимает как «мы помним» вместо «система записала». Факты остаются точными, но формулировка становится человеческой.
 

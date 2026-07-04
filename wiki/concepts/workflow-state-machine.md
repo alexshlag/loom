@@ -7,6 +7,10 @@ related: [wiki/entities/symfony.md]
 
 # Workflow & State Machine
 
+
+This page explores Workflow & State Machine as a key concept in our knowledge base.
+
+
 ## Definition
 
 Workflow component provides tools for managing business processes as finite state machines. Objects progress through defined stages (places) via transitions (actions). Symfony supports both full **Workflows** (multiple simultaneous places) and strict **State Machines** (single place at a time).

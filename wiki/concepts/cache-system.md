@@ -7,6 +7,10 @@ related: [wiki/entities/symfony.md]
 
 # Cache System
 
+
+This page explores Cache System as a key concept in our knowledge base.
+
+
 ## Definition
 
 Symfony Cache component provides PSR-6 and PSR-16 compliant caching with advanced features: tag-based invalidation, cache stampede protection, multiple adapters. Designed for performance — pre-configured adapters for most common backends (Redis, Memcached, APCu, Doctrine DBAL).

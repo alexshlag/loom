@@ -7,6 +7,10 @@ related: [wiki/concepts/llm-wiki.md, wiki/syntheses/rag-vs-llm-wiki-pattern.md, 
 
 # Сравнение: Loomana (Markdown-driven wiki) vs pi-llm-wiki/ (TypeScript platform)
 
+
+Comparative analysis covering Сравнение: Loomana (Markdown-driven wiki) vs pi-llm-wiki/ (TypeScript platform) across different contexts and implementations.
+
+
 ## Введение
 
 Оба проекта реализуют **LLM Wiki Pattern** (Andrej Karpathy), но на разных уровнях абстракции. **Loomana** — это **база знаний в markdown**, управляемая вручную через Schema и git. `pi-llm-wiki/` — это **TypeScript платформа** с 13+ инструментами, автоматизирующая весь workflow.

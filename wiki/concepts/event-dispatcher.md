@@ -7,6 +7,10 @@ related: [wiki/entities/symfony.md]
 
 # Event Dispatcher
 
+
+This page explores Event Dispatcher as a key concept in our knowledge base.
+
+
 ## Определение
 
 [[Event Dispatcher]] — компонент [[Symfony]], который обеспечивает decoupled communication между компонентами системы через события. Listeners и Subscribers реагируют на определённые события (например, HTTP request, kernel exception, console command). Поддерж как method-based registration, так и attribute-based (`#[AsEventListener]`). Работает параллельно с [[messenger component]] для async messaging и использует [[service container]] для управления зависимостями..

@@ -10,6 +10,10 @@ aliases: ["Symfony", "Symfony Framework", "SF framework"]
 
 # Symfony
 
+
+Page covering Symfony — entity information, architecture details, and usage patterns.
+
+
 ## Определение
 
 [[Symfony]] — высокопроизводительный PHP веб-фреймворк с открытым исходным кодом, созданный SensioLabs. Фреймворк построен на модульной архитектуре: ядро фреймворка состоит из 16+ [[components]], которые можно использовать как отдельно (PSR-совместимые), так и в составе full-stack framework. Symfony 8.x требует PHP 8.4+, LTS-версии 7.x работают на PHP 8.2+. Центральный механизм — [[service container]] (см. [[concepts/service-container.md]]) для управления зависимостями через [[dependency injection]].

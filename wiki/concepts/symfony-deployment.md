@@ -9,6 +9,10 @@ related: ["wiki/entities/symfony.md", "wiki/concepts/service-container.md", "wik
 
 # Symfony Deployment & Production Setup
 
+
+This page explores Symfony Deployment & Production Setup as a key concept in our knowledge base.
+
+
 ## Definition
 
 Symfony deployment requires a fully-featured web server (Nginx or Apache), PHP 8.4+ with core extensions, and Composer for dependency management. Production environment needs OPcache, cache warming, and proper routing configuration — local development uses the optional Symfony Local Web Server binary.

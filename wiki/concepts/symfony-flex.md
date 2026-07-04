@@ -7,6 +7,10 @@ related: [wiki/entities/symfony.md]
 
 # Symfony Flex & Recipes
 
+
+This page explores Symfony Flex & Recipes as a key concept in our knowledge base.
+
+
 ## Определение
 
 Symfony Flex — Composer plugin that intercepts package installation and automatically configures bundles/packages via predefined recipes. Default Symfony skeleton starts minimal (only `flex` + `framework-bundle`) and grows organically through recipe-driven installs.

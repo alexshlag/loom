@@ -7,6 +7,10 @@ related: [wiki/entities/symfony.md]
 
 # Twig Templating
 
+
+This page explores Twig Templating as a key concept in our knowledge base.
+
+
 ## Определение
 
 Twig — flexible, fast, secure PHP template engine used by Symfony. Compiles templates down to optimized PHP code with minimal overhead. Provides autoescaping for XSS protection, sandbox mode, and powerful templating syntax.

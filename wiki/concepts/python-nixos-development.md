@@ -7,6 +7,10 @@ related: [wiki/syntheses/python-nixos-development-environments.md]
 
 # Python Development Environments on NixOS
 
+
+This page explores Python Development Environments on NixOS as a key concept in our knowledge base.
+
+
 ## Определение:
 [[Python Development Environments]] on [[NixOS]] — методология создания изолированных сред разработки для [[Python]] в [[NixOS]], аналогичная virtualenv или conda, но с использованием декларативной системы сборки [[Nix]].
 

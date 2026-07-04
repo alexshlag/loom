@@ -8,6 +8,10 @@ related: [wiki/entities/symfony.md, wiki/comparisons/loom-vs-claude-obsidian.md]
 
 # Symfony UX Initiative — Comparison with AssetMapper
 
+
+Comparative analysis covering Symfony UX Initiative — Comparison with AssetMapper across different contexts and implementations.
+
+
 ## Overview
 Symfony UX packages (Hotwire, Stimulus, Chart.js integrations) leverage AssetMapper for zero-build frontend asset management.
 

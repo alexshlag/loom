@@ -7,6 +7,10 @@ related: [wiki/entities/symfony.md]
 
 # Routing System & Controllers
 
+
+This page explores Routing System & Controllers as a key concept in our knowledge base.
+
+
 ## Определение
 
 [[Routing System]] — ключевой компонент [[Symfony]], который маппит incoming URLs к application code (controller actions). Поддерживает YAML, XML, PHP и Attributes (рекомендуемый формат). Контроллеры — это классы-обработчики HTTP-запросов; в современных проектах они содержат только glue-code: routing → service call → response. Routing тесно связан с [[Symfony security system]] для защиты endpoints через `#[Security]` attributes.

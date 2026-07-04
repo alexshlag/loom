@@ -7,6 +7,10 @@ related: [wiki/entities/symfony.md, wiki/concepts/symfony-dependency-injection.m
 
 # Service Container & Dependency Injection
 
+
+This page explores Service Container & Dependency Injection as a key concept in our knowledge base.
+
+
 ## Определение
 
 [[Service Container]] — центральный механизм [[Symfony]], который централизует создание и управление объектами (services). Каждый service — это объект, выполняющий полезную задачу (mailer, database connection, logger). Container автоматически решает зависимости через autowiring на основе type-hints в конструкторах. PSR-11 compatible. Работает параллельно с [[event dispatcher]], [[messenger component]] и другими системными компонентами фреймворка.

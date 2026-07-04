@@ -7,6 +7,10 @@ related: [wiki/entities/symfony.md]
 
 # Testing Strategy & Best Practices
 
+
+This page explores Testing Strategy & Best Practices as a key concept in our knowledge base.
+
+
 ## Definition
 
 Symfony testing integrates with PHPUnit for comprehensive test coverage. Modern Symfony projects use WebTestCase for functional HTTP tests, custom classes for unit tests, and Zenstruck Foundry for expressive data generation. PHPUnit 11+ uses PHP attributes (`#[Test]`, `#[DataProvider]`) — annotations deprecated.

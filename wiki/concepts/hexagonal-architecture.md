@@ -10,6 +10,10 @@ aliases: ["Hexagonal Architecture", "Ports and Adapters", "DDD architecture"]
 
 # Hexagonal Architecture & Clean Patterns in Symfony
 
+
+This page explores Hexagonal Architecture & Clean Patterns in Symfony as a key concept in our knowledge base.
+
+
 ## Определение
 
 [[Hexagonal Architecture]] (Ports & Adapters) — architectural pattern that keeps business logic separate from technical details. Domain layer sits at center, depending on nothing. Framework — [[Symfony]], Doctrine, Stripe, any external service — lives at edges as adapters. Modern PHP + Symfony 7+ aligns naturally with tactical [[DDD patterns]] и clean architecture principles.

@@ -9,6 +9,10 @@ related: [wiki/entities/symfony.md, wiki/concepts/doctrine-orm.md, wiki/comparis
 
 # API Platform
 
+
+Page covering API Platform — entity information, architecture details, and usage patterns.
+
+
 ## Definition
 
 [[API Platform]] — фреймворк для создания гипермедийных REST и GraphQL API. Поддерживает JSON-LD, Hydra, OpenAPI, HAL, JSON:API и CSV одновременно из единого определения ресурса (PHP атрибуты/аннотации). Работает поверх [[Symfony]], Laravel или как standalone библиотека. Тесно интегрирован с [[Doctrine ORM]] для работы с entities и repositories.

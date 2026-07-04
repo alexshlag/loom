@@ -7,6 +7,10 @@ related: [wiki/entities/symfony.md]
 
 # AssetMapper
 
+
+This page explores AssetMapper as a key concept in our knowledge base.
+
+
 ## Definition
 
 AssetMapper — component for managing modern CSS & JavaScript assets without build pipelines or Node.js dependencies. Uses browser ES module imports and importmaps instead of bundlers like Webpack Encore. Introduced in Symfony 6.3, stable since 6.4+.

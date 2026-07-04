@@ -7,6 +7,10 @@ related: [wiki/concepts/python-nixos-development.md]
 
 # Основные способы создания сред разработки Python на NixOS
 
+
+Synthesis of multiple sources on the topic: Основные способы создания сред разработки Python на NixOS.
+
+
 ## Контекст
 Вопрос: какие основные подходы к созданию изолированных сред разработки для [[Python]] существуют в экосистеме [[NixOS]]? Исходный источник — [NixOS Wiki - Python](https://wiki.nixos.org/wiki/Python). Синтез из [[python-nixos-development]].
 

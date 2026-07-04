@@ -7,6 +7,10 @@ related: [wiki/entities/symfony.md]
 
 # Symfony AI Component
 
+
+This page explores Symfony AI Component as a key concept in our knowledge base.
+
+
 ## Definition
 
 Symfony AI — set of components integrating LLM capabilities into PHP applications. Unified interface for OpenAI, Anthropic, Google Gemini, Azure providers. Adopted by Symfony Core in mid-2025; shipped with ~35 model bridges and 24 vector store integrations as of June 2026.

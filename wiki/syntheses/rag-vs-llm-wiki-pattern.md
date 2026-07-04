@@ -7,6 +7,10 @@ related: [wiki/concepts/llm-wiki.md]
 
 # Сравнение: RAG vs LLM Wiki Pattern (Compounding Knowledge Base)
 
+
+Synthesis of multiple sources on the topic: Сравнение: RAG vs LLM Wiki Pattern (Compounding Knowledge Base).
+
+
 ## Контекст
 Стандартный RAG и большинство систем работы с файлами (NotebookLM, ChatGPT file uploads) работают одинаково: пользователь загружает документы → LLM извлекает relevant chunks на каждый запрос → генерирует ответ. Это работает, но **LLM rediscovering knowledge from scratch on every question**.
 
