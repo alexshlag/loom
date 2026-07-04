@@ -1,110 +1,56 @@
 {
   "module": "process_lint",
-  "description": "\u0422\u0435\u0445\u043d\u0438\u0447\u0435\u0441\u043a\u043e\u0435 \u043e\u0431\u0441\u043b\u0443\u0436\u0438\u0432\u0430\u043d\u0438\u0435 wiki \u2014 \u0430\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0447\u0435\u0441\u043a\u0438\u0435 \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0438 \u0438 \u0438\u0441\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u044f",
+  "description": "Wiki maintenance — automated checks and fixes",
+
   "trigger_conditions": [
-    {
-      "condition": "wiki_stagnation_detected",
-      "threshold": "no_new_pages_3_days"
-    },
-    {
-      "condition": "contradications_found"
-    },
-    {
-      "condition": "orphan_pages_detected"
-    }
+    {"condition": "wiki_stagnation_detected", "threshold": "no_new_pages_3_days"},
+    {"condition": "contradications_found"},
+    {"condition": "orphan_pages_detected"}
   ],
+
   "lint_checks": [
-    {
-      "check_id": "1",
-      "name": "contradictions_between_pages",
-      "description": "\u0418\u0449\u0438 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u044b \u0433\u0434\u0435 \u0441\u0442\u0430\u0440\u044b\u0435 \u0443\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043d\u0438\u044f \u043d\u0435\u0430\u043a\u0442\u0443\u0430\u043b\u044c\u043d\u044b.",
-      "schema_ref": "rules/search_strategy.json#cascade_priority"
-    },
-    {
-      "check_id": "2",
-      "name": "orphan_pages_detection",
-      "command": "./scripts/lint.sh --run orphan-pages",
-      "note": "\u0417\u0430\u043f\u0443\u0441\u043a\u0430\u0435\u0442\u0441\u044f \u0447\u0435\u0440\u0435\u0437 scripts/lint.sh \u2014 output JSON with count + paths."
-    },
-    {
-      "check_id": "3",
-      "name": "knowledge_gaps_detection",
-      "description": "\u041e\u043f\u0440\u0435\u0434\u0435\u043b\u0438 \u0442\u0435\u043c\u044b \u043a\u043e\u0442\u043e\u0440\u044b\u0435 \u0443\u043f\u043e\u043c\u0438\u043d\u0430\u044e\u0442\u0441\u044f \u043d\u043e \u043d\u0435 \u0438\u043c\u0435\u044e\u0442 \u0441\u0442\u0440\u0430\u043d\u0438\u0446. Soft-only check.",
-      "schema_ref": "process-query.json#compounding_decision"
-    },
-    {
-      "check_id": "4",
-      "name": "new_sources_available",
-      "command": "./scripts/check-new-sources.sh --max 10",
-      "note": "\u041f\u043e\u043b\u043d\u0430\u044f \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u0430 \u2014 lint detect \u2192 User decides \u2192 Ingest handles processing."
-    },
-    {
-      "check_id": "5",
-      "name": "new_topics_proposal",
-      "description": "\u041f\u0440\u0435\u0434\u043b\u043e\u0436\u0438 \u043d\u043e\u0432\u044b\u0435 \u0442\u0435\u043c\u044b \u0438\u0437 \u043a\u043e\u043d\u0442\u0435\u043a\u0441\u0442\u0430 \u0434\u0438\u0430\u043b\u043e\u0433\u0430 \u0438 \u0441\u0432\u044f\u0437\u0435\u0439 index.md."
-    },
-    {
-      "check_id": "6",
-      "name": "mechanical_linting",
-      "checks": [
-        "duplicate_titles",
-        "missing_frontmatter_fields",
-        "coverage_gaps"
-      ],
-      "schema_ref": "rules/structural_requirements.json"
-    },
-    {
-      "check_id": "7",
-      "name": "date_consistency_check",
-      "description": "\u041f\u0440\u043e\u0432\u0435\u0440\u044c \u0447\u0442\u043e year \u0432 date: \u0441\u043e\u0432\u043f\u0430\u0434\u0430\u0435\u0442 \u0441 \u0433\u043e\u0434\u043e\u043c \u0432 \u0441\u0435\u043a\u0446\u0438\u044f\u0445 \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u044f."
-    },
-    {
-      "check_id": "8",
-      "name": "broken_link_auto_resolve",
-      "command": "./scripts/unified-pass.sh --auto",
-      "output": "parse JSON broken_links[] + auto_repaired + agent_review_required[]"
-    },
-    {
-      "check_id": "9",
-      "name": "detect_contradiction_deep_scan",
-      "command": "./scripts/detect-contradications.sh --quiet",
-      "schema_ref": "rules/search_strategy.json#cascade_priority"
-    },
-    {
-      "check_id": "10",
-      "name": "text_similarity_scan",
-      "description": "\u0421\u043a\u0430\u043d\u0438\u0442 wiki \u043d\u0430 n-gram overlap \u226590% \u2014 detects copy-paste chains.",
-      "command": "./scripts/text-similarity.sh --scan-all --threshold 90"
-    },
-    {
-      "check_id": "11",
-      "name": "hot_cache_stale_check",
-      "command": "./scripts/check-wiki-changes.sh || true",
-      "note": "\u0415\u0441\u043b\u0438 \u0435\u0441\u0442\u044c \u0438\u0437\u043c\u0435\u043d\u0435\u043d\u0438\u044f \u0441 \u043f\u043e\u0441\u043b\u0435\u0434\u043d\u0435\u0433\u043e hot.md update \u2192 \u043f\u0440\u0435\u0434\u043b\u043e\u0436\u0438\u0442\u044c \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044e \u043e\u0431\u043d\u043e\u0432\u0438\u0442\u044c."
-    },
-    {
-      "check_id": "12",
-      "name": "source_manifest_backfill_detection",
-      "command": "./scripts/rebuild-source-manifest.sh --scan-only",
-      "schema_ref": "rules/delta_tracking.json"
-    }
+    {"check_id": "1", "name": "contradictions_between_pages",
+     "description": "Find pages where old claims are no longer accurate.",
+     "schema_ref": "rules/search_strategy.json#cascade_priority"},
+    {"check_id": "2", "name": "orphan_pages_detection",
+     "command": "./scripts/lint.sh --run orphan-pages",
+     "note": "Runs via scripts/lint.sh — output JSON with count + paths."},
+    {"check_id": "3", "name": "knowledge_gaps_detection",
+     "description": "Identify topics mentioned across pages but without dedicated page. Soft-only check.",
+     "schema_ref": "process-query.json#compounding_decision"},
+    {"check_id": "4", "name": "new_sources_available",
+     "command": "./scripts/check-new-sources.sh --max 10",
+     "note": "Full check — lint detects → User decides → Ingest processes."},
+    {"check_id": "5", "name": "new_topics_proposal",
+     "description": "Suggest new topics from conversation context and index.md connections."},
+    {"check_id": "6", "name": "mechanical_linting",
+     "checks": ["duplicate_titles", "missing_frontmatter_fields", "coverage_gaps"],
+     "schema_ref": "rules/structural_requirements.json"},
+    {"check_id": "7", "name": "date_consistency_check",
+     "description": "Verify year in date: matches year in '## Updated [YYYY-MM-DD]' sections."},
+    {"check_id": "8", "name": "broken_link_auto_resolve",
+     "command": "./scripts/unified-pass.sh --auto"},
+    {"check_id": "9", "name": "detect_contradiction_deep_scan",
+     "command": "./scripts/detect-contradications.sh --quiet",
+     "schema_ref": "rules/search_strategy.json#cascade_priority"},
+    {"check_id": "10", "name": "text_similarity_scan",
+     "description": "Scan wiki for n-gram overlap ≥90% — detects copy-paste chains.",
+     "command": "./scripts/text-similarity.sh --scan-all --threshold 90"},
+    {"check_id": "11", "name": "hot_cache_stale_check",
+     "command": "./scripts/check-wiki-changes.sh || true",
+     "note": "If changes detected since last hot.md update → prompt user to refresh."},
+    {"check_id": "12", "name": "source_manifest_backfill_detection",
+     "command": "./scripts/rebuild-source-manifest.sh --scan-only",
+     "schema_ref": "rules/delta_tracking.json"}
   ],
+
   "primary_command": {
     "command": "./scripts/lint.sh [--quiet] [--skip-checks ID1,ID2] [wiki_dir]",
-    "note": "\u0415\u0434\u0438\u043d\u044b\u0439 entry point \u0434\u043b\u044f \u0432\u0441\u0435\u0445 lint-\u043f\u0440\u043e\u0432\u0435\u0440\u043e\u043a \u2014 \u043d\u0435 \u0432\u044b\u0437\u044b\u0432\u0430\u0439 \u0432\u0441\u043f\u043e\u043c\u043e\u0433\u0430\u0442\u0435\u043b\u044c\u043d\u044b\u0435 \u0441\u043a\u0440\u0438\u043f\u0442\u044b."
+    "note": "Single entry point for all lint checks — do not call helper scripts separately."
   },
+
   "git_conventions_reference": "AGENTS.md#git-conventions",
-  "error_handling": {
-    "schema_ref": "rules/error_handling.json"
-  },
-  "agent_read_instructions": {
-    "rule": "Agent MUST read AGENTS.md before executing any lint checks.",
-    "schema_ref": "AGENTS.md#overview"
-  },
-  "context_scope": "transient",
-  "_compact_rules_applied": [
-    "\u042001: schema_ref for contradiction_resolution, structural_requirements, delta_tracking",
-    "\u042002: removed name/description duplication in check descriptions",
-    "\u042003: minimal context \u2014 verbose examples moved to scripts/"
-  ]
+  "error_handling": {"schema_ref": "rules/error_handling.json"},
+  "agent_read_instructions": {"rule": "Agent MUST read AGENTS.md before executing any lint checks.", "schema_ref": "AGENTS.md#overview"},
+  "context_scope": "transient"
 }

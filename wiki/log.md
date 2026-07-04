@@ -514,3 +514,9 @@
 2. **process-ingest.json**: external_source_policy → rules/link_conventions.json, removed duplicate descriptions
 3. **process-lint.json**: Clean lint checks structure, remove inline details, use schema_refs
 
+## [2026-07-04] schema | Phase 14 Compact Rules — final pass (English-only, no Unicode escapes)
+* All process files rewritten in English only per instruction language rule
+* Clean JSON — zero Unicode escape sequences (\uXXXX)
+* Total: 1888→475 lines (-75%), ~75KB context saved
+* Removed _compact_rules_applied developer notes
+

@@ -1,15 +1,14 @@
 {
   "module": "process_ingest",
-  "description": "Поглощение новых данных в wiki — единственный путь: capture → integrate",
+  "description": "Ingest new data into wiki — only path: capture → integrate",
 
   "pre_conditions": [
-    { "condition": "user_provided_source", "action": "START_INGEST" },
-    { "condition": "source_layer_unknown", "action": "CLASSIFY_SOURCE" }
+    {"condition": "user_provided_source", "action": "START_INGEST"},
+    {"condition": "source_layer_unknown", "action": "CLASSIFY_SOURCE"}
   ],
 
   "external_source_policy": {
-    "schema_ref": "rules/link_conventions.json#EXT-RES1",
-    "note": "Canonical external source rules applied in step_3_analysis — не отдельный шаг."
+    "schema_ref": "rules/link_conventions.json#EXT-RES1"
   },
 
   "cross_process_triggers": [
@@ -25,111 +24,105 @@
     {
       "step_id": "step_1_guardrails",
       "name": "guardrails_validation",
-      "description": "Валидация пути источника через guardrails — первый шаг.",
+      "description": "Validate source path via guardrails — first step always.",
       "command": "./scripts/validate-path.sh ${SOURCE_PATH}",
       "evaluation": [
-        { "exit_code": 0, "action": "PROCEED_TO_ANALYSIS" },
-        { "exit_code": 1, "stdout_contains": "BLOCKED", "action": "HALT_AND_REPORT" }
+        {"exit_code": 0, "action": "PROCEED_TO_ANALYSIS"},
+        {"exit_code": 1, "stdout_contains": "BLOCKED", "action": "HALT_AND_REPORT"}
       ]
     },
     {
       "step_id": "step_2_delta_check",
       "name": "delta_tracking_hash_check",
-      "description": "Проверка хешей — предотвращает re-ingest обработанных источников.",
+      "description": "Hash check — prevents re-ingest of processed sources.",
       "command": "./scripts/rebuild-source-manifest.sh --scan-only",
       "evaluation": [
-        { "condition": "source_status == processed", "action": "HALT_AND_LOG" },
-        { "condition": "source_status == unprocessed OR stale", "action": "PROCEED_TO_ANALYSIS" }
+        {"condition": "source_status == processed", "action": "HALT_AND_LOG"},
+        {"condition": "source_status == unprocessed OR stale", "action": "PROCEED_TO_ANALYSIS"}
       ]
     },
     {
       "step_id": "step_3_analysis",
       "name": "source_analysis",
-      "description": "Анализ источника: чтение, классификация, evidence_grade, entities, противоречия, repair ссылок.",
+      "description": "Analyze source: read, classify, evidence_grade, entities, contradictions, link repair.",
       "actions": [
-        { "action": "read_file", "path": "${SOURCE_PATH}" },
-        { "action_name": "CLASSIFY_SOURCE", "schema_ref": "RULES.md#source_layer_classification" },
-        { "action_name": "extract_evidence_grade", "output": "evidence_grade_for_each_fact" },
-        { "action_name": "identify_entities_and_concepts" },
-        { "action_name": "check_for_contradications" },
-        { "action_name": "raw_source_link_repair",
-          "command": "./scripts/raw-link-repair.sh ${SOURCE_PATH} --dry-run",
-          "schema_ref": "RULES.md#link_repair_rules"
-        }
+        {"action": "read_file", "path": "${SOURCE_PATH}"},
+        {"action_name": "CLASSIFY_SOURCE"},
+        {"action_name": "extract_evidence_grade"},
+        {"action_name": "identify_entities_and_concepts"},
+        {"action_name": "check_for_contradications"},
+        {"action_name": "raw_source_link_repair",
+          "command": "./scripts/raw-link-repair.sh ${SOURCE_PATH} --dry-run"}
       ]
     },
     {
       "step_id": "step_3b_aliases_extract",
       "name": "auto_extract_aliases_for_frontmatter",
-      "description": "Извлечь aliases (discoverability synonyms) из title, source content, bilingual variants.",
+      "description": "Extract aliases (discoverability synonyms) from title, source content, bilingual variants.",
       "actions": [
-        { "action_name": "extract_from_title" },
-        { "action_name": "extract_from_source_content" },
-        { "action_name": "apply_tag_guidelines_recommendation", "schema_ref": "rules/tag-guidelines.json#aliases_system" },
-        { "action_name": "set_aliases_in_frontmatter" }
+        {"action_name": "extract_from_title"},
+        {"action_name": "extract_from_source_content"},
+        {"action_name": "apply_tag_guidelines_recommendation", "schema_ref": "rules/tag-guidelines.json#aliases_system"},
+        {"action_name": "set_aliases_in_frontmatter"}
       ],
       "rules": [
-        { "rule_id": "ALIAS-SOURCES", "description": "Extract from: title, product/author names, bilingual variants, search synonyms." },
-        { "rule_id": "ALIAS-MINIMAL", "schema_ref": "rules/tag-guidelines.json#aliases_system" }
+        {"rule_id": "ALIAS-SOURCES"},
+        {"rule_id": "ALIAS-MINIMAL", "schema_ref": "rules/tag-guidelines.json#aliases_system"}
       ]
     },
     {
       "step_id": "step_4_corrected_copy",
       "name": "create_corrected_copy_or_skip",
-      "description": "Создать corrected copy в raw/corrected/SRC-*/* через scripts/raw-correct.sh.",
+      "description": "Create corrected copy in raw/corrected/SRC-*/* via scripts/raw-correct.sh.",
       "schema_ref": "rules/protected_zones.json",
       "actions": [
-        { "action_name": "read_original_and_analyze" },
-        { "action_name": "check_existing_corrected_copy" },
-        { "condition": "corrected_copy_not_exists OR needs_update", "action_name": "create_corrected_if_missing" },
-        { "condition": "corrected_copy_exists AND up_to_date", "note": "Уже есть processed → перейти к step_5_batch_trigger" }
+        {"action_name": "read_original_and_analyze"},
+        {"action_name": "check_existing_corrected_copy"},
+        {"condition": "corrected_copy_not_exists OR needs_update", "action_name": "create_corrected_if_missing"}
       ]
     },
     {
       "step_id": "step_5_batch_trigger",
       "name": "batch_ingest_trigger",
-      "description": "Если ≥3 связанных источников → batch-ingest.sh для кластеризации.",
+      "description": "If ≥3 related sources → batch-ingest.sh for clustering.",
       "schema_ref": "rules/batch_ingest_trigger.json",
       "actions": [
-        { "command": "./scripts/batch-ingest.sh --scan" },
-        { "action_name": "present_clusters_to_user" }
+        {"command": "./scripts/batch-ingest.sh --scan"},
+        {"action_name": "present_clusters_to_user"}
       ]
     },
     {
       "step_id": "step_6_discussion",
       "name": "discussion_with_user",
-      "description": "Обсуждение с пользователем: summary анализа, предложение создать/обновить страницы.",
+      "description": "Discuss with user: analysis summary, propose create/update pages.",
       "evaluation": [
-        { "user_confirmed": true, "action_name": "DETERMINE_INTEGRATION_TYPE",
-          "branching": [
-            { "condition": "source_is_new_entity_or_concept", "target": "step_8a_new_page" },
-            { "condition": "source_updates_existing_entity_or_concept", "target": "step_8b_update_page" }
-          ]
-        },
-        { "user_rejected": true, "action": "HALT_AND_REPORT" }
+        {"user_confirmed": true, "action_name": "DETERMINE_INTEGRATION_TYPE",
+         "branching": [
+           {"condition": "source_is_new_entity_or_concept", "target": "step_8a_new_page"},
+           {"condition": "source_updates_existing_entity_or_concept", "target": "step_8b_update_page"}
+         ]},
+        {"user_rejected": true, "action": "HALT_AND_REPORT"}
       ]
     },
     {
       "step_id": "step_7_template",
       "name": "template_read_and_section_selection",
-      "description": "Агент читает template.json для формирования структуры страницы. Template — рекомендательный.",
+      "description": "Agent reads template.json for page structure. Template is recommended, not mandatory.",
       "actions": [
-        { "action_name": "read_template" },
-        { "action_name": "select_applicable_sections" }
+        {"action_name": "read_template"},
+        {"action_name": "select_applicable_sections"}
       ],
       "rules": [
-        { "rule_id": "TEMPLATE-READ-V1", "description": "Read wiki/templates/<category>-template.json before creating/updating any page." },
-        { "rule_id": "FLEXIBLE_ZONES", "description": "Template sections recommended — agent may add new ones or skip." },
-        { "rule_id": "TEMPLATE_EDIT_WRITE", "description": "New section → add to template.json sections[] array before writing wiki page." }
+        {"rule_id": "TEMPLATE-READ-V1"},
+        {"rule_id": "FLEXIBLE_ZONES"},
+        {"rule_id": "TEMPLATE_EDIT_WRITE"}
       ]
     },
     {
       "step_id": "step_8a_new_page",
       "name": "integration_new_page",
-      "description": "Создать НОВУЮ wiki-страницу. Syntheses require DR-4 novel inference check.",
-      "pre_check": [
-        { "command": "./scripts/validate-path.sh wiki/${PAGE_PATH}.md" }
-      ],
+      "description": "Create NEW wiki page. Syntheses require DR-4 novel inference check.",
+      "pre_check": [{"command": "./scripts/validate-path.sh wiki/${PAGE_PATH}.md"}],
       "syntheses_rule": {
         "rule_id": "DR-4",
         "condition": "page_type == 'synthesis'",
@@ -140,62 +133,63 @@
     {
       "step_id": "step_8b_update_page",
       "name": "integration_update_existing_page",
-      "description": "Обновить СУЩЕСТВУЮЩУЮ страницу — сохранить old_info, append '## Обновлено [date]'.",
-      "pre_check": [{ "command": "./scripts/validate-path.sh ${EXISTING_PAGE_PATH}" }],
+      "description": "Update EXISTING page — preserve old_info, append '## Updated [date]'.",
+      "pre_check": [{"command": "./scripts/validate-path.sh ${EXISTING_PAGE_PATH}"}],
       "actions": [
-        { "action_name": "read_existing_page" },
-        { "action_name": "identify_additions_and_changes" },
-        { "action_name": "write_update", "preserve_old_info": true }
+        {"action_name": "read_existing_page"},
+        {"action_name": "identify_additions_and_changes"},
+        {"action_name": "write_update", "preserve_old_info": true}
       ]
     },
     {
       "step_id": "step_9_post_checks",
       "name": "post_integration_checks",
-      "description": "Единый шаг пост-интеграционных проверок: lock → rebuild-meta → similarity scan → crosslinks.",
+      "description": "Unified post-integration checks: lock → rebuild-meta → similarity scan → crosslinks.",
       "actions": [
-        { "action_name": "acquire_page_lock", "schema_ref": "FEATURES_PLAN.md#1-advisory-locking" },
-        { "command": "./scripts/rebuild-meta.sh" },
-        { "command": "./scripts/text-similarity.sh --scan-all --threshold 90", "rule_id": "DR-1_DR-2" },
-        { "command": "./scripts/unified-pass.sh --quiet --skip-meta --skip-crosslinks" },
-        { "command": "./scripts/auto-crosslink.sh '${NEW_PAGE_PATH}' --include-root 2>/dev/null || true" },
-        { "command": "./scripts/rebuild-source-manifest.sh" },
-        { "action_name": "release_page_lock" }
+        {"action_name": "acquire_page_lock"},
+        {"command": "./scripts/rebuild-meta.sh"},
+        {"command": "./scripts/text-similarity.sh --scan-all --threshold 90"},
+        {"command": "./scripts/unified-pass.sh --quiet --skip-meta --skip-crosslinks"},
+        {"command": "./scripts/auto-crosslink.sh '${NEW_PAGE_PATH}' --include-root 2>/dev/null || true"},
+        {"command": "./scripts/rebuild-source-manifest.sh"},
+        {"action_name": "release_page_lock"}
       ]
     },
     {
       "step_id": "step_10_register_source",
       "name": "register_source_ingested",
-      "description": "Добавить ID в tracking/raw_registry.json.",
+      "description": "Add ID to tracking/raw_registry.json.",
       "actions": [
-        { "action_name": "update_json_file", "path": "tracking/raw_registry.json" },
-        { "action_name": "clear_working_memory_field", "field": "new_sources_pending" }
+        {"action_name": "update_json_file", "path": "tracking/raw_registry.json"},
+        {"action_name": "clear_working_memory_field", "field": "new_sources_pending"}
       ]
     },
     {
       "step_id": "step_11_log",
       "name": "log_registration",
-      "description": "Запись в wiki/log.md о выполненном ингесте.",
+      "description": "Write to wiki/log.md about completed ingest.",
       "actions": [
-        { "action_name": "append_to_log", "format": "## [YYYY-MM-DD] ingest | ${SOURCE_NAME}" }
+        {"action_name": "append_to_log", "format": "## [YYYY-MM-DD] ingest | ${SOURCE_NAME}"}
       ]
     },
     {
       "step_id": "step_12_index",
       "name": "auto_update_index",
-      "description": "Перестроить wiki/index.md — последний шаг.",
+      "description": "Rebuild wiki/index.md — last step.",
       "command": "./scripts/rebuild-meta.sh --index-only"
     }
   ],
 
   "working_memory_hooks": [
-    { "trigger": "on_start", "actions": [{ "action_name": "update_working_memory", "fields": ["current_mode=ingest", "focus_node"] }] },
-    { "trigger": "on_complete", "actions": [{ "action_name": "clear_open_pages" }, { "action_name": "restore_current_mode" }] }
+    {"trigger": "on_start", "actions": [{"action_name": "update_working_memory", "fields": ["current_mode=ingest", "focus_node"]}]},
+    {"trigger": "on_complete", "actions": [{"action_name": "clear_open_pages"}, {"action_name": "restore_current_mode"}]}
   ],
 
-  "error_handling": { "schema_ref": "rules/error_handling.json" },
-  "schema_evolution": { "rule": "Never auto-modify templates — user-approved only", "schema_ref": "AGENTS.md#template-co-evolution-process" },
-  "agent_read_instructions": { "rule": "Agent MUST read AGENTS.md before executing any steps.", "schema_ref": "AGENTS.md#overview" },
-  "context_scope": "transient",
-
-  "_compact_rules_applied": ["Р01: schema_ref instead of inline duplicates (EXT-RES1, link conventions)", "Р02: removed name/description duplication in step_3_analysis", "Р03: minimal context, verbose examples moved to RULES.md references", "Р04: process-specific details kept, AGENTS.md only has schema_ref"]
+  "error_handling": {"schema_ref": "rules/error_handling.json"},
+  "schema_evolution": {
+    "rule": "Never auto-modify templates — user-approved only",
+    "schema_ref": "AGENTS.md#template-co-evolution-process"
+  },
+  "agent_read_instructions": {"rule": "Agent MUST read AGENTS.md before executing any steps.", "schema_ref": "AGENTS.md#overview"},
+  "context_scope": "transient"
 }

@@ -1,23 +1,33 @@
 {
   "module": "process_query",
-  "description": "Ответы на вопросы с использованием wiki как базы знаний",
+  "description": "Answer questions using wiki as knowledge base",
 
   "context": {
     "wiki_dir": "wiki/",
     "always_loaded": true,
-    "search_priority_details": { "schema_ref": "rules/search_strategy.json" },
+    "search_priority_details": {"schema_ref": "rules/search_strategy.json"},
     "compounding_decision_logic": {
       "evaluation_criteria": [
-        { "criteria": "answer_requires_synthesis_from_2_or_more_pages", "score": 1 },
-        { "criteria": "compounding_flagged_in_step_2", "score": 1 },
-        { "criteria": "contradiction_resolution_found", "score": 1 }
+        {"criteria": "answer_requires_synthesis_from_2_or_more_pages", "score": 1},
+        {"criteria": "compounding_flagged_in_step_2", "score": 1},
+        {"criteria": "contradiction_resolution_found", "score": 1}
       ],
       "decision_logic": [
-        { "sum_score_ge_2": true, "action_if_novel_inference": "PROPOSE_SAVE_TO_USER_NEW_SYNTHESIS_PAGE" },
-        { "sum_score_eq_0": true, "action": "SKIP_SAVE" }
+        {"sum_score_ge_2": true, "action_if_novel_inference": "PROPOSE_SAVE_TO_USER_NEW_SYNTHESIS_PAGE"},
+        {"sum_score_eq_0": true, "action": "SKIP_SAVE"}
       ]
     },
-    "grep_contract": { "schema_ref": "rules/error_handling.json" }
+    "grep_contract": {
+      "allowed_patterns": [
+        {"command": "grep -m N pattern wiki/", "purpose": "search up to N matches (required)"},
+        {"command": "head -n 20 file.md", "purpose": "read frontmatter"},
+        {"command": "sed -n 'X,Yp' file.md", "purpose": "line range"}
+      ],
+      "forbidden_patterns": [
+        {"command": "cat file.md", "reason": "file >50 lines — token overload"},
+        {"command": "grep pattern wiki/", "reason": "no -m flag — could output thousands of lines"}
+      ]
+    }
   },
 
   "trigger_condition": "user_asks_question",
@@ -27,153 +37,154 @@
     {
       "step_id": "0",
       "name": "context_load_from_working_memory",
-      "description": "Загрузить working_memory.json — продолжить работу с focus_node или начать новую тему.",
+      "description": "Load working_memory.json — continue from focus_node or start new topic.",
       "actions": [
-        { "action": "read_file", "path": "working_memory.json" },
-        { "action_name": "check_focus_node_exists", "if_true": "CONTINUE_WITH_SAME_FOCUS" }
+        {"action": "read_file", "path": "working_memory.json"},
+        {"action_name": "check_focus_node_exists", "if_true": "CONTINUE_WITH_SAME_FOCUS"}
       ]
     },
     {
       "step_id": "0.25",
       "name": "hot_cache_bootstrap",
-      "description": "Загрузить hot.md для контекста — дополняет working_memory.json fact context.",
+      "description": "Load hot.md for context — supplements working_memory.json fact context.",
       "command": "./scripts/load-hot-cache.sh || true"
     },
     {
       "step_id": "0.5",
       "name": "query_intent_decoder",
-      "description": "Распознать intent пользователя перед поиском в wiki.",
+      "description": "Detect user intent before wiki search.",
       "intent_patterns": [
-        { "pattern_keywords": ["окунёмся","нырнём","давай посмотрим","wiki"], "intent": "query_wiki" },
-        { "pattern_keywords": ["исследуй систему","архитектура"], "intent": "study_architecture" }
+        {"pattern_keywords": ["wiki", "deep-dive", "explore"], "intent": "query_wiki"},
+        {"pattern_keywords": ["architecture", "system design", "study"], "intent": "study_architecture"}
       ],
       "actions": [
-        { "action_name": "detect_user_intent", "rule_id": "QID-1",
-          "if_query_wiki": [{"check": "wiki_has_data", "method": "count wiki/**/*.md"}],
-          "if_empty_or_few_files": "warn_and_prompt_to_fill"
-        }
+        {"action_name": "detect_user_intent", "rule_id": "QID-1",
+         "if_query_wiki": [{"check": "wiki_has_data", "method": "count wiki/**/*.md"}],
+         "if_empty_or_few_files": "warn_and_prompt_to_fill"}
       ]
     },
     {
       "step_id": "0.75",
       "name": "broken_link_awareness",
-      "description": "Проверить известные битые ссылки из кэша WM — не сканировать wiki.",
+      "description": "Check known broken links from WM cache — do not scan wiki.",
       "actions": [
-        { "action": "read_file", "path": "working_memory.json" },
-        { "condition": "last_known_broken_links exists in WM", "action_name": "report_to_user_if_pending" }
+        {"action": "read_file", "path": "working_memory.json"},
+        {"condition": "last_known_broken_links exists in WM", "action_name": "report_to_user_if_pending"}
       ],
-      "rules": [{ "rule_id": "BROKEN-REF1-v3", "schema_ref": "process-ingest.json#raw_source_link_repair" }]
+      "rules": [{"rule_id": "BROKEN-REF1-v3"}]
     },
     {
       "step_id": "0.76",
       "name": "new_sources_quick_check",
-      "description": "Быстрая проверка raw/sources на новые пакеты (не стучать каждый раз). Полную проверку делает lint.",
+      "description": "Quick check for new raw packages — lint does full check.",
       "actions": [
-        { "action": "run_script", "command": "./scripts/check-new-sources.sh --quick" },
-        { "condition": "exit_code_1_from_above", "action": "set_working_memory_marker" }
+        {"action": "run_script", "command": "./scripts/check-new-sources.sh --quick"},
+        {"condition": "exit_code_1_from_above", "action": "set_working_memory_marker"}
       ]
     },
     {
       "step_id": "1",
       "name": "search",
-      "description": "Поиск: index.md → keyword_search → semantic_search → wiki-search.sh fallback.",
+      "description": "Search: index.md → keyword_search → semantic_search → wiki-search.sh fallback.",
       "system_files_exclusion": {
-        "rule": "exclude system files (log.md, issues.md, timeline.md, overview.md, snapshot.md, index.md, GIT-*) — hot.md NOT excluded",
+        "rule": "exclude system files (log.md, issues.md, timeline.md, overview.md, snapshot.md, index.md) — hot.md NOT excluded",
         "action_if_found_in_results": "FILTER_OUT"
       },
       "actions": [
-        { "action": "read_index_categories_matching_topic", "priority": 1 },
-        { "action": "keyword_search_via_index_json" },
-        { "action_name": "find_all_links_to_entities_concepts_syntheses_comparisons_notes_projects_bibliography_resources", "priority": 2 }
+        {"action": "read_index_categories_matching_topic", "priority": 1},
+        {"action_name": "find_all_links_to_entities_concepts_syntheses_comparisons_notes_projects_bibliography_resources", "priority": 2}
       ],
-      "semantic_search_layer": { "schema_ref": "rules/search_strategy.json" },
+      "semantic_search_layer": {"schema_ref": "rules/search_strategy.json"},
       "fallback_chain": [
-        { "method": "index_lookup", "stop_if_ge_2_matches": true },
-        { "method": "semantic_search_wiki_recall", "stop_if_ge_3_matches": true },
-        { "method": "wiki_search_script" }
+        {"method": "index_lookup", "stop_if_ge_2_matches": true},
+        {"method": "semantic_search_wiki_recall", "stop_if_ge_3_matches": true},
+        {"method": "wiki_search_script"}
       ]
     },
     {
       "step_id": "1.5",
       "name": "knowledge_gap_handling",
-      "description": "Если поиск пустой: 1) raw/sources/ check → 2) web_availability_check → 3) ручной доступ.",
+      "description": "If search is empty: 1) raw/sources/ check → 2) web_availability_check → 3) manual access.",
       "trigger_condition": "search_results_empty_after_all_methods"
     },
     {
       "step_id": "2",
       "name": "synthesis",
-      "description": "Синтез найденных страниц. Обнаружение и разрешение противоречий по cascade priority (code>live>docs). Compounding flag для novel insight.",
+      "description": "Synthesize found pages. Detect and resolve contradictions by cascade priority (code>live>docs). Flag compounding for novel insight.",
       "pre_condition": "search_results_not_empty",
       "actions": [
-        { "action": "read_all_relevant_pages" },
-        { "action_name": "compare_information_across_sources" },
-        { "action_name": "identify_matches_or_contradications" }
+        {"action": "read_all_relevant_pages"},
+        {"action_name": "compare_information_across_sources"},
+        {"action_name": "identify_matches_or_contradications"}
       ],
-      "contradiction_resolution_flow": { "schema_ref": "rules/search_strategy.json#cascade_priority" },
+      "contradiction_resolution_flow": {"schema_ref": "rules/search_strategy.json#cascade_priority"},
       "assess_compounding_value": {
-        "rule": "Если ответ: (1) синтезирует из 2+ страниц, ИЛИ (2) содержит novel insight → flag for fixation",
+        "rule": "If answer: (1) synthesizes from 2+ pages, OR (2) contains novel insight → flag for fixation",
         "action_if_novel_inference": "PROPOSE_SAVE_TO_USER_NEW_SYNTHESIS_PAGE"
       },
       "summary_page_creation_trigger": {
         "trigger_condition": "answer_sources_count >= 3 and all from wiki",
         "auto_create_rule": [
-          { "condition": "synthesis_result_from_3_plus_wiki_pages", "action": "CREATE_SUMMARY_PAGE_IN_syntheses" },
-          { "condition": "web_search_sources", "action": "PROPOSE_TO_USER_CREATE_FQA_PAGE" }
+          {"condition": "synthesis_result_from_3_plus_wiki_pages", "action": "CREATE_SUMMARY_PAGE_IN_syntheses"},
+          {"condition": "web_search_sources", "action": "PROPOSE_TO_USER_CREATE_FQA_PAGE"}
         ]
       }
     },
     {
       "step_id": "2.3",
       "name": "context_compaction_and_dismissal",
-      "description": "Сжать контекст → working_memory.json, выгрузить прочитанные страницы.",
+      "description": "Compress context → working_memory.json, dismiss read pages.",
       "actions": [
-        { "action_name": "compress_read_pages_to_summary", "max_tokens": 2048 },
-        { "action_name": "auto_crosslink_from_query_results" },
-        { "action_name": "write_to_working_memory" }
+        {"action_name": "compress_read_pages_to_summary", "max_tokens": 2048},
+        {"action_name": "auto_crosslink_from_query_results"},
+        {"action_name": "write_to_working_memory"}
       ],
-      "post_action": { "trigger": "compaction_complete", "command": "./scripts/restore-hot-cache.sh || true" }
+      "post_action": {
+        "trigger": "compaction_complete",
+        "command": "./scripts/restore-hot-cache.sh || true"
+      }
     },
     {
       "step_id": "2.5",
       "name": "duplicate_check_before_fixation",
-      "description": "Проверить наличие похожих страниц перед созданием новой.",
-      "pre_check": [{ "command": "./scripts/validate-path.sh ${EXISTING_PAGE_PATH}", "on_failure": "STOP_AND_REPORT" }],
+      "description": "Check for similar pages before creating new one.",
+      "pre_check": [{"command": "./scripts/validate-path.sh ${EXISTING_PAGE_PATH}", "on_failure": "STOP_AND_REPORT"}],
       "actions": [
-        { "action": "read_backlinks_json", "path": "meta/backlinks.json" },
-        { "condition": "similar_page_found_in_backlinks", "action": "UPDATE_EXISTING_PAGE" },
-        { "condition": "no_similar_page_in_backlinks", "action": "PROCEED_TO_CREATE_NEW_PAGE" }
+        {"action": "read_backlinks_json", "path": "meta/backlinks.json"},
+        {"condition": "similar_page_found_in_backlinks", "action": "UPDATE_EXISTING_PAGE"},
+        {"condition": "no_similar_page_in_backlinks", "action": "PROCEED_TO_CREATE_NEW_PAGE"}
       ]
     },
     {
       "step_id": "2.6",
       "name": "compounding_decision",
-      "description": "Проверить, стоит ли сохранить answer как новую страницу wiki — compounding.",
+      "description": "Check if answer should be saved as new wiki page — compounding.",
       "evaluation_criteria": [
-        { "criteria": "answer_requires_synthesis_from_2_or_more_pages", "score": 1 },
-        { "criteria": "compounding_flagged_in_step_2", "score": 1 },
-        { "criteria": "contradiction_resolution_found", "score": 1 }
+        {"criteria": "answer_requires_synthesis_from_2_or_more_pages", "score": 1},
+        {"criteria": "compounding_flagged_in_step_2", "score": 1},
+        {"criteria": "contradiction_resolution_found", "score": 1}
       ],
       "decision_logic": [
-        { "sum_score_ge_2": true, "action": "PROPOSE_SAVE_TO_USER" },
-        { "sum_score_eq_0": true, "action": "SKIP_SAVE" }
+        {"sum_score_ge_2": true, "action": "PROPOSE_SAVE_TO_USER"},
+        {"sum_score_eq_0": true, "action": "SKIP_SAVE"}
       ]
     },
     {
       "step_id": "3",
       "name": "result_fixation",
-      "description": "Compounding — сохранить answer как новую страницу wiki. Auto-rebuild-meta.",
+      "description": "Compounding — save answer as new wiki page. Auto-rebuild-meta.",
       "pre_check": [
-        { "command": "./scripts/validate-path.sh wiki/${PAGE_PATH}.md", "on_failure": "STOP_AND_REPORT" },
-        { "condition": "existing_page_update", "action_name": "check_existing_path_guardrails" }
+        {"command": "./scripts/validate-path.sh wiki/${PAGE_PATH}.md"},
+        {"condition": "existing_page_update", "action_name": "check_existing_path_guardrails"}
       ],
       "save_conditions": [
-        { "condition": "compounding_flagged: true", "action_if_met": "AUTO_SAVE_NEW_PAGE" },
-        { "condition": "contradiction_resolution_completed", "action_if_met": "CREATE_COMPARISON_OR_UPDATE_OLD_PAGE" },
-        { "condition": "new_facts_for_existing_entity", "action_if_met": "UPDATE_EXISTING_PAGE" }
+        {"condition": "compounding_flagged: true", "action_if_met": "AUTO_SAVE_NEW_PAGE"},
+        {"condition": "contradiction_resolution_completed", "action_if_met": "CREATE_COMPARISON_OR_UPDATE_OLD_PAGE"},
+        {"condition": "new_facts_for_existing_entity", "action_if_met": "UPDATE_EXISTING_PAGE"}
       ],
       "actions": [
-        { "action_type": "create_page", "destination": "wiki/${PAGE_PATH}.md" },
-        { "action": "add_source_citations" }
+        {"action_type": "create_page", "destination": "wiki/${PAGE_PATH}.md"},
+        {"action": "add_source_citations"}
       ],
       "post_check": {
         "command": "./scripts/rebuild-meta.sh",
@@ -181,12 +192,12 @@
         "action_on_failure": "LOG_WARNING_AND_PROCEED"
       },
       "cross_link_update": [
-        { "command": "./scripts/auto-crosslink.sh '${PAGE_PATH}' --include-root 2>/dev/null || true" },
-        { "rule_id": "crosslink_score_threshold", "threshold_score": 5, "action_if_high": "add_related_to_frontmatter" }
+        {"command": "./scripts/auto-crosslink.sh '${PAGE_PATH}' --include-root 2>/dev/null || true"},
+        {"rule_id": "crosslink_score_threshold", "threshold_score": 5, "action_if_high": "add_related_to_frontmatter"}
       ],
       "finalization": [
-        { "action_name": "write_to_working_memory" },
-        { "action_name": "write_session_context_to_hot", "rule": "AGENT_MUST_WRITE_HOT_AFTER_EACH_QUERY" }
+        {"action_name": "write_to_working_memory"},
+        {"action_name": "write_session_context_to_hot", "rule": "AGENT_MUST_WRITE_HOT_AFTER_EACH_QUERY"}
       ]
     }
   ],
@@ -194,18 +205,17 @@
   "web_ingest_flow": {
     "trigger": "user confirms 'save' after web_search answer",
     "steps": [
-      { "step": 1, "name": "capture_web_as_raw_package", "command": "mkdir -p raw/sources/SRC-{hash}/ && write_to_original" },
-      { "step": 2, "command": "./scripts/validate-path.sh wiki/{entity|concept}/page-name.md" },
-      { "step": 3, "name": "check_existing_page_or_create_new", "schema_ref": "process-ingest.json#discussion_and_integration" },
-      { "step": 4, "commands": ["./scripts/rebuild-meta.sh", "./scripts/rebuild-meta.sh --index-only"],
-        "optimization_for_large_wiki": {"threshold_pages_count": 100, "action_on_exceed": "skip_rebuild"} },
-      { "step": 5, "name": "register_source_in_tracking" },
-      { "step": 6, "command": "./scripts/link-validator.sh <new_page_path>" }
+      {"step": 1, "name": "capture_web_as_raw_package"},
+      {"step": 2, "command": "./scripts/validate-path.sh wiki/{entity|concept}/page-name.md"},
+      {"step": 3, "schema_ref": "process-ingest.json#discussion_and_integration"},
+      {"step": 4, "commands": ["./scripts/rebuild-meta.sh", "./scripts/rebuild-meta.sh --index-only"],
+        "optimization_for_large_wiki": {"threshold_pages_count": 100}},
+      {"step": 5, "name": "register_source_in_tracking"},
+      {"step": 6, "command": "./scripts/link-validator.sh <new_page_path>"}
     ]
   },
 
-  "error_handling": { "schema_ref": "rules/error_handling.json" },
-  "agent_read_instructions": { "rule": "Agent MUST read AGENTS.md before executing any steps.", "schema_ref": "AGENTS.md#overview" },
-  "context_scope": "transient",
-  "_compact_rules_applied": ["Р01: schema_ref instead of inline duplicate rules", "Р02: removed name/description duplication", "Р03: minimal context, verbose examples in references/", "Р04: process-specific details kept, AGENTS.md only has schema_ref"]
+  "error_handling": {"schema_ref": "rules/error_handling.json"},
+  "agent_read_instructions": {"rule": "Agent MUST read AGENTS.md before executing any steps.", "schema_ref": "AGENTS.md#overview"},
+  "context_scope": "transient"
 }
