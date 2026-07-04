@@ -1,5 +1,5 @@
 ---
-tags: [comparison, architecture, wiki-framework, ingest, workflow]
+tags: [ architecture, wiki-framework, ingest, workflow]
 date: 2026-07-01
 type: comparison
 category: comparison

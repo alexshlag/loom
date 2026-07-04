@@ -1,5 +1,5 @@
 ---
-tags: [entity, researcher, ai-scientist]
+tags: [ researcher, ai-scientist]
 date: 2026-06-24
 sources: [raw/llm-wiki.md]
 related: []

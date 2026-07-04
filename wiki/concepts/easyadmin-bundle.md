@@ -1,5 +1,5 @@
 ---
-tags: [concept, admin, symfony-bundle, cruds]
+tags: [ admin, symfony-bundle, cruds]
 date: 2026-07-01
 type: documentation
 category: concept

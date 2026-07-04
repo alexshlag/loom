@@ -335,7 +335,7 @@
     {
       "step_id": "step_8a_new_page",
       "name": "integration_new_page",
-      "description": "Создать НОВУЮ wiki-страницу из source, полученного в step_3_analysis. Взаимоисключающая ветка от step_6_discussion: если page_type=entity/concept/notes/meeting/project → создать страницу с frontmatter + sections по template.json. Если page_type=synthesis → применить DR-4 (novel_inference check). Выполняется ТОЛЬКО если condition='source_is_new_entity_or_concept' И не существует существующей страницы для обновления.",
+      "description": "Создать НОВУЮ wiki-страницу из source, полученного в step_3_analysis. Взаимоисключающая ветка от step_6_discussion: если page_type=entity/concept/notes/meeting/project → создать страницу с frontmatter + sections по template.json. Если page_type=synthesis → применить DR-4 (novel_inference check). Выполняется ТОЛЬКО если condition='source_is_new_entity_or_concept' И не существует существующей страницы для обновления. При создании frontmatter: прочитать rules/tag-guidelines.json для recommended тегов.",
       "condition": "source_is_new_entity_or_concept (из step_6_discussion.branching)",
       "pre_check": {
         "command": "./scripts/validate-path.sh wiki/${PAGE_PATH}.md",
@@ -632,5 +632,6 @@
       }
     ],
     "rule": "Never auto-modify templates — always user-approved changes per AGENTS.md#template-co-evolution-process"
-  }
+  },
+  "tag_guidelines_schema_ref": "rules/tag-guidelines.json"
 }

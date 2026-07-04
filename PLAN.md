@@ -4,6 +4,22 @@
 
 ## 🔄 Pending Phases (Next Steps)
 
+### Phase 15: Tagging System Quality & Guidelines 🆕
+**Цель**: Создать систему тегирования wiki — обязательные доменные теги + cross-reference tags.
+**Этапы:**
+1. **Research**: Поиск best practices, промптов, скиллов по tagging в Obsidian/LLM-контексте
+2. **Audit**: Найти все страницы с пустыми/generic тегами → предложить улучшения (см. Issue #42)
+3. **Rules**: Создать `rules/tag-guidelines.json` с рекомендуемыми тегами для каждой категории:
+   - Entity: `[entity, domain-keyword, framework/tools]`
+   - Concept: `[concept, domain, related-entity-tags]`  
+   - Synthesis: `[synthesis, topic, cross-reference-tags]`
+4. **Cross-reference enforcement**: Если страница A ссылается на страницу B → обе имеют общий tag
+5. **Language consistency**: en OR ru в рамках одного документа (не смешивать)
+6. **Validation**: lint-check для пустых/generic тегов → add to `lint.sh`
+
+**Статус:** ⬜ Open — требует research + proposal.
+**Связано**: `issues.md#42`, `wiki-search.sh` tag-match bonus, AGENTS.md#free-form-tags.
+
 ### Phase 14: Schema Optimization & Architecture Refinement 🆕
 **Цель**: Реализация рекомендаций по упрощению манифеста и разделению данных.
 **Этапы:**
@@ -14,6 +30,26 @@
 
 **Статус:** ⬜ Open — планируется обсуждение и утверждение этапов.
 **Связь**: `issues.md#39`
+
+---
+
+---
+
+### Phase 15.1: Frontmatter Architecture for Aliases & Discoverability 🆕
+**Цель**: Добавить `aliases` field в universal frontmatter, обновить AGENTS.md + process-ingest.json + tag-audit.sh для работы с алиасами.
+**Контекст**: Теги (tags) = domain keywords для поиска. Алиасы (aliases) = discoverability synonyms — слова которые user реально печатает в query. Без aliases страница не находится по поиску (search-by-synonym).
+
+**Этапы реализации:**
+| Step | Task | Output |
+|------|------|--------|
+| **1** | Обновить AGENTS.md: добавить `aliases` к universal frontmatter template + language policy для bilingual aliases | AGENTS.md updated |
+| **2** | Обновить process-ingest.json: step ingest → auto-extract aliases (product names, synonyms, author references) | process-ingest.json updated |
+| **3** | Обновить tag-audit.sh / lint.sh: check_aliases — если страница имеет 0 aliases, flag для agent review | scripts updated |
+| **4** | Обновить wiki templates (entity-template.json, concept-template.json): добавить `aliases` в recommended frontmatter fields | templates updated |
+| **5** | Batch-update existing pages with high search-potential: Loomana, pi-coding-agent, llm-wiki.md | Domain tags + aliases applied |
+
+**Связано**: `rules/tag-guidelines.json`, `issues.md#42`
+**Зависит от**: Phase 15 (tag guidelines)
 
 ---
 

@@ -1,5 +1,5 @@
 ---
-tags: [концепция, testing, phpunit, zenstruck-foundry]
+tags: [ testing, phpunit, zenstruck-foundry]
 date: 2026-06-25
 sources: [raw/corrected/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md]
 related: [wiki/entities/symfony.md]

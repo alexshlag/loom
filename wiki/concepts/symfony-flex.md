@@ -1,5 +1,5 @@
 ---
-tags: [концепция, composer, flex, recipes]
+tags: [ composer, flex, recipes]
 date: 2026-06-25
 sources: [raw/corrected/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md]
 related: [wiki/entities/symfony.md]

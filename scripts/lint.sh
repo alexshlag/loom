@@ -185,12 +185,99 @@ if [[ "$SKIP_CHECKS" != *",11,"* ]]; then
   fi
 fi
 
+# --- Check 12: Tag audit with auto-fix (empty, non-EN, generic type, XR gaps) ---
+TAG_EMPTY=0; TAG_NON_EN=0; TAG_GENERIC=0; TAG_XR_GAPS=0
+if [[ "$SKIP_CHECKS" != *",12,"* ]]; then
+  FIX_ITER=0
+  while true; do
+    local_tr=$(bash "${SCRIPT_DIR}/tag-audit.sh" --quiet "$WIKI_DIR" 2>/dev/null) || { break; }
+    TAG_EMPTY=$(echo "$local_tr" | python3 -c 'import json,sys;d=json.load(sys.stdin);print(d.get("issues_found",{}).get("empty_tags",0))' 2>/dev/null) || TAG_EMPTY=0
+    TAG_NON_EN=$(echo "$local_tr" | python3 -c 'import json,sys;d=json.load(sys.stdin);print(d.get("issues_found",{}).get("non_en_tags",0))' 2>/dev/null) || TAG_NON_EN=0
+    TAG_GENERIC=$(echo "$local_tr" | python3 -c 'import json,sys;d=json.load(sys.stdin);print(d.get("issues_found",{}).get("generic_type_tags",0))' 2>/dev/null) || TAG_GENERIC=0
+    TAG_XR_GAPS=$(echo "$local_tr" | python3 -c 'import json,sys;d=json.load(sys.stdin);print(d.get("issues_found",{}).get("xr_gaps",0))' 2>/dev/null) || TAG_XR_GAPS=0
+    local_tot=$((TAG_EMPTY + TAG_NON_EN + TAG_GENERIC + TAG_XR_GAPS))
+    [ "$local_tot" -eq 0 ] && break
+    $QUIET || echo "[~] Tag audit: ${local_tot} issues — auto-fix (iter $((FIX_ITER+1)))..." >&2
+    bash "${SCRIPT_DIR}/tag-audit.sh" --fix --quiet "$WIKI_DIR" >/dev/null 2>&1 || true
+    FIX_ITER=$((FIX_ITER+1))
+    [ "$FIX_ITER" -ge 3 ] && break
+  done
+  $QUIET || echo "[✓] Check 12/12: tag_audit — empty:${TAG_EMPTY} non-en:${TAG_NON_EN} generic:${TAG_GENERIC} xr:${TAG_XR_GAPS}" >&2
+fi
+TOTAL_ISSUES=$((TOTAL_ISSUES + TAG_EMPTY + TAG_NON_EN + TAG_GENERIC + TAG_XR_GAPS))
+
+# --- Check 13: Missing frontmatter with auto-insert (slug, category, type) ---
+MISSING_FM=0; FIXED_FM_FILES=""
+if [[ "$SKIP_CHECKS" != *",13,"* ]]; then
+    # Find pages missing YAML frontmatter delimiters at file start
+    local_fms=""
+    while IFS= read -r f; do
+        first=$(head -1 "$f" 2>/dev/null || true)
+        if [[ "$first" != "---"* ]]; then
+            echo "$f" >> /tmp/lint_missing_fm.txt
+        fi
+    done < <(find "$WIKI_DIR/entities" "$WIKI_DIR/concepts" "$WIKI_DIR/syntheses" "$WIKI_DIR/comparisons" -name "*.md" 2>/dev/null)
+    
+    if [ -s /tmp/lint_missing_fm.txt ]; then
+        MISSING_FM=$(wc -l < /tmp/lint_missing_fm.txt)
+        
+        # Auto-insert frontmatter for each missing page
+        while IFS= read -r f; do
+            rel="${f#${WIKI_DIR}/}"
+            dir_name=$(echo "$rel" | cut -d'/' -f1)
+            
+            # Map directory to category value
+            case "$dir_name" in
+                entities)   cat_val="entity";  type_val="documentation" ;;
+                concepts)   cat_val="concept"; type_val="documentation" ;;
+                syntheses)  cat_val="synthesis"; type_val="faq_summary" ;;
+                comparisons) cat_val="comparison"; type_val="analysis" ;;
+                *)          cat_val="entity"; type_val="documentation" ;;
+            esac
+            
+            # Extract slug from filename (lowercase, hyphenated)
+            fname=$(basename "$f" .md)
+            slug=$(echo "$fname" | tr '[:upper:]' '[:lower:]' | sed 's/ /-/g')
+            
+            # Build frontmatter block and prepend to file
+            fm_block=$(cat <<FMEOF
+---
+tags: [${slug}]
+date: $(date +%Y-%m-%d)
+type: ${type_val}
+category: ${cat_val}
+sources: []
+related: []
+---
+
+FMEOF
+)
+            # Prepend frontmatter, preserve original content
+            { echo "$fm_block"; cat "$f"; } > "${f}.tmp" && mv "${f}.tmp" "$f"
+        done < /tmp/lint_missing_fm.txt
+        
+        $QUIET || while IFS= read -r f; do
+            echo "[~] Auto-inserted frontmatter: ${f#${WIKI_DIR}/}" >&2
+        done < /tmp/lint_missing_fm.txt
+    fi
+    
+    # Clean up temp file
+    rm -f /tmp/lint_missing_fm.txt 2>/dev/null || true
+fi
+TOTAL_ISSUES=$((TOTAL_ISSUES + MISSING_FM))
+
+# D7: Rebuild meta index after tag auto-fixes AND frontmatter insertions
+if [[ $FIX_ITER -gt 0 ]] || [[ $MISSING_FM -gt 0 ]]; then
+    echo "[*] Rebuilding meta index..." >&2
+    safe_run "./scripts/rebuild-meta.sh --index-only" local_tag_rebuild || true
+fi
+
 # --- Summary output (machine-readable JSON to stdout) ---
 cat <<EOF | grep -v "^="
 {
   "timestamp": "$(date +%Y-%m-%dT%H:%M:%S)",
   "wiki_dir": "${WIKI_DIR#/}",
-  "checks_run": 11,
+  "checks_run": 13,
   "issues_found": {
     "contradictions": ${CONTRADICTIONS},
     "orphan_pages": ${ORPHAN_COUNT},
@@ -204,7 +291,12 @@ cat <<EOF | grep -v "^="
     "agent_review_details": ${AGENT_REVIEW_REQUIRED_JSON},
     "contradictions_deep": ${CONTRADICTIONS_DEEP},
     "text_similarity_overlaps": ${TEXT_SIMILARITY_MATCHES},
-    "hot_cache_stale": ${HOT_CACHE_STALE}
+    "hot_cache_stale": ${HOT_CACHE_STALE},
+    "tag_empty": ${TAG_EMPTY},
+    "tag_non_en": ${TAG_NON_EN},
+    "tag_generic": ${TAG_GENERIC},
+    "tag_xr_gaps": ${TAG_XR_GAPS},
+    "missing_frontmatter": ${MISSING_FM}
   },
   "total_issues": ${TOTAL_ISSUES},
   "status": "$([ $TOTAL_ISSUES -eq 0 ] && echo 'CLEAN' || echo 'ISSUES_FOUND')"
@@ -215,7 +307,7 @@ EOF
 if [ "$QUIET" = true ]; then
   : # no-op: silent mode — suppress human-readable output
 else
-  echo "[✓] Checks run: 11" >&2
+  echo "[✓] Checks run: 13" >&2
   echo "[!] Total issues found: ${TOTAL_ISSUES}" >&2
 fi
 

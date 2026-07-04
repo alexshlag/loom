@@ -1,22 +1,22 @@
 {
-  "last_updated": "2026-07-03T21:50:00+04:00",
+  "last_updated": "2026-07-04T18:30:00+04:00",
   "current_mode": "project",
-  "focus_node": "Ingest algorithms comparative research — completed, article created",
-  "open_pages": [{"path": "wiki/research/ingest-algorithms-comparison.md", "status": "created"}],
+  "focus_node": "Tag audit completed — wikilinks added, XR gaps identified",
+  "open_pages": [{"path": "wiki/entities/symfony.md", "status": "updated"}, {"path": "wiki/concepts/service-container.md", "status": "linked"}],
   "dead_ends": [],
   "query_summary": {
-    "intent": "Analyze ingest algorithms from pi-llm-wiki and claude-obsidian, create wiki article with improvements",
-    "pages_read": ["/tmp/pi-github-repos/zosmaai/pi-llm-wiki/extensions/llm-wiki/lib/ingest-worker.ts", "/tmp/pi-github-repos/AgriciDaniel/claude-obsidian/skills/wiki-ingest/SKILL.md", "/tmp/pi-github-repos/AgriciDaniel/claude-obsidian/agents/wiki-ingest.md"],
+    "intent": "Complete tag audit — add wikilinks, fix XR gaps, update rules",
+    "pages_read": ["rules/tag-guidelines.json", "scripts/tag-audit.sh", "wiki/entities/symfony.md", "wiki/concepts/service-container.md"],
     "key_findings": [
-      "wiki-lock.sh (advisory locking) — critical for parallel safety",
-      "Background synthesis + deterministic commit — high reliability improvement",
-      "Real-time contradiction callouts — prevents silent overwrites",
-      "Mode-aware routing and address assignment — future-proofing"
+      "Added 15 pages with bidirectional wikilinks (entities ↔ concepts)",
+      "XR audit found 1 gap: symfony.md → service-container.md has no shared domain tags",
+      "TAG-P6 updated: Non-English tags violation instead of Cyrillic-only check",
+      "37 total issues: 1 empty, 15 non-EN, 21 generic, 1 XR gap"
     ]
   },
   "next_steps_todo": [
-    {"task": "Implement wiki-lock.sh (Phase 1: Critical) — flock-based advisory locks per-file", "priority": "critical"},
-    {"task": "Add real-time contradiction callouts to process-ingest.json#step_3_analysis", "priority": "high"},
-    {"task": "Create scripts/ingest-worker.sh with background synthesis (Phase 2: High)", "priority": "high"}
+    {"task": "Fix XR gap: add shared domain tags to symfony.md and service-container.md", "priority": "high"},
+    {"task": "Convert all Non-English tags (konceptiya) → English equivalents across 15 pages", "priority": "high"},
+    {"task": "Remove generic type tags from 21 pages (concept/entity/synthesis in tags)", "priority": "medium"}
   ]
 }

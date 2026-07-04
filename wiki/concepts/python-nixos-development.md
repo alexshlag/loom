@@ -1,5 +1,5 @@
 ---
-tags: [concept, nixos, python, development-environment]
+tags: [ nixos, python, development-environment]
 date: 2026-06-24
 sources: [raw/corrected/SRC-2025-06-24-002/nixos-python-wiki.md]
 related: [wiki/syntheses/python-nixos-development-environments.md]
@@ -8,7 +8,7 @@ related: [wiki/syntheses/python-nixos-development-environments.md]
 # Python Development Environments on NixOS
 
 ## Определение:
-Методология создания изолированных сред разработки для Python в NixOS, аналогичная virtualenv или conda, но с использованием декларативной системы сборки Nix.
+[[Python Development Environments]] on [[NixOS]] — методология создания изолированных сред разработки для [[Python]] в [[NixOS]], аналогичная virtualenv или conda, но с использованием декларативной системы сборки [[Nix]].
 
 ## Принципы работы:
 

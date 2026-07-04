@@ -1,5 +1,5 @@
 ---
-tags: [концепция, architecture, hexagonal, clean-architecture, domain-driven-design]
+tags: [ architecture, hexagonal, clean-architecture, domain-driven-design]
 date: 2026-06-25
 sources: [raw/corrected/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md]
 related: [wiki/entities/symfony.md, wiki/concepts/symfony-dependency-injection.md]
@@ -9,7 +9,7 @@ related: [wiki/entities/symfony.md, wiki/concepts/symfony-dependency-injection.m
 
 ## Определение
 
-Hexagonal Architecture (Ports & Adapters) — architectural pattern that keeps business logic separate from technical details. Domain layer sits at center, depending on nothing. Framework — Symfony, Doctrine, Stripe, any external service — lives at edges as adapters. Modern PHP + Symfony 7+ aligns naturally with tactical DDD patterns.
+[[Hexagonal Architecture]] (Ports & Adapters) — architectural pattern that keeps business logic separate from technical details. Domain layer sits at center, depending on nothing. Framework — [[Symfony]], Doctrine, Stripe, any external service — lives at edges as adapters. Modern PHP + Symfony 7+ aligns naturally with tactical [[DDD patterns]] и clean architecture principles.
 
 ## Three-Layer Structure
 

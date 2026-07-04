@@ -1,5 +1,5 @@
 ---
-tags: [concept, rag, knowledge-base, llm, compounding-knowledge]
+tags: [ rag, knowledge-base, llm, compounding-knowledge]
 date: 2026-06-25
 sources: [raw/llm-wiki.md]
 related: []
@@ -11,7 +11,7 @@ related: []
 > **Related concept:** Vannevar Bush's Memex (1945) — personal curated knowledge store with associative trails.
 
 ## Определение
-Архитектурный паттерн для построения **персональной wiki через LLM**, которая инкрементально накапливает и поддерживает актуальность знаний, вместо стандартного RAG, где LLM rediscovering knowledge from scratch на каждый запрос.
+[[LLM Wiki Pattern]] — архитектурный паттерн для построения **персональной wiki через LLM**, которая инкрементально накапливает и поддерживает актуальность знаний, вместо стандартного [[RAG]], где LLM rediscovering knowledge from scratch на каждый запрос. Использует принципы [[hexagonal architecture]] и [[DDD patterns]] для организации структуры wiki.
 
 Ключевая метафора Karpathy: *«Obsidian — это IDE; LLM — programmer; wiki — codebase.»*
 

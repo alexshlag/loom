@@ -1,5 +1,5 @@
 ---
-tags: [entity, runtime, javascript, server-side, npm]
+tags: [ runtime, javascript, server-side, npm]
 date: 2026-07-02
 type: documentation
 category: entity

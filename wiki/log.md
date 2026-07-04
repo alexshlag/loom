@@ -403,3 +403,33 @@
 - Verified links: 0 broken, 0 auto-repaired
 ## [2026-07-02] ingest | Clippy Rust lint tool from raw/sources/SRC-test-entity-001/rust-clippy.md
 ## [2026-07-02] ingest | nodejs entity created from https://nodejs.org/en/about
+## [2026-07-04] schema | Added Issue #42 (Tagging System Quality) to issues.md + Phase 15 to PLAN.md
+## [2026-07-04] schema | Changed 'обязательные' → 'рекомендуемые' для тегов в Issue #42 и Phase 15
+## [2026-07-04] schema | Created rules/tag-guidelines.json + updated AGENTS.md (tags description) + process-ingest.json (schema_ref)
+## [2026-07-04] lint | Tag audit script created — scripts/tag-audit.sh
+* Создан скрипт аудита тегов по правилам tag-guidelines.json (TAG-P1..P5)
+* Найдено 3 категории проблем:
+  - 1 страница с пустыми/пропущенными тегами (entities/loomana.md)
+  - 14 страниц со смешением en+ru тегов (TAG-P2 violation) — все концепты
+  - 35 страниц с generic type tags вместо доменных (TAG-P1 violation) — concept/концепция/entity/synthesis/duplicate frontmatter.type
+* **Корень проблемы**: Агент использует type из frontmatter как тег, а не domain keywords
+* **Следующий шаг**: XR audit (shared tags between linked pages) — требует отдельной проверки
+## [2026-07-04] schema | TAG-P6 added: English-only tags for wiki unification
+* Обновлён rules/tag-guidelines.json — добавлено правило TAG-P6: теги wiki ведутся только на английском для унификации поиска и cross-reference
+* TAG-P2 обновлён: language consistency внутри document, но без рекомендации ru/en выбора
+* Скрипт tag-audit.sh переписан с проверкой TAG-P6 (Cyrillic tags)
+
+## [2026-07-04] lint | Tag audit results — 37 issues found across wiki
+* Empty/missing: 1 page (entities/loomana.md)
+* Cyrillic tags violation (TAG-P6): 15 pages — all concepts use `концепция` + Latin mix
+* Generic type duplicates (TAG-P1): 21 pages — concept/entity/synthesis in tags duplicate frontmatter.type
+* XR audit: 0 links found — wiki has NO internal wikilinks between pages yet → structural gap
+## [2026-07-04] lint | XR audit completed — 1 cross-reference gap found
+* Добавлены wikilinks к 15 страницам (entities, concepts, syntheses)
+* XR audit: entities/symfony.md → [[concepts/service-container.md]] has NO SHARED TAGS
+* Причина: symfony имеет тега [entity, framework, php]; service-container имеет [концепция, dependency-injection, "service container"] — нет общих доменных тегов (generic/non-EN skipped)
+
+## [2026-07-04] schema | Updated tag-audit.sh with XR fix and Non-English label
+* Fixed: target_file path handling for .md extensions (.md.md → .md)
+* Renamed "Cyrillic tags violation" → "Non-English Tags Violation (TAG-P6)"
+* Added comprehensive bidirectional wikilinks between related pages

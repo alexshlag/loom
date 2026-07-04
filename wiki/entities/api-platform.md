@@ -1,5 +1,5 @@
 ---
-tags: [entity, api, rest, graphql, symfony]
+tags: [ api, rest, graphql, symfony]
 date: 2026-07-01
 type: documentation
 category: entity
@@ -11,7 +11,7 @@ related: [wiki/entities/symfony.md, wiki/concepts/doctrine-orm.md, wiki/comparis
 
 ## Definition
 
-API Platform — фреймворк для создания гипермедийных REST и GraphQL API. Поддерживает JSON-LD, Hydra, OpenAPI, HAL, JSON:API и CSV одновременно из единого определения ресурса (PHP атрибуты/аннотации). Работает поверх Symfony, Laravel или как standalone библиотека.
+[[API Platform]] — фреймворк для создания гипермедийных REST и GraphQL API. Поддерживает JSON-LD, Hydra, OpenAPI, HAL, JSON:API и CSV одновременно из единого определения ресурса (PHP атрибуты/аннотации). Работает поверх [[Symfony]], Laravel или как standalone библиотека. Тесно интегрирован с [[Doctrine ORM]] для работы с entities и repositories.
 
 ## Key Characteristics
 

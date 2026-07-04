@@ -1,5 +1,5 @@
 ---
-tags: [концепция, messenger, messaging, queue]
+tags: [ messenger, messaging, queue]
 date: 2026-06-25
 sources: [raw/corrected/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md]
 related: [wiki/entities/symfony.md]
@@ -9,7 +9,7 @@ related: [wiki/entities/symfony.md]
 
 ## Definition
 
-Messenger — component for sending and receiving messages to/from other applications or via message queues. Provides a message bus that can handle messages immediately (sync) or send them through transports (queues) for async processing. PSR-compliant, works independently outside Symfony framework.
+[[Messenger Component]] — component for sending and receiving messages to/from other applications or via message queues. Предоставляет [[message bus]], который может обрабатывать сообщения немедленно (sync) или отправлять их через transports (queues) для async processing. PSR-compliant, работает независимо вне Symfony framework. Работает параллельно с [[event dispatcher]] и использует [[service container]] для управления зависимостями между handlers.
 
 ## Core Architecture
 

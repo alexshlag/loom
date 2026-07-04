@@ -1,5 +1,5 @@
 ---
-tags: [entity, dxp, cms, commerce, symfony]
+tags: [ dxp, cms, commerce, symfony]
 date: 2026-07-01
 type: documentation
 category: entity
@@ -11,7 +11,7 @@ related: [wiki/entities/symfony.md, wiki/entities/api-platform.md, wiki/entities
 
 ## Definition
 
-Ibexa DXP (Digital Experience Platform) — enterprise-grade CMS + commerce platform на базе Symfony. Объединяет content management, personalization и eCommerce в единую систему. Доступен как on-premise, cloud или managed Ibexa Cloud PaaS.
+[[Ibexa DXP]] (Digital Experience Platform) — enterprise-grade CMS + commerce platform на базе [[Symfony]]. Объединяет content management, personalization и eCommerce в единую систему. Доступен как on-premise, cloud или managed Ibexa Cloud PaaS. Работает поверх [[API Platform]] для headless API и используется как альтернатива [[Sylius]] для enterprise commerce.
 
 ## Product Editions
 

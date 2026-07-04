@@ -1,0 +1,82 @@
+{
+  "version": "1.0",
+  "date": "2026-07-04",
+  "description": "Guidelines for wiki page tagging — domain tags + aliases for discoverability. Never free-form: every tag must be searchable (user query → keyword match).",
+
+  "tag_principles": {
+    "domain_tags_first": "Primary tags = domain-specific keywords that users would actually type when searching. No generic labels.",
+    "avoid_generic_tags": "Never use entity, documentation, system, note as standalone tags — they're schema categories (frontmatter.category), not search terms.",
+    "searchability_check": "Before adding a tag, ask: 'Would this user type this word in their query?' If no → it's architecture metadata, not a tag. Put it in related/sources instead.",
+    "tag_count_recommendation": "5-7 domain tags per page + 3-5 aliases for discoverability."
+  },
+
+  "per_category_guidelines": {
+    "entity": {
+      "recommended_tags": ["[domain-keyword, framework/tools, specific-concepts]"],
+      "examples": {"symfony": ["framework", "php", "dependency-injection", "service-container"], "nvidia": ["gpu", "hardware", "ai-chips", "semiconductor"]},
+      "rules": [
+        "Use concrete product/tech names as tags",
+        "Add domain keywords (e.g., 'gpu', 'api-platform' not just 'entity')",
+        "Avoid: tool, entity, package"
+      ]
+    },
+
+    "concept": {
+      "recommended_tags": ["[core-concept, related-domain, method]"],
+      "examples": {"llm-wiki.md": ["rag", "knowledge-base", "llm", "compounding-knowledge"]},
+      "rules": [
+        "Tags describe the idea itself (not 'concept' as a category)",
+        "Include related entity tags if applicable",
+        "Avoid: concept, theory, principle"
+      ]
+    },
+
+    "synthesis": {
+      "recommended_tags": ["[topic, cross-reference-tags]"],
+      "examples": {"rag-vs-llm-wiki-pattern.md": ["rag", "llm", "knowledge-base"]},
+      "rules": [
+        "Tags = domain keywords from both compared sources",
+        "Cross-link tags should match the entity/concept pages they reference"
+      ]
+    },
+
+    "comparison": {
+      "recommended_tags": ["[comparison-topic, platform, architecture]"],
+      "examples": {"llm-wiki-implementations.md": ["llm-wiki", "architecture", "platform"]},
+      "rules": [
+        "Use domain-specific comparison terms",
+        "Include both compared entities' tags"
+      ]
+    }
+  },
+
+  "aliases_system": {
+    "description": "Aliases are discoverability synonyms — words users might type that don't match the page title exactly. They live in frontmatter `aliases` field.",
+    "placement_in_frontmatter": "aliases should appear after category, before sources/related",
+    "example_structure": "---\ntags: [llm-wiki, personal-knowledge-base]\ndate: YYYY-MM-DD\ntype: documentation\ncategory: entity\naliases: [Loomana, loom, LLM Wiki Pattern, Karpathy wiki]\n---",
+    "rules": [
+      "Aliases = product names, synonyms, author names, descriptive phrases users search for",
+      "Never put architecture terms (three-layer-architecture) as aliases — they're not searchable",
+      "Include both English and native-language variants if page is bilingual"
+    ],
+    "examples": {
+      "Loomana.md": ["Loomana", "loom", "LLM Wiki Pattern", "Karpathy wiki", "compounding knowledge base"],
+      "pi-coding-agent.md": ["Pi Coding Agent", "pi-llm-wiki", "terminal agent"]
+    }
+  },
+
+  "auto_computed_fields": {
+    "evidence_grade": {
+      "description": "Auto-compute from source authority at ingest time — never manual.",
+      "levels": {"documented": "Authoritative source (official docs, wiki)", "corroborated": "Confirmed by 2+ independent sources", "assertion_only": "Weak source (blog post, forum)"}
+    }
+  },
+
+  "lint_integration": {
+    "checks_to_add_to_lint_sh": [
+      {"check_id": 13, "name": "missing_frontmatter_auto_insert", "status": "implemented"},
+      {"check_id_20": "empty_tags_check", "description": "Find pages with empty tags [] → suggest domain tags"},
+      {"check_id_21": "generic_tag_filter", "description": "Flag generic type-tags (entity, documentation) instead of domain-specific ones"}
+    ]
+  }
+}

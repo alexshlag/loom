@@ -1,5 +1,5 @@
 ---
-tags: [synthesis, rag, llm, knowledge-base, comparison]
+tags: [rag,llm,knowledge-base]
 date: 2026-06-24
 sources: [raw/llm-wiki.md]
 related: [wiki/concepts/llm-wiki.md]

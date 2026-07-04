@@ -1,5 +1,5 @@
 ---
-tags: [концепция, dependency-injection, service-container]
+tags: [ dependency-injection, service-container]
 date: 2026-06-25
 sources: [raw/corrected/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md]
 related: [wiki/entities/symfony.md, wiki/concepts/symfony-dependency-injection.md]
@@ -9,7 +9,7 @@ related: [wiki/entities/symfony.md, wiki/concepts/symfony-dependency-injection.m
 
 ## Определение
 
-Service Container — центральный механизм Symfony, который централизует создание и управление объектами (services). Каждый service — это объект, выполняющий полезную задачу (mailer, database connection, logger). Container автоматически решает зависимости через autowiring на основе type-hints в конструкторах. PSR-11 compatible.
+[[Service Container]] — центральный механизм [[Symfony]], который централизует создание и управление объектами (services). Каждый service — это объект, выполняющий полезную задачу (mailer, database connection, logger). Container автоматически решает зависимости через autowiring на основе type-hints в конструкторах. PSR-11 compatible. Работает параллельно с [[event dispatcher]], [[messenger component]] и другими системными компонентами фреймворка.
 
 ## Принципы работы
 

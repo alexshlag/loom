@@ -62,6 +62,24 @@
 
 ---
 
+### Issue #42: Tagging System — Quality & Guidelines 🆕
+**Проблема**: Теги в wiki ставятся агентам free-form без рекомендуемых cross-reference тегов. Результат: 
+- Смешение en/ru (`концепция` vs `concept`) в одной категории
+- Generic теги вместо доменных (например, `[harness, wiki-setup]` вместо `[memory, context, compounding]` для natural-memory.md)
+- Пустые теги `[]` на страницах с реальным контентом
+- Нет рекомендуемых cross-reference тегов: если страница A ссылается на страницу B через wikilink → обе должны иметь общий tag
+
+**Цель**: Создать систему тегирования где:
+1. Каждый документ получает доменные теги (symfony, doctrine, phpunit — а не generic `entity/concept`)
+2. Cross-reference tags: связанные страницы делят общие теги для улучшения поиска
+3. Consistent language: en OR ru в рамках одного документа (не смешивать)
+4. Recommended patterns: entity type + domain keywords + framework/tools
+
+**Решение**: Исследовать best practices, промпты, скиллы → создать `rules/tag-guidelines.json` с конкретными правилами для каждой категории.
+
+**Статус:** ⬜ Open — requires research & proposal.
+**Связано**: AGENTS.md#297 (free-form tags), wiki-search.sh tag-match bonus (+1 балл за совпадение).
+
 ### Issue #39: Context Bloat & Architecture Optimization (HIGH) 🆕
 **Проблема**: `AGENTS.md` содержит слишком много технических деталей (правила Git, политики языков, архитектура памяти), что ведет к раздуванию контекста и снижению эффективности агента.
 **Решение**: Вынести технические спецификации в отдельную директорию `rules/` (например, `rules/protected_zones.json`, `rules/git_conventions.json` и т.д.). `AGENTS.md` должен остаться высокоуровневым манифестом с ссылками на эти файлы.

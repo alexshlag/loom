@@ -1,5 +1,5 @@
 ---
-tags: [synthesis, nixos, python, development-environment]
+tags: [ nixos, python, development-environment]
 date: 2026-06-24
 sources: [wiki/concepts/python-nixos-development.md, raw/corrected/SRC-2025-06-24-002/nixos-python-wiki.md]
 related: [wiki/concepts/python-nixos-development.md]
@@ -8,7 +8,7 @@ related: [wiki/concepts/python-nixos-development.md]
 # Основные способы создания сред разработки Python на NixOS
 
 ## Контекст
-Вопрос: какие основные подходы к созданию изолированных сред разработки для Python существуют в экосистеме NixOS? Исходный источник — [NixOS Wiki - Python](https://wiki.nixos.org/wiki/Python).
+Вопрос: какие основные подходы к созданию изолированных сред разработки для [[Python]] существуют в экосистеме [[NixOS]]? Исходный источник — [NixOS Wiki - Python](https://wiki.nixos.org/wiki/Python). Синтез из [[python-nixos-development]].
 
 ## Анализ
 

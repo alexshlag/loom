@@ -1,5 +1,5 @@
 ---
-tags: [comparison, symfony]
+tags: [ symfony]
 date: 2026-06-25
 type: documentation
 sources: []

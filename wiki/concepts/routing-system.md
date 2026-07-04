@@ -1,5 +1,5 @@
 ---
-tags: [концепция, routing, controllers, attributes]
+tags: [ routing, controllers, attributes]
 date: 2026-06-25
 sources: [raw/corrected/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md]
 related: [wiki/entities/symfony.md]
@@ -9,7 +9,7 @@ related: [wiki/entities/symfony.md]
 
 ## Определение
 
-Routing System — компонент Symfony, который маппит incoming URLs к application code (controller actions). Поддерживает YAML, XML, PHP и Attributes (рекомендуемый формат). Контроллеры — это классы-обработчики HTTP-запросов; в современных проектах они содержат только glue-code: routing → service call → response.
+[[Routing System]] — ключевой компонент [[Symfony]], который маппит incoming URLs к application code (controller actions). Поддерживает YAML, XML, PHP и Attributes (рекомендуемый формат). Контроллеры — это классы-обработчики HTTP-запросов; в современных проектах они содержат только glue-code: routing → service call → response. Routing тесно связан с [[Symfony security system]] для защиты endpoints через `#[Security]` attributes.
 
 ## Принципы работы
 

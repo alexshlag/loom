@@ -1,3 +1,12 @@
+---
+tags: [llm-wiki, personal-knowledge-base, compounding, rag-alternative, karpathy-wiki]
+date: 2026-07-04
+type: documentation
+category: entity
+aliases: [Loomana, loom, LLM Wiki Pattern, Karpathy wiki, compounding knowledge base]
+sources: [wiki/concepts/llm-wiki.md, wiki/syntheses/rag-vs-llm-wiki-pattern.md, wiki/comparisons/llm-wiki-implementations.md, wiki/entities/pi-coding-agent.md]
+related: [concepts/llm-wiki.md, syntheses/rag-vs-llm-wiki-pattern.md, comparisons/llm-wiki-implementations.md, entities/andrej-karpathy.md, entities/pi-coding-agent.md]
+---
 # Loomana — Wiki System Documentation
 
 ## Что такое Loomana?
