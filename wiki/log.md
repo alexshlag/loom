@@ -441,3 +441,13 @@
 
 ## [2026-07-04] fix | rebuild-meta.sh — Fixed smart truncation of summary text (avoid cutting on [\ or ") and aliases parsing (quote artifacts from split(,))
 ## [2026-07-04] fix | lint.sh Check 14 — Fixed trailing comma bug in heredoc JSON output (STRUCTURAL_VIOLATOR_JSON)
+
+## [2026-07-04] ingest | SRC-002: Node.js on NixOS article from wiki.nixos.org
+* Ingested external source: https://wiki.nixos.org/wiki/Node.js
+* Created corrected copy in raw/corrected/SRC-002/nodejs-nixos.md with frontmatter + structured content
+* Original saved to raw/SRC-002/nodejs-nixos-original.md (immutable)
+* Manifest created: hash_original=sha256:9a91da5f3e1dcb1d78b3c6fa9872e2e33f0b5a2aa455a9df34203238b4070f0c
+* Updated existing wiki/entities/nodejs.md with NixOS sections (setup, packaging, troubleshooting)
+* Frontmatter updated: tags=[runtime,javascript,server-side,npm,nixos,nixpkgs]
+* Lint.sh validation passed — JSON output valid, 40 structural violations detected (system files + all concept pages missing body text before first ##)
+* hot.md refreshed with ingest summary + next steps

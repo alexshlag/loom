@@ -1,9 +1,9 @@
 ---
-tags: [ runtime, javascript, server-side, npm]
-date: 2026-07-02
+tags: [ runtime, javascript, server-side, npm, nixos, nixpkgs ]
+date: 2026-07-04
 type: documentation
 category: entity
-sources: ["https://nodejs.org/en/about", "https://github.com/nodejs/release"]
+sources: ["https://nodejs.org/en/about", "https://github.com/nodejs/release", "raw/corrected/SRC-002/nodejs-nixos.md"]
 related: []
 ---
 
@@ -93,7 +93,46 @@ HTTP-стек спроектирован с streaming и low latency в mind, ч
 | [nodejs](https://github.com/nodejs) | Основные проекты (core, docs, modules) |
 | [pkgjs](https://github.com/pkgjs) | Пакетные инструменты |
 
-Связанные страницы (pending):
+## Node.js on NixOS
+
+### Установка и настройка
+- `environment.systemPackages = with pkgs; [ nodejs ]` — базовая установка через nixpkgs
+- Доступны версии: `nodejs`, `nodejs_12_x`, `nodejs_22`, etc.
+
+### Разработка в Nix Shell
+```nix
+{ pkgs ? import <nixpkgs> {} }:
+pkgs.mkShell {
+  nativeBuildInputs = with pkgs.buildPackages; [
+    nodejs_22
+    yarn
+  ];
+}
+```
+
+### Corepack + steam-run для pinned-версий пакетных менеджеров
+```nix
+pkgs.mkShell {
+  buildInputs = with pkgs; [ corepack steam-run-free ];
+  shellHook = ''alias deno="steam-run pnpm deno"'';
+}
+```
+
+### Пакетирование через `buildNpmPackage`
+- Позволяет пакетить npm-based проекты без node2nix (без auto-generated dependencies)
+- Создаёт reproducible cache для npm dependencies
+- Example в flake.nix с `npmDepsHash` и `src = ./.`
+
+### Troubleshooting на NixOS
+1. **`npm install -g` fails** — read-only store, нужно: configure prefix to ~/.npm-global, avoid `-g`, или использовать `npx`
+2. **Binaries ENOENT errors** — динамически линкуются к несуществующим в NixOS библиотекам → workaround: `steam-run`
+3. **Google fonts fetch failure (NextJS)** — Nix sandbox без интернета не даёт fetch Google Fonts → использовать `next/font/local` + `preBuild` с копированием из `nixpkgs#google-fonts`
+
+### nodePackages overlay
+- Пакеты в `nixpkgs.nodePackages` собираются через `nixpkgs.nodejs`
+- Можно override версию: `nodejs = prev.nodejs-16_x;` → пересборка всех зависимостей
+
+Связанные страницы:
 - npm — пакетный менеджер для Node.js
 - Express — веб-фреймворк на основе Node.js
 - V8 Engine — JavaScript engine, лежащий в основе

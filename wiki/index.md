@@ -8,7 +8,7 @@
 * [Clippy](entities/rust-clippy.md) — Clippy is a collection of lints (static analysis checks) to catch common mistakes and improve Rust code. — [rust, linter, linting-tool]
 * [Ibexa DXP](entities/ibexa-dxp.md) — [[Ibexa DXP]] (Digital Experience Platform) — enterprise-grade CMS + commerce platform на базе [[Symfony]]. — [dxp, cms, commerce, symfony]
 * [Loomana — Wiki System Documentation](entities/loomana.md) — **Loomana** (внутреннее имя `loom`) — это **LLM-powered personal knowledge base**, где знания компандятся с каждым новым источником и вопросом. — [llm-wiki, personal-knowledge-base, compounding, rag-alternative, karpathy-wiki]
-* [Node.js](entities/nodejs.md) — Node.js — это runtime для выполнения JavaScript-кода вне браузера. — [runtime, javascript, server-side, npm]
+* [Node.js](entities/nodejs.md) — Node.js — это runtime для выполнения JavaScript-кода вне браузера. — [runtime, javascript, server-side, npm, nixos, nixpkgs]
 * [Nvidia](entities/nvidia.md) — Американская технологическая корпорация, лидер в области разработки графических процессоров (GPU), аппаратных ускорителей для искусственного интеллекта (AI) — [hardware, ai, semiconductor]
 * [Pi Coding Agent](entities/pi-coding-agent.md) — Минимальный терминальный код-агент (harness), расширяемый через TypeScript-расширения, skills, prompt templates и темы. — [coding-agent, terminal-ui, typescript-extension, llm-agency, nodejs-sdk] ([Pi Coding Agent] [pi-llm-wiki])
 * [Sylius](entities/sylius.md) — [[Sylius]] — open-source eCommerce framework на базе [[Symfony Full Stack]]. — [ecommerce, symfony, headless]
@@ -69,7 +69,7 @@
 
 
 ---
-*Created: auto-generated | Last updated: 2026-07-04 18:20*
+*Created: auto-generated | Last updated: 2026-07-04 19:44*
 
 ## Хронология
 | Дата | Событие |
