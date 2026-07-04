@@ -1,22 +1,22 @@
 {
-  "last_updated": "2026-07-04T18:30:00+04:00",
+  "last_updated": "2026-07-04T19:00:00+04:00",
   "current_mode": "project",
-  "focus_node": "Tag audit completed — wikilinks added, XR gaps identified",
-  "open_pages": [{"path": "wiki/entities/symfony.md", "status": "updated"}, {"path": "wiki/concepts/service-container.md", "status": "linked"}],
+  "focus_node": "Tag audit resolved — generic tags fixed, symfony ↔ service-container XR gap closed",
+  "open_pages": [],
   "dead_ends": [],
   "query_summary": {
-    "intent": "Complete tag audit — add wikilinks, fix XR gaps, update rules",
-    "pages_read": ["rules/tag-guidelines.json", "scripts/tag-audit.sh", "wiki/entities/symfony.md", "wiki/concepts/service-container.md"],
+    "intent": "Fix tag consistency: remove generic tags, strengthen domain connections, update memory layers",
+    "pages_read": ["rules/tag-guidelines.json", "meta/backlinks.json", "wiki/entities/symfony.md", "wiki/concepts/service-container.md"],
     "key_findings": [
-      "Added 15 pages with bidirectional wikilinks (entities ↔ concepts)",
-      "XR audit found 1 gap: symfony.md → service-container.md has no shared domain tags",
-      "TAG-P6 updated: Non-English tags violation instead of Cyrillic-only check",
-      "37 total issues: 1 empty, 15 non-EN, 21 generic, 1 XR gap"
+      "XR gap resolved: backlinks.json contains entities-symfony-md → concepts-service-container-md bidirectional links",
+      "Generic 'tool' tag removed from ai-factory.md (replaced with obsidian-cli, cli-tool)",
+      "Generic 'tool' tag removed from rust-clippy.md (replaced with linting-tool)",
+      "Added autowiring + di-pattern domain tags to symfony.md for stronger semantic connection",
+      "Non-English tags: not found in current state (may have been fixed earlier or audit was preventive)"
     ]
   },
   "next_steps_todo": [
-    {"task": "Fix XR gap: add shared domain tags to symfony.md and service-container.md", "priority": "high"},
-    {"task": "Convert all Non-English tags (konceptiya) → English equivalents across 15 pages", "priority": "high"},
-    {"task": "Remove generic type tags from 21 pages (concept/entity/synthesis in tags)", "priority": "medium"}
+    {"task": "Verify all entity/concept pages have ≥3 domain-specific tags per tag-guidelines.json", "priority": "medium"},
+    {"task": "Run lint.sh check_id=6 to confirm no generic type tags remain", "priority": "low"}
   ]
 }

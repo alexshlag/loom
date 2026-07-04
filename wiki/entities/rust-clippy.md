@@ -1,5 +1,5 @@
 ---
-tags: [ rust, linter, tool]
+tags: [rust, linter, linting-tool]
 date: 2026-07-02
 type: documentation
 category: entity

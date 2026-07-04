@@ -1,5 +1,5 @@
 ---
-tags: [framework, php, dependency-injection, service-container]
+tags: [framework, php, dependency-injection, service-container, autowiring, di-pattern]
 date: 2026-06-25
 sources: [raw/corrected/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md]
 related: [wiki/concepts/service-container.md, wiki/concepts/routing-system.md, wiki/concepts/hexagonal-architecture.md]

@@ -1,5 +1,5 @@
 ---
-tags: [tool, cli, agent-skill-system, stack-agnostic, spec-driven]
+tags: [ obsidian-cli, vault-transport, cli-tool, spec-driven]
 date: 2026-06-24
 sources: [https://github.com/lee-to/ai-factory, https://www.npmjs.com/package/ai-factory]
 related: [wiki/entities/pi-coding-agent.md]
