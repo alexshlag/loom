@@ -85,21 +85,6 @@ AGENTS.md и process-файлы (`process-ingest.json`, `process-query.json`, `p
 
 ---
 
-## Unified-Pass Architecture (Phase 23)
-
-`scripts/unified-pass.sh` — **оркестратор**, а не monolithic merge трёх скриптов:
-
-- **Shared walk**: один `find` по wiki с единым exclude-списком system files
-- **Dispatch**: результаты walk передаются в 3 consumer-функции
-- **Consumers**: `collect_metadata()` (из rebuild-meta.sh), `validate_links()` (из link-validator.sh), `discover_crosslinks()` (из auto-crosslink.sh)
-- **Frontmatter parsing**: единый shared helper (Python) вместо 5 разных regex
-- **Output**: каждый consumer может писать JSON в stdout и/или файлы
-- **System file exclusion**: единый список, определяется в начале скрипта
-
-> Цель: устранить 3 независимых полных walk поwiki при каждом ingest/lint.
-
----
-
 ## 🔖 Git Conventions
 
 - **Commit format**: `<type> | <scope>: <description>` (type: feat|fix|refactor|schema|lint|ingest|query; description lowercase)
@@ -250,7 +235,7 @@ related: []
   - `next_steps_todo`: удалять задачи со статусом `completed` или которые больше не актуальны
   - `broken_links_resolved`: **не удалять** — это audit trail, добавляет новую запись сверху
   - `open_pages`, `dead_ends`: чистить после закрытия сессии (dismiss всех прочитанных)
-  - Пример: если агент выполнил задачу "unified-pass.sh --full", он должен удалить её из `next_steps_todo` перед write()
+  - Пример: если задача выполнена — удалить её из `next_steps_todo` перед write()
 - Не дублирует wiki — хранит только метаданные сессии (не сами страницы)
 
 **Canonical rules source**: `rules/session_context_rules.json` определяет полный алгоритм работы с memory layers (working_memory.json, hot.md, log.md), save_triggers, и read_algorithm. Агент читает этот файл перед каждым действием с памятью.
