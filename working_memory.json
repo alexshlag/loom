@@ -1,41 +1,17 @@
 {
-  "last_updated": "2026-07-04T19:35:00+04:00",
+  "last_updated": "2026-07-04T19:50:00+04:00",
   "current_mode": "project",
-  "focus_node": "Check 14 structural requirements \u2014 lint.sh heredoc JSON escaping bug",
-  "open_pages": [
-    "scripts/lint.sh",
-    "scripts/check-structural.sh"
-  ],
-  "dead_ends": [
-    {
-      "approach": "bash heredoc interpolation of multi-line JSON array from STRUCTURAL_VIOLATOR_JSON",
-      "reason": "When STRUCTURAL_VIOLATOR_JSON contains raw JSON array (40 items, ~8KB), embedding it directly in the cat <<EOF heredoc breaks outer JSON \u2014 inner quotes and newlines create invalid JSON at line 226: trailing comma before end of object. Tried escaping with json.dumps() but bash still interpolates unescaped.",
-      "fixed_in": "scripts/lint.sh: removed trailing comma after ${STRUCTURAL_VIOLATOR_JSON} in heredoc",
-      "note": "check-structural.sh works correctly (valid JSON). Problem is only in lint.sh heredoc output formatting."
-    }
-  ],
+  "focus_node": "Ingest completed — Node.js on NixOS article processed",
+  "open_pages": [],
+  "dead_ends": [],
   "query_summary": {
-    "intent": "Integrate Check 14: structural requirements validation into lint.sh",
-    "pages_read": [
-      "scripts/lint.sh",
-      "scripts/check-structural.sh",
-      "scripts/rebuild-meta.sh"
-    ],
+    "intent": "Ingest nodejs wiki.nixos.org article into wiki",
+    "pages_read": ["wiki/entities/nodejs.md"],
     "key_findings": [
-      "check-structural.sh correctly finds 40 violations across wiki pages (all missing body text between H1 and first ##)",
-      "lint.sh now runs 14 checks instead of 13",
-      "Bug: STRUCTURAL_VIOLATOR_JSON array breaks JSON output in heredoc \u2014 outer JSON invalid",
-      "Fixed: trailing comma bug in lint.sh Check 14 heredoc \u2014 now valid JSON output"
+      "SRC-002 ingested successfully, wiki/entities/nodejs.md updated with NixOS content"
     ]
   },
   "next_steps_todo": [
-    {
-      "task": "Fix lint.sh Check 14: escape STRUCTURAL_VIOLATOR_JSON properly for heredoc (use jq or double-escape inner quotes)",
-      "priority": "high"
-    },
-    {
-      "task": "Add aliases to all entity/concept pages for discoverability",
-      "priority": "medium"
-    }
+    {"task": "Add aliases to all entity/concept pages for discoverability", "priority": "medium"}
   ]
 }
