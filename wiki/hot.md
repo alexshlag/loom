@@ -8,36 +8,33 @@ related: []
 # Wiki Hot Cache — Last Updated: 2026-07-04
 
 ## Active Project (WORK_MODE: project)
-- **Project**: Loomana wiki — tag audit + XR gap resolution
-- **Status**: RESOLVED ✅
-- **Focus node**: Generic tags removed, symfony ↔ service-container connection strengthened
-- **Related wiki pages**: `wiki/entities/symfony.md`, `wiki/concepts/service-container.md`, `rules/tag-guidelines.json`
+- **Project**: Loomana wiki — Phase 14+15 compaction + routing fix
+- **Status**: IN PROGRESS 🟥
+- **Focus node**: process-query.json → process-ingest.json mandatory transition
+- **Related wiki pages**: `process-query.json`, `AGENTS.md`
 - **Completed actions**: 
-  - XR gap closed: backlinks.json contains entities-symfony-md → concepts-service-container-md bidirectional links
-  - Generic 'tool' tag removed from ai-factory.md → replaced with obsidian-cli, cli-tool
-  - Generic 'tool' tag removed from rust-clippy.md → replaced with linting-tool
-  - Added autowiring + di-pattern domain tags to symfony.md for stronger semantic connection
-- **Next steps**: Verify all pages have ≥3 domain-specific tags per tag-guidelines.json
+  - step_2.7 added: mandatory gateway for web_search → user_confirm → process-ingest.json
+  - All direct wiki-write actions replaced with PROPOSE_*_TO_USER + transition_after_confirm
+  - Guardrails added to steps 2, 2.5, 2.6, 3
+- **Next steps**: Verify AGENTS.md global rule exists; test query flow end-to-end
 
 ## Active Session Context
-- **Topic**: Complete tag audit — add wikilinks, fix XR gaps, update rules
-- **User query intent**: Audit all entity/concept pages for tag consistency and cross-reference quality
-- **Pages read**: `rules/tag-guidelines.json`, `scripts/wiki-search.sh`, `wiki/entities/symfony.md`, `wiki/concepts/service-container.md`
-- **Key findings**: Tag scoring now working, but 37 issues remain to resolve before audit is clean
+- **Topic**: Fix process-query.json routing — all wiki-write must go through process-ingest.json
+- **User query intent**: Audit + fix all points where process-query creates/updates wiki pages directly
+- **Pages read**: `process-query.json`, `AGENTS.md`
+- **Key findings**: 
+  - Found 7+ direct wiki-write actions bypassing ingest flow
+  - All replaced with proposals → user_confirm → transition to process-ingest.json
+  - Added step_2.7 mandatory gateway for web_search sources
 
 ## System State
 ### Active Threads
-- Phase 5: Dynamic priority scoring — complete ✅
-- Phase 23: Unified-pass.sh integration into lint/ingest workflows — complete ✅
-- Issue #10: Python scripts refactored to use logging module — complete ✅
-- Issue #11: check-new-sources.sh trap handler fixed — complete ✅
-- Lint.sh skip-check numbering bug fixed + hot_cache_stale_check wired — complete ✅
-- **NEW**: Tag audit in progress — 37 issues identified, XR gaps need resolution
+- Phase 14: Compact Rules + AGENTS.md → IN PROGRESS 🟥
+- **NEW**: Phase 15: process-query → process-ingest routing fix — IN PROGRESS 🟥
+- Issue #39: Context bloat → AGENTS.md compaction pending
 
 ### Recent Changes
-- **2026-07-04**: Search improvements — tags now scored in wiki-search.sh and displayed in index.md
-- **2026-07-04**: Tag audit initiated — bidirectional links added (15 pages), XR gaps found, tag-guidelines updated
-- **2026-07-03**: Research — comparative ingest algorithms analysis created (`wiki/research/ingest-algorithms-comparison.md`)
+- **2026-07-05**: process-query.json routing fix — all wiki-write actions routed through process-ingest.json via step_2.7 gateway
 - **2026-07-03**: Wiki health check — resolved all 7 orphan pages via crosslinks, fixed contradictions in natural-memory.md and python-nixos-development.md
 - **2026-07-01**: Phase 23 (Unified Pass Architecture) fully completed — unified-pass.sh replaces 3 separate script walks
 

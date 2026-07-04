@@ -1,21 +1,23 @@
 {
-  "last_updated": "2026-07-05T10:30:00+04:00",
+  "last_updated": "2026-07-05T13:45:00+04:00",
   "current_mode": "project",
-  "focus_node": "Phase 14 — Search Contract + English-only instructions fix",
+  "focus_node": "Phase 15 — Process-query → process-ingest routing fix",
   "open_pages": [
-    {"path": "AGENTS.md", "status": "updated"},
-    {"path": "process-query.json", "status": "compacted"},
-    {"path": "RULES.md", "status": "updated"}
+    {"path": "process-query.json", "status": "updated"},
+    {"path": "AGENTS.md", "status": "pending_global_rule_check"}
   ],
   "dead_ends": [],
   "query_summary": {
-    "intent": "Fix search strategy: replace pseudo-actions with wiki-search.sh, enforce English-only instructions",
-    "pages_read": ["AGENTS.md#search_strategy", "process-query.json"],
+    "intent": "Fix all wiki-write points in process-query.json to route through process-ingest.json",
+    "pages_read": ["process-query.json", "AGENTS.md"],
     "key_findings": [
-      "Found 6 pseudo-actions in process-query.json (no real commands)",
-      "All Cyrillic constraints converted to English",
-      "Search Contract added to AGENTS.md with strict fallback chain"
+      "Found 7+ direct wiki-write actions bypassing ingest flow",
+      "All replaced with PROPOSE_*_TO_USER + transition_after_confirm",
+      "Added step_2.7 mandatory gateway for web_search → user_confirm → process-ingest.json"
     ]
   },
-  "next_steps_todo": []
+  "next_steps_todo": [
+    {"task": "Verify AGENTS.md has global rule 'all wiki ops through process files'", "priority": "high"},
+    {"task": "Test query flow with web_search + confirm scenario", "priority": "medium"}
+  ]
 }

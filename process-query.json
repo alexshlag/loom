@@ -1,44 +1,80 @@
 {
   "module": "process_query",
   "description": "Answer questions using wiki as knowledge base",
-
   "context": {
     "wiki_dir": "wiki/",
     "always_loaded": true,
-    "search_priority_details": {"schema_ref": "rules/search_strategy.json"},
+    "search_priority_details": {
+      "schema_ref": "rules/search_strategy.json"
+    },
     "compounding_decision_logic": {
       "evaluation_criteria": [
-        {"criteria": "answer_requires_synthesis_from_2_or_more_pages", "score": 1},
-        {"criteria": "compounding_flagged_in_step_2", "score": 1},
-        {"criteria": "contradiction_resolution_found", "score": 1}
+        {
+          "criteria": "answer_requires_synthesis_from_2_or_more_pages",
+          "score": 1
+        },
+        {
+          "criteria": "compounding_flagged_in_step_2",
+          "score": 1
+        },
+        {
+          "criteria": "contradiction_resolution_found",
+          "score": 1
+        }
       ],
       "decision_logic": [
-        {"sum_score_ge_2": true, "action_if_novel_inference": "PROPOSE_SAVE_TO_USER_NEW_SYNTHESIS_PAGE"},
-        {"sum_score_eq_0": true, "action": "SKIP_SAVE"}
+        {
+          "sum_score_ge_2": true,
+          "action_if_novel_inference": "PROPOSE_SAVE_TO_USER_NEW_SYNTHESIS_PAGE"
+        },
+        {
+          "sum_score_eq_0": true,
+          "action": "SKIP_SAVE"
+        }
       ]
     },
     "grep_contract": {
       "allowed_patterns": [
-        {"command": "grep -m N pattern wiki/", "purpose": "search up to N matches (required)"},
-        {"command": "head -n 20 file.md", "purpose": "read frontmatter"},
-        {"command": "sed -n 'X,Yp' file.md", "purpose": "line range"}
+        {
+          "command": "grep -m N pattern wiki/",
+          "purpose": "search up to N matches (required)"
+        },
+        {
+          "command": "head -n 20 file.md",
+          "purpose": "read frontmatter"
+        },
+        {
+          "command": "sed -n 'X,Yp' file.md",
+          "purpose": "line range"
+        }
       ],
       "forbidden_patterns": [
-        {"command": "cat file.md", "reason": "file >50 lines — token overload"},
-        {"command": "grep pattern wiki/", "reason": "no -m flag — could output thousands of lines"}
+        {
+          "command": "cat file.md",
+          "reason": "file >50 lines — token overload"
+        },
+        {
+          "command": "grep pattern wiki/",
+          "reason": "no -m flag — could output thousands of lines"
+        }
       ]
     }
   },
-
   "trigger_condition": "user_asks_question",
-  "not_for": ["ingest_processing", "wiki_validation"],
-
+  "not_for": [
+    "ingest_processing",
+    "wiki_validation"
+  ],
   "steps": [
     {
       "step_id": "0",
       "structure": [
-        {"step_1": "read working_memory.json"},
-        {"step_2": "check focus_node in WM -> if exists: continue with same focus, else: new topic"}
+        {
+          "step_1": "read working_memory.json"
+        },
+        {
+          "step_2": "check focus_node in WM -> if exists: continue with same focus, else: new topic"
+        }
       ],
       "if_broken": "STOP -> read working_memory.json -> set new focus"
     },
@@ -51,37 +87,71 @@
     {
       "step_id": "0.5",
       "structure": [
-        {"step_1": "parse query for keywords -> map to intent (query_wiki | study_architecture | other)"},
-        {"step_2": "if intent=query_wiki: count wiki/**/*.md", "action_if_empty": "warn_and_prompt_to_fill"}
+        {
+          "step_1": "parse query for keywords -> map to intent (query_wiki | study_architecture | other)"
+        },
+        {
+          "step_2": "if intent=query_wiki: count wiki/**/*.md",
+          "action_if_empty": "warn_and_prompt_to_fill"
+        }
       ],
-      "constraints": ["Never use find/ls for check — only count *.md"]
+      "constraints": [
+        "Never use find/ls for check — only count *.md"
+      ]
     },
     {
       "step_id": "0.75",
       "structure": [
-        {"step_1": "read working_memory.json -> check last_known_broken_links key"},
-        {"step_2": "if broken_links exist: report to user, else: continue"}
+        {
+          "step_1": "read working_memory.json -> check last_known_broken_links key"
+        },
+        {
+          "step_2": "if broken_links exist: report to user, else: continue"
+        }
       ],
-      "constraints": ["Do NOT scan wiki for broken links — only use WM cache"]
+      "constraints": [
+        "Do NOT scan wiki for broken links — only use WM cache"
+      ]
     },
     {
       "step_id": "0.76",
       "name": "new_sources_quick_check",
       "description": "Quick check for new raw packages — lint does full check.",
       "actions": [
-        {"action": "run_script", "command": "./scripts/check-new-sources.sh --quick"},
-        {"condition": "exit_code_1_from_above", "action": "set_working_memory_marker"}
+        {
+          "action": "run_script",
+          "command": "./scripts/check-new-sources.sh --quick"
+        },
+        {
+          "condition": "exit_code_1_from_above",
+          "action": "set_working_memory_marker"
+        }
       ]
     },
     {
       "step_id": "1",
       "system_files_exclusion": {
-        "exclude": ["log.md", "issues.md", "timeline.md", "overview.md", "snapshot.md", "index.md"]
+        "exclude": [
+          "log.md",
+          "issues.md",
+          "timeline.md",
+          "overview.md",
+          "snapshot.md",
+          "index.md"
+        ]
       },
       "structure": [
-        {"step_1": "./scripts/wiki-search.sh --dynamic \"<query>\"", "stop_if_ge_2_matches": true},
-        {"step_2": "grep -m 30 \"<keyword>\" wiki/index.md", "action_if_empty": "continue"},
-        {"step_3": "grep -m 20 \"<keyword>\" meta/search-index.json"}
+        {
+          "step_1": "./scripts/wiki-search.sh --dynamic \"<query>\"",
+          "stop_if_ge_2_matches": true
+        },
+        {
+          "step_2": "grep -m 30 \"<keyword>\" wiki/index.md",
+          "action_if_empty": "continue"
+        },
+        {
+          "step_3": "grep -m 20 \"<keyword>\" meta/search-index.json"
+        }
       ],
       "constraints": [
         "find/ls/cat prohibited for search — always start with wiki-search.sh --dynamic"
@@ -98,33 +168,60 @@
       "step_id": "2",
       "pre_condition": "search_results_not_empty",
       "structure": [
-        {"step_1": "read all matched wiki pages from search"},
-        {"step_2": "compare across sources -> identify contradictions (cascade: code>live>docs)"},
-        {"step_3": "assess_compounding_value: if synthesis_from_2+pages OR novel_inference -> PROPOSE_SAVE_TO_USER"}
+        {
+          "step_1": "read all matched wiki pages from search"
+        },
+        {
+          "step_2": "compare across sources -> identify contradictions (cascade: code>live>docs)"
+        },
+        {
+          "step_3": "assess_compounding_value: if synthesis_from_2+pages OR novel_inference -> PROPOSE_SAVE_TO_USER"
+        }
       ],
-      "summary_page_creation_trigger": {
-        "if_sources_count_ge_3": "CREATE_SUMMARY_PAGE_IN_syntheses",
-        "if_web_search_sources": "PROPOSE_TO_USER_CREATE_FQA"
-      },
-      "contradiction_resolution_flow": {"schema_ref": "rules/search_strategy.json#cascade_priority"},
-      "assess_compounding_value": {
-        "rule": "If answer: (1) synthesizes from 2+ pages, OR (2) contains novel insight → flag for fixation",
-        "action_if_novel_inference": "PROPOSE_SAVE_TO_USER_NEW_SYNTHESIS_PAGE"
-      },
       "summary_page_creation_trigger": {
         "trigger_condition": "answer_sources_count >= 3 and all from wiki",
         "auto_create_rule": [
-          {"condition": "synthesis_result_from_3_plus_wiki_pages", "action": "CREATE_SUMMARY_PAGE_IN_syntheses"},
-          {"condition": "web_search_sources", "action": "PROPOSE_TO_USER_CREATE_FQA_PAGE"}
-        ]
+          {
+            "condition": "synthesis_result_from_3_plus_wiki_pages",
+            "action": "PROPOSE_SAVE_TO_USER",
+            "transition_after_confirm": "process-ingest.json#step_8a_new_page"
+          },
+          {
+            "condition": "web_search_sources",
+            "action": "PROPOSE_TO_USER_CREATE_FQA_PAGE",
+            "trigger_web_ingest_flow": true
+          }
+        ],
+        "guardrail": {
+          "prohibited": [
+            "CREATE_SUMMARY_PAGE_IN_syntheses without process-ingest-transition"
+          ]
+        }
+      },
+      "contradiction_resolution_flow": {
+        "schema_ref": "rules/search_strategy.json#cascade_priority"
+      },
+      "assess_compounding_value": {
+        "rule": "If answer: (1) synthesizes from 2+ pages, OR (2) contains novel insight → flag for fixation",
+        "action_if_novel_inference": "PROPOSE_SAVE_TO_USER_NEW_SYNTHESIS_PAGE",
+        "guardrail": {
+          "transition_after_user_confirm": "process-ingest.json via web_ingest_flow",
+          "description": "Never create wiki pages directly from query. All proposals → user_confirm → TRANSITION to process-ingest.json"
+        }
       }
     },
     {
       "step_id": "2.3",
       "structure": [
-        {"step_1": "compress read pages to summary (max_tokens=2048)"},
-        {"step_2": "auto_crosslink_from_query_results -> add to working_memory.json"},
-        {"step_3": "write session context to hot.md"}
+        {
+          "step_1": "compress read pages to summary (max_tokens=2048)"
+        },
+        {
+          "step_2": "auto_crosslink_from_query_results -> add to working_memory.json"
+        },
+        {
+          "step_3": "write session context to hot.md"
+        }
       ],
       "post_action": {
         "trigger": "compaction_complete",
@@ -135,74 +232,236 @@
       "step_id": "2.5",
       "name": "duplicate_check_before_fixation",
       "description": "Check for similar pages before creating new one.",
-      "pre_check": [{"command": "./scripts/validate-path.sh ${EXISTING_PAGE_PATH}", "on_failure": "STOP_AND_REPORT"}],
+      "pre_check": [
+        {
+          "command": "./scripts/validate-path.sh ${EXISTING_PAGE_PATH}",
+          "on_failure": "STOP_AND_REPORT"
+        }
+      ],
       "actions": [
-        {"action": "read_backlinks_json", "path": "meta/backlinks.json"},
-        {"condition": "similar_page_found_in_backlinks", "action": "UPDATE_EXISTING_PAGE"},
-        {"condition": "no_similar_page_in_backlinks", "action": "PROCEED_TO_CREATE_NEW_PAGE"}
-      ]
+        {
+          "action": "read_backlinks_json",
+          "path": "meta/backlinks.json"
+        },
+        {
+          "condition": "similar_page_found_in_backlinks",
+          "action": "PROPOSE_UPDATE_TO_USER",
+          "transition_after_confirm": "process-ingest.json#step_8b_update_page",
+          "note": "UPDATE_EXISTING_PAGE prohibited — must route through process-ingest.json"
+        },
+        {
+          "condition": "no_similar_page_in_backlinks",
+          "action": "PROPOSE_CREATE_TO_USER",
+          "transition_after_confirm": "process-ingest.json#step_8a_new_page",
+          "note": "PROCEED_TO_CREATE_NEW_PAGE prohibited — must route through process-ingest.json"
+        }
+      ],
+      "guardrail": {
+        "prohibited": [
+          "UPDATE_EXISTING_PAGE directly",
+          "CREATE_NEW_PAGE directly",
+          "any wiki-write without process-ingest-transition"
+        ]
+      }
     },
     {
       "step_id": "2.6",
       "name": "compounding_decision",
       "description": "Check if answer should be saved as new wiki page — compounding.",
       "evaluation_criteria": [
-        {"criteria": "answer_requires_synthesis_from_2_or_more_pages", "score": 1},
-        {"criteria": "compounding_flagged_in_step_2", "score": 1},
-        {"criteria": "contradiction_resolution_found", "score": 1}
+        {
+          "criteria": "answer_requires_synthesis_from_2_or_more_pages",
+          "score": 1
+        },
+        {
+          "criteria": "compounding_flagged_in_step_2",
+          "score": 1
+        },
+        {
+          "criteria": "contradiction_resolution_found",
+          "score": 1
+        }
       ],
       "decision_logic": [
-        {"sum_score_ge_2": true, "action": "PROPOSE_SAVE_TO_USER"},
-        {"sum_score_eq_0": true, "action": "SKIP_SAVE"}
+        {
+          "sum_score_ge_2": true,
+          "action": "PROPOSE_SAVE_TO_USER",
+          "transition_after_confirm": "process-ingest.json (via step_2.7 if web_source or via direct ingest if internal)"
+        },
+        {
+          "sum_score_eq_0": true,
+          "action": "SKIP_SAVE"
+        }
+      ]
+    },
+    {
+      "step_id": "2.7",
+      "name": "transition_to_ingest_if_web_source_confirmed",
+      "description": "IF user confirms saving web_search answer → TRANSITION to process-ingest.json (never direct edit). This is the mandatory gateway from query → wiki write.",
+      "trigger_condition": "web_search_used AND user_confirm_save",
+      "transition_rule": {
+        "condition": "user_confirmed_after_web_answer",
+        "action_if_met": "TRANSITION_TO process-ingest.json via web_ingest_flow",
+        "action_if_not_met": "PROCEED_TO step_3_result_fixation (internal wiki only)"
+      },
+      "guardrail": {
+        "rule_id": "NO_DIRECT_EDIT_FROM_WEB_SEARCH",
+        "enforcement": "All wiki create/update operations MUST go through process-ingest.json steps. Direct edit() without ingest flow is prohibited.",
+        "schema_ref": "AGENTS.md#wiki_operation_routing_contract"
+      },
+      "structure": [
+        {
+          "step_1": "check if web_ingest_flow.trigger is met (web_search used + user_confirm)"
+        },
+        {
+          "step_2": "IF true → execute process-ingest.json steps via web_ingest_flow (capture → raw-correct.sh → discussion → integration → post-checks)",
+          "action_if_true": "JUMP_TO process-ingest"
+        },
+        {
+          "step_3": "IF false (internal wiki answer) → PROCEED TO step_3_result_fixation",
+          "action_if_false": "CONTINUE_TO_STEP_3"
+        }
       ]
     },
     {
       "step_id": "3",
       "name": "result_fixation",
-      "description": "Compounding — save answer as new wiki page. Auto-rebuild-meta.",
+      "description": "Compounding — save answer as new wiki page. Auto-rebuild-meta. Internal-only paths (no web source). Web sources MUST have passed step_2.7.",
       "pre_check": [
-        {"command": "./scripts/validate-path.sh wiki/${PAGE_PATH}.md"},
-        {"condition": "existing_page_update", "action_name": "check_existing_path_guardrails"}
+        {
+          "command": "./scripts/validate-path.sh wiki/${PAGE_PATH}.md"
+        },
+        {
+          "condition": "existing_page_update",
+          "action_name": "check_existing_path_guardrails"
+        }
       ],
       "save_conditions": [
-        {"condition": "compounding_flagged: true", "action_if_met": "AUTO_SAVE_NEW_PAGE"},
-        {"condition": "contradiction_resolution_completed", "action_if_met": "CREATE_COMPARISON_OR_UPDATE_OLD_PAGE"},
-        {"condition": "new_facts_for_existing_entity", "action_if_met": "UPDATE_EXISTING_PAGE"}
+        {
+          "condition": "compounding_flagged: true",
+          "action_if_met": "PROPOSE_SAVE_TO_USER",
+          "note": "AUTO_SAVE_NEW_PAGE replaced — must route through process-ingest.json#step_8a_new_page or step_8b_update_page"
+        },
+        {
+          "condition": "contradiction_resolution_completed",
+          "action_if_met": "PROPOSE_UPDATE_TO_USER",
+          "note": "CREATE_COMPARISON_OR_UPDATE_OLD_PAGE replaced — must route through process-ingest.json"
+        },
+        {
+          "condition": "new_facts_for_existing_entity",
+          "action_if_met": "PROPOSE_UPDATE_TO_USER",
+          "note": "UPDATE_EXISTING_PAGE replaced — must route through process-ingest.json#step_8b_update_page"
+        }
       ],
       "actions": [
-        {"action_type": "create_page", "destination": "wiki/${PAGE_PATH}.md"},
-        {"action": "add_source_citations"}
+        {
+          "action_type": "propose_save_to_user",
+          "description": "Only proposal — actual write happens in process-ingest.json steps",
+          "destination": "wiki/${PAGE_PATH}.md"
+        },
+        {
+          "action": "add_source_citations",
+          "note": "Done after ingest flow completes, not during query step"
+        }
       ],
+      "guardrail": {
+        "prohibited": [
+          "create_page directly in query step",
+          "AUTO_SAVE_NEW_PAGE without process-ingest",
+          "CREATE_COMPARISON_OR_UPDATE_OLD_PAGE without process-ingest",
+          "UPDATE_EXISTING_PAGE without process-ingest"
+        ]
+      },
       "post_check": {
         "command": "./scripts/rebuild-meta.sh",
         "action_on_success": "PROCEED_TO_LOG_AND_INDEX_UPDATE",
         "action_on_failure": "LOG_WARNING_AND_PROCEED"
       },
       "cross_link_update": [
-        {"command": "./scripts/auto-crosslink.sh '${PAGE_PATH}' --include-root 2>/dev/null || true"},
-        {"rule_id": "crosslink_score_threshold", "threshold_score": 5, "action_if_high": "add_related_to_frontmatter"}
+        {
+          "command": "./scripts/auto-crosslink.sh '${PAGE_PATH}' --include-root 2>/dev/null || true"
+        },
+        {
+          "rule_id": "crosslink_score_threshold",
+          "threshold_score": 5,
+          "action_if_high": "add_related_to_frontmatter"
+        }
       ],
       "finalization": [
-        {"action_name": "write_to_working_memory"},
-        {"action_name": "write_session_context_to_hot", "rule": "AGENT_MUST_WRITE_HOT_AFTER_EACH_QUERY"}
+        {
+          "action_name": "write_to_working_memory"
+        },
+        {
+          "action_name": "write_session_context_to_hot",
+          "rule": "AGENT_MUST_WRITE_HOT_AFTER_EACH_QUERY"
+        }
       ]
     }
   ],
-
   "web_ingest_flow": {
     "trigger": "user confirms 'save' after web_search answer",
-    "steps": [
-      {"step": 1, "name": "capture_web_as_raw_package"},
-      {"step": 2, "command": "./scripts/validate-path.sh wiki/{entity|concept}/page-name.md"},
-      {"step": 3, "schema_ref": "process-ingest.json#discussion_and_integration"},
-      {"step": 4, "commands": ["./scripts/rebuild-meta.sh", "./scripts/rebuild-meta.sh --index-only"],
-        "optimization_for_large_wiki": {"threshold_pages_count": 100}},
-      {"step": 5, "name": "register_source_in_tracking"},
-      {"step": 6, "command": "./scripts/link-validator.sh <new_page_path>"}
-    ]
+    "description": "Full transition from query → ingest. Executes process-ingest.json steps when user approves wiki write from web_search.",
+    "transition_target": "process-ingest.json",
+    "ingress_from_query_step": "step_2.7_transition_to_ingest_if_web_source_confirmed",
+    "required_steps": [
+      {
+        "step_id": "step_4_corrected_copy",
+        "name": "create_corrected_copy_or_skip",
+        "command": "scripts/raw-correct.sh --add <web_source> content → raw/corrected/SRC-*/*",
+        "mandatory": true
+      },
+      {
+        "step_id": "step_6_discussion",
+        "name": "discussion_with_user",
+        "description": "Present analysis, propose page structure, get user_confirmed",
+        "mandatory": true
+      },
+      {
+        "step_id": "step_8b_update_page",
+        "name": "integration_update_existing_page",
+        "pre_condition": "existing_page_path_identified",
+        "actions": [
+          "read_existing_page",
+          "identify_additions",
+          "write_update with preserve_old_info"
+        ]
+      }
+    ],
+    "post_steps": [
+      {
+        "step": 4,
+        "commands": [
+          "./scripts/rebuild-meta.sh",
+          "./scripts/rebuild-meta.sh --index-only"
+        ],
+        "optimization_for_large_wiki": {
+          "threshold_pages_count": 100
+        }
+      },
+      {
+        "step": 5,
+        "name": "register_source_in_tracking"
+      },
+      {
+        "step": 6,
+        "command": "./scripts/link-validator.sh <new_page_path>"
+      }
+    ],
+    "guardrails": {
+      "prohibited": [
+        "direct_edit()",
+        "skip_step_4_corrected_copy",
+        "skip_step_6_discussion",
+        "write_to_wiki_without_process_ingest"
+      ]
+    }
   },
-
-  "error_handling": {"schema_ref": "rules/error_handling.json"},
-  "agent_read_instructions": {"rule": "Agent MUST read AGENTS.md before executing any steps.", "schema_ref": "AGENTS.md#overview"},
+  "error_handling": {
+    "schema_ref": "rules/error_handling.json"
+  },
+  "agent_read_instructions": {
+    "rule": "Agent MUST read AGENTS.md before executing any steps.",
+    "schema_ref": "AGENTS.md#overview"
+  },
   "context_scope": "transient"
 }

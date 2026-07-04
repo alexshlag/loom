@@ -539,3 +539,15 @@ Current task: Phase 15 (Tagging System). Next pending: Phase 15.1 (Aliases).
 * AGENTS.md compaction + post-refactor tests are PENDING
 * Working memory updated: focus_node = AGENTS.md compacting
 
+
+## [2026-07-05] schema | Fix: all process-query wiki-write must route through process-ingest.json
+  - Added step_2.7 mandatory gateway for web_search → user_confirm → process-ingest.json transition
+  - Replaced ALL direct wiki-write actions with PROPOSE_*_TO_USER + transition_after_confirm:
+    * step_2 summary_page_creation_trigger → PROPOSE_SAVE_TO_USER → process-ingest.json#step_8a_new_page
+    * step_2 assess_compounding_value → guardrail added (transition_after_user_confirm)
+    * step_2.5 actions → PROPOSE_UPDATE_TO_USER + PROPOSE_CREATE_TO_USER with transitions
+    * step_2.6 decision_logic → transition_after_confirm: process-ingest.json
+    * step_3 save_conditions → all replaced with PROPOSE_*_TO_USER (was AUTO_SAVE_NEW_PAGE, etc.)
+    * step_3 actions → create_page replaced with propose_save_to_user (proposal only)
+  - Guardrails added to steps 2, 2.5, 2.6, 3: prohibited direct_edit() without process-ingest
+  - web_ingest_flow updated: required_steps explicit, ingress_from_query_step linked

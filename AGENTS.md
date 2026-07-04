@@ -29,6 +29,7 @@ AGENTS.md и process-файлы (`process-ingest.json`, `process-query.json`, `p
 **Проблема**: Agent сохраняет в контексте все rules даже после завершения процесса → bloat memory.
 
 **Решение**: ALL rules are Transient — read fresh from source before every action. No persistent memory needed because:
+
 - `agent_read_instructions` in each process file mandates reading AGENTS.md before execution
 - This guarantees context refresh at EVERY process start, regardless of when session began
 
@@ -42,6 +43,7 @@ AGENTS.md и process-файлы (`process-ingest.json`, `process-query.json`, `p
 ```
 
 **Agent reads fresh from source files only when needed:**
+
 - AGENTS.md → before EVERY process (auto-read via `agent_read_instructions` in process files)
 - Process-specific rules → only during active process, forget after completion
 - Hybrid rules (templates, link conventions) → read when actively working on that topic
@@ -64,6 +66,7 @@ AGENTS.md и process-файлы (`process-ingest.json`, `process-query.json`, `p
 ### Current Scope Breakdown
 
 **ALL rules are Transient:**
+
 - ✅ Memory contract, execution contract, error handling → read fresh from AGENTS.md
 - ✅ Git conventions, protected zones, silent output → read fresh when needed
 - ✅ Page templates, link conventions, crosslinks → read on demand
@@ -95,7 +98,8 @@ AGENTS.md и process-файлы (`process-ingest.json`, `process-query.json`, `p
 
 ### Pre-commit Memory Sync Rule
 
-Before EVERY git commit in development mode (AGENTS.md, RULES.md, process-*.json, PLAN.md, FEATURES_PLAN.md changes):
+Before EVERY git commit in development mode (AGENTS.md, RULES.md, process-\*.json, PLAN.md, FEATURES_PLAN.md changes):
+
 1. Update working_memory.json: set `focus_node` = current task name; filter completed tasks from `next_steps_todo`
 2. Update hot.md Active Project with Phase status + what was done
 3. See [rules/session_context_rules.json](rules/session_context_rules.json) for write_algorithm.
@@ -423,11 +427,11 @@ related: [] # связанные wiki-страницы (wiki-relative paths)
 
 Детальные шаблоны страниц хранятся в `wiki/templates/`.
 
-| Category | File |
-|----------|------|
-| Entity | [entity-template.json](wiki/templates/entity-template.json) |
-| Concept | [concept-template.json](wiki/templates/concept-template.json) |
-| Synthesis | [synthesis-template.json](wiki/templates/synthesis-template.json) |
+| Category   | File                                                                |
+| ---------- | ------------------------------------------------------------------- |
+| Entity     | [entity-template.json](wiki/templates/entity-template.json)         |
+| Concept    | [concept-template.json](wiki/templates/concept-template.json)       |
+| Synthesis  | [synthesis-template.json](wiki/templates/synthesis-template.json)   |
 | Comparison | [comparison-template.json](wiki/templates/comparison-template.json) |
 
 **Canonical**: `AGENTS.md#template_files` → full catalog: `[wiki/templates/index.json](wiki/templates/index.json)`
@@ -443,6 +447,7 @@ related: [] # связанные wiki-страницы (wiki-relative paths)
 **Файл**: `rules/categories.json`
 
 Структура:
+
 ```json
 {
   "version": "1.0",
@@ -462,6 +467,7 @@ related: [] # связанные wiki-страницы (wiki-relative paths)
 | `description` | Описание назначения категории |
 
 **Куда читать:**
+
 - `scripts/rebuild-meta.sh` — строит index.md из CATEGORY_ORDER + CATEGORIES_LABELS_RAW
 - `scripts/wiki-search.sh` — вычисляет порядок при старте скрипта в `CATEGORY_ORDER`
 - `scripts/duplicate-titles.sh` — читает CATEGORIES для проверки дублей
@@ -608,13 +614,14 @@ related: [] # связанные wiki-страницы (wiki-relative paths)
 
 Wiki использует три слоя памяти — каждый закрывает свою роль, не дублируя друг друга:
 
-| Файл | Роль | Живёт | Читаю/пишу |
-|------|------|-------|------------|
-| **working_memory.json** | Оперативная память *текущей* сессии — focus_node, open_pages, next_steps_todo. Периодически перезаписывается (turn → turn). | Коротко: одна сессия. Чистится при dismissal/compaction. | Agent записывает каждый turn. |
-| **hot.md** | Срез *активного проекта и вопросов* — на чём остановились, какие wiki-страницы были полезны, ключевые выводы из обсуждений. Выживает компакцию через restore-hot-cache.sh. | Долгосрочно: между сессиями. Обновляется при end-of-session или когда важная задача закрыта. | Agent записывает срез, не полную ленту. |
-| **log.md** | Append-only летопись всех действий и изменений wiki. Хронологическая лента. | Навсегда. Не переписывается, только append. | Agent append'ит каждую запись. |
+| Файл                    | Роль                                                                                                                                                                       | Живёт                                                                                        | Читаю/пишу                              |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | --------------------------------------- |
+| **working_memory.json** | Оперативная память _текущей_ сессии — focus_node, open_pages, next_steps_todo. Периодически перезаписывается (turn → turn).                                                | Коротко: одна сессия. Чистится при dismissal/compaction.                                     | Agent записывает каждый turn.           |
+| **hot.md**              | Срез _активного проекта и вопросов_ — на чём остановились, какие wiki-страницы были полезны, ключевые выводы из обсуждений. Выживает компакцию через restore-hot-cache.sh. | Долгосрочно: между сессиями. Обновляется при end-of-session или когда важная задача закрыта. | Agent записывает срез, не полную ленту. |
+| **log.md**              | Append-only летопись всех действий и изменений wiki. Хронологическая лента.                                                                                                | Навсегда. Не переписывается, только append.                                                  | Agent append'ит каждую запись.          |
 
 **Как они взаимодействуют:**
+
 ```
 Session start:
   ├── read working_memory.json → restore focus_node, next_steps_todo
@@ -664,6 +671,7 @@ Session end:
 ### Log.md Read Pattern
 
 Agent читает log.md при старте сессии для понимания контекста предыдущих обсуждений:
+
 - **Правило**: Agent использует grep (не cat) для чтения последних записей — не более 10-20 строк.
 - **Когда читать**: При start session, если `working_memory.json` пустой или stale (>30 days без обновлений).
 - **Как читать**: `grep -m 20 "" wiki/log.md | tail -20` для последних записей. Или по ключевым словам: `grep -m 10 "project_name" wiki/log.md`.
@@ -874,7 +882,8 @@ Parallel writes to the same wiki page can silently corrupt content. Without advi
 ### How It Works
 
 `scripts/wiki-lock.sh` provides **per-file advisory locking** with:
-- **Noclobber atomic creation** — POSIX race-safe lock acquire (`set -o noclobber`)  
+
+- **Noclobber atomic creation** — POSIX race-safe lock acquire (`set -o noclobber`)
 - **Age-based staleness** — crashed writer unblocks automatically after 60s
 - **Cross-process release** — simple `rm -f`, no PID tracking needed (design requirement)
 
@@ -893,6 +902,7 @@ fi
 ### Integration in Ingest Flow
 
 Locks are automatically acquired/released at **step_9_post_checks**:
+
 - `acquire` → first action (before rebuild-meta, link validation)
 - `release` → last action (after all post-checks complete)
 
@@ -900,12 +910,12 @@ This ensures the lock covers ALL post-write operations: metadata updates, crossl
 
 ### Exit Codes
 
-| Code | Meaning | Action |
-|------|---------|--------|
-| 0 | Success (lock acquired) | Continue to next step |
-| 75 | Lock held by alive process | Retry after 2s or continue with caution |
-| 3 | Cannot create lock dir | Log error, abort write |
-| 4 | Invalid path format | Check path validation, fix if needed |
+| Code | Meaning                    | Action                                  |
+| ---- | -------------------------- | --------------------------------------- |
+| 0    | Success (lock acquired)    | Continue to next step                   |
+| 75   | Lock held by alive process | Retry after 2s or continue with caution |
+| 3    | Cannot create lock dir     | Log error, abort write                  |
+| 4    | Invalid path format        | Check path validation, fix if needed    |
 
 > Schema ref: `FEATURES_PLAN.md#1-advisory-locking` — full implementation plan.
 
@@ -1027,14 +1037,15 @@ Guardrails enforcement через `scripts/validate-path.sh`. Для схем п
 
 Системная папка, которая **не коммитится в git** (.gitignore). Содержит:
 
-| Файл/Папка | Назначение |
-|-----------|------------|
-| `locks/` | Временные директории для блокировок (wiki-lock.sh) |
-| `.wiki-lock.meta` | Состояние блокировки мета-слоя |
-| `hook.log` | Лог авто-коммитов (git-auto-commit.sh) |
-| `auto-commit.disabled` | Флаг отключения auto-commit |
+| Файл/Папка             | Назначение                                         |
+| ---------------------- | -------------------------------------------------- |
+| `locks/`               | Временные директории для блокировок (wiki-lock.sh) |
+| `.wiki-lock.meta`      | Состояние блокировки мета-слоя                     |
+| `hook.log`             | Лог авто-коммитов (git-auto-commit.sh)             |
+| `auto-commit.disabled` | Флаг отключения auto-commit                        |
 
 **Правила:**
+
 - Agent может читать и писать в эту папку для управления системным состоянием
 - **Никогда не коммитить** — это runtime state, не project artifact
 - При поломке: проверить целостность блокировок (`ls .vault-meta/locks/`), удалить stale locks если нужно
@@ -1084,6 +1095,7 @@ Guardrails enforcement через `scripts/validate-path.sh`. Для схем п
 **Primary**: `./scripts/wiki-search.sh --dynamic "<query>"` — анализирует intent, приоритет категорий, relevance scoring.
 
 **Fallback chain (strict order)**:
+
 1. `grep -m 30 "<keyword>" wiki/index.md` → если ≥2 matches → использовать
 2. `grep -m 20 "<keyword>" meta/search-index.json`
 
@@ -1253,3 +1265,18 @@ cd /path/to/loomana && ./scripts/lint.sh --skip-checks 3,5
 **Usage**: `./scripts/wiki-search.sh --dynamic "query"` — results sorted by combined score descending.
 
 > Full workflow: `AGENTS.md#smart_search_priority` → extended with dynamic intent analysis.
+
+---
+
+## 🚫 Wiki Operation Routing Contract
+
+**Rule**: All wiki create/update operations MUST go through process-ingest.json or process-query.json steps. Never direct edit() without process flow.
+
+**Flow routing table:**  
+ | Scenario | Process File | Transition Trigger |  
+ |----------|-------------|-------------------|  
+ | New source from web_search → save to wiki | process-query.json#web_ingest_flow → process-ingest.json | user_confirm after web_search |  
+ | Update existing page with new facts | process-ingest.json#step_8b_update_page | source_identifies_existing_page |  
+ | Simple query answer (no save) | process-query.json only | no compounding_flag |
+
+---
