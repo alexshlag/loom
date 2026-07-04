@@ -258,13 +258,17 @@ def _cat_label(k):
 CATEGORIES = {k: _cat_label(k) for k in CATEGORY_ORDER}
 
 def extract_summary(content):
+    import re as _re
     # Parse tags from frontmatter
     tags = []
+    aliases = []
     for line in content.split('\n')[:10]:
         if line.startswith('tags:'):
-            import re as _re
-            raw_tags = [t.strip() for t in _re.findall(r'\\[(.*?)\\]', line) for t in t.split(',')]
+            raw_tags = [t.strip() for t in _re.findall(r'\\[(.*?)\\]', line)]
             tags = [t for t in raw_tags if t and len(t) > 2]
+        elif line.startswith('aliases:'):
+            raw_aliases = [a.strip().strip('\"') for a in _re.findall(r'\\[(.*?)\\]', line)]
+            aliases = [a for a in raw_aliases if a]
     
     lines = content.split('\n')
     fm_end = -1
@@ -311,7 +315,7 @@ def extract_summary(content):
         if last_dot > 20:
             summary = summary[:last_dot + 1]
     
-    return summary, tags
+    return summary, tags, [], aliases
 
 category_pages = {cat: [] for cat in CATEGORY_ORDER}
 for root, dirs, files in os.walk(wiki_dir):
@@ -343,13 +347,13 @@ for root, dirs, files in os.walk(wiki_dir):
             else:
                 continue
         
-        summary, page_tags = extract_summary(content)
+        summary, page_tags, _sources, page_aliases = extract_summary(content)
         category_pages.setdefault(cat_dir, []).append({
             'title': title,
             'path': rel_path,
             'summary': summary,
             'tags': page_tags,
-            'aliases': page.get('aliases', []) if hasattr(page, 'get') else []
+            'aliases': page_aliases
         })
 
 now_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')

@@ -40,3 +40,10 @@ related: []
 - **2026-07-03**: Research — comparative ingest algorithms analysis created (`wiki/research/ingest-algorithms-comparison.md`)
 - **2026-07-03**: Wiki health check — resolved all 7 orphan pages via crosslinks, fixed contradictions in natural-memory.md and python-nixos-development.md
 - **2026-07-01**: Phase 23 (Unified Pass Architecture) fully completed — unified-pass.sh replaces 3 separate script walks
+
+## Session Context — 2026-07-04 Tag Audit
+**Status**: ✅ Complete. All entity/concept pages now have ≥3 domain-specific tags per tag-guidelines.json. Generic type-tags removed from 2 pages. Next: Phase 15.1 (aliases for discoverability).
+
+## Session Context — 2026-07-04 Final State
+**Status**: ✅ Tag audit complete. All entity/concept pages have ≥3 domain tags. Orphan page archived to raw/. Hot cache updated.
+**Next**: Phase 15.1 (aliases for discoverability) + contradiction resolution (soft, optional).
