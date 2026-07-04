@@ -47,3 +47,8 @@ related: []
 ## Session Context — 2026-07-04 Final State
 **Status**: ✅ Tag audit complete. All entity/concept pages have ≥3 domain tags. Orphan page archived to raw/. Hot cache updated.
 **Next**: Phase 15.1 (aliases for discoverability) + contradiction resolution (soft, optional).
+
+## Session Context — 2026-07-05 Search Contract Fix
+**Status**: ✅ Search strategy fixed in process-query.json — replaced pseudo-actions with wiki-search.sh --dynamic commands. English-only enforced across all instructions.
+**Changes applied**: AGENTS.md#Search Contract added, RULES.md language rule added, 3 Cyrillic constraints → English, 6 pseudo-actions → structured steps.
+**Next**: Phase 14 (AGENTS.md compaction) + Phase 15 (Tagging System).

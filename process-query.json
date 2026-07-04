@@ -36,12 +36,11 @@
   "steps": [
     {
       "step_id": "0",
-      "name": "context_load_from_working_memory",
-      "description": "Load working_memory.json — continue from focus_node or start new topic.",
-      "actions": [
-        {"action": "read_file", "path": "working_memory.json"},
-        {"action_name": "check_focus_node_exists", "if_true": "CONTINUE_WITH_SAME_FOCUS"}
-      ]
+      "structure": [
+        {"step_1": "read working_memory.json"},
+        {"step_2": "check focus_node in WM -> if exists: continue with same focus, else: new topic"}
+      ],
+      "if_broken": "STOP -> read working_memory.json -> set new focus"
     },
     {
       "step_id": "0.25",
@@ -51,27 +50,19 @@
     },
     {
       "step_id": "0.5",
-      "name": "query_intent_decoder",
-      "description": "Detect user intent before wiki search.",
-      "intent_patterns": [
-        {"pattern_keywords": ["wiki", "deep-dive", "explore"], "intent": "query_wiki"},
-        {"pattern_keywords": ["architecture", "system design", "study"], "intent": "study_architecture"}
+      "structure": [
+        {"step_1": "parse query for keywords -> map to intent (query_wiki | study_architecture | other)"},
+        {"step_2": "if intent=query_wiki: count wiki/**/*.md", "action_if_empty": "warn_and_prompt_to_fill"}
       ],
-      "actions": [
-        {"action_name": "detect_user_intent", "rule_id": "QID-1",
-         "if_query_wiki": [{"check": "wiki_has_data", "method": "count wiki/**/*.md"}],
-         "if_empty_or_few_files": "warn_and_prompt_to_fill"}
-      ]
+      "constraints": ["Never use find/ls for check — only count *.md"]
     },
     {
       "step_id": "0.75",
-      "name": "broken_link_awareness",
-      "description": "Check known broken links from WM cache — do not scan wiki.",
-      "actions": [
-        {"action": "read_file", "path": "working_memory.json"},
-        {"condition": "last_known_broken_links exists in WM", "action_name": "report_to_user_if_pending"}
+      "structure": [
+        {"step_1": "read working_memory.json -> check last_known_broken_links key"},
+        {"step_2": "if broken_links exist: report to user, else: continue"}
       ],
-      "rules": [{"rule_id": "BROKEN-REF1-v3"}]
+      "constraints": ["Do NOT scan wiki for broken links — only use WM cache"]
     },
     {
       "step_id": "0.76",
@@ -84,22 +75,18 @@
     },
     {
       "step_id": "1",
-      "name": "search",
-      "description": "Search: index.md → keyword_search → semantic_search → wiki-search.sh fallback.",
       "system_files_exclusion": {
-        "rule": "exclude system files (log.md, issues.md, timeline.md, overview.md, snapshot.md, index.md) — hot.md NOT excluded",
-        "action_if_found_in_results": "FILTER_OUT"
+        "exclude": ["log.md", "issues.md", "timeline.md", "overview.md", "snapshot.md", "index.md"]
       },
-      "actions": [
-        {"action": "read_index_categories_matching_topic", "priority": 1},
-        {"action_name": "find_all_links_to_entities_concepts_syntheses_comparisons_notes_projects_bibliography_resources", "priority": 2}
+      "structure": [
+        {"step_1": "./scripts/wiki-search.sh --dynamic \"<query>\"", "stop_if_ge_2_matches": true},
+        {"step_2": "grep -m 30 \"<keyword>\" wiki/index.md", "action_if_empty": "continue"},
+        {"step_3": "grep -m 20 \"<keyword>\" meta/search-index.json"}
       ],
-      "semantic_search_layer": {"schema_ref": "rules/search_strategy.json"},
-      "fallback_chain": [
-        {"method": "index_lookup", "stop_if_ge_2_matches": true},
-        {"method": "semantic_search_wiki_recall", "stop_if_ge_3_matches": true},
-        {"method": "wiki_search_script"}
-      ]
+      "constraints": [
+        "find/ls/cat prohibited for search — always start with wiki-search.sh --dynamic"
+      ],
+      "if_broken": "STOP_SEARCH -> ./scripts/wiki-search.sh --dynamic <query>"
     },
     {
       "step_id": "1.5",
@@ -109,14 +96,16 @@
     },
     {
       "step_id": "2",
-      "name": "synthesis",
-      "description": "Synthesize found pages. Detect and resolve contradictions by cascade priority (code>live>docs). Flag compounding for novel insight.",
       "pre_condition": "search_results_not_empty",
-      "actions": [
-        {"action": "read_all_relevant_pages"},
-        {"action_name": "compare_information_across_sources"},
-        {"action_name": "identify_matches_or_contradications"}
+      "structure": [
+        {"step_1": "read all matched wiki pages from search"},
+        {"step_2": "compare across sources -> identify contradictions (cascade: code>live>docs)"},
+        {"step_3": "assess_compounding_value: if synthesis_from_2+pages OR novel_inference -> PROPOSE_SAVE_TO_USER"}
       ],
+      "summary_page_creation_trigger": {
+        "if_sources_count_ge_3": "CREATE_SUMMARY_PAGE_IN_syntheses",
+        "if_web_search_sources": "PROPOSE_TO_USER_CREATE_FQA"
+      },
       "contradiction_resolution_flow": {"schema_ref": "rules/search_strategy.json#cascade_priority"},
       "assess_compounding_value": {
         "rule": "If answer: (1) synthesizes from 2+ pages, OR (2) contains novel insight → flag for fixation",
@@ -132,12 +121,10 @@
     },
     {
       "step_id": "2.3",
-      "name": "context_compaction_and_dismissal",
-      "description": "Compress context → working_memory.json, dismiss read pages.",
-      "actions": [
-        {"action_name": "compress_read_pages_to_summary", "max_tokens": 2048},
-        {"action_name": "auto_crosslink_from_query_results"},
-        {"action_name": "write_to_working_memory"}
+      "structure": [
+        {"step_1": "compress read pages to summary (max_tokens=2048)"},
+        {"step_2": "auto_crosslink_from_query_results -> add to working_memory.json"},
+        {"step_3": "write session context to hot.md"}
       ],
       "post_action": {
         "trigger": "compaction_complete",

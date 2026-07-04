@@ -1079,11 +1079,17 @@ Guardrails enforcement через `scripts/validate-path.sh`. Для схем п
 
 ---
 
-## 🔍 Search Strategy
+## 🔍 Search Contract
 
-> Canonical flow: `index_lookup → semantic_search → wiki-search.sh` — полный алгоритм в `process-query.json#search_priority_details`.
-> **Fallback**: `meta/search-index.json` — structured index with keywords/tags/first-sentences for fast lookup.
-> **System files excluded**: См. `process-query.json#step_1.system_files_exclusion`.
+**Primary**: `./scripts/wiki-search.sh --dynamic "<query>"` — анализирует intent, приоритет категорий, relevance scoring.
+
+**Fallback chain (strict order)**:
+1. `grep -m 30 "<keyword>" wiki/index.md` → если ≥2 matches → использовать
+2. `grep -m 20 "<keyword>" meta/search-index.json`
+
+**Constraints**: [Запрещен find/ls/cat для поиска — только wiki-search.sh --dynamic первым]
+
+**If_broken**: STOP_SEARCH → ./scripts/wiki-search.sh --dynamic <query>
 
 ---
 

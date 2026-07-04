@@ -1,19 +1,20 @@
 {
-  "last_updated": "2026-07-05T00:10:00+04:00",
+  "last_updated": "2026-07-05T10:30:00+04:00",
   "current_mode": "project",
-  "focus_node": "Phase 14 — AGENTS.md compaction (самый проблемный файл)",
+  "focus_node": "Phase 14 — Search Contract + English-only instructions fix",
   "open_pages": [
-    {"path": "AGENTS.md", "status": "pending_compact"},
-    {"path": "PLAN.md", "status": "updated"}
+    {"path": "AGENTS.md", "status": "updated"},
+    {"path": "process-query.json", "status": "compacted"},
+    {"path": "RULES.md", "status": "updated"}
   ],
   "dead_ends": [],
   "query_summary": {
-    "intent": "Corrected Phase 14 status — moved back to IN PROGRESS (AGENTS.md not yet touched, tests pending)",
-    "pages_read": ["PLAN.md"],
+    "intent": "Fix search strategy: replace pseudo-actions with wiki-search.sh, enforce English-only instructions",
+    "pages_read": ["AGENTS.md#search_strategy", "process-query.json"],
     "key_findings": [
-      "Phase 14 corrected: still IN PROGRESS",
-      "DONE: RULES.md (-57%), process files (-75%)",
-      "PENDING: AGENTS.md compaction, post-refactor testing"
+      "Found 6 pseudo-actions in process-query.json (no real commands)",
+      "All Cyrillic constraints converted to English",
+      "Search Contract added to AGENTS.md with strict fallback chain"
     ]
   },
   "next_steps_todo": []
