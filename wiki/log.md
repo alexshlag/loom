@@ -525,3 +525,11 @@
 * Schema ref examples moved to rules/schema-ref-examples.md
 * Added dev-docs cleanup rule: delete fully closed issues/tasks from PLAN.md/issues.md/FEATURES_PLAN.md after task completion
 
+## [2026-07-04] schema | Dev-docs cleanup rule executed — PLAN.md, issues.md, FEATURES_PLAN.md compacted
+
+* PLAN.md: 180→50 lines (-72%) — removed fully closed phases (14 Partial/Full, 13.4, 13.3, 13.2), moved to "Completed" section
+* issues.md: ~6KB → ~2KB — removed resolved issues #29-30, #37-41 from active list, consolidated into "Resolved Today/Recently"
+* FEATURES_PLAN.md: ~5KB → ~2KB — marked Advisory Locking as ✅ in matrix and roadmap, removed full implementation details (already implemented)
+
+Current task: Phase 15 (Tagging System). Next pending: Phase 15.1 (Aliases).
+

@@ -2,250 +2,84 @@
 
 ---
 
-## ✅ Resolved Today/Recently
+## 🔴 Open / In Progress
 
-### Issue #40: Broken Schema References After Cleanup ✅ FIXED (2026-07-02)
-**Проблема**: После удаления ARCHITECTURE.md, TEMPLATES.md, WORK_MODES.md и создания rules/ — в process-файлах обнаружены битые schema_ref ссылки.
-
-**Найдено 4 битых ссылки + 3 несемантичных:**
-
-| # | File | Line | Broken Ref | Problem |
-|---|------|------|------------|---------|
-| 1 | process-query.json | L926 | `process-ingest.json#step_3a` | step_3a не существует (в AGENTS.md: нет, в process-ingest.json: step_3_analysis) |
-| 2 | process-lint.json | L218 | `AGENTS.md#raw_corrected_zone` | Anchor mismatch — заголовок содержит эмодзи и скобки (`## 📂 Raw Corrected Zone`) |
-| 3 | process-lint.json | L222 | `AGENTS.md#non-blocking-lint` | Anchor mismatch — заголовок с суффиксом `(Phase 3)` |
-| 4 | process-lint.json | L127 | `process-lint.json#rebuild_meta_trigger` | Self-ref на nonexistent section (inline description, no named section) |
-
-**Несемантичные ссылки:**
-
-| # | File | Line | Ref | Problem |
-|---|------|------|-----|---------|
-| 5 | process-query.json | L932 | `AGENTS.md` | Bare ref без anchor — слишком широкий, ссылается на весь файл |
-| 6 | process-query.json | L926 (part) | `process-ingest.json#step_3b` | Аналогично: step_3b не существует как anchor |
-
-**Решение**: Прочитать RULES.md для алгоритма поиска связей, затем исправить каждый case.
-
-✅ **Fix applied (2026-07-02):**
-| Case | Before → After | Action |
-|------|----------------|--------|
-| 1 | `process-ingest.json#step_3a` → description inline, ref removed | RULES.md Step 3: rule implemented inline in process-ingest.json |
-| 2 | `AGENTS.md#raw_corrected_zone` → `rules/delta_tracking.json` | RULES.md Step 1: found exact match in rules/ |
-| 3 | `AGENTS.md#non-blocking-lint` → `rules/non_blocking_lint.json` | RULES.md Step 1: found exact match in rules/ |
-| 4 | `process-lint.json#rebuild_meta_trigger` → ref removed, inline note kept | RULES.md Step 3: rule is script command, no external ref needed |
-| 5 | `AGENTS.md` bare ref → `AGENTS.md#overview` | Added semantic anchor for precise targeting |
-| 6 | `process-ingest.json#step_3b` → description inline, ref removed | Same as Case 1 |
-
-**Additional fixes found during audit:**
-- Removed self-ref `process-query.json#broken_link_awareness` (self-reference within same file)
-- Fixed missing `rules/` prefix on decision-rules.md refs: L553/L808 → `rules/decision-rules.md`
-- Fixed Cyrillic anchors: L124, L941 `#git-конвенции` → `AGENTS.md#git-conventions`
-- Fixed underscore→hyphen: process-ingest.json L605 `template_co_evolution` → `template-co-evolution-process`
-
-**Validation:** ✅ All JSON files validated. ✅ All referenced files exist.
-
-👉 **Canonical**: `RULES.md`, `process-*.json`
-
-### Issue #41: Process Workflow Anomalies 🔴 FIXED (Found & Resolved 2026-07-02)
-**Проблема**: Duplicate step_id "0.5", missing descriptions for steps 8a/8b, stale trigger references.
-
-**Fix applied:**
-| Case | Before -> After | Action |
-|------|----------------|--------|
-| A1 | `new_sources_quick_check` step_id `"0.5"` -> `"0.76"` | Removed duplicate with `query_intent_decoder` |
-| B1 | `step_8a_new_page` description MISSING -> added 2-sentence instruction + conditional logic note | Added full integration instructions |
-| B2 | `step_8b_update_existing_page` description MISSING -> added 3-sentence instruction + conditional branching note | Added update workflow details |
-| C1 | Trigger `"new_sources_detected_in_step_05"` -> `"new_sources_detected_in_step_076"` | Updated to match renamed step_id |
-
-**Validation:** ✅ All JSON valid. ✅ No duplicate IDs. ✅ All steps have descriptions.
-
-👉 **Canonical**: `process-*.json`
-
----
-
-### Issue #42: Tagging System — Quality & Guidelines 🆕
-**Проблема**: Теги в wiki ставятся агентам free-form без рекомендуемых cross-reference тегов. Результат: 
-- Смешение en/ru (`концепция` vs `concept`) в одной категории
-- Generic теги вместо доменных (например, `[harness, wiki-setup]` вместо `[memory, context, compounding]` для natural-memory.md)
-- Пустые теги `[]` на страницах с реальным контентом
-- Нет рекомендуемых cross-reference тегов: если страница A ссылается на страницу B через wikilink → обе должны иметь общий tag
-
-**Цель**: Создать систему тегирования где:
-1. Каждый документ получает доменные теги (symfony, doctrine, phpunit — а не generic `entity/concept`)
-2. Cross-reference tags: связанные страницы делят общие теги для улучшения поиска
-3. Consistent language: en OR ru в рамках одного документа (не смешивать)
-4. Recommended patterns: entity type + domain keywords + framework/tools
-
-**Решение**: Исследовать best practices, промпты, скиллы → создать `rules/tag-guidelines.json` с конкретными правилами для каждой категории.
-
-**Статус:** ⬜ Open — requires research & proposal.
-**Связано**: AGENTS.md#297 (free-form tags), wiki-search.sh tag-match bonus (+1 балл за совпадение).
-
-### Issue #39: Context Bloat & Architecture Optimization (HIGH) 🆕
-**Проблема**: `AGENTS.md` содержит слишком много технических деталей (правила Git, политики языков, архитектура памяти), что ведет к раздуванию контекста и снижению эффективности агента.
-**Решение**: Вынести технические спецификации в отдельную директорию `rules/` (например, `rules/protected_zones.json`, `rules/git_conventions.json` и т.д.). `AGENTS.md` должен остаться высокоуровневым манифестом с ссылками на эти файлы.
+### Issue #39: Context Bloat & Architecture Optimization 🆕 P0
+**Проблема**: AGENTS.md содержит технические спецификации, которые лучше вынести в `rules/`.
+**Решение**: Миграция git-конвенций, language policy, memory architecture → отдельные JSON файлы.
 **Статус:** ⬜ Open — требует создания директории и миграции блоков.
 **Связано**: Архитектурное решение по разделению "Манифеста" и "Справочников".
 
-**Severity**: **CRITICAL** — тестовое покрытие отсутствует.
-
-### Issue #5/#9: Orphan Pages + Auto-Crosslink Logic ⚠️ PARTIAL FIX
-**Проблема**: `auto-crosslink.sh` работает только на текстовом совпадении имени, не учитывает semantic relationships и shared-source clusters.
-
-**Fix applied (2026-06-28)**: ✅ `orphan-pages.sh` fixed — 37 → 5 orphan pages; auto-crosslink rewritten с multi-level scoring; integrated into ingest process.
+### Issue #5/#9: Orphan Pages + Auto-Crosslink Logic 🆕 PARTIAL FIX
+**Проблема**: `auto-crosslink.sh` работает только на текстовом совпадении имени, не учитывает semantic relationships.
+**Fix applied:** ✅ 37 → 5 orphan pages; multi-level scoring integrated into ingest process.
 
 **Remaining**:
-- [ ] Merge/clarify `concepts/python-nixos-development.md` vs `syntheses/python-nixos-development-environments.md` — redundant content
-- [x] Exclude system files (log.md, timeline.md) from normal search logic ✅ done
+- [ ] Merge/clarify `concepts/python-nixos-development.md` vs `syntheses/python-nixos-development-environments.md`
 
-👉 **Canonical**: `scripts/orphan-pages.sh`, `scripts/auto-crosslink.sh`, `decision-rules.md`, `process-ingest.json`
+### Issue #11: Trap Handlers для Cleanup 🆕 PARTIAL
+**Проблема**: Часть скриптов не использует `trap EXIT/cleanup`.
+**Статус:** ✅ `wiki-search.sh`, `link-validator.sh`, `auto-crosslink.sh` используют `mktemp + trap`. ⬜ Осталось: `rebuild-meta.sh`, `check-new-sources.sh`, `text-similarity.sh`, `lint.sh`.
 
-### Issue #11: Trap Handlers для Cleanup 🔽 PARTIALLY DONE
-**Проблема**: Часть скриптов не использует `trap EXIT/cleanup`. При аварийном выходе временные файлы остаются.
-
-**Статус:** ✅ Частично — `wiki-search.sh`, `link-validator.sh`, `auto-crosslink.sh` используют `mktemp + trap`. ⬜ Осталось: `rebuild-meta.sh`, `check-new-sources.sh`, `text-similarity.sh`, `lint.sh`.
-
-### Issue #12: Unit Tests для Скриптов ⚠️ BROKEN
+### Issue #12: Unit Tests для Скриптов 🆕 BROKEN
 **Проблема**: Единственный тест `tests/text-similarity.bats` — broken (typo в `$BATS_TEST_DIRTEXT`). Остальные скрипты не покрыты.
 
-**Severity:** 🔴 **Broken** — требуется починить существующий тест и добавить новые.
-
-### Issue #18: Hardcoded /tmp/ Overlap File (HIGH) ⚠️ PARTIAL FIX
-**Проблема**: Race condition между параллельными инстансами при использовании `/tmp/`. Нет cleanup при краше. Нарушение RULES.md (use mktemp, not /tmp/).
-
-**Fix applied:** ✅ `process-ingest.json` updated: `mktemp` instead of hardcoded `/tmp/overlap_result.json`.
-
-**Remaining**:
-- [ ] Добавить trap cleanup для $TMP_OVERLAP в agent workflow (или скрипт сам cleanups)
-- [ ] Проверить другие места где используется /tmp/ в скриптах
+### Issue #18: Hardcoded /tmp/ Overlap File 🆕 PARTIAL FIX
+**Fix applied:** ✅ `process-ingest.json` updated with `mktemp`.
+**Remaining**: Добавить trap cleanup для $TMP_OVERLAP.
 
 ### Issue #27: Broken Link Handling — Agent Escalation Rules 🆕 IN PROGRESS
-**Проблема**: `link-validator.sh --full` обнаруживает broken links, но agent escalation rules отсутствуют.
+**Проблема**: Agent escalation rules отсутствуют после DR-EX1 и step 0.75 в process-query.json.
 
-**Fix applied:** ✅ DR-EX1 added to AGENTS.md (external link standard); step 0.75 in process-query.json (lightweight awareness via working_memory); raw_source_link_repair в step_1; updated post-operation validation (only new files check).
+**Fix applied:** ✅ External link standard (DR-EX1), lightweight awareness via WM, raw_source_link_repair in step_1.
 
 **Remaining**:
-- [ ] Agent decision thresholds: autonomously fix case/path mismatches; escalate fuzzy < 50 or ambiguous intent
+- [ ] Agent decision thresholds: autonomously fix case/path mismatches; escalate fuzzy < 50
 - [ ] Document escalation rules in process-query.json → broken_link_awareness
 
-👉 **Schema ref**: `process-query.json#broken_link_awareness`, `process-ingest.json#raw_source_link_repair`
+### Issue #28: Page Templates Co-evolution 🆕 INCOMPLETE
+**Проблема**: AGENTS.md содержит секции Template Editing Policy и Template Co-evolution Process, но фактическая работа не завершена.
+**Статус:** ⬜ Open — требуется discussion + user approval для推进.
 
-### Issue #28: Page Templates Co-evolution — INCOMPLETE 🆕
-**Проблема**: AGENTS.md содержит секции Template Editing Policy и Template Co-evolution Process, но фактическая работа над шаблонами страниц (user-approved structural improvements) не завершена.
-
-**Статус:** ⬜ Open — требуется discussion + user approval для推进
-**Schema ref**: `AGENTS.md#template_co_evolution`, `process-ingest.json` (логирование в log.md)
-
-### Issue #22: DEBUG Prints in Production Code (MEDIUM) 🆕
-**Проблема**: `scripts/performance/similarity_index.py:196-198,272` — `# DEBUG: ...` print statements оставлены в production.
-
+### Issue #22: DEBUG Prints in Production Code 🆕 MEDIUM
+**Проблема**: `scripts/performance/similarity_index.py:196-198,272` — `# DEBUG:` print statements в production.
 **Fix**: Удалить или обернуть в `if __debug__`.
 
-### Issue #23: Redundant Wiki Walks (MEDIUM) 🆕
-**Проблема**: После каждого ingest запускаются `rebuild-meta.sh` + `link-validator.sh` + `auto-crosslink.sh` — 3 независимых полных walk'а по wiki. Для 1000+ страниц latency станет проблемой.
+### Issue #23: Redundant Wiki Walks 🆕 MEDIUM
+**Проблема**: После каждого ingest запускаются 3 независимых полных walk'а по wiki → latency проблема при 1000+ страницах.
 
-**Fix**: Объединить в единый скрипт или передавать results между Script'ами (unified-pass architecture Phase 23).
-
-### Issue #24: Manual JSON Construction (MEDIUM) 🆕
-**Проблема**: `lint.sh:127-145` и `link-validator.sh:63-64` генерируют JSON вручную через `echo`/`printf` + `sed` escaping. Если данные содержат `"`, `\n`, или unicode — JSON будет сломан.
-
+### Issue #24: Manual JSON Construction 🆕 MEDIUM
+**Проблема**: `lint.sh` и `link-validator.sh` генерируют JSON вручную через `echo`/`printf`. Если данные содержат `"`, `\n`, unicode — JSON сломается.
 **Fix**: Использовать `jq` или Python для всех JSON output.
 
-### Issue #25: `check_id` Numbering Inconsistency (LOW) 🆕
+### Issue #25: `check_id` Numbering Inconsistency 🆕 LOW
 **Проблема**: `lint.sh` комментарии пишут `Check 4/9` для check_id=3, `Check 5/9` для check_id=5. Нумерация не совпадает с AGENTS.md и process-lint.json.
 
-### Issue #8: Syntheses Special Handling ⚠️ PARTIAL FIX
+### Issue #8: Syntheses Special Handling 🆕 PARTIAL FIX
 **Проблема**: `syntheses/` — аналитические синтезы, не должны обрабатываться как обычные страницы wiki.
 
 **Fix applied:** ✅ DR-4 в AGENTS.md; syntheses_rule в process-ingest.json step 3a; compounding_decision_logic differentiate fact collection vs new logical inference.
 
-**Remaining**: Добавить rule в AGENTS.md → `syntheses not processed like regular wiki pages`.
+**Remaining**: Добавить rule → `syntheses not processed like regular wiki pages`.
 
-### Issue #31: Media Files Pipeline Missing 🆕
-**Проблема**: В Loomana нет специфицированного pipeline для media files (OCR, metadata extraction).
+### Issue #29/30: Delta Tracking & Batch Ingest ✅ RESOLVED
+**Решение:** `scripts/rebuild-source-manifest.sh` + `scripts/batch-ingest.sh` — оба работают, интегрированы.
 
-**Решение:** ✅ DECISION MADE — `wiki/assets/images/[slug].[ext]` + `wiki/assets/descriptions/[slug].md` + optional `.media-manifest.json`.
-
-**Remaining**:
-- [ ] Скрипт `scripts/media-ingest.sh` — автоматизация OCR + metadata extraction
-- [ ] Интеграция в ingest flow — trigger point (agent вызывает media pipeline при получении изображения)
-
-👉 **Severity:** LOW — nice-to-have, не блокирует работу.
-
-### Issue #13: scripts/README.md 🔽 LOW PRIORITY
-**Проблема**: Нет единой документации по скриптам (usage examples, architecture overview, known limitations). Сложно новичку понять, как работают 15+ скриптов.
-
-👉 **Статус:** ⬜ Deferred — nice-to-have для onboarding.
+### Issue #31: Media Files Pipeline Missing 🆕 LOW
+**Проблема**: Нет специфицированного pipeline для media files (OCR, metadata extraction).
+**Решение:** ✅ DECISION MADE — `wiki/assets/images/[slug].[ext]` + descriptions + optional `.media-manifest.json`.
 
 ---
 
+## ✅ Resolved Today/Recently (2026-07-04)
 
-## ✅ Resolved Today/Recently
-
-### Issues #37-38: Broken Schema References & JSON Corruption ✅ RESOLVED (2026-07-02)
-**Проблема**: process-ingest.json содержал битые schema_ref, указывающие на несуществующие блоки в AGENTS.md.
-
+### Issues #37-41: Schema References & Process Workflow Anomalies ✅ FIXED
 **Fix applied:**
-1. Создана директория `rules/` с отдельными JSON-файлами для каждого правила
-2. Исправлены все битые ссылки:
-   - `AGENTS.md#raw_corrected_zone` → `rules/protected_zones.json`
-   - `AGENTS.md#batch_ingest_trigger` → `rules/batch_ingest_trigger.json` (новое правило)
-   - `rules/link-conventions` → `rules/link_conventions.json` (исправлен дефис)
-3. Создано новое правило `rules/batch_ingest_trigger.json` для кластеризации источников
-
-**Schema refs исправлены:**
-- process-ingest.json: 7 schema_ref → все валидны
-- process-query.json: все ссылки проверены
-- process-lint.json: JSON corruption fixed
-
-👉 **Canonical**: `rules/*.json`, `process-ingest.json`, `RULES.md`
-
-### Issue #33: AGENTS.md Optimization ✅ RESOLVED (2026-07-02)
-**Цель**: Уменьшение объема контекста и упрощение структуры манифеста.
-**Действия**:
-- Удаление дубликатов блоков Schema Reference и Schema Inheritance.
-- Удаление технически детализированного блока Non-blocking Lint (перенос в документацию скриптов).
-- Очистка структуры для улучшения фокусировки LLM на правилах поведения.
-**Результат**: Сокращение объема AGENTS.md, повышение читаемости и эффективности обработки инструкций.
-
-### Issue #32: Wiki/sources/ Structure Missing ✅ RESOLVED (Phase 29)
-**Решение:** Создан `raw/corrected/` с архитектурой "Original → Corrected → Wiki".
-- Immutable originals + corrected copies + manifests
-- Delta tracking, hash-based deduplication, backflow for contradiction resolution
-
-### Issue #30: Batch Ingest Workflow ✅ RESOLVED (2026-07-01)
-**Решение:** Создан `scripts/batch-ingest.sh` — orchestrator для кластеризации источников.
-- Триггер: ≥3 связанных источника или пользователь предоставляет несколько файлов
-- Действие: сканирование, извлечение H1/tags/keywords, группировка по shared entities
-
-### Issue #29: Delta Tracking ✅ RESOLVED (Phase 29)
-**Решение:** `scripts/rebuild-source-manifest.sh` — delta tracking через hash-based deduplication.
-- Layer 1: Originals (immutable) → raw/SRC-*/original.md
-- Layer 2: Corrected copies (agent rw) → raw/corrected/SRC-*/file.md
-- Layer 3: Wiki pages reference Layer 2
+- All broken schema_refs fixed → all refs valid
+- Duplicate step_id "0.5" removed → renamed to 0.76
+- Added descriptions for steps 8a/8b
+- Updated stale trigger references
 
 ---
 
-## ✅ Resolved Previously
-
-### Issues #1-4: External Sources Update Policy ✅ RESOLVED
-**Решение:** Два режима обновления — user-requested + cron; тот же источник → внешние данные приоритетны.
-
-### Issues #6-7: Lint Parse Bug + Depth Limit ✅ RESOLVED
-**Fixes:** `check-new-sources` parse bug fixed (`grep -c '^NEW:'`); raw sources depth limit with `--max N`.
-
-### Issue #10: Error Logging — Unified Format ✅ FIXED
-**Fix:** Created `scripts/utilities/common.sh` — unified `log_error()`, `safe_run()`.
-
-### Issues #17-20: Silent Errors, /tmp/ Race Condition, Link Validator Limit, validate-path Bypass ✅ RESOLVED
-**Fixes:** 
-- `set -uo pipefail`; `log_error()` function; duplicate code removed
-- `mktemp` instead of hardcoded `/tmp/overlap_result.json`
-- `head -500` → configurable `--max N` flag (default: 100)
-- Prefix-only match + write-zone validation
-
-### Issues #26, #34-36: Schema Migration ✅ RESOLVED
-**Status:** All rules embedded in AGENTS.md / process files. dialog.md removed.
-
----
-
-*Last update: 2026-07-02 | Live: #39, #5/#9, #11, #12, #18, #27, #28, #22, #23, #24, #25, #8, #31, #13. Resolved today: #37-38 (Schema References), #33 (AGENTS.md Optimization).*
+*Last update: 2026-07-04 | Live: #39, #5/#9, #11, #12, #18, #27, #28, #22, #23, #24, #25, #8. Resolved today: #37-41.*
