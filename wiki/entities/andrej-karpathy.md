@@ -1,5 +1,5 @@
 ---
-tags: [ researcher, ai-scientist]
+tags: [machine-learning, deep-learning, computer-vision, nlp, llm-wiki-pattern]
 date: 2026-06-24
 sources: [raw/llm-wiki.md]
 related: []

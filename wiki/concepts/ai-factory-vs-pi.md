@@ -1,5 +1,5 @@
 ---
-tags: [ architecture-pattern]
+tags: [workflow-schema, agent-orchestration, harness-comparison, methodology]
 date: 2026-06-24
 sources: [wiki/entities/ai-factory.md, wiki/entities/pi-coding-agent.md]
 related: []

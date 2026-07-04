@@ -55,6 +55,7 @@ changed_str = "${CHANGED_LIST}"
 
 def parse_frontmatter(content):
     tags, date, sources = [], '', []
+    aliases = []
     for line in content.split('\n')[:10]:
         if line.startswith('tags:'):
             tags = [t.strip() for t in re.findall(r'\[(.*?)\]', line) for t in t.split(',')]
@@ -62,7 +63,9 @@ def parse_frontmatter(content):
             date = line.split(': ')[1].strip()
         elif line.startswith('sources:'):
             sources = [s.strip().strip('[]').split(',')[0] if ',' not in s else None for s in re.findall(r'\[(.*?)\]', line)]
-    return tags, date, sources
+        elif line.startswith('aliases:'):
+            aliases = [t.strip() for t in re.findall(r'\[(.*?)\]', line) for t in t.split(',')]
+    return tags, date, sources, aliases
 
 def get_page_type(path):
     rel = os.path.relpath(path, wiki_dir)
@@ -99,7 +102,7 @@ for root, dirs, files in os.walk(wiki_dir):
         rel = os.path.relpath(fpath, wiki_dir).replace('/', '-').replace('.', '-')
         with open(fpath, 'r', encoding='utf-8') as f:
             content = f.read(2000)
-        tags, date, sources = parse_frontmatter(content)
+        tags, date, sources, aliases = parse_frontmatter(content)
         title_match = re.search(r'^# (.+)', content, re.MULTILINE)
         title = title_match.group(1).strip() if title_match else fname.replace('.md', '').replace('-', ' ').title()
         page_type = get_page_type(fpath)
@@ -110,7 +113,8 @@ for root, dirs, files in os.walk(wiki_dir):
             'path': os.path.relpath(fpath, "${PROJECT_ROOT}"),
             'date_created': date or 'unknown',
             'tags': tags,
-            'sources': sources
+            'sources': sources,
+            'aliases': aliases
         }
         found = False
         for i, p in enumerate(pages):
@@ -344,7 +348,8 @@ for root, dirs, files in os.walk(wiki_dir):
             'title': title,
             'path': rel_path,
             'summary': summary,
-            'tags': page_tags
+            'tags': page_tags,
+            'aliases': page.get('aliases', []) if hasattr(page, 'get') else []
         })
 
 now_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
@@ -359,7 +364,8 @@ for cat_key in CATEGORY_ORDER:
     else:
         for page in sorted(pages_list, key=lambda x: x['title']):
             tag_str = ' '.join(f'[{t}]' for t in page.get('tags', [])[:3]) if page.get('tags') else ''
-            extra = f' — {tag_str}' if tag_str else ''
+            alias_str = ' '.join(f'[{a}]' for a in page.get('aliases', [])[:2]) if page.get('aliases') else ''
+            extra = f' — {tag_str}' + (f' ({alias_str})' if alias_str else '') if tag_str else ''
             lines_out.append('* [' + page['title'] + '](' + page['path'] + ') — ' + page['summary'] + extra)
     lines_out.append('')
 

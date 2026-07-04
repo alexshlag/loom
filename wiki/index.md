@@ -2,12 +2,12 @@
 
 
 ## Сущности
-* [AI Factory](entities/ai-factory.md) — Stack-agnostic CLI tool and skill system for AI-powered development. — [tool] [cli] [agent-skill-system]
+* [AI Factory](entities/ai-factory.md) — Stack-agnostic CLI tool and skill system for AI-powered development. — [obsidian-cli] [vault-transport] [cli-tool]
 * [API Platform](entities/api-platform.md) — # API Platform [[API Platform]] — фреймворк для создания гипермедийных REST и GraphQL API. — [api] [rest] [graphql]
 * [Andrej Karpathy](entities/andrej-karpathy.md) — AI Researcher, автор LLM Wiki pattern (LLM-powered personal knowledge base). — [researcher] [ai-scientist]
-* [Clippy](entities/rust-clippy.md) — # Clippy Clippy is a collection of lints (static analysis checks) to catch common mistakes and improve Rust code. — [rust] [linter] [tool]
+* [Clippy](entities/rust-clippy.md) — # Clippy Clippy is a collection of lints (static analysis checks) to catch common mistakes and improve Rust code. — [rust] [linter] [linting-tool]
 * [Ibexa DXP](entities/ibexa-dxp.md) — # Ibexa DXP [[Ibexa DXP]] (Digital Experience Platform) — enterprise-grade CMS + commerce platform на базе [[Symfony]]. — [dxp] [cms] [commerce]
-* [Loomana — Wiki System Documentation](entities/loomana.md) — **Loomana** (внутреннее имя `loom`) — это **LLM-powered personal knowledge base**, где знания компандятся с каждым новым источником и вопросом. — [loomana]
+* [Loomana — Wiki System Documentation](entities/loomana.md) — **Loomana** (внутреннее имя `loom`) — это **LLM-powered personal knowledge base**, где знания компандятся с каждым новым источником и вопросом. — [llm-wiki] [personal-knowledge-base] [compounding]
 * [Node.js](entities/nodejs.md) — Node.js — это runtime для выполнения JavaScript-кода вне браузера. — [runtime] [javascript] [server-side]
 * [Nvidia](entities/nvidia.md) — # Nvidia Американская технологическая корпорация, лидер в области разработки графических процессоров (GPU), аппаратных ускорителей для искусственного  — [hardware] [semiconductor]
 * [Pi Coding Agent](entities/pi-coding-agent.md) — Минимальный терминальный код-агент (harness), расширяемый через TypeScript-расширения, skills, prompt templates и темы. — [coding-agent] [terminal]
@@ -69,7 +69,7 @@
 
 
 ---
-*Created: auto-generated | Last updated: 2026-07-04 05:21*
+*Created: auto-generated | Last updated: 2026-07-04 16:17*
 
 ## Хронология
 | Дата | Событие |

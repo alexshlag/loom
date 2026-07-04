@@ -433,3 +433,8 @@
 * Fixed: target_file path handling for .md extensions (.md.md → .md)
 * Renamed "Cyrillic tags violation" → "Non-English Tags Violation (TAG-P6)"
 * Added comprehensive bidirectional wikilinks between related pages
+
+## [2026-07-04] tag-audit | Fixed all entity/concept pages with <3 domain tags + removed generic type-tags
+  - Added ≥3 domain-specific tags to: pi-coding-agent.md, andrej-karpathy.md, service-container.md, symfony-dependency-injection.md, event-dispatcher.md, twig-templating.md, ai-factory-vs-pi.md
+  - Removed generic type-tags (researcher/ai-scientist → machine-learning/deep-learning etc., architecture-pattern → workflow-schema etc.)
+  - All entity/concept pages now comply with tag-guidelines.json ≥3 domain tags rule

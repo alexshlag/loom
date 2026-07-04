@@ -1,5 +1,5 @@
 ---
-tags: [ symfony, dependency-injection]
+tags: [symfony, dependency-injection, service-container, autowiring, di-pattern]
 date: 2026-06-28
 sources: [raw/sources/SRC-2026-06-28-SYMFONY-DI-001/symfony-di.md]
 related: []

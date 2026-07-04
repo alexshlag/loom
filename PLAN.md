@@ -51,6 +51,21 @@
 **Связано**: `rules/tag-guidelines.json`, `issues.md#42`
 **Зависит от**: Phase 15 (tag guidelines)
 
+### Phase 15.1 Execution Plan — Pending Review
+
+| # | File/Component | What to change | Priority |
+|---|--------------|---------------|----------|
+| **P1** | AGENTS.md universal frontmatter template | Add `aliases: []` field + description (after category, before sources) | 🔴 CRITICAL |
+| **P2** | `scripts/rebuild-meta.sh` parse_frontmatter() | Read aliases from YAML → store in registry.json as page['aliases'] | 🔴 CRITICAL |
+| **P3** | `wiki/index.md` rebuild logic (in rebuild-meta.sh) | Show aliases after summary: `[alias] [alias] [alias]` (max 2, same pattern as tags) | 🟡 HIGH |
+| **P4** | `scripts/lint.sh` check_aliases | Add check_id=13b: flag pages with empty/missing aliases when they have ≥5 tags |
+| **P5** | process-ingest.json auto-extract step | Add aliases extraction during ingest (product names, synonyms, author refs) | 🟡 HIGH |
+| **P6** | wiki/templates/entity-template.json | Add `aliases` to recommended frontmatter fields |
+| **P7** | wiki/templates/concept-template.json | Same as entity template |
+| **P8** | Existing pages batch-update | Apply aliases to Loomana (already done), pi-coding-agent, llm-wiki.md, symfony.md |
+
+> **Связано**: Phase 15.1 → execution sub-steps P1-P8. Canonical rules already exist in `rules/tag-guidelines.json#aliases_system`.
+
 ---
 
 ## ✅ Completed — 2026-07-02 Session
