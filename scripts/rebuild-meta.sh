@@ -246,6 +246,14 @@ CATEGORY_ORDER = ['entities', 'concepts', 'comparisons', 'syntheses', 'overviews
                  'notes', 'meetings', 'projects', 'bibliography', 'resources']
 
 def extract_summary(content):
+    # Parse tags from frontmatter
+    tags = []
+    for line in content.split('\n')[:10]:
+        if line.startswith('tags:'):
+            import re as _re
+            raw_tags = [t.strip() for t in _re.findall(r'\\[(.*?)\\]', line) for t in t.split(',')]
+            tags = [t for t in raw_tags if t and len(t) > 2]
+    
     lines = content.split('\n')
     fm_end = -1
     dashes_found = 0
@@ -291,7 +299,7 @@ def extract_summary(content):
         if last_dot > 20:
             summary = summary[:last_dot + 1]
     
-    return summary
+    return summary, tags
 
 category_pages = {cat: [] for cat in CATEGORY_ORDER}
 for root, dirs, files in os.walk(wiki_dir):
@@ -323,11 +331,12 @@ for root, dirs, files in os.walk(wiki_dir):
             else:
                 continue
         
-        summary = extract_summary(content)
+        summary, page_tags = extract_summary(content)
         category_pages.setdefault(cat_dir, []).append({
             'title': title,
             'path': rel_path,
-            'summary': summary
+            'summary': summary,
+            'tags': page_tags
         })
 
 now_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
@@ -341,7 +350,9 @@ for cat_key in CATEGORY_ORDER:
         lines_out.append('')
     else:
         for page in sorted(pages_list, key=lambda x: x['title']):
-            lines_out.append('* [' + page['title'] + '](' + page['path'] + ') — ' + page['summary'])
+            tag_str = ' '.join(f'[{t}]' for t in page.get('tags', [])[:3]) if page.get('tags') else ''
+            extra = f' — {tag_str}' if tag_str else ''
+            lines_out.append('* [' + page['title'] + '](' + page['path'] + ') — ' + page['summary'] + extra)
     lines_out.append('')
 
 lines_out.extend([

@@ -169,6 +169,17 @@ print(min(int(count * tpb), mb))
     fi
     score=$((score + backlinks * 5))
     
+    # Tag-match bonus: +1 per tag that matches any query word
+    local tags=$(grep 'tags:' "$filepath" | head -1 || true)
+    if [[ -n "$tags" ]]; then
+        while IFS= read -r qword; do
+            [[ -z "$qword" ]] && continue
+            if grep -qi "\b$qword\b" <<< "$tags" 2>/dev/null; then
+                score=$((score + 1))
+            fi
+        done < <(echo "$escaped_query" | tr ' ' '\n')
+    fi
+    
     local max_priority=${3:-9}
     local category_bonus=$(( (max_priority - cat_index) * 10 ))
     score=$((score + category_bonus))
