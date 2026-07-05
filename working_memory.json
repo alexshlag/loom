@@ -1,30 +1,32 @@
 {
-    "last_updated": "2026-07-05T22:03+03",
+    "last_updated": "2026-07-05T22:13+03",
     "current_mode": "project",
-    "focus_node": "Phase 32.1 Cycles 1-7 complete. AGENTS.md reduced to 682 lines (~39KB). Created rules/work_modes.json from extracted Work Modes section.",
+    "focus_node": "Phase 32.1 Self-reference audit complete. All 9 anchors resolved (7 done, 2 kept inline). AGENTS.md reduced to 682 lines (~39KB). Next: extract external_sources_policy.json.",
     "open_pages": [],
     "dead_ends": [],
     "query_summary": {
-        "intent": "Phase 32.1 Cycle 7: Extract User Work Modes + decide on External Sources Policy",
+        "intent": "Complete self-reference audit — resolve remaining anchors (context_management, execution_modes, media_pipeline)",
         "pages_read": [
-            "AGENTS.md (Work Modes section)",
-            "PLAN.md",
-            "process-query.json, process-ingest.json, process-lint.json (ref check)"
+            "AGENTS.md sections: context_management, work_modes, summary_pages, auto_computed_fields",
+            "PLAN.md (self-ref audit table)",
+            "rules/faq_summary.json, rules/evidence_grade.json"
         ],
         "key_findings": [
-            "C7: Work Modes extracted → rules/work_modes.json (116 lines). AGENTS.md -60 lines.",
-            "External Sources Policy decided as skip — too small for separate file, kept brief ref",
-            "lint.sh passes: 0 broken links. All schema_refs validated."
+            "C6/C7 already extracted: faq_summary.json + evidence_grade.json exist from prior cycle",
+            "context_management_phase_32 — already has brief ref to context-scopes.json ✅",
+            "execution_modes — already has schema_ref to rules/execution_modes.json ✅",
+            "media_pipeline — kept inline per AGENTS.md policy (workflow description, not rule)",
+            "All 9 anchors audited: 7 resolved, 2 kept inline as shared contracts"
         ]
     },
     "next_steps_todo": [
         {
-            "task": "C8: Extract auto_computed_fields (evidence_grade logic) to rules/",
-            "priority": "medium"
+            "task": "Extract external_sources_policy.json — web_ingest_flow routing contract (~6 строк table in AGENTS.md)",
+            "priority": "high"
         },
         {
-            "task": "Audit remaining Self-Reference Audit items: media_pipeline, summary_pages",
-            "priority": "low"
+            "task": "Final verification: grep process-*.json for any broken schema_refs",
+            "priority": "medium"
         }
     ]
 }
