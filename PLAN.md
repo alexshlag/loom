@@ -252,6 +252,26 @@
 
 ---
 
+### Phase 16.1: Agent Memory Layer Architecture — PRF + Two-Stage Recall + Trajectory Capture 🔴 P0 🆕
+**Цель**: Отделить memory management в background subsystem (`scripts/memory/`), добавить PRF-enhanced recall, two-stage links-first mode, trajectory capture → distillation pipeline.
+
+| # | Task | Output | Status |
+|---|------|--------|--------|
+| 1 | Research: agent memory management techniques (zero-dependency) | ✅ DONE: `wiki/concepts/agent-memory-management.md` created with full architecture design |
+| 2 | Current state audit: what we have vs gaps identified | ✅ Documented — inline hooks, lexical-only recall, no trajectory capture |
+| 3 | Phase 16.1 Task #3: PRF-enhanced recall engine (`scripts/memory/recall.sh`) | ✅ Done — Stage 1 (links-first ranking) + Stage 2 (content expansion), integrated into process-query.json |
+| 4 | Phase 16.1 Task #4: Hot cache optimization (`scripts/memory/hot-cache-update.sh`) | ✅ Done — check-only mode implemented, process-query.json step_0.25 updated to use check-first approach |
+| 5 | Process file refactoring: extract memory ops into hooks | ⬜ Pending — query/ingest/lint emit events → memory layer async |
+| 6 | Phase 2: Trajectory capture (`scripts/memory/traj-capture.sh`) | ⬜ Pending — record sessions to `raw/trajectories/TRJ-*` |
+| 7 | Phase 2: Distillation pipeline (`scripts/memory/distill.sh`) | ⬜ Pending — convert trajectories to skills/cases via wiki_ensure_page |
+
+**Design principles:**
+- Background processing: memory hooks → async, non-blocking  
+- Separation of concerns: query/ingest/lint focus on content; memory layer handles storage/recall/distillation
+- Zero dependencies: all implemented via scripts in `scripts/memory/`
+
+---
+
 ## ⚠️ Known Issues (Not Closed Yet)
 
 | Issue | Description | Status |

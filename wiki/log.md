@@ -611,3 +611,45 @@ C9: Extracted compounding workflow from AGENTS.md#compounding-workflow + process
   - Deleted search&discovery block from AGENTS.md; removed schema_ref_to_agent_rules from rules/search_strategy.json
   - Updated rules/categories.json: schema_ref → concise inline rule
   - ⚠️ context-scopes.json still has stale schema_ref_to_agent_rules — to be addressed next session
+
+## [2026-07-06] ingest | Agent memory management research & wiki creation
+Ingest: comprehensive research on LLM agent memory techniques → created two wiki pages:
+1. **wiki/concepts/agent-memory-management.md** (10827 bytes)
+   - 7 techniques covered: compaction, tool-result clearing, structured note-taking, hybrid recall, cross-session memory, decay/consolidation, trajectory capture
+   - Comparison matrix for loomana applicability (zero-dependency focus)
+   - References to pi-agent-core compaction.ts + pi-llm-wiki recall.ts implementations
+2. **wiki/comparisons/agent-memory-techniques.md** (3874 bytes)
+   - Technique-by-technique comparison: external DB, embedding service, custom dependencies
+   - Top 3 recommendations for loomana with implementation notes
+Sources used:
+- Anthropic: Effective Context Engineering + Context Engineering Cookbook (compaction, tool-clearing, memory)
+- Anthropic Source Study: Claude Code 7-Layer Memory Architecture
+- NirDiamant/Agent_Memory_Techniques: 30 techniques taxonomy
+- zosmaai/pi-llm-wiki: hybrid recall implementation + trajectory capture system
+- Zero-dependency implementations: agent-memory-kit, agentic-memory, agent-memory-skill (Ebbinghaus)
+- Survey papers: arxiv:2603.07670v1, arxiv:2605.06716
+# Test
+
+## [2026-07-06] Phase 16.1 Tasks #3+#4 COMPLETED — PRF-enhanced recall + hot cache optimization
+
+### Task #3: PRF-enhanced recall engine (`scripts/memory/recall.sh`)
+- Stage 1 (links-first): returns ranked paths without loading content → saves context
+- Stage 2 (content expansion): loads only top-K selected pages with frontmatter/headers
+- Integrated into process-query.json — all wiki-search.sh calls replaced with recall.sh
+- Added schema_ref to `scripts/memory/recall-spec.md`
+
+### Task #4: Hot cache optimization (`scripts/memory/hot-cache-update.sh`)
+- Check-only mode compares timestamps before loading hot.md
+- Excludes hot.md from comparison (avoids self-referential max mtime)
+- process-query.json step_0.25 updated to use check-first approach
+- Added schema_ref to `scripts/memory/hot-cache-spec.md`
+
+### Files changed:
+- `scripts/memory/recall.sh` — new PRF-enhanced recall engine
+- `scripts/memory/recall-spec.md` — specification doc for Task #3
+- `scripts/memory/hot-cache-update.sh` — check-only mode optimization
+- `scripts/memory/hot-cache-spec.md` — specification doc for Task #4
+- `process-query.json` — all wiki-search.sh → recall.sh, step_0.25 uses check-first
+- `PLAN.md` — PRF-enhanced recall + hot cache marked done
+- `wiki/concepts/agent-memory-management.md` — updated to reflect current state
+

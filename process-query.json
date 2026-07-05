@@ -58,8 +58,9 @@
     {
       "step_id": "0.25",
       "name": "hot_cache_bootstrap",
-      "description": "Load hot.md for context \u2014 supplements working_memory.json fact context.",
-      "command": "./scripts/load-hot-cache.sh || true"
+      "schema_ref": "scripts/memory/hot-cache-update.sh",
+      "description": "Skip hot cache rebuild if wiki unchanged — check-only mode first, load only on changes.",
+      "command": "./scripts/memory/hot-cache-update.sh --check-only || ./scripts/load-hot-cache.sh"
     },
     {
       "step_id": "0.5",
@@ -127,9 +128,10 @@
           "index.md"
         ]
       },
+            "schema_ref": "scripts/memory/recall-spec.md",
       "structure": [
         {
-          "step_1": "./scripts/wiki-search.sh --dynamic \"<query>\"",
+          "step_1": "./scripts/memory/recall.sh <query>",
           "stop_if_ge_2_matches": true
         },
         {
@@ -141,12 +143,12 @@
         }
       ],
       "constraints": [
-        "find/ls/cat prohibited for search \u2014 always start with wiki-search.sh --dynamic"
+        "find/ls/cat prohibited for search — always start with recall.sh"
       ],
-      "if_broken": "STOP_SEARCH -> ./scripts/wiki-search.sh --dynamic <query>",
+      "if_broken": "STOP_SEARCH -> ./scripts/memory/recall.sh <query>",
       "transition_to_1.5_if_empty": {
         "condition": "all_wiki_search_methods_returned_zero_matches",
-        "description": "If wiki-search.sh + grep from index.md + grep from search-index.json all return 0 results \u2192 trigger step_1.5 knowledge_gap_handling"
+        "description": "If recall.sh + grep from index.md + grep from search-index.json all return 0 results \u2192 trigger step_1.5 knowledge_gap_handling"
       }
     },
     {
@@ -156,7 +158,7 @@
       "trigger_condition": "search_results_empty_after_all_wiki_methods",
       "preconditions": [
         {
-          "check": "wiki-search.sh returned 0 matches"
+          "check": "recall.sh returned empty results"
         },
         {
           "check": "grep -m 30 from index.md returned 0 matches"

@@ -1,13 +1,13 @@
 {
-    "last_updated": "2026-07-05T23:48+03",
+    "last_updated": "2026-07-06T15:50+03",
     "current_mode": "project",
-    "focus_node": "Session end — schema cleanup (C9 compounding extraction, wiki categories deletion)",
-    "open_pages": [],
-    "dead_ends": [
-        {"approach": "mem.pdf text extraction via pdf-oxide", "reason": "PDF layout broken, content fragmented across pages"}
+    "focus_node": "Memory Layer Architecture — Phase 1a complete (Tasks #3+#4), Phase 2 planning next",
+    "open_pages": [
+        {"path": "scripts/memory/recall-spec.md", "status": "reading"}
     ],
+    "dead_ends": [],
     "query_summary": {
-        "intent": "Cleanup AGENTS.md blocks: compounding workflow extraction (C9), wiki categories deletion, search & discovery deletion; verify schema_refs integrity",
+        "intent": "Изучить техники управления памятью LLM-агентов, найти реализации в pi и pi-llm-wiki, определить подходящий вариант для loomana; составить план работы",
         "pages_read": [
             "AGENTS.md#compounding-workflow",
             "process-query.json context.compounding_decision_logic + steps[2.5, 2.6]",
@@ -19,15 +19,65 @@
             "✅ Created rules/compounding_workflow.json (~130 lines extracted from process-query.json + AGENTS.md)",
             "✅ Deleted wiki-categories block from AGENTS.md (zero loss — no direct refs in processes)",
             "✅ Updated rules/categories.json: schema_ref → concise inline rule",
-            "✅ Deleted search&discovery block from AGENTS.md; removed schema_ref_to_agent_rules from search_strategy.json",
-            "⚠️ context-scopes.json still has stale schema_ref — to be addressed in next session"
+            "✅ Deleted search&discovery block from AGENTS.md; removed schema_ref_to_agent_rules from search_strategy.json"
         ]
     },
     "next_steps_todo": [
         {
-            "task": "Next session: memory management & agent context architecture overhaul (mem.pdf Plan B)",
-            "priority": "high"
+            "task": "Phase 16.1 Task #3: PRF-enhanced recall engine — DONE (recall.sh created + integrated into process-query.json)",
+            "priority": "high",
+            "status": "completed"
+        },
+        {
+            "task": "Phase 16.1 Task #4: Hot cache optimization — DONE (hot-cache-update.sh check-only mode implemented, process-query.json step_0.25 updated)",
+            "priority": "high",
+            "status": "completed"
+        },
+        {
+            "task": "Process file refactoring — extract memory ops from query/ingest/lint into hooks → background processing (Phase 2)",
+            "priority": "medium",
+            "status": "pending"
+        },
+        {
+            "task": "Phase 16.2: Trajectory capture system — implement scripts/memory/traj-capture.sh for session logging to raw/trajectories/",
+            "priority": "medium",
+            "status": "pending"
+        },
+        {
+            "task": "Phase 16.2: Distillation pipeline — implement scripts/memory/distill.sh to convert trajectories to skills/cases",
+            "priority": "medium",
+            "status": "pending"
         }
     ],
-    "session_log_ref": "wiki/log.md#2026-07-05-schema-cleanup"
+    "session_context": {
+        "completed_research": [
+            "Agent memory management techniques (zero-dependency)",
+            "Analysis of 8+ open-source implementations: pi, pi-llm-wiki, memfabric, cortex-memory, etc.",
+            "Best practices: three-layer model, hybrid recall, trajectory capture → distillation"
+        ],
+        "created_artifacts": [
+            "wiki/concepts/agent-memory-management.md — comprehensive design document with architecture, implementation phases",
+            "scripts/memory/recall.sh — PRF-enhanced two-stage recall engine (Stage 1: links-first ranking + Stage 2: content expansion)",
+            "scripts/memory/recall-spec.md — specification for Phase 16.1 Task #3",
+            "scripts/memory/hot-cache-update.sh — check-only mode optimization for hot cache rebuilds",
+            "process-query.json updated — all wiki-search.sh calls replaced with recall.sh, step_0.25 uses check-first approach"
+        ],
+        "architecture_decisions": [
+            "Background processing via hooks (not inline memory ops)",
+            "Separation of concerns: query/ingest/lint → content; memory layer → storage/recall/distillation",
+            "Zero dependencies: all implemented via scripts in scripts/memory/",
+            "recall.sh uses wiki-search.sh as lexical backbone + PRF boost for semantic expansion"
+        ],
+        "phase_1a_progress": {
+            "completed_tasks": ["Task #3: PRF-enhanced recall engine", "Task #4: Hot cache check-only mode"],
+            "pending_tasks": [],
+            "files_changed": [
+                "scripts/memory/recall.sh (new)",
+                "process-query.json (modified — 0 wiki-search references now)",
+                "PLAN.md (updated — PRF-enhanced recall marked done)",
+                "wiki/concepts/agent-memory-management.md (updated — reflects current state)"
+            ]
+        }
+    },
+    "broken_links_resolved": []
 }
