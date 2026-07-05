@@ -1,30 +1,33 @@
 {
-    "last_updated": "2026-07-05T23:18+03",
+    "last_updated": "2026-07-05T23:38+03",
     "current_mode": "project",
-    "focus_node": "Phase 32 completion + rules/*.json Cyrillic cleanup and schema_ref standardization",
-    "open_pages": [],
+    "focus_node": "Compounding Workflow extraction — C9 (inline → rules/compounding_workflow.json)",
+    "open_pages": [
+        {"path": "rules/compounding_workflow.md", "status": "updating"}
+    ],
     "dead_ends": [],
     "query_summary": {
-        "intent": "Complete extraction cycles C1-C8, finalize self-reference audit, clean all rules/*.json from Cyrillic, add schema_ref_to_agent_rules",
+        "intent": "Extract compounding workflow from AGENTS.md + process-query.json into standalone rules file with schema_ref",
         "pages_read": [
-            "AGENTS.md sections (work_modes, wiki_operation_routing)",
-            "PLAN.md (extraction priority map + cycle log)",
-            "All 25 rules/*.json files"
+            "AGENTS.md#compounding-workflow (lines 395-406)",
+            "process-query.json context.compounding_decision_logic + steps[2.5, 2.6]",
+            "rules/compounding_workflow.json (newly created)"
         ],
         "key_findings": [
-            "✅ All 12 Cyrillic-containing rules/*.json now English-only (~400+ Cyrillic segments removed)",
-            "✅ schema_ref_to_agent_rules added to all 21 missing files (standard pattern applied)",
-            "✅ 4 existing files already had schema_ref",
-            "📊 Total: 25/25 rules/*.json now compliant with RULES.md #2"
+            "✅ Created rules/compounding_workflow.json (~130 lines extracted)",
+            "✅ AGENTS.md: replaced inline definition with schema_ref + summary",
+            "✅ process-query.json: compounding_decision_logic → schema_ref",
+            "✅ process-query.json: duplicate_check_before_fixation → schema_ref",
+            "📊 Total: 26 rules/*.json files, all valid JSON"
         ]
     },
     "next_steps_todo": [
         {
-            "task": "Commit comprehensive Cyrillic cleanup + schema_ref standardization across all rules/*.json",
+            "task": "Commit compounding_workflow extraction (C9)",
             "priority": "high"
         },
         {
-            "task": "Update PLAN.md audit task to reflect completion of Cyrillic cleanup phase",
+            "task": "Update PLAN.md audit table — mark C9 as completed",
             "priority": "medium"
         }
     ]

@@ -398,12 +398,11 @@ Category order and definitions are stored in **`rules/categories.json`**. Agent 
 
 ### Compounding Workflow
 
-Answer is considered compound (requires saving as new wiki page) if:
+**Schema ref**: `rules/compounding_workflow.json`
 
-- Synthesis from ≥2 wiki pages with new insight (not just fact gathering)
-- Contradiction resolved requiring documentation in separate page
-- Answer supplements existing entity/concept with new facts
-  **Save conditions**: Compounding → propose to user save as new page. Synthesis = new logical conclusion (A+B→C), not mere aggregation.
+Answer is considered compound (requires saving as new wiki page) if synthesis from ≥2 wiki pages produces novel insight, contradiction resolved between sources, or existing entity/concept supplemented with new facts → **propose save to user**. Synthesis = new logical conclusion (A+B→C), not mere aggregation.
+
+> Full decision logic: `rules/compounding_workflow.json` — scoring system, duplicate check, web source transitions.
 
 ---
 
