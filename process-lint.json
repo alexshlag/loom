@@ -41,7 +41,11 @@
      "note": "If changes detected since last hot.md update → prompt user to refresh."},
     {"check_id": "12", "name": "source_manifest_backfill_detection",
      "command": "./scripts/rebuild-source-manifest.sh --scan-only",
-     "schema_ref": "rules/delta_tracking.json"}
+     "schema_ref": "rules/delta_tracking.json"},
+    {"check_id": "13", "name": "tag_quality_validation",
+     "description": "Validate all wiki pages have 3-7 domain-specific tags, no empty/generic arrays.",
+     "command": "./scripts/lint.sh --run tag-validation",
+     "schema_ref": "rules/tag-guidelines.json#lint_validation_check"}
   ],
 
   "primary_command": {

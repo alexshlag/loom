@@ -1,82 +1,69 @@
 {
   "version": "1.0",
-  "date": "2026-07-04",
-  "description": "Guidelines for wiki page tagging — domain tags + aliases for discoverability. Never free-form: every tag must be searchable (user query → keyword match).",
-
-  "tag_principles": {
-    "domain_tags_first": "Primary tags = domain-specific keywords that users would actually type when searching. No generic labels.",
-    "avoid_generic_tags": "Never use entity, documentation, system, note as standalone tags — they're schema categories (frontmatter.category), not search terms.",
-    "searchability_check": "Before adding a tag, ask: 'Would this user type this word in their query?' If no → it's architecture metadata, not a tag. Put it in related/sources instead.",
-    "tag_count_recommendation": "5-7 domain tags per page + 3-5 aliases for discoverability."
+  "description": "Tagging system guidelines for wiki pages — domain-specific patterns, prohibited generics, aliases policy, and cross-reference enforcement.",
+  "policy": {
+    "rule": "All pages MUST have 3-7 tags. No generic/broad terms alone.",
+    "pattern": "[domain-entity] + [specific-concept] + [technology/role]",
+    "prohibited_patterns": ["generic standalone (architecture, admin, ai, cms)", "empty array without comment", "comment inline after tags"]
   },
-
-  "per_category_guidelines": {
-    "entity": {
-      "recommended_tags": ["[domain-keyword, framework/tools, specific-concepts]"],
-      "examples": {"symfony": ["framework", "php", "dependency-injection", "service-container"], "nvidia": ["gpu", "hardware", "ai-chips", "semiconductor"]},
-      "rules": [
-        "Use concrete product/tech names as tags",
-        "Add domain keywords (e.g., 'gpu', 'api-platform' not just 'entity')",
-        "Avoid: tool, entity, package"
-      ]
+  "recommended_tags_by_category": {
+    "entities/": {
+      "description": "Specific tools, projects, people — use their actual names + domain category",
+      "pattern": "{primary-name} + {category-sub} + {language-tech}",
+      "examples_good": ["symfony", "doctrine-orm", "twig", "rust-linter"],
+      "examples_bad": ["cms", "framework", "tool"]
     },
-
-    "concept": {
-      "recommended_tags": ["[core-concept, related-domain, method]"],
-      "examples": {"llm-wiki.md": ["rag", "knowledge-base", "llm", "compounding-knowledge"]},
-      "rules": [
-        "Tags describe the idea itself (not 'concept' as a category)",
-        "Include related entity tags if applicable",
-        "Avoid: concept, theory, principle"
-      ]
+    "concepts/": {
+      "description": "Architectural patterns, principles — use precise technical terms",
+      "pattern": "{concept-name} + {pattern-type} + {implementation}",
+      "examples_good": ["hexagonal-architecture", "event-dispatcher", "state-machine"],
+      "examples_bad": ["architecture", "workflow", "testing"]
     },
-
-    "synthesis": {
-      "recommended_tags": ["[topic, cross-reference-tags]"],
-      "examples": {"rag-vs-llm-wiki-pattern.md": ["rag", "llm", "knowledge-base"]},
-      "rules": [
-        "Tags = domain keywords from both compared sources",
-        "Cross-link tags should match the entity/concept pages they reference"
-      ]
+    "syntheses/": {
+      "description": "Topic-specific synthesis — use combined domain tags",
+      "pattern": "{topic} + {comparison-type} + {methodology}",
+      "examples_good": ["rag-vs-llm-wiki", "compounding-pattern"],
+      "examples_bad": ["knowledge-base", "platform"]
     },
-
-    "comparison": {
-      "recommended_tags": ["[comparison-topic, platform, architecture]"],
-      "examples": {"llm-wiki-implementations.md": ["llm-wiki", "architecture", "platform"]},
-      "rules": [
-        "Use domain-specific comparison terms",
-        "Include both compared entities' tags"
-      ]
+    "comparisons/": {
+      "description": "Compare-specific tags — both entities being compared",
+      "pattern": "{entity-a} + {entity-b} + {comparison-dimension}",
+      "examples_good": ["symfony-ux-packages", "loom-vs-claude-obsidian"],
+      "examples_bad": ["architecture", "platform"]
     }
   },
-
   "aliases_system": {
-    "description": "Aliases are discoverability synonyms — words users might type that don't match the page title exactly. They live in frontmatter `aliases` field.",
-    "placement_in_frontmatter": "aliases should appear after category, before sources/related",
-    "example_structure": "---\ntags: [llm-wiki, personal-knowledge-base]\ndate: YYYY-MM-DD\ntype: documentation\ncategory: entity\naliases: [Loomana, loom, LLM Wiki Pattern, Karpathy wiki]\n---",
-    "rules": [
-      "Aliases = product names, synonyms, author names, descriptive phrases users search for",
-      "Never put architecture terms (three-layer-architecture) as aliases — they're not searchable",
-      "Include both English and native-language variants if page is bilingual"
+    "description": "Discoverability synonyms — what users actually type in queries",
+    "inclusion_rules": [
+      "Product names (e.g., 'Loomana', 'pi-coding-agent')",
+      "Common synonyms ('LLM Wiki Pattern' for Loomana)",
+      "Bilingual variants if used by user (EN/RU)"
     ],
-    "examples": {
-      "Loomana.md": ["Loomana", "loom", "LLM Wiki Pattern", "Karpathy wiki", "compounding knowledge base"],
-      "pi-coding-agent.md": ["Pi Coding Agent", "pi-llm-wiki", "terminal agent"]
+    "exclusion_rules": [
+      "Architecture terms — these are tags, not aliases"
+    ],
+    "example": {
+      "page": "Loomana",
+      "tags": ["llm-wiki", "compounding-knowledge", "rag-alternative"],
+      "aliases": ["Loomana", "LLM Wiki Pattern", "Karpathy wiki"]
     }
   },
-
-  "auto_computed_fields": {
-    "evidence_grade": {
-      "description": "Auto-compute from source authority at ingest time — never manual.",
-      "levels": {"documented": "Authoritative source (official docs, wiki)", "corroborated": "Confirmed by 2+ independent sources", "assertion_only": "Weak source (blog post, forum)"}
-    }
+  "cross_reference_enforcement": {
+    "rule": "If page A links to page B → both must share at least one common tag",
+    "enforcement": "process-ingest.json#post_check: validate shared tags before writing crosslinks"
   },
-
-  "lint_integration": {
-    "checks_to_add_to_lint_sh": [
-      {"check_id": 13, "name": "missing_frontmatter_auto_insert", "status": "implemented"},
-      {"check_id_20": "empty_tags_check", "description": "Find pages with empty tags [] → suggest domain tags"},
-      {"check_id_21": "generic_tag_filter", "description": "Flag generic type-tags (entity, documentation) instead of domain-specific ones"}
+  "language_consistency": {
+    "rule": "Use EITHER English OR Russian within one document — never mix languages in tags",
+    "recommendation": "English preferred for consistency with AGENTS.md conventions",
+    "exceptions": ["Russian-only content pages may use ru-tags exclusively"]
+  },
+  "lint_validation_check": {
+    "check_id": "13b",
+    "description": "Validate tag quality — empty, generic, or comment-embedded tags",
+    "actions": [
+      {"condition": "tags_is_empty_or_whitespace", "action": "warn: missing domain-specific tags"},
+      {"condition": "tags_contain_comment_after_array", "action": "error: inline comments break YAML parsing"},
+      {"condition": "all_tags_are_generic (architecture, admin, ai without context)", "action": "warn: replace with domain-specific alternatives"}
     ]
   }
 }

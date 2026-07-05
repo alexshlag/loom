@@ -551,3 +551,9 @@ Current task: Phase 15 (Tagging System). Next pending: Phase 15.1 (Aliases).
     * step_3 actions → create_page replaced with propose_save_to_user (proposal only)
   - Guardrails added to steps 2, 2.5, 2.6, 3: prohibited direct_edit() without process-ingest
   - web_ingest_flow updated: required_steps explicit, ingress_from_query_step linked
+
+## [2026-07-05] schema | Phase 15 tagging system created — rules/tag-guidelines.json + process integration (step_4_tag_validation, check_id=13)
+- Created comprehensive tag guidelines: policy, recommended patterns by category, aliases_system, cross-reference enforcement, language consistency
+- Added step_4_tag_validation to process-ingest.json with auto-reject generic tags logic
+- Added check_id=13 to process-lint.json for tag quality validation
+- Audit completed: 22/43 files have generic/broad tag issues; 3 inline comments in frontmatter

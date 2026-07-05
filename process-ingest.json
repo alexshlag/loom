@@ -100,6 +100,24 @@
       ]
     },
     {
+      "step_id": "step_4_tag_validation",
+      "name": "tag_quality_validation",
+      "description": "Validate tags against guidelines — 3-7 domain-specific, no generics. Auto-fix empty/generic.",
+      "schema_ref": "rules/tag-guidelines.json",
+      "actions": [
+        { "action_name": "extract_current_tags_from_frontmatter" },
+        {
+          "condition": "tags_are_empty OR tags_contain_generic",
+          "action_name": "auto_reject_generic_and_suggest_domain_tags"
+        },
+        { "action_name": "apply_tag_guidelines_recommendation" }
+      ],
+      "rules": [
+        { "rule_id": "TAG-MINIMUM-3", "description": "Minimum 3 tags required" },
+        { "rule_id": "NO-GENERICS", "schema_ref": "rules/tag-guidelines.json#policy.prohibited_patterns" }
+      ]
+    },
+    {
       "step_id": "step_5_batch_trigger",
       "name": "batch_ingest_trigger",
       "description": "If ≥3 related sources - batch-ingest.sh for clustering.",

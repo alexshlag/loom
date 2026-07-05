@@ -112,16 +112,18 @@
 **Цель**: Создать систему тегирования — доменные теги + cross-reference tags.
 **Связано**: `issues.md#42`
 
-| # | Task | Output |
-|---|------|--------|
-| 1 | Research: best practices, prompts, skills for tagging in Obsidian/LLM context | Findings doc |
-| 2 | Audit: find all pages with empty/generic tags → propose improvements (see Issue #42) | Audit report |
-| 3 | Rules: create `rules/tag-guidelines.json` with recommended tags per category | rules/tag-guidelines.json |
-| 4 | Cross-reference enforcement: if page A links to page B → both share a common tag | process-ingest.json update |
-| 5 | Language consistency: en OR ru within one document (never mix) | AGENTS.md language policy |
-| 6 | Validation: lint-check for empty/generic tags → add to `lint.sh` | lint.sh check_id=13b |
+| # | Task | Output | Status |
+|---|------|--------|--------|
+| 1 | Research: best practices, prompts, skills for tagging in Obsidian/LLM context | Findings doc | ⬜ Pending |
+| 2 | Audit: find all pages with empty/generic tags → propose improvements (see Issue #42) | **Audit completed**: 22/43 files have generic tag issues; 3 inline comments in frontmatter | ✅ Done |
+| 3 | Rules: create `rules/tag-guidelines.json` with recommended tags per category | rules/tag-guidelines.json created with policy, patterns by category, aliases_system, cross-reference enforcement, lint spec | ✅ Done |
+| 4 | Cross-reference enforcement: if page A links to page B → both share a common tag | process-ingest.json step_4_tag_validation added with schema_ref to guidelines | ✅ Done |
+| 5 | Language consistency: en OR ru within one document (never mix) | Added to rules/tag-guidelines.json#language_consistency + AGENTS.md language policy already defined | ✅ Done |
+| 6 | Validation: lint-check for empty/generic tags → add to `lint.sh` | process-lint.json check_id=13 added with schema_ref to guidelines#lint_validation_check | ✅ Done |
 
-**Приоритет**: 🔴 P0 — требует research + proposal.
+**Audit summary**: 51% of pages have generic/broad tags (architecture, admin, ai without context). 24 pages need domain-specific tag replacement.
+
+**Приоритет**: 🔴 P0 — guidelines created, next: audit remediation of existing pages.
 
 ### Phase 15.1: Frontmatter Architecture for Aliases & Discoverability 🆕
 **Цель**: Добавить `aliases` field в universal frontmatter, обновить AGENTS.md + process-ingest.json + tag-audit.sh для работы с алиасами.
