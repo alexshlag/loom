@@ -74,6 +74,24 @@
 
 ## 🔄 Pending Tasks (Next Steps)
 
+### Phase 15.x: RULES.md:10 Audit Remediation — Fix Compounding Dup, Unresolved Refs, Lint→Ingest Bridge 🆕 P0 **NEW**
+
+**Цель**: Устранить все пробелы из аудита RULES.md пункт 10 (Issue #44). Обеспечить: единый источник compounding logic, resolve all action_names, bridge Lint→Ingest.
+
+**Зависит от**: `RULES.md` — **ЧИТАТЬ ПЕРЕД ВЫПОЛНЕНИЕМ** (пункт 10, правила автоматизации). Canonical: `RULES.md#10`
+
+| # | Task | Description | Verification Command | Status |
+|---|------|-------------|---------------------|--------|
+| **T1** | Consolidate compounding_decision_logic в single source | Убрать дубли из process-query.json. Оставить определение только в `compounding_decision_logic` (top-level). Удалить inline-копии из `assess_compounding_value` и `step_2.6`. Заменить на schema_ref → compounding_decision_logic. | `grep -c "PROPOSE_SAVE_TO_USER" process-query.json` → 5 uses, 0 inline dupes | ✅ Done |
+| **T1-v** | Validate: no duplicate definition remains | Проверить grep-ом что PROPOSE_SAVE только в compounding_decision_logic и step_2.6 (как consumer). assess_compounding_value должен point на schema_ref или быть удалён. | ✅ 0 inline dupes, все refs point to single source | ✅ Done |
+| **T2** | Define `check_existing_path_guardrails` в rules/ | Создать `rules/path-guard-check.json` с: (a) function description, (b) bash implementation via validate-path.sh, (c) schema_ref для process-query.json. Алгоритм: validate + existing_page check + timestamp comparison. | Новый файл создан; grep -r "path-guard-check" в process-query.json → 1 совпадение (step_3.pre_check) | ✅ Done |
+| **T2-v** | Test guardrails resolve correctly | `bash scripts/validate-path.sh wiki/entities/test.md` — должен работать. process-query.json updated schema_refs вместо action_name. | ✅ Оба шага point to rules/path-guard-check.json | ✅ Done |
+| **T3** | Create Lint→Ingest bridge | В process-lint.json добавить post_lint_actions секцию с триггером new_sources_detected → web_ingest_flow.trigger. В process-query.json#web_ingest_flow добавить ingress point из lint (lint_new_sources_triggers). Document переход в AGENTS.md. | process-lint.json + process-query.json updated; grep -r "post_lint_actions" → 1 блок, ingress_from_lint_step added | ✅ Done |
+| **T3-v** | Check transition chain works | Verify lint output JSON → user decision → ingest flow trigger. Ensure process-ingest.json can receive trigger from query (web_ingest_flow) or lint (new_sources_detected). | ✅ Единая точка входа в ingest, оба триггера работают | ✅ Done |
+| **T4** | Final audit run — re-run RULES.md:10 check | После всех исправлений — повторить аудит по всем 4 условиям. Фиксировать статус каждого. | issues.md updated с resolved status для Issue #44 | ⬜ |
+
+---
+
 ### Phase 15: Tagging System Quality & Guidelines 🆕 P0
 **Цель**: Создать систему тегирования — доменные теги + cross-reference tags.
 **Связано**: `issues.md#42`
@@ -126,4 +144,4 @@
 
 ---
 
-*Last update: 2026-07-04 | Current task: Phase 15 (Tagging System). Next: Phase 15.1 (Aliases).*
+*Last update: 2026-07-05 | Current task: Phase 15.x (RULES.md:10 remediation). Next: Phase 15 (Tagging System).*

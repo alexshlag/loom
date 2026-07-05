@@ -52,5 +52,29 @@
   "git_conventions_reference": "AGENTS.md#git-conventions",
   "error_handling": {"schema_ref": "rules/error_handling.json"},
   "agent_read_instructions": {"rule": "Agent MUST read AGENTS.md before executing any lint checks.", "schema_ref": "AGENTS.md#overview"},
-  "context_scope": "transient"
+  "context_scope": "transient",
+
+  "post_lint_actions": {
+    "description": "Actions triggered after lint.sh completes — bridges lint findings to user decision and ingest flow.",
+    "trigger_on_exit_code_0": "new_sources_detected OR orphan_pages_found OR contradications_detected",
+    "actions": [
+      {
+        "condition": "new_sources_detected",
+        "action": "present_new_sources_to_user",
+        "transition_after_user_confirm": "process-query.json#web_ingest_flow.trigger (ingress_from_lint)",
+        "schema_ref": "AGENTS.md#external_sources_update_policy"
+      },
+      {
+        "condition": "orphan_pages_found",
+        "action": "list_orphan_pages + propose merge/update/delete",
+        "transition_after_user_confirm": "process-ingest.json#step_8b_update_page (for update/merge) or process-query.json#web_ingest_flow.trigger"
+      },
+      {
+        "condition": "contradications_detected",
+        "action": "flag_contradiction_pages + present to user for cascade resolution",
+        "schema_ref": "rules/contradiction_resolution.json"
+      }
+    ],
+    "rule": "Lint outputs JSON findings → user reviews → user decides → agent executes ingest/update via appropriate process file. Lint never writes wiki directly, only reports."
+  }
 }

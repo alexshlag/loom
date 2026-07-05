@@ -4,6 +4,28 @@
 
 ## 🔴 Open / In Progress
 
+### Issue #44: RULES.md:10 Audit Failures (Compounding Dup, Unresolved Refs, Lint→Ingest Gap) 🆕 P0 **RESOLVED**
+**Проблема**: Аудит пункта 10 RULES.md выявил 3 критических пробела:
+
+1. **Дублированная compounding logic** — один и тот же score-based алгоритм описан в 3 местах.
+2. **Unresolved action_name** — `check_existing_path_guardrails` упоминался но не определён.
+3. **Нет bridge Lint → Ingest** — отсутствовал явный переход.
+
+**Fix applied:**
+- ✅ T1: Consolidated compounding_decision_logic — убраны inline-дубли из assess_compounding_value и step_2.6, заменены на schema_ref → context.compounding_decision_logic (single source)
+- ✅ T2: Created rules/path-guard-check.json — resolved action_name check_existing_path_guardrails, replaced with schema_ref в process-query.json#step_3
+- ✅ T3: Added post_lint_actions in process-lint.json + ingress_from_lint_step в web_ingest_flow (process-query.json)
+
+**Статус:** ✅ Resolved — all 4 conditions from RULES.md:10 now satisfied.
+
+**Final audit results:**
+| Condition | Status |
+|-----------|--------|
+| 1. Wiki writes via process only | ✅ No more direct wiki edits |
+| 2. Role separation (ingest/query/lint) | ✅ Maintained |
+| 3. Logical bridges between roles | ✅ Lint→Ingest bridge added |
+| 4. No unresolved refs/dupes | ✅ compounding_logic consolidated, path-guard-check defined |
+
 ### Issue #39: Context Bloat & Architecture Optimization 🆕 P0
 **Проблема**: AGENTS.md содержит технические спецификации, которые лучше вынести в `rules/`.
 **Решение**: Миграция git-конвенций, language policy, memory architecture → отдельные JSON файлы.
