@@ -279,7 +279,7 @@
       "step_id": "2.6",
       "name": "compounding_decision",
       "description": "Check if answer should be saved as new wiki page — compounding.",
-      "schema_ref": "context.compounding_decision_logic"
+      "schema_ref": "process-query.json#compounding_decision_logic"
     },
     {
       "step_id": "2.7",
@@ -294,7 +294,7 @@
       "guardrail": {
         "rule_id": "NO_DIRECT_EDIT_FROM_WEB_SEARCH",
         "enforcement": "All wiki create/update operations MUST go through process-ingest.json steps. Direct edit() without ingest flow is prohibited.",
-        "schema_ref": "AGENTS.md#wiki_operation_routing_contract"
+        "schema_ref": "process-query.json#web_ingest_flow"
       },
       "structure": [
         {

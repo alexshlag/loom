@@ -7,6 +7,7 @@
     "cross_category_exception": "../ allowed for cross-category links (e.g. from concepts/ to entities/) as long as target exists under wiki/"
   },
   "external_links": {
+    "rule_id": "EXT-RES1",
     "standard": "EXT-LINK-V1 (canonical http/https URLs)",
     "prohibited": "[text](raw/**) — never link to raw/. [text](../**) — relative paths prohibited.",
     "unavailability_check": "log broken URLs (404/timeouts) → inform user, do NOT auto-remove"

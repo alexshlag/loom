@@ -62,7 +62,7 @@
         "condition": "new_sources_detected",
         "action": "present_new_sources_to_user",
         "transition_after_user_confirm": "process-query.json#web_ingest_flow.trigger (ingress_from_lint)",
-        "schema_ref": "AGENTS.md#external_sources_update_policy"
+        "schema_ref": "process-ingest.json#external_source_policy"
       },
       {
         "condition": "orphan_pages_found",

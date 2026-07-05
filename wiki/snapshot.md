@@ -1,6 +1,6 @@
 ---
 tags: [snapshot, active-projects]
-date: 2026-06-30
+date: 2026-07-05
 sources: []
 related: [wiki/comparisons/llm-wiki-implementations.md, wiki/comparisons/loom-vs-claude-obsidian.md, wiki/concepts/llm-wiki.md, wiki/entities/loomana.md, wiki/concepts/natural-memory.md]
 ---

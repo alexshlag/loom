@@ -264,8 +264,8 @@
 
   "error_handling": { "schema_ref": "rules/error_handling.json" },
   "schema_evolution": {
-    "rule": "Never auto-modify templates - user-approved only",
-    "schema_ref": "AGENTS.md#template-co-evolution-process"
+    "rule": "Never auto-modify templates - user-approved only, schema-patch requires user approval",
+    "schema_ref": "rules/execution_contract.json"
   },
   "agent_read_instructions": {
     "rule": "Agent MUST read AGENTS.md before executing any steps.",
