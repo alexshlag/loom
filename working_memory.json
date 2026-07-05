@@ -1,18 +1,14 @@
 {
-  "last_updated": "2026-07-05T14:30:00+04:00",
+  "last_updated": "2026-07-05T15:00:00+04:00",
   "current_mode": "project",
-  "focus_node": "Phase 14 completed \u2014 system tested, all schema_refs fixed",
+  "focus_node": "Update auto-ingest logic for web_search data (3 scenarios)",
   "open_pages": [
-    {
-      "path": "rules/contradiction_resolution.json",
-      "status": "created"
-    },
     {
       "path": "process-query.json",
       "status": "updated"
     },
     {
-      "path": "process-lint.json",
+      "path": "AGENTS.md",
       "status": "updated"
     }
   ],

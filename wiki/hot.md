@@ -38,6 +38,7 @@ related: []
 - **2026-07-03**: Wiki health check — resolved all 7 orphan pages via crosslinks, fixed contradictions in natural-memory.md and python-nixos-development.md
 - **2026-07-01**: Phase 23 (Unified Pass Architecture) fully completed — unified-pass.sh replaces 3 separate script walks
 
+- `2026-07-05 15:00` — **System change**: Updated web_ingest_flow logic to distinguish three scenarios (update_existing / topic_expansion / new_independent_topic). Auto-ingest now covers both scenario 1 AND scenario 2; user_confirm only required for first page of scenario 3.
 ## Session Context — 2026-07-04 Tag Audit
 **Status**: ✅ Complete. All entity/concept pages now have ≥3 domain-specific tags per tag-guidelines.json. Generic type-tags removed from 2 pages. Next: Phase 15.1 (aliases for discoverability).
 

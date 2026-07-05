@@ -61,10 +61,7 @@
     }
   },
   "trigger_condition": "user_asks_question",
-  "not_for": [
-    "ingest_processing",
-    "wiki_validation"
-  ],
+  "not_for": ["ingest_processing", "wiki_validation"],
   "steps": [
     {
       "step_id": "0",
@@ -97,9 +94,7 @@
           "action_if_empty": "warn_and_prompt_to_fill"
         }
       ],
-      "constraints": [
-        "Never use find/ls for check — only count *.md"
-      ]
+      "constraints": ["Never use find/ls for check — only count *.md"]
     },
     {
       "step_id": "0.75",
@@ -119,9 +114,7 @@
           "schema_ref": "process-ingest.json#raw_source_link_repair"
         }
       ],
-      "constraints": [
-        "Do NOT scan wiki for broken links — only use WM cache"
-      ]
+      "constraints": ["Do NOT scan wiki for broken links — only use WM cache"]
     },
     {
       "step_id": "0.76",
@@ -166,17 +159,112 @@
       "constraints": [
         "find/ls/cat prohibited for search — always start with wiki-search.sh --dynamic"
       ],
-      "if_broken": "STOP_SEARCH -> ./scripts/wiki-search.sh --dynamic <query>"
+      "if_broken": "STOP_SEARCH -> ./scripts/wiki-search.sh --dynamic <query>",
+      "transition_to_1.5_if_empty": {
+        "condition": "all_wiki_search_methods_returned_zero_matches",
+        "description": "If wiki-search.sh + grep from index.md + grep from search-index.json all return 0 results → trigger step_1.5 knowledge_gap_handling"
+      }
     },
     {
       "step_id": "1.5",
       "name": "knowledge_gap_handling",
-      "description": "If search is empty: 1) raw/sources/ check → 2) web_availability_check → 3) manual access.",
-      "trigger_condition": "search_results_empty_after_all_methods"
+      "description": "When wiki search returns empty: run web_search → synthesize answer from external sources → propose save to user → if confirmed → ingest → lint check → return answered data.",
+      "trigger_condition": "search_results_empty_after_all_wiki_methods",
+      "preconditions": [
+        {
+          "check": "wiki-search.sh returned 0 matches"
+        },
+        {
+          "check": "grep -m 30 from index.md returned 0 matches"
+        },
+        {
+          "check": "grep -m 20 from search-index.json returned 0 matches"
+        }
+      ],
+      "workflow": [
+        {
+          "step": 1,
+          "name": "web_search_external",
+          "action": "web_search with queries array (2-4 varied angles)",
+          "constraints": [
+            "Use queries array, not single query — vary phrasing and scope for broader coverage",
+            "Prefer provider=auto for optimal routing"
+          ]
+        },
+        {
+          "step": 2,
+          "name": "synthesize_external_answer",
+          "action": "Synthesize answer from web_search results using wiki page templates (not raw snippets)",
+          "output_format": "structured knowledge with tags, sources, related pages"
+        },
+        {
+          "step": 3,
+          "name": "determine_save_path",
+          "description": "Determine if external data expands existing topic or is a new independent topic. Key distinction: NOT 'existing_page vs new_topic' but 'topic_expansion (auto) vs new_independent_topic (propose)'",
+          "actions": [
+            {
+              "if_topic_expansion_detected": "AUTO_INGEST_TOPIC_EXPANSION — no user confirmation required, create new wiki page + links to existing topic via web_ingest_flow",
+              "reasoning": "Новая страница относится к существующей теме в wiki (Symfony→миграции) → расширение темы, auto-ingest",
+              "example": "Symfony exists in wiki → new page 'Migrations in Symfony' from internet data → auto-ingest"
+            },
+            {
+              "if_new_independent_topic_detected": "PROPOSE_SAVE_TO_USER_NEW_INDEPENDENT_TOPIC — require user confirmation before creating first page for this topic",
+              "reasoning": "Самостоятельная тема/сущность, которой нет в wiki (PHP) → предложение пользователю + ожидание подтверждения",
+              "example": "PHP is new to wiki → propose 'Create PHP Best Practices' → wait confirm"
+            },
+            {
+              "rule": "USER_CONFIRM_REQUIRED_ONLY_FOR_FIRST_PAGE_OF_NEW_INDEPENDENT_TOPIC. Once topic approved in wiki, all subsequent pages for that topic are auto_ingest (topic_expansion)"
+            }
+          ]
+        },
+        {
+          "step": 4,
+          "name": "execute_save_path",
+          "actions": [
+            {
+              "if_topic_expansion": "TRANSITION_TO process-ingest.json via web_ingest_flow (create_new_expansion_of_existing, auto)"
+            },
+            {
+              "if_propose_new_independent": "WAIT_FOR_USER_RESPONSE → if yes: TRANSITION_TO ingest (approve new topic), if no: PROCEED_TO answer_only"
+            }
+          ]
+        }
+      ],
+      "post_web_search_path": {
+        "description": "After user confirms save → run full ingest flow → return answer from saved wiki data",
+        "flow": [
+          {
+            "step": 1,
+            "action": "web_ingest_flow trigger met → JUMP_TO process-ingest.json#step_4_corrected_copy"
+          },
+          {
+            "step": 2,
+            "action": "raw-correct.sh creates corrected copy in raw/corrected/SRC-*/*"
+          },
+          {
+            "step": 3,
+            "action": "Discussion with user — present analysis, propose page structure"
+          },
+          {
+            "step": 4,
+            "action": "Integration: update existing or create new page via process-ingest.json steps"
+          },
+          {
+            "step": 5,
+            "action": "Post-checks: rebuild-meta.sh + link-validator.sh"
+          }
+        ]
+      },
+      "web_search_fail_path": {
+        "description": "If web_search also returns no useful data → inform user",
+        "trigger_condition": "web_search_results_empty_or_unusable",
+        "action": "Inform user: no external data found for this query"
+      }
     },
     {
       "step_id": "2",
       "pre_condition": "search_results_not_empty",
+      "alternative_trigger_for_1.5_path": "knowledge_gap_handling_complete_and_ingest_resumed",
       "structure": [
         {
           "step_1": "read all matched wiki pages from search"
@@ -284,12 +372,19 @@
     {
       "step_id": "2.7",
       "name": "transition_to_ingest_if_web_source_confirmed",
-      "description": "IF user confirms saving web_search answer → TRANSITION to process-ingest.json (never direct edit). This is the mandatory gateway from query → wiki write.",
-      "trigger_condition": "web_search_used AND user_confirm_save",
-      "transition_rule": {
-        "condition": "user_confirmed_after_web_answer",
-        "action_if_met": "TRANSITION_TO process-ingest.json via web_ingest_flow",
-        "action_if_not_met": "PROCEED_TO step_3_result_fixation (internal wiki only)"
+      "description": "IF web_search used → TRANSITION to process-ingest.json (never direct edit). Gateway from query → wiki write.",
+      "trigger_condition": "web_search_used",
+      "topic_expansion_rule": {
+        "condition": "new_page_relates_to_existing_topic_in_wiki",
+        "action_if_met": "AUTO_INGEST_TOPIC_EXPANSION — TRANSITION_TO process-ingest.json via web_ingest_flow, create_new_expansion_of_existing (no user_confirm required)",
+        "description_for_expansion": "Новая страница относится к существующей теме в wiki → auto-ingest. Пример: Symfony есть в wiki → новая страница 'Migrations in Symfony' → расширение темы, без подтверждения",
+        "note": "Agent creates NEW page + adds crosslinks to existing topic — but this is automatic, no user_confirm needed"
+      },
+      "new_independent_topic_rule": {
+        "condition": "independent_topic_not_found_in_wiki",
+        "action_if_met": "PROPOSE_SAVE_TO_USER_NEW_INDEPENDENT_TOPIC — wait for user_confirm before TRANSITIONING",
+        "description_for_new": "Самостоятельная тема, которой нет в wiki → предложение пользователю. Confirm required ONLY FOR FIRST PAGE OF THIS TOPIC.",
+        "post_first_approval_note": "Once topic approved in wiki → subsequent pages for same topic become topic_expansion (auto_ingest)"
       },
       "guardrail": {
         "rule_id": "NO_DIRECT_EDIT_FROM_WEB_SEARCH",
@@ -298,15 +393,15 @@
       },
       "structure": [
         {
-          "step_1": "check if web_ingest_flow.trigger is met (web_search used + user_confirm)"
+          "step_1": "check if web_search_used (determine topic_expansion vs new_independent_topic)"
         },
         {
-          "step_2": "IF true → execute process-ingest.json steps via web_ingest_flow (capture → raw-correct.sh → discussion → integration → post-checks)",
-          "action_if_true": "JUMP_TO process-ingest"
+          "step_2": "IF topic_expansion → execute process-ingest.json via web_ingest_flow (create_new_expansion_of_existing, auto)",
+          "action_if_expansion": "JUMP_TO process-ingest (auto, no user_confirm)"
         },
         {
-          "step_3": "IF false (internal wiki answer) → PROCEED TO step_3_result_fixation",
-          "action_if_false": "CONTINUE_TO_STEP_3"
+          "step_3": "IF new_independent_topic → PROPOSE_SAVE_TO_USER_NEW_INDEPENDENT_TOPIC",
+          "action_if_new": "WAIT_FOR_USER_RESPONSE"
         }
       ]
     },
@@ -381,7 +476,11 @@
         {
           "action_name": "write_to_working_memory",
           "rule_id": "WM-SYNC-AFTER-WIKI-V1",
-          "fields_to_write": ["focus_node", "next_steps_todo (auto-cleanup)", "query_summary"]
+          "fields_to_write": [
+            "focus_node",
+            "next_steps_todo (auto-cleanup)",
+            "query_summary"
+          ]
         },
         {
           "action_name": "write_session_context_to_hot",
@@ -397,8 +496,24 @@
     }
   ],
   "web_ingest_flow": {
-    "trigger": "user confirms 'save' after web_search answer OR lint detected new sources with user approval",
-    "description": "Full transition from query → ingest or from lint → ingest. Executes process-ingest.json steps when user approves wiki write.",
+    "trigger": "web_search_used (topic_expansion: auto) OR user_confirm_save (new_independent_topic: require confirm)",
+    "description": "Full transition from query → ingest or from lint → ingest. Executes process-ingest.json steps.",
+    "three_scenarios": {
+      "scenario_1_update_existing": {
+        "condition": "web_search_data_matches_existing_wiki_page",
+        "action": "AUTO_INGEST: update existing page via web_ingest_flow → step_8b_update_page, no user_confirm required"
+      },
+      "scenario_2_topic_expansion_create_new_page": {
+        "condition": "web_search_data_relates_to_existing_wiki_topic (new page but same topic)",
+        "action": "AUTO_INGEST: create_new_expansion_of_existing via web_ingest_flow → step_8a_new_page + crosslinks, no user_confirm required",
+        "note": "Это НЕ 'existing_page_update' — это создание НОВОЙ страницы, но относящейся к существующей теме. Auto-ingest, без подтверждения. Пример: Symfony есть → новая страница 'Migrations in Symfony'"
+      },
+      "scenario_3_new_independent_topic": {
+        "condition": "web_search_data_is_new_independent_topic_not_found_in_wiki",
+        "action": "PROPOSE_SAVE_TO_USER_FIRST_PAGE_OF_NEW_TOPIC → wait for user_confirm. Once approved, subsequent pages for same topic become scenario_2 (topic_expansion) — auto_ingest.",
+        "note": "User confirm required only FOR THE FIRST PAGE of this independent topic. After approval, all further expansion of this topic is automatic"
+      }
+    },
     "transition_target": "process-ingest.json",
     "ingress_from_query_step": "step_2.7_transition_to_ingest_if_web_source_confirmed",
     "ingress_from_lint_step": "post_lint_actions.new_sources_detected (via process-lint.json)",
@@ -413,7 +528,21 @@
         "step_id": "step_6_discussion",
         "name": "discussion_with_user",
         "description": "Present analysis, propose page structure, get user_confirmed",
-        "mandatory": true
+        "mandatory": false,
+        "note": "SKIPPED for scenario_1 (update_existing) and scenario_2 (topic_expansion). MANDATORY only for scenario_3 (new_independent_topic)."
+      },
+      {
+        "step_id": "step_8a_new_page",
+        "name": "create_new_expansion_of_existing",
+        "description": "Create new wiki page that expands existing topic — used for scenario 2 (topic expansion)",
+        "pre_condition": "existing_topic_path_identified AND no_matching_subpage_exists_yet",
+        "actions": [
+          "read_existing_topic_page",
+          "identify_new_subtopic_from_web_data",
+          "write_new_expansion_page with crosslinks_to_parent_topic"
+        ],
+        "used_for_scenario": "scenario_2 (topic_expansion_create_new_page) — auto_ingest, no user_confirm required",
+        "note": "Example: Symfony exists → create 'Migrations in Symfony' page → auto-ingest as topic expansion"
       },
       {
         "step_id": "step_8b_update_page",
@@ -462,5 +591,31 @@
     "rule": "Agent MUST read AGENTS.md before executing any steps.",
     "schema_ref": "AGENTS.md#overview"
   },
-  "context_scope": "transient"
+  "context_scope": "transient",
+  "scenario_routing": {
+    "description": "Defines how different query scenarios are routed through the process",
+    "scenarios": [
+      {
+        "name": "wiki_has_data",
+        "flow": ["step_0", "step_1", "step_2", "step_2.3", "step_3"],
+        "description": "Wiki search returns results → proceed to synthesis"
+      },
+      {
+        "name": "wiki_empty_external_available",
+        "flow": [
+          "step_0",
+          "step_1",
+          "step_1.5_web_search",
+          "step_2_user_response",
+          "step_ingest_if_confirmed_or_step_answer_only"
+        ],
+        "description": "Wiki empty → web search → synthesize → propose save → ingest or just answer"
+      },
+      {
+        "name": "wiki_empty_no_external",
+        "flow": ["step_0", "step_1", "step_1.5_web_search_fail"],
+        "description": "Wiki empty → web search also fails → inform user no external data found"
+      }
+    ]
+  }
 }

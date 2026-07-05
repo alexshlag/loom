@@ -562,3 +562,16 @@ Current task: Phase 15 (Tagging System). Next pending: Phase 15.1 (Aliases).
 - Replaced broad/generic tags (architecture, admin, cms, ai, testing, workflow, etc.) with domain-specific alternatives
 - Added commerce-cms, gpu-manufacturer, hexagonal-pattern, easyadmin-admin-ui, llm-integration, state-machinery-pattern, async-message-queue, psr6-caching, access-control-voters
 - 36/38 pages now have NO generic tags (94.7%)
+
+## [2026-07-05] schema | web_ingest_flow update — 3 scenarios for auto-ingest logic
+
+**Summary**: Updated process-query.json and AGENTS.md to clarify three distinct scenarios for web_search → wiki data flow:
+- Scenario 1: Update existing page (auto-ingest, no confirm)
+- Scenario 2: Topic expansion — create new subpage of existing topic (auto-ingest, no confirm)
+- Scenario 3: New independent topic (propose to user, confirm required only for first page)
+
+**Key change**: Agent now distinguishes between "update_existing_page" and "create_new_expansion_of_existing_topic". Both are auto-ingest — but they use different steps (step_8b_update_page vs step_8a_new_page).
+
+**Files updated**:
+- `process-query.json`: Added scenario_2 logic, step_8a_new_page to required_steps, topic_expansion_rule in step_2.7
+- `AGENTS.md`: Updated Auto-ingest vs Proposal section with three scenarios and first-page rule for new topics

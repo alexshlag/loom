@@ -335,6 +335,30 @@ related: []
 
 **Правило**: Novel insight = новый логический вывод (не сбор фактов). Агент должен уметь объяснить: «Какие данные → какой вывод?» Если цепочка прозрачна и все шаги из источников — это synthesis, не novel insight.
 
+### Auto-ingest vs Proposal для web_search данных
+
+**Правило**: Три сценария ветвления — не только "existing_page vs new_topic", а "update_existing / topic_expansion / new_independent_topic".
+
+| # | Сценарий | Действие агента | User Confirm? |
+|---|----------|-----------------|---------------|
+| 1 | **Update existing page**: данные о конкретной странице wiki, которая уже существует | ✅ **Auto-ingest**: web_ingest_flow → step_8b_update_page — без запроса подтверждения |
+| 2 | **Topic expansion (создание новой страницы)**: новая страница относится к существующей теме в wiki. Пример: Symfony есть → "Migrations in Symfony" из интернета | ✅ **Auto-ingest**: web_ingest_flow → step_8a_new_page + crosslinks_to_parent_topic — без запроса подтверждения |
+| 3 | **New independent topic**: самостоятельная тема/сущность, которой НЕТ в wiki. Пример: PHP (если нет страницы) | ⚠️ **Propose to user**: PROPOSE_SAVE_TO_USER_FIRST_PAGE_OF_NEW_TOPIC → ждать confirm → если да: ingest (approve topic), если нет: просто ответить |
+
+**Логика определения (process-query.json#step_1.5 + step_2.7)**:
+- Агент определяет по web_search результатам: есть ли matching wiki page/topic?
+  - ✅ Да, конкретная страница → `AUTO_INGEST_TO_EXISTING` (scenario 1)
+  - ✅ Да, но это новая подстраница/расширение темы → `AUTO_INGEST_TOPIC_EXPANSION` (scenario 2)
+  - ❌ Нет в wiki вообще → `PROPOSE_SAVE_TO_USER_NEW_INDEPENDENT_TOPIC` (scenario 3)
+- Step_6_discussion (discussion_with_user) в web_ingest_flow: mandatory=false — пропускается для сценариев 1 и 2. MANDATORY только для scenario 3.
+
+**Правило "первой страницы" для новой темы (scenario 3)**:
+- User confirm **ТОЛЬКО ДЛЯ ПЕРВОЙ СТРАНИЦЫ** новой независимой темы
+- После approval этой темы → все последующие страницы по этой теме становятся `topic_expansion` (auto_ingest)
+- Пример: PHP — первое предложение "Создать PHP Best Practices?" → ✅ да → ingest → далее "Symfony PHP patterns" → auto-ingest как расширение темы PHP
+
+**Schema ref**: `process-query.json#web_ingest_flow`, `process-query.json#step_2.7`
+
 ---
 
 ## 📄 Page Templates
@@ -1290,10 +1314,12 @@ cd /path/to/loomana && ./scripts/lint.sh --skip-checks 3,5
 **Rule**: All wiki create/update operations MUST go through process-ingest.json or process-query.json steps. Never direct edit() without process flow.
 
 **Flow routing table:**  
- | Scenario | Process File | Transition Trigger |  
- |----------|-------------|-------------------|  
- | New source from web_search → save to wiki | process-query.json#web_ingest_flow → process-ingest.json | user_confirm after web_search |  
- | Update existing page with new facts | process-ingest.json#step_8b_update_page | source_identifies_existing_page |  
- | Simple query answer (no save) | process-query.json only | no compounding_flag |
+ | Scenario | Process File | Transition Trigger | User Confirm? |
+ |----------|-------------|-------------------|---------------|
+ | Web search → update existing wiki page | process-query.json#web_ingest_flow → process-ingest.json | `existing_page_identified_from_web_data` | ❌ Auto (scenario 1) |
+ | Web search → topic expansion (create new subpage of existing topic) | process-query.json#web_ingest_flow → process-ingest.json | `new_subtopic_of_existing_topic` | ❌ Auto, no confirm required (scenario 2) |
+ | Web search → new independent topic (first page) | process-query.json#web_ingest_flow → process-ingest.json | `new_independent_topic_not_in_wiki` | ✅ Required only for first page of this topic (scenario 3) |
+ | Update existing page with new facts | process-ingest.json#step_8b_update_page | source_identifies_existing_page | ❌ Auto (no confirm) |
+ | Simple query answer (no save) | process-query.json only | no compounding_flag | N/A
 
 ---
