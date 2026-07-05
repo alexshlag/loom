@@ -39,7 +39,7 @@
 
   "resolution_actions": [
     {"when": "resolved_via_cascade", "action": "add_update_section_to_old_page"},
-    {"when": "conflicting_priorities", "action": "create_comparison_page_for_complex_conflicts"},
+    {"when": "conflicting_priorities OR multiple_live_state_sources", "action": "create_comparison_page_for_complex_conflicts"},
     {"when": "not_resolved_human_override", "action": "note_in_answer"}
   ],
 

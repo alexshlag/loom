@@ -90,3 +90,21 @@ LLM-агент имеет ограниченный context window. Каждый 
 
 **Р06: Самое важное — последнее (recency bias)**
 Критические контракты ("никогда делать X") должны быть в конце документа или перед ними — LLM лучше помнит последние элементы.
+
+**🚨 Р07: EXAMPLES AS CONDITIONAL LOGIC — NEVER REMOVE WITHOUT AUDIT**
+Примеры/edge cases в JSON-инструкциях часто работают как `if-else` конструкция:
+```
+{
+  "when": "conflicting_priorities OR multiple_live_state",
+  "action": "create_comparison_page_for_complex_conflicts"
+}
+```
+Это НЕ метаинформация — это **conditional behavior specification**. Agent использует эту логику при runtime.
+
+**Правила:**
+1. Перед удалением примера/edge case → проверь: является ли он частью `when/action` или `if/then` логики?
+2. Если пример описывает ситуацию → поведение ("если X, то Y") → **НЕ УДАЛЯТЬ**. Это conditional logic.
+3. Если пример — просто иллюстрация без влияния на агентное поведение → можно удалить.
+4. Недоверие: если в сомнении — оставь и добавь `schema_ref` к описанию вместо удаления.
+
+**Категорически запрещено:** удалять примеры из `resolution_actions`, `fallback_chain`, `constraints`, `arbitration_layer` без аудита их роли в conditional flow.
