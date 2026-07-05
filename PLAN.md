@@ -189,39 +189,51 @@
 | **C6** | Self-referencing anchors audit + schema_ref replacement → context_scopes/git_conventions/execution_modes/session_context/context_bridge/silent_output (6 replaced). Created faq_summary.json + evidence_grade.json. | `rules/faq_summary.json` + `rules/evidence_grade.json` | ✅ Done | 2 kept inline (language_policy/template_files shared contracts) |
 | **C7** | User Work Modes → extracted to JSON with determination algorithm, mode_definitions, management_rules, integration_with_memory schema_ref. AGENTS.md reduced by -60 lines. | `rules/work_modes.json` | ✅ Done | lint.sh: 0 broken links; 1 expected contradictions_deep |
 
-### Remaining Self-Reference Audit (AGENTS.md)
+### Self-Reference Audit — Final Status (Complete)
 
-| Anchor | Section | Status | Action Required |
-|--------|---------|--------|-----------------|
-| `AGENTS.md#context_management_phase_32` | Context Management Transient → context-scopes.json exists ✅ | brief ref needed |
-| `AGENTS.md#git_conventions` | Git Conventions brief ref (already extracted) | brief ref in AGENTS.md |
-| `AGENTS.md#work_modes` | User Work Modes → extracted to JSON, schema_ref added ✅ | **DONE** |
-| `AGENTS.md#media_pipeline` | Wiki Assets & Media Pipeline → needs audit | audit required |
-| `AGENTS.md#summary_pages` | FAQ Pages creation rules → needs audit | audit required |
-| `AGENTS.md#auto_computed_fields` | Auto-computed Fields extraction candidate | extract to JSON |
-| `AGENTS.md#language_policy` | Language Policy → keep in AGENTS.md (shared contract) | keep as-is |
-| `AGENTS.md#template_files` | Template Files → shared contract with user, keep in AGENTS.md | keep as-is |
-| `AGENTS.md#execution_modes` | Execution Modes → needs audit (already has rules/execution_modes.json) | brief ref needed |
+| Anchor | Section | Status | Resolution |
+|--------|---------|--------|------------|
+| `AGENTS.md#context_management_phase_32` | Context Management Transient | ✅ Done | brief ref to context-scopes.json already present |
+| `AGENTS.md#git_conventions` | Git Conventions | ✅ Done (C1) | brief ref in AGENTS.md |
+| `AGENTS.md#work_modes` | User Work Modes | ✅ Done (C7) | extracted → rules/work_modes.json |
+| `AGENTS.md#media_pipeline` | Wiki Assets & Media Pipeline | Skipped | workflow description — kept inline per AGENTS.md policy |
+| `AGENTS.md#summary_pages` | FAQ Pages creation rules | ✅ Done (C6) | faq_summary.json already exists |
+| `AGENTS.md#auto_computed_fields` | Auto-computed Fields | ✅ Done (C6) | evidence_grade.json already exists |
+| `AGENTS.md#language_policy` | Language Policy | Keep as-is | shared contract — no extraction needed |
+| `AGENTS.md#template_files` | Template Files | Keep as-is | shared contract with user — no extraction needed |
+| `AGENTS.md#execution_modes` | Execution Modes | ✅ Done | schema_ref to rules/execution_modes.json already present |
+
+**Result**: All 9 anchors audited. 7 resolved (3 existing refs + 2 extracted in C6/C7, plus 1 brief ref). 2 kept inline as shared contracts. 1 skipped (workflow description).
+---
 
 
 ### Extraction Priority Map (8 blocks identified)
 
 | # | Block in AGENTS.md | Target File | Existing rules/? | Priority |
 |---|-------------------|-------------|------------------|----------|
-| 1 | Git Conventions | `rules/git_conventions.json` | ❌ No | 🔴 P0 |
+| 1 | Git Conventions | `rules/git_conventions.json` | ❌ No (now ✅) | 🔴 P0 **DONE** |
 | 2 | Memory Architecture + Session Context → consolidate into session_context_rules.json | ✅ Yes (expand) | 🟡 HIGH |
 | 3 | Wiki Categories → move full defs from AGENTS.md to categories.json | ✅ Yes (consolidate) | 🟡 HIGH |
 | 4 | Search & Discovery → verify search_strategy.json completeness | ✅ Yes (verify+expand) | 🟡 HIGH |
 | 5 | External Sources Update Policy + Auto-ingest scenarios | brief ref in AGENTS.md (too small for extraction) | Skipped | 🟡 HIGH |
 | 6 | Compounding Workflow → add to existing compounding_decision_logic (in process-query) | ⚠️ Inline in query | 🟢 MEDIUM |
-| 7 | User Work Modes | `rules/work_modes.json` | ✅ Created | 🔴 DONE |
+| 7 | User Work Modes | `rules/work_modes.json` | ✅ Created (C7) | 🔴 **DONE** |
+
+### Remaining Extraction Candidates
+
+| # | Block | Target File | Status |
+|---|-------|-------------|--------|
+| 8 | Delta Tracking → verify delta_tracking.json completeness | ✅ Verify+expand | 🟢 LOW |
+| 9 | Compounding Workflow | add to process-query.json | ⚠️ Inline, needs audit |
+| 10 | External Sources Update Policy | brief ref only (skip) | Skipped |
+
+**Note**: Items 2-4 already exist as .json files from prior cycles — need expand/verify, not new extraction.
 | 8 | Delta Tracking → verify delta_tracking.json completeness | ✅ Yes (verify+expand) | 🟢 LOW |
 
 ### Expected Outcome
-- **After**: AGENTS.md ~25-30KB (final), process files + rules/ carry the detail
-- **Current state**: AGENTS.md now ~46KB, ~1198 lines (-107 lines from C1+C2)
-- **After**: AGENTS.md ~25-30KB, process files + rules/ carry the detail
-- **Safety net**: Every rule traceable via schema_ref chain; no broken links
+- **Target**: AGENTS.md ~25-30KB (final), process files + rules/ carry the detail
+- **Current state**: AGENTS.md 682 lines (~39KB). Processed: C1-C7. All self-references audited.
+- **Safety net**: Every rule traceable via schema_ref chain; no broken links verified by lint.sh
 
 ---
 
