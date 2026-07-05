@@ -3,9 +3,5 @@
   "version": "1.0",
   "updated": "2026-07-02",
   "description": "Шаблон для синтезов (глубокий анализ из ≥3 источников)",
-  "sections": [
-    "Context",
-    "Analysis",
-    "Conclusions"
-  ]
+  "sections": ["Context", "Analysis", "Conclusions"]
 }

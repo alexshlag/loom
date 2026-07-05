@@ -9,6 +9,7 @@ tracking/raw_registry.json
 
 # Obsidian local workspace settings (machine-specific)
 .obsidian/
+.pi/
 
 # OS/editor artifacts
 .DS_Store

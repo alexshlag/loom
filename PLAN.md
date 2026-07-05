@@ -165,11 +165,48 @@
 
 ---
 
+## 🔄 Phase 32.1: Deep Restructuring — Extract Rules from AGENTS.md
+
+**Цель**: Сократить AGENTS.md до рабочего минимума (~25-30KB), вынеся технические спецификации в `rules/*.json`. Циклический алгоритм: extract → reference → validate → next.
+
+### Циклический алгоритм (repeat per block)
+
+1. **Extraction**: скопировать блок из AGENTS.md → создать `rules/*.json` с protocol_name + description + rules/actions
+2. **Reference update**: заменить inline-текст в AGENTS.md на concise schema_ref к новому файлу
+3. **Cross-reference fix**: найти все ссылки вида `AGENTS.md#old_section` → заменить на `rules/new_file.json#rule_id`
+4. **Validation**: `grep -r "AGENTS.md#old_section" process-*.json` → 0 matches; `lint.sh` passes
+5. **Commit** → move to next block
+
+### Cycle Execution Log (repeat per block)
+
+| Cycle | Block Extracted | Target File | Status | Validation |
+|-------|-----------------|-------------|--------|------------|
+| **C1** | Git Conventions | `rules/git_conventions.json` | ✅ Done | lint.sh: 14 checks, 0 errors |
+
+### Extraction Priority Map (8 blocks identified)
+
+| # | Block in AGENTS.md | Target File | Existing rules/? | Priority |
+|---|-------------------|-------------|------------------|----------|
+| 1 | Git Conventions | `rules/git_conventions.json` | ❌ No | 🔴 P0 |
+| 2 | Memory Architecture + Session Context → consolidate into session_context_rules.json | ✅ Yes (expand) | 🟡 HIGH |
+| 3 | Wiki Categories → move full defs from AGENTS.md to categories.json | ✅ Yes (consolidate) | 🟡 HIGH |
+| 4 | Search & Discovery → verify search_strategy.json completeness | ✅ Yes (verify+expand) | 🟡 HIGH |
+| 5 | External Sources Update Policy + Auto-ingest scenarios | `rules/external_sources_policy.json` | ❌ No | 🟡 HIGH |
+| 6 | Compounding Workflow → add to existing compounding_decision_logic (in process-query) | ⚠️ Inline in query | 🟢 MEDIUM |
+| 7 | User Work Modes | `rules/work_modes.json` | ❌ No | 🟢 MEDIUM |
+| 8 | Delta Tracking → verify delta_tracking.json completeness | ✅ Yes (verify+expand) | 🟢 LOW |
+
+### Expected Outcome
+- **Before**: AGENTS.md ~50KB, 1305 lines
+- **After**: AGENTS.md ~25-30KB, process files + rules/ carry the detail
+- **Safety net**: Every rule traceable via schema_ref chain; no broken links
+
+---
+
 ## ⚠️ Known Issues (Not Closed Yet)
 
 | Issue | Description | Status |
 |-------|-------------|--------|
-| **#39** | Context bloat — AGENTS.md still too verbose. Solution: move technical specs to `rules/` | ⬜ Open |
 | **#5/#9** | Orphan pages + auto-crosslink needs semantic relationships (not just name matches) | ⚠️ Partial fix |
 | **#11** | Some scripts lack `trap EXIT/cleanup` for temp files | ⚠️ Partial |
 | **#27** | Broken link handling — agent escalation rules incomplete | ⬜ Open |
@@ -185,4 +222,4 @@
 
 ---
 
-*Last update: 2026-07-05 | Current task: Phase 15.x (RULES.md:10 remediation). Next: Phase 15 (Tagging System).*
+*Last update: 2026-07-05 | Current task: Phase 15.x (RULES.md:10 remediation). Next: Phase 32.1 (AGENTS.md extraction loop).*

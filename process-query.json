@@ -61,10 +61,7 @@
     }
   },
   "trigger_condition": "user_asks_question",
-  "not_for": [
-    "ingest_processing",
-    "wiki_validation"
-  ],
+  "not_for": ["ingest_processing", "wiki_validation"],
   "steps": [
     {
       "step_id": "0",
@@ -97,9 +94,7 @@
           "action_if_empty": "warn_and_prompt_to_fill"
         }
       ],
-      "constraints": [
-        "Never use find/ls for check — only count *.md"
-      ]
+      "constraints": ["Never use find/ls for check — only count *.md"]
     },
     {
       "step_id": "0.75",
@@ -119,9 +114,7 @@
           "schema_ref": "process-ingest.json#raw_source_link_repair"
         }
       ],
-      "constraints": [
-        "Do NOT scan wiki for broken links — only use WM cache"
-      ]
+      "constraints": ["Do NOT scan wiki for broken links — only use WM cache"]
     },
     {
       "step_id": "0.76",
@@ -541,7 +534,7 @@
       {
         "step_id": "step_8a_new_page",
         "name": "create_new_expansion_of_existing",
-        "description": "Create new wiki page that expands existing topic — used for scenario 2 (topic expansion)",
+        "description": "Create new wiki page that expands existing topic — used for scenario_2 (topic expansion)",
         "pre_condition": "existing_topic_path_identified AND no_matching_subpage_exists_yet",
         "actions": [
           "read_existing_topic_page",
@@ -591,26 +584,12 @@
       ]
     }
   },
-  "error_handling": {
-    "schema_ref": "rules/error_handling.json"
-  },
-  "agent_read_instructions": {
-    "rule": "Agent MUST read AGENTS.md before executing any steps.",
-    "schema_ref": "AGENTS.md#overview"
-  },
-  "context_scope": "transient",
   "scenario_routing": {
     "description": "Defines how different query scenarios are routed through the process",
     "scenarios": [
       {
         "name": "wiki_has_data",
-        "flow": [
-          "step_0",
-          "step_1",
-          "step_2",
-          "step_2.3",
-          "step_3"
-        ],
+        "flow": ["step_0", "step_1", "step_2", "step_2.3", "step_3"],
         "description": "Wiki search returns results → proceed to synthesis"
       },
       {
@@ -626,13 +605,17 @@
       },
       {
         "name": "wiki_empty_no_external",
-        "flow": [
-          "step_0",
-          "step_1",
-          "step_1.5_web_search_fail"
-        ],
+        "flow": ["step_0", "step_1", "step_1.5_web_search_fail"],
         "description": "Wiki empty → web search also fails → inform user no external data found"
       }
     ]
-  }
+  },
+  "error_handling": {
+    "schema_ref": "rules/error_handling.json"
+  },
+  "agent_read_instructions": {
+    "rule": "Agent MUST read AGENTS.md before executing any steps.",
+    "schema_ref": "AGENTS.md#overview"
+  },
+  "context_scope": "transient"
 }

@@ -4,10 +4,10 @@
   "updated": "2026-07-02",
   "description": "Шаблон для сравнений (сравнительный анализ сущностей/концептов)",
   "sections": [
-      "Overview",
-      "Comparison Table",
-      "Deep Dive Analysis",
-      "Conclusions / Recommendation",
-      "Related Pages"
+    "Overview",
+    "Comparison Table",
+    "Deep Dive Analysis",
+    "Conclusions / Recommendation",
+    "Related Pages"
   ]
 }

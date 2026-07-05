@@ -3,61 +3,101 @@
   "description": "Wiki maintenance — automated checks and fixes",
 
   "trigger_conditions": [
-    {"condition": "wiki_stagnation_detected", "threshold": "no_new_pages_3_days"},
-    {"condition": "contradications_found"},
-    {"condition": "orphan_pages_detected"}
+    {
+      "condition": "wiki_stagnation_detected",
+      "threshold": "no_new_pages_3_days"
+    },
+    { "condition": "contradications_found" },
+    { "condition": "orphan_pages_detected" }
   ],
 
   "lint_checks": [
-    {"check_id": "1", "name": "contradictions_between_pages",
-     "description": "Find pages where old claims are no longer accurate.",
-     "schema_ref": "rules/contradiction_resolution.json"},
-    {"check_id": "2", "name": "orphan_pages_detection",
-     "command": "./scripts/lint.sh --run orphan-pages",
-     "note": "Runs via scripts/lint.sh — output JSON with count + paths."},
-    {"check_id": "3", "name": "knowledge_gaps_detection",
-     "description": "Identify topics mentioned across pages but without dedicated page. Soft-only check.",
-     "schema_ref": "process-query.json#compounding_decision"},
-    {"check_id": "4", "name": "new_sources_available",
-     "command": "./scripts/check-new-sources.sh --max 10",
-     "note": "Full check — lint detects → User decides → Ingest processes."},
-    {"check_id": "5", "name": "new_topics_proposal",
-     "description": "Suggest new topics from conversation context and index.md connections."},
-    {"check_id": "6", "name": "mechanical_linting",
-     "checks": ["duplicate_titles", "missing_frontmatter_fields", "coverage_gaps"],
-     "schema_ref": "rules/structural_requirements.json"},
-    {"check_id": "7", "name": "date_consistency_check",
-     "description": "Verify year in date: matches year in '## Updated [YYYY-MM-DD]' sections."},
-    {"check_id": "8", "name": "broken_link_auto_resolve",
-     "command": "./scripts/unified-pass.sh --auto"},
-    {"check_id": "9", "name": "detect_contradiction_deep_scan",
-     "command": "./scripts/detect-contradications.sh --quiet",
-     "schema_ref": "rules/contradiction_resolution.json"},
-    {"check_id": "10", "name": "text_similarity_scan",
-     "description": "Scan wiki for n-gram overlap ≥90% — detects copy-paste chains.",
-     "command": "./scripts/text-similarity.sh --scan-all --threshold 90"},
-    {"check_id": "11", "name": "hot_cache_stale_check",
-     "command": "./scripts/check-wiki-changes.sh || true",
-     "note": "If changes detected since last hot.md update → prompt user to refresh."},
-    {"check_id": "12", "name": "source_manifest_backfill_detection",
-     "command": "./scripts/rebuild-source-manifest.sh --scan-only",
-     "schema_ref": "rules/delta_tracking.json"},
-    {"check_id": "13", "name": "tag_quality_validation",
-     "description": "Validate all wiki pages have 3-7 domain-specific tags, no empty/generic arrays.",
-     "command": "./scripts/lint.sh --run tag-validation",
-     "schema_ref": "rules/tag-guidelines.json#lint_validation_check"}
+    {
+      "check_id": "1",
+      "name": "contradictions_between_pages",
+      "description": "Find pages where old claims are no longer accurate.",
+      "schema_ref": "rules/contradiction_resolution.json"
+    },
+    {
+      "check_id": "2",
+      "name": "orphan_pages_detection",
+      "command": "./scripts/lint.sh --run orphan-pages",
+      "note": "Runs via scripts/lint.sh — output JSON with count + paths."
+    },
+    {
+      "check_id": "3",
+      "name": "knowledge_gaps_detection",
+      "description": "Identify topics mentioned across pages but without dedicated page. Soft-only check.",
+      "schema_ref": "process-query.json#compounding_decision"
+    },
+    {
+      "check_id": "4",
+      "name": "new_sources_available",
+      "command": "./scripts/check-new-sources.sh --max 10",
+      "note": "Full check — lint detects → User decides → Ingest processes."
+    },
+    {
+      "check_id": "5",
+      "name": "new_topics_proposal",
+      "description": "Suggest new topics from conversation context and index.md connections."
+    },
+    {
+      "check_id": "6",
+      "name": "mechanical_linting",
+      "checks": [
+        "duplicate_titles",
+        "missing_frontmatter_fields",
+        "coverage_gaps"
+      ],
+      "schema_ref": "rules/structural_requirements.json"
+    },
+    {
+      "check_id": "7",
+      "name": "date_consistency_check",
+      "description": "Verify year in date: matches year in '## Updated [YYYY-MM-DD]' sections."
+    },
+    {
+      "check_id": "8",
+      "name": "broken_link_auto_resolve",
+      "command": "./scripts/unified-pass.sh --auto"
+    },
+    {
+      "check_id": "9",
+      "name": "detect_contradiction_deep_scan",
+      "command": "./scripts/detect-contradications.sh --quiet",
+      "schema_ref": "rules/contradiction_resolution.json"
+    },
+    {
+      "check_id": "10",
+      "name": "text_similarity_scan",
+      "description": "Scan wiki for n-gram overlap ≥90% — detects copy-paste chains.",
+      "command": "./scripts/text-similarity.sh --scan-all --threshold 90"
+    },
+    {
+      "check_id": "11",
+      "name": "hot_cache_stale_check",
+      "command": "./scripts/check-wiki-changes.sh || true",
+      "note": "If changes detected since last hot.md update → prompt user to refresh."
+    },
+    {
+      "check_id": "12",
+      "name": "source_manifest_backfill_detection",
+      "command": "./scripts/rebuild-source-manifest.sh --scan-only",
+      "schema_ref": "rules/delta_tracking.json"
+    },
+    {
+      "check_id": "13",
+      "name": "tag_quality_validation",
+      "description": "Validate all wiki pages have 3-7 domain-specific tags, no empty/generic arrays.",
+      "command": "./scripts/lint.sh --run tag-validation",
+      "schema_ref": "rules/tag-guidelines.json#lint_validation_check"
+    }
   ],
 
   "primary_command": {
     "command": "./scripts/lint.sh [--quiet] [--skip-checks ID1,ID2] [wiki_dir]",
     "note": "Single entry point for all lint checks — do not call helper scripts separately."
   },
-
-  "git_conventions_reference": "AGENTS.md#git-conventions",
-  "error_handling": {"schema_ref": "rules/error_handling.json"},
-  "agent_read_instructions": {"rule": "Agent MUST read AGENTS.md before executing any lint checks.", "schema_ref": "AGENTS.md#overview"},
-  "context_scope": "transient",
-
   "post_lint_actions": {
     "description": "Actions triggered after lint.sh completes — bridges lint findings to user decision and ingest flow.",
     "trigger_on_exit_code_0": "new_sources_detected OR orphan_pages_found OR contradications_detected",
@@ -80,5 +120,12 @@
       }
     ],
     "rule": "Lint outputs JSON findings → user reviews → user decides → agent executes ingest/update via appropriate process file. Lint never writes wiki directly, only reports."
-  }
+  },
+  "git_conventions_reference": "rules/git_conventions.json#GIT-CONVENTIONS-V1",
+  "error_handling": { "schema_ref": "rules/error_handling.json" },
+  "agent_read_instructions": {
+    "rule": "Agent MUST read AGENTS.md before executing any lint checks.",
+    "schema_ref": "AGENTS.md#overview"
+  },
+  "context_scope": "transient"
 }

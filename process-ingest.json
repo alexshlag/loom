@@ -113,8 +113,14 @@
         { "action_name": "apply_tag_guidelines_recommendation" }
       ],
       "rules": [
-        { "rule_id": "TAG-MINIMUM-3", "description": "Minimum 3 tags required" },
-        { "rule_id": "NO-GENERICS", "schema_ref": "rules/tag-guidelines.json#policy.prohibited_patterns" }
+        {
+          "rule_id": "TAG-MINIMUM-3",
+          "description": "Minimum 3 tags required"
+        },
+        {
+          "rule_id": "NO-GENERICS",
+          "schema_ref": "rules/tag-guidelines.json#policy.prohibited_patterns"
+        }
       ]
     },
     {

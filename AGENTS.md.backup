@@ -90,11 +90,37 @@ During the period of script writing and debugging, the following code developmen
 
 ## 🔖 Git Conventions
 
-**Commit format**: `<type> | <scope>: <description>` (feat|fix|refactor|schema|lint|ingest|query; description lowercase).
+- **Commit format**: `<type> | <scope>: <description>` (type: feat|fix|refactor|schema|lint|ingest|query; description lowercase)
+- **Allowed**: `git status --short`, `git add wiki/`, `git rm --cached`
+- **Prohibited**: `git add *` (system junk), `git commit -a` (no staged commits)
+- Commit **on user request**: `git add -A; git commit -m "<type> | <scope>: <description>"`
+- `git add -A` — safe, ignores .gitignore automatically
 
-Full specification including allowed/prohibited commands, pre-commit memory sync workflow (`rules/session_context_rules.json`), and regular wiki memory sync → **see [rules/git_conventions.json](rules/git_conventions.json)**.
+### Pre-commit Memory Sync Rule
 
-> Canonical: `AGENTS.md#git_conventions` — detailed rules in extracted file.
+Before EVERY git commit in development mode (AGENTS.md, RULES.md, process-\*.json, PLAN.md, FEATURES_PLAN.md changes):
+
+1. Update working_memory.json: set `focus_node` = current task name; filter completed tasks from `next_steps_todo`
+2. Update hot.md Active Project with Phase status + what was done
+3. See [rules/session_context_rules.json](rules/session_context_rules.json) for write_algorithm.
+
+> This bridges dev-process → wiki-agent-memory: every git commit triggers memory update automatically — not conditional on schema changes.
+> Full guardrails enforced by `.git/hooks/pre-commit` + `scripts/validate-path.sh`.
+
+### Regular Wiki Operations Memory Sync
+
+```json
+{
+  "trigger": "page_created_or_updated",
+  "rule_id": "WM-SYNC-AFTER-WIKI-V1",
+  "steps": [
+    {"step": 1, "action": "update working_memory.json: focus_node + next_steps_todo (auto-cleanup) + query_summary"},
+    {"step": 2, "action": "update hot.md System State → Recent Changes with summary of wiki changes"}
+  ],
+  "scope": "applies to all wiki operations regardless of work_mode",
+  "note": "Works alongside Pre-commit Memory Sync Rule (dev-mode only) — both can trigger simultaneously"
+}
+```
 
 ---
 
@@ -264,16 +290,76 @@ related: []
 ### 6. Agent Rules & Conventions (`rules/`)
 
 - Directory of technical specifications and niche instructions moved from AGENTS.md to reduce context bloat.
-- Format: **JSON or Markdown** — choose based on content nature:
-  - JSON → structured data, algorithms, arrays/objects, machine-parseable rules
-  - Markdown → procedural text, narrative explanations, template structures, human-readable workflows
-- No format restrictions — match the medium to the message
+- Format: **JSON preferred** (machine-readable), but `.md` files acceptable when structure requires textual description.
 - Contains rules: `protected_zones.json`, `error_handling.json`, `execution_contract.json`, `link_conventions.json`, `search_strategy.json`, `tag-guidelines.json`, `session_context_rules.json`, and others.
 - AGENTS.md contains links (`schema_ref`) to these files instead of duplicating — agent reads rule only when it needs to apply it.
 
 ---
 
-## 📄 Page Templates & Frontmatter
+## 🔁 External Sources Update Policy (Issues #1-3 resolved)
+
+### Issue #1: How often to update wiki from external sources?
+
+**Solution**: Two update modes:
+
+| Mode             | Trigger                                                          | Description                                                                                              |
+| ------------------ | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **User-requested** | User explicitly asks "update X" or "check relevance of Y"        | Agent does `web_search` → compares with current data → updates page if data changed                      |
+| **Cron (default)** | Automatically on schedule                                        | Lint script runs `check-new-sources.sh` + periodic wiki page refresh without user request                |
+
+**Rule**: Agent never does `web_search` for wiki updates in normal mode. Only on explicit user request or cron.
+
+### Issue #2: When is `web_search` higher priority than internal data?
+
+**Solution:**
+
+| Scenario                                                        | Priority                                                                     |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| **Same source** (same URL/domain) but data changed              | ✅ External data is priority — update wiki                                       |
+| **Different sources** contradict each other                     | ⚠️ Move to Issue #4 (Authoritative Source Criteria) — separate discussion       |
+| **Facts vs opinions**                                           | Facts → web_search. Opinions/arguments → store in wiki as-is                   |
+
+**Rule**: If `web_search` is from same source as current wiki page, but data has changed — external data takes priority.
+
+### Issue #3: "Novel insight" criterion
+
+**Solution**: Clear criteria instead of subjective definition:
+
+| Type                            | Criteria                                                                                             | Action                                                 |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| **Fact synthesis**              | Gathering facts from 2+ sources without new output                                                   | ❌ Do not create new page, add to existing one           |
+| **New insight**                 | Agent makes logical step that was not explicitly stated in any source (e.g., "A + B → C")            | ✅ Flag for fixation, propose creating a page            |
+| **Contextual application**      | Formulates how to apply known concepts to user's current context                                     | ⚠️ Notes/notes, not new wiki page                        |
+
+**Rule**: Novel insight = new logical conclusion (not fact gathering). Agent must be able to explain: "Which data → which conclusion?" If chain is transparent and all steps from sources — this is synthesis, not novel insight.
+
+### Auto-ingest vs Proposal for web_search data
+
+**Rule**: Three branching scenarios — not just "existing_page vs new_topic", but "update_existing / topic_expansion / new_independent_topic".
+
+| # | Scenario | Agent Action | User Confirm? |
+|---|----------|--------------|---------------|
+| 1 | **Update existing page**: data about specific wiki page that already exists | ✅ **Auto-ingest**: web_ingest_flow → step_8b_update_page — without confirmation request |
+| 2 | **Topic expansion (creating new page)**: new page relates to existing topic in wiki. Example: Symfony exists → "Migrations in Symfony" from internet | ✅ **Auto-ingest**: web_ingest_flow → step_8a_new_page + crosslinks_to_parent_topic — without confirmation request |
+| 3 | **New independent topic**: standalone topic/entity NOT IN wiki. Example: PHP (if no page) | ⚠️ **Propose to user**: PROPOSE_SAVE_TO_USER_FIRST_PAGE_OF_NEW_TOPIC → wait for confirm → if yes: ingest (approve topic), if no: just answer |
+
+**Determination logic (process-query.json#step_1.5 + step_2.7)**:
+- Agent determines from web_search results: is there a matching wiki page/topic?
+  - ✅ Yes, specific page → `AUTO_INGEST_TO_EXISTING` (scenario 1)
+  - ✅ Yes, but new subpage/topic expansion → `AUTO_INGEST_TOPIC_EXPANSION` (scenario 2)
+  - ❌ Not in wiki at all → `PROPOSE_SAVE_TO_USER_NEW_INDEPENDENT_TOPIC` (scenario 3)
+- Step_6_discussion (discussion_with_user) in web_ingest_flow: mandatory=false — skipped for scenarios 1 and 2. MANDATORY only for scenario 3.
+
+**"First page" rule for new topic (scenario 3)**:
+- User confirm **ONLY FOR FIRST PAGE** of new independent topic
+- After approval of this topic → all subsequent pages on this topic become `topic_expansion` (auto_ingest)
+- Example: PHP — first proposal "Create PHP Best Practices?" → ✅ yes → ingest → later "Symfony PHP patterns" → auto-ingest as topic expansion
+
+**Schema ref**: `process-query.json#web_ingest_flow`, `process-query.json#step_2.7`
+
+---
+
+## 📄 Page Templates
 
 ### ⚠️ Global Rule: Template Editing Policy
 
@@ -382,7 +468,7 @@ Detailed page templates stored in `wiki/templates/`.
 
 > Templates are **recommended**, not enforced. Agent may add/remove sections as needed.
 >
-> **Frontmatter composition is fixed and defined only by Universal Frontmatter section — no template-specific field lists allowed.** Any changes to frontmatter fields require updating scripts that enforce the schema.
+> Templates cannot change frontmatter fields
 
 **Canonical**: `AGENTS.md#template_files`
 
@@ -401,7 +487,8 @@ Structure:
   "version": "1.0",
   "categories": [
     { "key": "entities",       "label": { "en": "Entities",         "ru": "Сущности" },        "description": "..." },
-    { "key": "concepts",       "label": { "en": "Concepts",          "ru": "Концепции" },         "description": "..." }
+    { "key": "concepts",       "label": { "en": "Concepts",          "ru": "Концепции" },         "description": "..." },
+    ...
   ]
 }
 ```
@@ -600,7 +687,7 @@ Agent saves session context to hot.md **immediately after every action** — not
 
 ### CONTEXT_BUBBLE & GREP CONTRACT
 
-#### 📝 Grep Contract
+### 📝 Grep Contract
 
 ```json
 {
@@ -710,125 +797,6 @@ Upon detecting any error, contradiction, or dead end — **do not stall**, but f
 
 ---
 
-## 🛡 Rules & Guardrails
-
-### Guardrails Reference
-
-Guardrails enforced via `scripts/validate-path.sh`. For path validation and protected zones schema — see `process-ingest.json` (capture flow validation).
-
-#### Schema References
-
-- `process-ingest.json` references this for capture flow validation
-- `scripts/validate-path.sh` implements the actual guardrails
-
-### Fetch Content Truncation Handling
-
-```json
-{
-  "fetch_content_truncation": {
-    "condition": "response_markdown_contains '[Content truncated...]' or output is visibly cut off mid-sentence",
-    "primary_action": "fallback to web_search(query) + get_search_content(responseId) for complete coverage",
-    "logging_verbose_template": [
-      "[!] Fetch truncation detected in X.md, length ~{N} chars",
-      "[✓] Fallback activated: web_search + get_search_content called"
-    ]
-  }
-}
-```
-
-### Protected Zones
-
-```json
-{
-  "protected_zones": {
-  "raw/**": {"owner": "user", "access": "read-only via capture flow"},
-  "raw/corrected/": {"rule_id": "RAW-CORRECTED-V1", "owner": "agent", "access": "full read/write for processed copies (scripts/raw-correct.sh)"},
-  "wiki/**": {"owner": "agent", "access": "full read/write/manage"},
-  "meta/**": {"rule": "auto-generated", "files": ["registry.json", "backlinks.json"], "rebuild_command": "./scripts/rebuild-meta.sh"},
-  "tracking/": {"rule_id": "TRACKING-V1", "owner": "agent", "access": "full read/write for ingest registry files", "note": "raw_registry.json, similarity_index.json and other tracking files. Agent writes directly."},
-  ".vault-meta/": {"rule": "gitignored-system", "files": ["locks/", ".wiki-lock.meta"], "owner": "agent", "access": "read/write for system state only", "note": "Not committed to git — contains system lock files and agent logs."}
-  },
-  "zone_def1": {
-  "rule_id": "ZONE-DEF1",
-  "raw/**": {"owner": "user", "access": "read-only via capture flow"},
-  "raw/corrected/": {"owner": "agent", "access": "full read/write for processed copies (scripts/raw-correct.sh)"},
-  "wiki/**": {"owner": "agent", "access": "full read/write/manage"},
-  "tracking/": {"owner": "agent", "access": "full read/write for registry and tracking files"},
-  "implications": ["Agent manages all wiki links/structure. User controls raw/. Agent writes to raw/corrected/ and tracking/."
-  ],
-  "meta_def1": {
-  "rule_id": "META-DEF1",
-  "rules": [
-  "NEVER edit meta files directly",
-  "All operations through scripts only"
-  ],
-  "protected_by": "validate-path.sh blocks direct write to meta/**"
-  },
-  "never_do": [
-  "directly_edit_protected_zones",
-  "skip_capture_flow_for_raw_sources",
-  "manually_modify_meta_files"
-  ]
-}
-```
-
-#### `.vault-meta/` — agent system files
-
-System directory that is **not committed to git** (.gitignore). Contains:
-
-| File/Directory       | Purpose                                         |
-| ------------------- | ----------------------------------------------- |
-| `locks/`            | Temporary directories for locks (wiki-lock.sh)  |
-| `.wiki-lock.meta`   | Meta-layer lock state                            |
-| `hook.log`          | Auto-commit log (git-auto-commit.sh)            |
-| `auto-commit.disabled` | Auto-commit disable flag                       |
-
-**Rules:**
-
-- Agent can read and write to this directory for managing system state
-- **Never commit** — this is runtime state, not project artifact
-- On failure: check lock integrity (`ls .vault-meta/locks/`), remove stale locks if needed
-
-> Canonical: `AGENTS.md#vault_meta` — agent must understand this zone when debugging lock corruption or auto-commit failures.
-
----
-
-### Delta Tracking (Phase 29)
-
-**Purpose**: Prevent waste of tokens on re-ingesting already-processed sources. Ensure contradiction resolution can trace back to original source.
-
-#### Manifest File (`raw/corrected/SRC-*/*/.manifest.json`):
-
-```json
-{
-  "original_path": "raw/SRC-001/pi-dev-docs-latest.md",
-  "corrected_path": "raw/corrected/SRC-001/pi-dev-docs-latest.md",
-  "hash_original": "sha256:abc123...",
-  "date_ingested": "2026-07-01",
-  "status": "processed"
-}
-```
-
-#### Workflow:
-
-| Step              | Action                                                                                       |
-| ----------------- | -------------------------------------------------------------------------------------------- |
-| **1. Capture**    | Agent saves original to `raw/SRC-*/*` (immutable)                                            |
-| **2. Hash check** | Calculate hash of original → check if `.manifest.json` exists with same hash                 |
-| **3a. Skip**      | If manifest exists AND corrected copy is up-to-date → skip re-ingest                         |
-| **3b. Process**   | If no manifest or stale → create corrected copy in `raw/corrected/`, write manifest, proceed |
-
-#### Contradiction Resolution:
-
-1. Agent detects contradiction → reads wiki page → gets `sources: ["raw/corrected/SRC-*/<file>.md"]`
-2. Reads `.manifest.json` for original_path + hash_original
-3. Re-reads raw/original (immutable) for comparison with current wiki facts
-4. Resolves based on cascade priority (code > docs, documented > assertion_only)
-
-> Schema ref: `process-ingest.json#step_4_corrected_copy`, `AGENTS.md#raw_corrected_zone`
-
----
-
 ## 📂 Raw Corrected Zone (`raw/corrected/`)
 
 ### Architecture: Original → Corrected → Wiki
@@ -861,68 +829,13 @@ ALLOWED_WRITE_ZONES=("raw/corrected/" "wiki/" "tracking/")  # ← agent rw zone 
 
 ---
 
-## 🔁 External Sources Update Policy (Issues #1-3 resolved)
+### Phase 3: Non-blocking Lint
 
-### Issue #1: How often to update wiki from external sources?
-
-**Solution**: Two update modes:
-
-| Mode             | Trigger                                                          | Description                                                                                              |
-| ------------------ | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| **User-requested** | User explicitly asks "update X" or "check relevance of Y"        | Agent does `web_search` → compares with current data → updates page if data changed                      |
-| **Cron (default)** | Automatically on schedule                                        | Lint script runs `check-new-sources.sh` + periodic wiki page refresh without user request                |
-
-**Rule**: Agent never does `web_search` for wiki updates in normal mode. Only on explicit user request or cron.
-
-### Issue #2: When is `web_search` higher priority than internal data?
-
-**Solution:**
-
-| Scenario                                                        | Priority                                                                     |
-| --------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| **Same source** (same URL/domain) but data changed              | ✅ External data is priority — update wiki                                       |
-| **Different sources** contradict each other                     | ⚠️ Move to Issue #4 (Authoritative Source Criteria) — separate discussion       |
-| **Facts vs opinions**                                           | Facts → web_search. Opinions/arguments → store in wiki as-is                   |
-
-**Rule**: If `web_search` is from same source as current wiki page, but data has changed — external data takes priority.
-
-### Issue #3: "Novel insight" criterion
-
-**Solution**: Clear criteria instead of subjective definition:
-
-| Type                            | Criteria                                                                                             | Action                                                 |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| **Fact synthesis**              | Gathering facts from 2+ sources without new output                                                   | ❌ Do not create new page, add to existing one           |
-| **New insight**                 | Agent makes logical step that was not explicitly stated in any source (e.g., "A + B → C")            | ✅ Flag for fixation, propose creating a page            |
-| **Contextual application**      | Formulates how to apply known concepts to user's current context                                     | ⚠️ Notes/notes, not new wiki page                        |
-
-**Rule**: Novel insight = new logical conclusion (not fact gathering). Agent must be able to explain: "Which data → which conclusion?" If chain is transparent and all steps from sources — this is synthesis, not novel insight.
-
-### Auto-ingest vs Proposal for web_search data
-
-**Rule**: Three branching scenarios — not just "existing_page vs new_topic", but "update_existing / topic_expansion / new_independent_topic".
-
-| # | Scenario | Agent Action | User Confirm? |
-|---|----------|--------------|---------------|
-| 1 | **Update existing page**: data about specific wiki page that already exists | ✅ **Auto-ingest**: web_ingest_flow → step_8b_update_page — without confirmation request |
-| 2 | **Topic expansion (creating new page)**: new page relates to existing topic in wiki. Example: Symfony exists → "Migrations in Symfony" from internet | ✅ **Auto-ingest**: web_ingest_flow → step_8a_new_page + crosslinks_to_parent_topic — without confirmation request |
-| 3 | **New independent topic**: standalone topic/entity NOT IN wiki. Example: PHP (if no page) | ⚠️ **Propose to user**: PROPOSE_SAVE_TO_USER_FIRST_PAGE_OF_NEW_TOPIC → wait for confirm → if yes: ingest (approve topic), if no: just answer |
-
-**Determination logic (process-query.json#step_1.5 + step_2.7)**:
-- Agent determines from web_search results: is there a matching wiki page/topic?
-  - ✅ Yes, specific page → `AUTO_INGEST_TO_EXISTING` (scenario 1)
-  - ✅ Yes, but new subpage/topic expansion → `AUTO_INGEST_TOPIC_EXPANSION` (scenario 2)
-  - ❌ Not in wiki at all → `PROPOSE_SAVE_TO_USER_NEW_INDEPENDENT_TOPIC` (scenario 3)
-- Step_6_discussion (discussion_with_user) in web_ingest_flow: mandatory=false — skipped for scenarios 1 and 2. MANDATORY only for scenario 3.
-
-**"First page" rule for new topic (scenario 3)**:
-- User confirm **ONLY FOR FIRST PAGE** of new independent topic
-- After approval of this topic → all subsequent pages on this topic become `topic_expansion` (auto_ingest)
-- Example: PHP — first proposal "Create PHP Best Practices?" → ✅ yes → ingest → later "Symfony PHP patterns" → auto-ingest as topic expansion
-
-**Schema ref**: `process-query.json#web_ingest_flow`, `process-query.json#step_2.7`
-
----
+- **Entry point**: `scripts/lint.sh` — single script for all lint-checks
+- **Does not block agent turn**: runs separately (can be cron-based)
+- **Output**: stdout = JSON report, stderr = human-readable summary
+- **Process-lint.json** references this script instead of inline execution of individual checks
+- **Schema ref**: `AGENTS.md#non-blocking-lint`
 
 ## 🔗 Link Conventions & Auto-Fix
 
@@ -1090,9 +1003,126 @@ Agent manages two independent modes:
 
 ---
 
-## 🔍 Search & Discovery
+## 🛡 Rules & Guardrails
 
-### Search Contract
+### Guardrails Reference
+
+Guardrails enforced via `scripts/validate-path.sh`. For path validation and protected zones schema — see `process-ingest.json` (capture flow validation).
+
+#### Schema References
+
+- `process-ingest.json` references this for capture flow validation
+- `scripts/validate-path.sh` implements the actual guardrails
+
+### Fetch Content Truncation Handling
+
+```json
+{
+  "fetch_content_truncation": {
+    "condition": "response_markdown_contains '[Content truncated...]' or output is visibly cut off mid-sentence",
+    "primary_action": "fallback to web_search(query) + get_search_content(responseId) for complete coverage",
+    "logging_verbose_template": [
+      "[!] Fetch truncation detected in X.md, length ~{N} chars",
+      "[✓] Fallback activated: web_search + get_search_content called"
+    ]
+  }
+}
+```
+
+### Protected Zones
+
+```json
+{
+  "protected_zones": {
+  "raw/**": {"owner": "user", "access": "read-only via capture flow"},
+  "raw/corrected/": {"rule_id": "RAW-CORRECTED-V1", "owner": "agent", "access": "full read/write for processed copies (scripts/raw-correct.sh)"},
+  "wiki/**": {"owner": "agent", "access": "full read/write/manage"},
+  "meta/**": {"rule": "auto-generated", "files": ["registry.json", "backlinks.json"], "rebuild_command": "./scripts/rebuild-meta.sh"},
+  "tracking/": {"rule_id": "TRACKING-V1", "owner": "agent", "access": "full read/write for ingest registry files", "note": "raw_registry.json, similarity_index.json and other tracking files. Agent writes directly."},
+  ".vault-meta/": {"rule": "gitignored-system", "files": ["locks/", ".wiki-lock.meta"], "owner": "agent", "access": "read/write for system state only", "note": "Not committed to git — contains system lock files and agent logs."}
+  },
+  "zone_def1": {
+  "rule_id": "ZONE-DEF1",
+  "raw/**": {"owner": "user", "access": "read-only via capture flow"},
+  "raw/corrected/": {"owner": "agent", "access": "full read/write for processed copies (scripts/raw-correct.sh)"},
+  "wiki/**": {"owner": "agent", "access": "full read/write/manage"},
+  "tracking/": {"owner": "agent", "access": "full read/write for registry and tracking files"},
+  "implications": ["Agent manages all wiki links/structure. User controls raw/. Agent writes to raw/corrected/ and tracking/."
+  ],
+  "meta_def1": {
+  "rule_id": "META-DEF1",
+  "rules": [
+  "NEVER edit meta files directly",
+  "All operations through scripts only"
+  ],
+  "protected_by": "validate-path.sh blocks direct write to meta/**"
+  },
+  "never_do": [
+  "directly_edit_protected_zones",
+  "skip_capture_flow_for_raw_sources",
+  "manually_modify_meta_files"
+  ]
+}
+```
+
+#### `.vault-meta/` — agent system files
+
+System directory that is **not committed to git** (.gitignore). Contains:
+
+| File/Directory       | Purpose                                         |
+| ------------------- | ----------------------------------------------- |
+| `locks/`            | Temporary directories for locks (wiki-lock.sh)  |
+| `.wiki-lock.meta`   | Meta-layer lock state                            |
+| `hook.log`          | Auto-commit log (git-auto-commit.sh)            |
+| `auto-commit.disabled` | Auto-commit disable flag                       |
+
+**Rules:**
+
+- Agent can read and write to this directory for managing system state
+- **Never commit** — this is runtime state, not project artifact
+- On failure: check lock integrity (`ls .vault-meta/locks/`), remove stale locks if needed
+
+> Canonical: `AGENTS.md#vault_meta` — agent must understand this zone when debugging lock corruption or auto-commit failures.
+
+---
+
+### Delta Tracking (Phase 29)
+
+**Purpose**: Prevent waste of tokens on re-ingesting already-processed sources. Ensure contradiction resolution can trace back to original source.
+
+#### Manifest File (`raw/corrected/SRC-*/*/.manifest.json`):
+
+```json
+{
+  "original_path": "raw/SRC-001/pi-dev-docs-latest.md",
+  "corrected_path": "raw/corrected/SRC-001/pi-dev-docs-latest.md",
+  "hash_original": "sha256:abc123...",
+  "date_ingested": "2026-07-01",
+  "status": "processed"
+}
+```
+
+#### Workflow:
+
+| Step              | Action                                                                                       |
+| ----------------- | -------------------------------------------------------------------------------------------- |
+| **1. Capture**    | Agent saves original to `raw/SRC-*/*` (immutable)                                            |
+| **2. Hash check** | Calculate hash of original → check if `.manifest.json` exists with same hash                 |
+| **3a. Skip**      | If manifest exists AND corrected copy is up-to-date → skip re-ingest                         |
+| **3b. Process**   | If no manifest or stale → create corrected copy in `raw/corrected/`, write manifest, proceed |
+
+#### Contradiction Resolution:
+
+1. Agent detects contradiction → reads wiki page → gets `sources: ["raw/corrected/SRC-*/<file>.md"]`
+2. Reads `.manifest.json` for original_path + hash_original
+3. Re-reads raw/original (immutable) for comparison with current wiki facts
+4. Resolves based on cascade priority (code > docs, documented > assertion_only)
+
+> Schema ref: `process-ingest.json#step_4_corrected_copy`, `AGENTS.md#raw_corrected_zone`
+
+---
+
+## 🔍 Search Contract
 
 **Primary**: `./scripts/wiki-search.sh --dynamic "<query>"` — analyzes intent, category priority, relevance scoring.
 
@@ -1107,29 +1137,7 @@ Agent manages two independent modes:
 
 ---
 
-### Dynamic Priority + Relevance Scoring (Phase 5)
-
-`scripts/wiki-search.sh --dynamic "query"` — dynamic category order based on query intent.
-
-**Query Intent Analysis:**
-
-- Entity keywords → `entities/`, `concepts/`, `syntheses/` priority
-- Comparison keywords (`vs`, `compared to`) → `comparisons/`, `syntheses/`, `concepts/` priority
-- Concept keywords → `concepts/`, `syntheses/`, `entities/` priority
-- Fallback: static priority (syntheses→concepts→entities)
-
-**Relevance Scoring:**
-
-1. Position weight: query in H1 = +3, body = +1 per occurrence
-2. Frequency weight: total occurrences × 1
-3. Backlink weight: mentions in other wiki pages × 5
-4. Category bonus: earlier priority category gets +10×(max_priority - index)
-
-**Usage**: `./scripts/wiki-search.sh --dynamic "query"` — results sorted by combined score descending.
-
-> Full workflow: `AGENTS.md#smart_search_priority` → extended with dynamic intent analysis.
-
----
+## **Schema Reference**: `AGENTS.md#compounding_workflow` → Full workflow defined in [process-query.json](process-query.json). Compounding decision logic is query-specific.
 
 ## 📅 Date Convention Rule
 
@@ -1141,7 +1149,24 @@ Agent manages two independent modes:
 
 ---
 
-## 🔧 Auto-Rebuild Metadata & Non-blocking Lint
+## 🔄 Schema Inheritance
+
+Process files inherit from AGENTS.md via `schema_ref` (never duplicate rules).
+
+### Canonical References
+
+| Reference                | Path                                                                                        |
+| ------------------------ | ------------------------------------------------------------------------------------------- |
+| Meta rebuild             | `./scripts/rebuild-meta.sh`                                                                 |
+| Search priority          | `process-query.json#search_priority_details`                                                |
+| Lint script              | `./scripts/lint.sh`                                                                         |
+| Contradiction resolution | `process-query.json#contradiction_resolution_flow → authoritative > temporal > user_review` |
+
+> Rule: never duplicate AGENTS.md rules in process files. Always add `schema_ref` for canonical source.
+
+---
+
+## 🔧 Auto-Rebuild Metadata
 
 ### Meta Rebuild Path
 
@@ -1158,26 +1183,28 @@ Agent manages two independent modes:
 
 > Full integration flow: `process-ingest.json#step_3a` (full), `process-query.json#post_check`, `process-lint.json#check_id_7`
 
-### Auto-update Index
+---
+
+## 📄 Auto-update Index
 
 `./scripts/rebuild-meta.sh --index-only` → rebuilds `wiki/index.md` (H1 headers + first sentences per category)
 
 **Trigger**: Ingest process after create_page/update_existing. Lint after link_validation.
 
-> Logic details: script parses wiki/*/_.md, groups by subdirectory, sorts alphabetically.
+> Logic details: script parses wiki/\*_/_.md, groups by subdirectory, sorts alphabetically.
 
-### Non-blocking Lint (Phase 3)
+## 🔄 Non-blocking Lint (Phase 3)
 
 `scripts/lint.sh` — autonomous lint-audit script that does not block agent turn.
 
-#### When Called
+### When Called
 
 | Process            | Trigger                                                                                      |
 | ------------------ | -------------------------------------------------------------------------------------------- |
 | **Standalone**     | `./scripts/lint.sh [--quiet] [--skip-checks ID1,ID2]` — can be run separately or by cron    |
 | **Process-lint**   | Instead of inline lint → call `./scripts/lint.sh --quiet`                                    |
 
-#### How to Use
+### How to Use
 
 ```bash
 # Full check (stdout = JSON report, stderr = human-readable)
@@ -1190,7 +1217,7 @@ cd /path/to/loomana && ./scripts/lint.sh --quiet
 cd /path/to/loomana && ./scripts/lint.sh --skip-checks 3,5
 ```
 
-#### Output Format (JSON on stdout)
+### Output Format (JSON on stdout)
 
 ```json
 {
@@ -1217,7 +1244,7 @@ cd /path/to/loomana && ./scripts/lint.sh --skip-checks 3,5
 }
 ```
 
-#### Checks Performed by Script
+### Checks Performed by Script
 
 | Check ID | Name                  | Script                                     | Result                                                    |
 | -------- | --------------------- | ------------------------------------------ | --------------------------------------------------------- |
@@ -1233,14 +1260,14 @@ cd /path/to/loomana && ./scripts/lint.sh --skip-checks 3,5
 | 10       | Text similarity scan  | `text-similarity.sh --scan-all`            | matches[] with similarity_score, file1, file2             |
 | 11       | Hot cache stale check | `check-wiki-changes.sh`                    | WIKI CHANGES DETECTED / no changes                        |
 
-#### Why This Matters
+### Why This Matters
 
 - **Does not block agent turn**: lint runs separately, does not require inline execution
 - **Scalability**: can be run by cron (e.g., every 4 hours)
 - **Single entry point**: all checks in one script → simple call from any process
 - **JSON output for machine parsing**: stdout = structured report, stderr = human-readable
 
-#### Cron example (optional)
+### Cron example (optional)
 
 ```bash
 # crontab -e — automatic lint every N hours
@@ -1249,26 +1276,31 @@ cd /path/to/loomana && ./scripts/lint.sh --skip-checks 3,5
 
 ---
 
-## 🔄 Schema Inheritance & Routing
+## 🎯 Dynamic Priority + Relevance Scoring (Phase 5)
 
-### Schema Inheritance
+`scripts/wiki-search.sh --dynamic "query"` — dynamic category order based on query intent.
 
-Process files inherit from AGENTS.md via `schema_ref` (never duplicate rules).
+**Query Intent Analysis:**
 
-#### Canonical References
+- Entity keywords → `entities/`, `concepts/`, `syntheses/` priority
+- Comparison keywords (`vs`, `compared to`) → `comparisons/`, `syntheses/`, `concepts/` priority
+- Concept keywords → `concepts/`, `syntheses/`, `entities/` priority
+- Fallback: static priority (syntheses→concepts→entities)
 
-| Reference                | Path                                                                                        |
-| ------------------------ | ------------------------------------------------------------------------------------------- |
-| Meta rebuild             | `./scripts/rebuild-meta.sh`                                                                 |
-| Search priority          | `process-query.json#search_priority_details`                                                |
-| Lint script              | `./scripts/lint.sh`                                                                         |
-| Contradiction resolution | `process-query.json#contradiction_resolution_flow → authoritative > temporal > user_review` |
+**Relevance Scoring:**
 
-> Rule: never duplicate AGENTS.md rules in process files. Always add `schema_ref` for canonical source.
+1. Position weight: query in H1 = +3, body = +1 per occurrence
+2. Frequency weight: total occurrences × 1
+3. Backlink weight: mentions in other wiki pages × 5
+4. Category bonus: earlier priority category gets +10×(max_priority - index)
+
+**Usage**: `./scripts/wiki-search.sh --dynamic "query"` — results sorted by combined score descending.
+
+> Full workflow: `AGENTS.md#smart_search_priority` → extended with dynamic intent analysis.
 
 ---
 
-### Wiki Operation Routing Contract
+## 🚫 Wiki Operation Routing Contract
 
 **Rule**: All wiki create/update operations MUST go through process-ingest.json or process-query.json steps. Never direct edit() without process flow.
 
@@ -1280,3 +1312,5 @@ Process files inherit from AGENTS.md via `schema_ref` (never duplicate rules).
  | Web search → new independent topic (first page) | process-query.json#web_ingest_flow → process-ingest.json | `new_independent_topic_not_in_wiki` | ✅ Required only for first page of this topic (scenario 3) |
  | Update existing page with new facts | process-ingest.json#step_8b_update_page | source_identifies_existing_page | ❌ Auto (no confirm) |
  | Simple query answer (no save) | process-query.json only | no compounding_flag | N/A |
+
+---

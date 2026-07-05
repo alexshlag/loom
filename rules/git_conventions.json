@@ -1,0 +1,58 @@
+{
+  "rule_id": "GIT-CONVENTIONS-V1",
+  "protocol_name": "Git Conventions",
+  "description": "Commit format, allowed/prohibited commands, pre-commit memory sync workflow",
+  "commit_format": {
+    "pattern": "<type> | <scope>: <description>",
+    "types": ["feat", "fix", "refactor", "schema", "lint", "ingest", "query"],
+    "scope": "component or module affected (lowercase)",
+    "description": "Summary of change (lowercase, imperative)",
+    "example": "feat | schema: add external_sources_policy.md extraction target"
+  },
+  "allowed_commands": [
+    { "command": "git status --short", "purpose": "Check repository state" },
+    { "command": "git add wiki/", "purpose": "Stage wiki changes only" },
+    { "command": "git rm --cached", "purpose": "Remove from index (not working tree)" },
+    { "command": "git add -A", "purpose": "Safe staging, respects .gitignore automatically" }
+  ],
+  "prohibited_commands": [
+    { "command": "git add *", "reason": "System junk, temp files, logs — bloated index" },
+    { "command": "git commit -a", "reason": "No staged commits allowed — must be explicit" }
+  ],
+  "pre_commit_memory_sync": {
+    "trigger": "dev_mode_git_commit",
+    "applies_to_files": ["AGENTS.md", "RULES.md", "process-*.json", "PLAN.md", "FEATURES_PLAN.md"],
+    "steps": [
+      {
+        "step": 1,
+        "action": "Update working_memory.json: set focus_node = current task name; filter completed tasks from next_steps_todo"
+      },
+      {
+        "step": 2,
+        "action": "Update hot.md Active Project with Phase status + what was done"
+      }
+    ],
+    "schema_ref_for_algorithm": "rules/session_context_rules.json",
+    "guardrails": [".git/hooks/pre-commit", "scripts/validate-path.sh"]
+  },
+  "regular_wiki_memory_sync": {
+    "rule_id": "WM-SYNC-AFTER-WIKI-V1",
+    "trigger": "page_created_or_updated",
+    "steps": [
+      {
+        "step": 1,
+        "action": "Update working_memory.json: focus_node + next_steps_todo (auto-cleanup) + query_summary"
+      },
+      {
+        "step": 2,
+        "action": "Update hot.md System State → Recent Changes with summary of wiki changes"
+      }
+    ],
+    "scope": "applies to all wiki operations regardless of work_mode",
+    "note": "Works alongside Pre-commit Memory Sync Rule (dev-mode only) — both can trigger simultaneously"
+  },
+  "canonical_ref": "AGENTS.md#git_conventions",
+  "process_references": {
+    "lint_reference_note": "Previously referenced as AGENTS.md#git-conventions in process-lint.json — now use rules/git_conventions.json#rule_id"
+  }
+}
