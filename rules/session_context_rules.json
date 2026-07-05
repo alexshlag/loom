@@ -5,17 +5,17 @@
   "description": "Memory architecture: Three-Layer Model + save triggers + read patterns + operational constraints",
   "layers": {
     "working_memory.json": {
-      "role": "current-session operational memory \u2014 focus_node, open_pages, next_steps_todo, dead_ends, query_summary",
+      "role": "current-session operational memory - focus_node, open_pages, next_steps_todo, dead_ends, query_summary",
       "lifespan": "short: one session. Cleared on dismissal/compaction.",
       "rw": "agent writes every turn"
     },
     "hot.md": {
-      "role": "long-term snapshot \u2014 active project/session context, wiki changes summary. Survives compaction.",
+      "role": "long-term snapshot - active project/session context, wiki changes summary. Survives compaction.",
       "lifespan": "between sessions. Updated after important actions AND on any wiki page change.",
       "rw": "agent writes snapshot (not full log tape)",
       "structure": {
-        "active_project": "WORK_MODE: project \u2014 name, focus_node, related_pages, findings, next_steps",
-        "session_context": "WORK_MODE: query/discussion \u2014 topic, pages_read, key_findings",
+        "active_project": "WORK_MODE: project - name, focus_node, related_pages, findings, next_steps",
+        "session_context": "WORK_MODE: query/discussion - topic, pages_read, key_findings",
         "system_state": "Active Threads + Recent Changes (updated on every wiki create/update)"
       }
     },
@@ -61,7 +61,7 @@
       {
         "event": "user_message",
         "rule_id": "HOT-SAVE-QUERY-V1",
-        "target_section": "Active Session Context \u2192 topic, query_intent"
+        "target_section": "Active Session Context -> topic, query_intent"
       },
       {
         "event": "action_completed",
@@ -72,13 +72,13 @@
         "event": "wiki_modified",
         "rule_id": "HOT-WIKI-CHANGES-V1",
         "priority": "immediate",
-        "target_section": "System State \u2192 Recent Changes"
+        "target_section": "System State -> Recent Changes"
       }
     ],
     "concurrent_handling": {
       "description": "When multiple triggers fire simultaneously, write ALL relevant sections in one pass (not sequentially)",
       "example": [
-        "user_message + action_completed \u2192 query_intent AND pages_read written together"
+        "user_message + action_completed -> query_intent AND pages_read written together"
       ]
     }
   },
@@ -129,7 +129,7 @@
     },
     {
       "rule_id": "NO_APPEND_TO_JSON",
-      "value": "Never append to JSON files \u2014 read full file \u2192 modify \u2192 write complete document"
+      "value": "Never append to JSON files - read full file -> modify -> write complete document"
     },
     {
       "rule_id": "LOG_APPEND_ONLY",

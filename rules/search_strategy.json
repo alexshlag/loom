@@ -11,7 +11,7 @@
     {
       "step": 1,
       "pattern": "grep -m 30 \"<keyword>\" wiki/index.md",
-      "condition": "if >=2 matches \u2192 use"
+      "condition": "if >=2 matches -> use"
     },
     {
       "step": 2,
@@ -27,7 +27,7 @@
     "rule": "only wiki-search.sh --dynamic first for search"
   },
   "if_broken": {
-    "action": "STOP_SEARCH \u2192 ./scripts/wiki-search.sh --dynamic <query>",
+    "action": "STOP_SEARCH -> ./scripts/wiki-search.sh --dynamic <query>",
     "description": "If search fails, stop and retry with dynamic mode"
   },
   "relevance_scoring": {
@@ -89,11 +89,11 @@
   "scoring_thresholds": [
     {
       "score_min": 5,
-      "action": "Strong candidate \u2014 suggest crosslink with confidence"
+      "action": "Strong candidate - suggest crosslink with confidence"
     },
     {
       "score_range": "3-4",
-      "action": "Weak signal \u2014 suggest review, agent decides"
+      "action": "Weak signal - suggest review, agent decides"
     },
     {
       "score_max": 2,
