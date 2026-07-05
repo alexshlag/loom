@@ -271,7 +271,7 @@
 
 ---
 
-*Last update: 2026-07-05 | Completed: Phase 16, Phase 14.5, Phases 15.x/y, C1-C8. AGENTS.md: 676 lines (~39KB). Next: remaining audit blocks (Delta Tracking) or planned audit phase.*
+*Last update: 2026-07-05 | Completed: Phase 16, Phase 14.5, Phases 15.x/y, C1-C8, Phase 32.z.1 (Cyrillic cleanup + schema_ref standardization). AGENTS.md: 676 lines (~39KB). Next: remaining audit blocks or planned audit phase.*
 ### 🚨 Phase 32.z: Rules/*.json Cyrillic Cleanup + Schema Ref Standardization 🔴 P0
 
 **Цель**: Все файлы rules/*.json должны быть на английском (RULES.md #2) и иметь schema_ref_to_agent_rules.
@@ -306,4 +306,15 @@
 
 > **R07-Compliance**: Не удалять примеры/edge cases без аудита (они работают как conditional logic).
 
+---
+
+---
+### ✅ Phase 32.z.1 COMPLETE: Cyrillic Cleanup + Schema Ref Standardization 🔴 DONE
+
+**Результат**: Все 25 files rules/*.json теперь на английском (RULES.md #2 compliance).
+- ~400+ Cyrillic segments → English translations across 12 files
+- `schema_ref_to_agent_rules` added to 21 missing files, 4 already had it
+- All JSON validated — no structural violations
+
+**Commit**: `a8568aa fix | schema: standardize all rules/*.json (Cyrillic→EN, schema_ref added)`
 ---
