@@ -597,3 +597,8 @@ AGENTS.md reduced from ~1305 to ~1198 lines (-107 lines). lint.sh passes.
 C3: Extracted Search & Discovery rules into rules/search_strategy.json SD-V2 (2595 bytes)
 C4: Consolidated Error Handling Protocol into rules/error_handling.json EHP-V2 (2720 bytes)
 AGENTS.md reduced to ~1030 lines (-21% from original 1305). lint.sh passes.
+
+## [2026-07-05] schema | Phase 32.1 Cycles 5 - Silent Output + Execution Contract extraction
+C5a: Replaced full Silent Output section with brief ref → rules/silent_output.json (already existed)
+C5b: Replaced full Execution Contract section with brief ref → rules/execution_contract.json (already existed)
+AGENTS.md now 742 lines. lint.sh passes.
