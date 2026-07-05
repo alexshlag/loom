@@ -61,7 +61,10 @@
     }
   },
   "trigger_condition": "user_asks_question",
-  "not_for": ["ingest_processing", "wiki_validation"],
+  "not_for": [
+    "ingest_processing",
+    "wiki_validation"
+  ],
   "steps": [
     {
       "step_id": "0",
@@ -94,12 +97,14 @@
           "action_if_empty": "warn_and_prompt_to_fill"
         }
       ],
-      "constraints": ["Never use find/ls for check — only count *.md"]
+      "constraints": [
+        "Never use find/ls for check — only count *.md"
+      ]
     },
     {
       "step_id": "0.75",
       "name": "broken_link_awareness",
-      "description": "Проверить известные битые ссылки из кэша WM — не сканировать wiki.",
+      "description": "Check known broken links from WM cache — do not scan wiki.",
       "structure": [
         {
           "step_1": "read working_memory.json -> check last_known_broken_links key"
@@ -114,7 +119,9 @@
           "schema_ref": "process-ingest.json#raw_source_link_repair"
         }
       ],
-      "constraints": ["Do NOT scan wiki for broken links — only use WM cache"]
+      "constraints": [
+        "Do NOT scan wiki for broken links — only use WM cache"
+      ]
     },
     {
       "step_id": "0.76",
@@ -204,12 +211,12 @@
           "actions": [
             {
               "if_topic_expansion_detected": "AUTO_INGEST_TOPIC_EXPANSION — no user confirmation required, create new wiki page + links to existing topic via web_ingest_flow",
-              "reasoning": "Новая страница относится к существующей теме в wiki (Symfony→миграции) → расширение темы, auto-ingest",
+              "reasoning": "New page relates to existing topic in wiki (Symfony→migrations) → topic expansion, auto-ingest",
               "example": "Symfony exists in wiki → new page 'Migrations in Symfony' from internet data → auto-ingest"
             },
             {
               "if_new_independent_topic_detected": "PROPOSE_SAVE_TO_USER_NEW_INDEPENDENT_TOPIC — require user confirmation before creating first page for this topic",
-              "reasoning": "Самостоятельная тема/сущность, которой нет в wiki (PHP) → предложение пользователю + ожидание подтверждения",
+              "reasoning": "Standalone topic/entity not found in wiki (PHP) → propose to user + wait for confirmation",
               "example": "PHP is new to wiki → propose 'Create PHP Best Practices' → wait confirm"
             },
             {
@@ -377,13 +384,13 @@
       "topic_expansion_rule": {
         "condition": "new_page_relates_to_existing_topic_in_wiki",
         "action_if_met": "AUTO_INGEST_TOPIC_EXPANSION — TRANSITION_TO process-ingest.json via web_ingest_flow, create_new_expansion_of_existing (no user_confirm required)",
-        "description_for_expansion": "Новая страница относится к существующей теме в wiki → auto-ingest. Пример: Symfony есть в wiki → новая страница 'Migrations in Symfony' → расширение темы, без подтверждения",
+        "description_for_expansion": "New page relates to existing topic in wiki → auto-ingest. Example: Symfony exists in wiki → new page \"Migrations in Symfony\" → topic expansion, no confirmation needed",
         "note": "Agent creates NEW page + adds crosslinks to existing topic — but this is automatic, no user_confirm needed"
       },
       "new_independent_topic_rule": {
         "condition": "independent_topic_not_found_in_wiki",
         "action_if_met": "PROPOSE_SAVE_TO_USER_NEW_INDEPENDENT_TOPIC — wait for user_confirm before TRANSITIONING",
-        "description_for_new": "Самостоятельная тема, которой нет в wiki → предложение пользователю. Confirm required ONLY FOR FIRST PAGE OF THIS TOPIC.",
+        "description_for_new": "Independent topic not found in wiki → propose to user. Confirm required ONLY FOR FIRST PAGE OF THIS TOPIC.",
         "post_first_approval_note": "Once topic approved in wiki → subsequent pages for same topic become topic_expansion (auto_ingest)"
       },
       "guardrail": {
@@ -506,7 +513,7 @@
       "scenario_2_topic_expansion_create_new_page": {
         "condition": "web_search_data_relates_to_existing_wiki_topic (new page but same topic)",
         "action": "AUTO_INGEST: create_new_expansion_of_existing via web_ingest_flow → step_8a_new_page + crosslinks, no user_confirm required",
-        "note": "Это НЕ 'existing_page_update' — это создание НОВОЙ страницы, но относящейся к существующей теме. Auto-ingest, без подтверждения. Пример: Symfony есть → новая страница 'Migrations in Symfony'"
+        "note": "This is NOT 'existing_page_update' — this is creating a NEW page relating to an existing topic. Auto-ingest, no confirmation required. Example: Symfony exists → new page 'Migrations in Symfony'"
       },
       "scenario_3_new_independent_topic": {
         "condition": "web_search_data_is_new_independent_topic_not_found_in_wiki",
@@ -597,7 +604,13 @@
     "scenarios": [
       {
         "name": "wiki_has_data",
-        "flow": ["step_0", "step_1", "step_2", "step_2.3", "step_3"],
+        "flow": [
+          "step_0",
+          "step_1",
+          "step_2",
+          "step_2.3",
+          "step_3"
+        ],
         "description": "Wiki search returns results → proceed to synthesis"
       },
       {
@@ -613,7 +626,11 @@
       },
       {
         "name": "wiki_empty_no_external",
-        "flow": ["step_0", "step_1", "step_1.5_web_search_fail"],
+        "flow": [
+          "step_0",
+          "step_1",
+          "step_1.5_web_search_fail"
+        ],
         "description": "Wiki empty → web search also fails → inform user no external data found"
       }
     ]

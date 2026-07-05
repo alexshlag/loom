@@ -2,9 +2,23 @@
 
 ---
 
-## ⚡ Current Task — ACTIVE
+## ⚡ Completed Sessions
 
-### Phase 14: Compact Rules & Process Files ✅ COMPLETED (2026-07-05)
+### Phase 16: Wiki Documentation Language Standardization ✅ COMPLETED (2026-07-05)
+**Цель**: Перевести всю инструкционную документацию на английский согласно RULES.md #2.
+**Статус:** 🟢 **COMPLETED** — DONE: AGENTS.md full translation, RULES.md full translation, process-query.json Russian strings cleanup (6 strings).
+
+**Completed:**
+- ✅ AGENTS.md → 1324 lines fully translated to English (~50KB)
+- ✅ RULES.md → 117 lines fully translated to English (~6KB)
+- ✅ process-query.json → 6 Russian descriptions replaced with English equivalents
+- ✅ All agent instructions now in English (as required by RULES.md #2)
+- ✅ Wiki page content language policy preserved (bilingual sources allowed)
+
+**Files modified:**
+- AGENTS.md — full translation
+- RULES.md — full translation
+- process-query.json — 6 Russian strings → English equivalents
 **Цель**: Уменьшить context window AGENTS.md + process-файлов. Проверить, что агент сохраняет способность выполнять сложные операции.
 **Статус:** 🟢 **COMPLETED** — DONE: RULES.md (-57%), process files (-75%), AGENTS.md compaction + schema_refs validation + system testing.
 

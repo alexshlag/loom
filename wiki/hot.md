@@ -1,56 +1,44 @@
 ---
 tags: [cache, system]
-date: 2026-07-04
-category: cache
+date: 2026-07-05
+category: note
 sources: []
 related: []
 ---
-# Wiki Hot Cache — Last Updated: 2026-07-04
+# Wiki Hot Cache — Last Updated: 2026-07-05
 
 ## Active Project (WORK_MODE: project)
-- **Project**: Loomana wiki — Phase 14+15 compaction + routing fix
-- **Status**: IN PROGRESS 🟥
-- **Focus node**: process-query.json → process-ingest.json mandatory transition
-- **Related wiki pages**: `process-query.json`, `AGENTS.md`
+- **Project**: Loomana wiki architecture optimization + language standardization
+- **Status**: 🟢 COMPLETED SESSION — Phase 14.5, 15, 15.x, 16 all done
+- **Focus node**: Documentation translation (AGENTS.md → English), compaction validation, system testing
+- **Related wiki pages**: `rules/contradiction_resolution.json`, `rules/tag-guidelines.json`, `rules/path-guard-check.json`
 - **Completed actions**: 
-  - step_2.7 added: mandatory gateway for web_search → user_confirm → process-ingest.json
-  - All direct wiki-write actions replaced with PROPOSE_*_TO_USER + transition_after_confirm
-  - Guardrails added to steps 2, 2.5, 2.6, 3
-- **Next steps**: Verify AGENTS.md global rule exists; test query flow end-to-end
+  - AGENTS.md full translation to English (~1324 lines)
+  - RULES.md full translation to English (~117 lines)  
+  - process-query.json: 6 Russian strings → English equivalents
+  - Rules extracted: contradiction_resolution.json, tag-guidelines.json, path-guard-check.json
+  - Schema refs validated (all 25+ references working)
 
 ## Active Session Context
-- **Topic**: Fix process-query.json routing — all wiki-write must go through process-ingest.json
-- **User query intent**: Audit + fix all points where process-query creates/updates wiki pages directly
-- **Pages read**: `process-query.json`, `AGENTS.md`
+- **Topic**: Complete Phase 14.5 (contradiction resolution), Phase 15 (tagging), Phase 15.x (RULES.md:10 audit), Phase 16 (language standardization)
 - **Key findings**: 
-  - Found 7+ direct wiki-write actions bypassing ingest flow
-  - All replaced with proposals → user_confirm → transition to process-ingest.json
-  - Added step_2.7 mandatory gateway for web_search sources
+  - All agent instructions now English-only per RULES.md #2
+  - Contradiction resolution flow restored with cascade priority + evidence_grade_sub_priority
+  - Tagging system guidelines created; domain-specific tags enforced via lint validation
 
 ## System State
 ### Active Threads
-- Phase 14: Compact Rules + AGENTS.md → IN PROGRESS 🟥
-- **NEW**: Phase 15: process-query → process-ingest routing fix — IN PROGRESS 🟥
-- Issue #39: Context bloat → AGENTS.md compaction pending
+- Phase 14.5: Context bloat reduction → ✅ COMPLETED (RULES.md extracted, schema_refs valid)
+- Phase 15: Tagging system → ✅ COMPLETED (tag-guidelines.json + audit remediation)
+- Phase 15.x: RULES.md:10 audit → ✅ COMPLETED (compounding_logic consolidated, lint→ingest bridge)
+- Phase 16: Language standardization → ✅ COMPLETED (AGENTS.md/RULES.md translated)
 
 ### Recent Changes
-- **2026-07-05**: process-query.json routing fix — all wiki-write actions routed through process-ingest.json via step_2.7 gateway
-- **2026-07-03**: Wiki health check — resolved all 7 orphan pages via crosslinks, fixed contradictions in natural-memory.md and python-nixos-development.md
-- **2026-07-01**: Phase 23 (Unified Pass Architecture) fully completed — unified-pass.sh replaces 3 separate script walks
+- **2026-07-05**: Complete documentation language standardization — AGENTS.md + RULES.md fully translated to English; process-query.json Russian strings cleaned
+- **2026-07-05**: Contradiction resolution flow restored (rules/contradiction_resolution.json) with cascade priority, evidence grades, fallback chain
+- **2026-07-05**: Tagging system created (rules/tag-guidelines.json); 36/38 pages audited and fixed to domain-specific tags
+- **2026-07-05**: RULES.md:10 audit remediation — compounding_decision_logic consolidated, path-guard-check.json created, lint→ingest bridge added
+- **2026-07-04**: process-query.json routing fix — all wiki-write actions routed through process-ingest.json via step_2.7 gateway
 
-- `2026-07-05 15:00` — **System change**: Updated web_ingest_flow logic to distinguish three scenarios (update_existing / topic_expansion / new_independent_topic). Auto-ingest now covers both scenario 1 AND scenario 2; user_confirm only required for first page of scenario 3.
-## Session Context — 2026-07-04 Tag Audit
-**Status**: ✅ Complete. All entity/concept pages now have ≥3 domain-specific tags per tag-guidelines.json. Generic type-tags removed from 2 pages. Next: Phase 15.1 (aliases for discoverability).
-
-## Session Context — 2026-07-04 Final State
-**Status**: ✅ Tag audit complete. All entity/concept pages have ≥3 domain tags. Orphan page archived to raw/. Hot cache updated.
-**Next**: Phase 15.1 (aliases for discoverability) + contradiction resolution (soft, optional).
-
-## Session Context — 2026-07-05 Search Contract Fix
-**Status**: ✅ Search strategy fixed in process-query.json — replaced pseudo-actions with wiki-search.sh --dynamic commands. English-only enforced across all instructions.
-**Changes applied**: AGENTS.md#Search Contract added, RULES.md language rule added, 3 Cyrillic constraints → English, 6 pseudo-actions → structured steps.
-**Next**: Phase 14 (AGENTS.md compaction) + Phase 15 (Tagging System).
-
-## Recent Changes — 2026-07-05
-- **twig-templating.md** updated: added official twig.symfony.com features (Fast/Secure/Flexible, PHP comparison, ecosystem)
-- **index.md** rebuilt via rebuild-meta.sh --index-only
+## Session Context — 2026-07-05 Final State
+**Status**: ✅ All four phases completed today (14.5, 15, 15.x, 16). System tested: schema_refs valid, scripts executable, lint working. Issues #39, #42, #43, #44 resolved. Session paused — next steps: verify test suite, run full lint.sh, consider Phase 15.1 (aliases).

@@ -1,117 +1,117 @@
-# СИСТЕМНЫЙ РЕГЛАМЕНТ РАЗРАБОТКИ КОДА (ДЛЯ ИИ-АГЕНТА)
+# CODE DEVELOPMENT SYSTEM REGULATION (FOR AI AGENT)
 
-## 1. ФУНДАМЕНТАЛЬНЫЕ ПРИНЦИПЫ
-* **KISS:** Самое простое решение. Без сверх-архитектуры.
-* **DRY:** Не дублируй логику — выноси в функции/модули.
-* **YAGNI:** Реализуй только то, что запрошено. Без "на будущее".
-* **Single Responsibility:** Один модуль = одна задача.
+## 1. FUNDAMENTAL PRINCIPLES
+* **KISS:** The simplest solution. No super-architecture needed.
+* **DRY:** Do not duplicate logic — extract to functions/modules.
+* **YAGNI:** Implement only what is requested. No "for the future."
+* **Single Responsibility:** One module = one task.
 
-## 2. ЧИТАЕМОСТЬ И СТИЛЬ
-* Осмысленные имена на английском (никаких `a`, `b`).
-* Официальный стайл-гайд языка (PEP 8, effective Go, TS guidelines).
-* Минимум комментариев — код самодостаточен. Bash/awk/jq: комментарии "что делает" обязательны в начале и на сложных pipe.
+## 2. READABILITY & STYLE
+* Meaningful names in English (no `a`, `b`).
+* Official language style guide (PEP 8, effective Go, TS guidelines).
+* Minimal comments — code is self-documenting. Bash/awk/jq: "what it does" comments mandatory at beginning and on complex pipes.
 
-**ЯЗЫК ИНСТРУКЦИЙ ДЛЯ АГЕНТА:** Все инструкции для агентов wiki (process-файлы, rules/*.json, AGENTS.md) пишутся **только на английском**. Названия файлов, переменные, комментарии — английский. Исключение: контент wiki-страниц может быть на любом языке.
+**AGENT INSTRUCTION LANGUAGE:** All agent instructions for wiki (process files, rules/*.json, AGENTS.md) must be written **only in English**. File names, variables, comments — in English. Exception: wiki page content may be in any language.
 
-## 3. НАДЁЖНОСТЬ
-* Валидируй все внешние данные (null/undefined checks).
-* Явная обработка ошибок — никогда не swallow exceptions.
-* Чистые функции, минимизация side effects.
+## 3. RELIABILITY
+* Validate all external data (null/undefined checks).
+* Explicit error handling — never swallow exceptions.
+* Pure functions, minimize side effects.
 
-## 4. ФОРМАТ ВЫДАЧИ
-* Только рабочий код — без "воды".
-* Без заглушек `// тут будет логика`.
-* Краткое пояснение только для ключевых архитектурных решений.
+## 4. OUTPUT FORMAT
+* Only working code — no "fluff."
+* No stubs `// logic goes here`.
+* Brief explanation only for key architectural decisions.
 
-## 5. АРХИТЕКТУРА СКРИПТОВ (JSON & LLM-WIKI)
-* JSON парсинг → `jq`, Markdown → `awk/sed/grep` в отдельных скриптах, не промпте.
-* Идемпотентность — повторный запуск не дублирует записи.
-* Каждый скрипт: `set -euo pipefail`, пути в кавыках.
+## 5. SCRIPT ARCHITECTURE (JSON & LLM-WIKI)
+* JSON parsing → `jq`, Markdown → `awk/sed/grep` in separate scripts, not in prompts.
+* Idempotency — re-running does not duplicate entries.
+* Every script: `set -euo pipefail`, paths quoted.
 
-## 6. АВТОМАТИЗАЦИЯ ЛИНТИНГА
-* Валидация входящих данных → exit code >0 при ошибке (чтобы агент мог исправить).
-* Атомарная запись: `.tmp` + `mv` только при успехе.
-* Smart-поиск: Bash-скрипт с зашитой очисткой от Regex-инъекций, не силами ИИ.
+## 6. LINT AUTOMATION
+* Input data validation → exit code >0 on error (so agent can fix).
+* Atomic write: `.tmp` + `mv` only on success.
+* Smart search: Bash script with built-in Regex-injection cleanup, not AI-driven.
 
-## ПРАВИЛО АВТОМАТИЗАЦИИ (ПЕРЕНОС В BASH)
-* Каждая задача → отдельный Bash-скрипт с аргументами и exit code.
-* Логирование: понятные сообщения "Ошибка в строке Х: формат JSON".
-* `--help` в каждом скрипте для быстрого recall флагов.
+## AUTOMATION RULE (TRANSFER TO BASH)
+* Every task → separate Bash script with arguments and exit code.
+* Logging: clear messages "Error in line X: JSON format."
+* `--help` in every script for quick flag recall.
 
-## 7. FIX PRINCIPLE — Исправляй инструменты, не документы
-Баги wiki → исправляются в `scripts/` и инструкциях, не в `wiki/**`. Противоречивые данные = симптом ошибки процесса (ingest/query/lint). Страница wiki переписывается только если источник изменился.
+## 7. FIX PRINCIPLE — Fix tools, not documents
+Wiki bugs → fixed in `scripts/` and instructions, not in `wiki/**`. Contradictory data = symptom of process error (ingest/query/lint). Wiki page rewritten only if source changed.
 
-## 8. SCHEMA REF OPTIMIZATION — Оптимизация ссылок
+## 8. SCHEMA REF OPTIMIZATION — Link optimization
 
-Инструкции `process-*.json` ссылаются на правила через `schema_ref`. Битые ссылки → исправляй по алгоритму:
+`process-*.json` instructions reference rules via `schema_ref`. Broken links → fix per algorithm:
 
-### Алгоритм исправления
-1. **Ищи в `rules/*.json`** — правило могло быть перенесено, но ссылка не обновлена.
-2. **Интеллектуальное сопоставление**: ключевые слова + семантика (не только точные совпадения).
-3. **Если не найдено:**
-   - Реализовано в скрипте → **удали ссылку** (скрипт сам — документация)
-   - Используется многократно → **создай `rules/<name>.json`** + `schema_ref`
-   - Одиночное правило → **запиши inline**, не удаляй
+### Fix Algorithm
+1. **Search in `rules/*.json`** — rule may have been moved but link not updated.
+2. **Intelligent matching**: keywords + semantics (not just exact matches).
+3. **If not found:**
+   - Implemented in script → **remove link** (script is self-documenting)
+   - Used repeatedly → **create `rules/<name>.json`** + `schema_ref`
+   - Single-use rule → **write inline**, do not remove
 
-### Примеры и практика: `rules/schema-ref-examples.md`
+### Examples and practice: `rules/schema-ref-examples.md`
 
-## 8.1 GIT WORKFLOW — Commit после задачи
+## 8.1 GIT WORKFLOW — Commit after task
 
-После завершения задачи:
-1. Проверь работоспособность wiki
-2. **Обнови dev-документы:**
-   - `issues.md` → удали полностью закрытые баги, оставь только открытые + текущие
-   - `PLAN.md`, `FEATURES_PLAN.md` → обнови статусы фаз, отметь текущую задачу
+After completing a task:
+1. Verify wiki functionality
+2. **Update dev documents:**
+   - `issues.md` → fully close resolved bugs, leave only open + current ones
+   - `PLAN.md`, `FEATURES_PLAN.md` → update phase statuses, mark current task
 3. **Git commit:**
    ```bash
    git add -A && git commit -m "<type> | <scope>: <description>"
    ```
 
-**Формат комита:** `<type> | <scope>: <description>` (type: feat|fix|refactor|schema|lint|ingest|query)
+**Commit format:** `<type> | <scope>: <description>` (type: feat|fix|refactor|schema|lint|ingest|query)
 
-## 9. КОМПАКТИЗАЦИЯ ИНСТРУКЦИЙ — Лаконичность без потери логики
+## 9. INSTRUCTION COMPACTIFICATION — Conciseness without losing logic
 
-LLM-агент имеет ограниченный context window. Каждый токен конкурирует с реальными данными.
+LLM agent has limited context window. Every token competes with real data.
 
-**Р01: Не дублировать существующие правила (schema_ref)**
-Есть в `rules/` → используй `schema_ref`. Запрещено писать full description inline, если файл существует.
+**R01: Do not duplicate existing rules (schema_ref)**
+Exists in `rules/` → use `schema_ref`. Writing full description inline is prohibited if file exists.
 
-**Р02: Не повторять один и тот же смысл**
-Каждое правило пишется ОДИН раз. name/description/instruction говорят одно — убери дубль. Разные аспекты (что/ограничения/примеры) — это multi-layer spec, не дубль.
+**R02: Do not repeat the same meaning**
+Each rule written ONCE. name/description/instruction say one thing — remove duplication. Different aspects (what/constraints/examples) — this is multi-layer spec, not duplicate.
 
-**Р03: Минимальный контекст без потери логики**
-Убрать verbose списки (>5 → вынести в `rules/`). Примеры и edge cases → в process-файлах или `rules/`. Default assumption: agent already knows basic concepts.
+**R03: Minimal context without losing logic**
+Remove verbose lists (>5 → move to `rules/`). Examples and edge cases → in process files or `rules/`. Default assumption: agent already knows basic concepts.
 
-**Р04: Process-specific детали → process-файлы (progressive disclosure)**
-Инструкции конкретного процесса → соответствующий `process-*` файл. AGENTS.md → только schema_ref, не полные описания.
+**R04: Process-specific details → process files (progressive disclosure)**
+Instructions for specific process → corresponding `process-*` file. AGENTS.md → only schema_ref, not full descriptions.
 
-**Р05: Контракты → AGENTS.md, примеры → references/**
-Обязательные правила (output contracts, validation) — в AGENTS.md. Примеры и edge cases → в `rules/`. Проверка: "Если агент забудет это правило, что сломается?" → критично = AGENTS.md.
+**R05: Contracts → AGENTS.md, examples → references/**
+Mandatory rules (output contracts, validation) — in AGENTS.md. Examples and edge cases → in `rules/`. Check: "If agent forgets this rule, what breaks?" → critical = AGENTS.md.
 
-**Р06: Самое важное — последнее (recency bias)**
-Критические контракты ("никогда делать X") должны быть в конце документа или перед ними — LLM лучше помнит последние элементы.
+**R06: Most important last (recency bias)**
+Critical contracts ("never do X") should be at end of document or before them — LLM remembers last elements better.
 
-**🚨 Р07: EXAMPLES AS CONDITIONAL LOGIC — NEVER REMOVE WITHOUT AUDIT**
-Примеры/edge cases в JSON-инструкциях часто работают как `if-else` конструкция:
+**🚨 R07: EXAMPLES AS CONDITIONAL LOGIC — NEVER REMOVE WITHOUT AUDIT**
+Examples/edge cases in JSON instructions often work as `if-else` construct:
 ```
 {
   "when": "conflicting_priorities OR multiple_live_state",
   "action": "create_comparison_page_for_complex_conflicts"
 }
 ```
-Это НЕ метаинформация — это **conditional behavior specification**. Agent использует эту логику при runtime.
+This is NOT meta-information — it is **conditional behavior specification**. Agent uses this logic at runtime.
 
-**Правила:**
-1. Перед удалением примера/edge case → проверь: является ли он частью `when/action` или `if/then` логики?
-2. Если пример описывает ситуацию → поведение ("если X, то Y") → **НЕ УДАЛЯТЬ**. Это conditional logic.
-3. Если пример — просто иллюстрация без влияния на агентное поведение → можно удалить.
-4. Недоверие: если в сомнении — оставь и добавь `schema_ref` к описанию вместо удаления.
+**Rules:**
+1. Before removing example/edge case → check: does it form part of `when/action` or `if/then` logic?
+2. If example describes situation → behavior ("if X, then Y") → **DO NOT REMOVE**. This is conditional logic.
+3. If example — just illustration without affecting agent behavior → can be removed.
+4. Skepticism: if in doubt — keep and add `schema_ref` to description instead of removing.
 
-**Категорически запрещено:** удалять примеры из `resolution_actions`, `fallback_chain`, `constraints`, `arbitration_layer` без аудита их роли в conditional flow.
+**Strictly prohibited:** removing examples from `resolution_actions`, `fallback_chain`, `constraints`, `arbitration_layer` without auditing their role in conditional flow.
 
-## 10. Проверка успеха разработки - выполнение условий рабочих процессов wiki
+## 10. Development Success Check - Fulfillment of Wiki Workflow Conditions
 
-1. Агент не выполняет задачи в `wiki` вне инструкций `wiki`; 
-2. Выдержан принцип разделения ролей: ingest | query | lint; 
-3. Обеспечены все логические связи и переходы между ролями - до завершения любой инструкции и получения ожидаемого результата.
-4. Нет пробелов и/или конфликтов в инструкциях - агенту не нужно задумываться: "что делать в этой ситуации"
+1. Agent does not perform tasks in `wiki` outside of wiki instructions;
+2. Role separation principle maintained: ingest | query | lint;
+3. All logical connections and transitions between roles ensured — before completing any instruction and receiving expected result.
+4. No gaps and/or conflicts in instructions — agent doesn't need to wonder: "what to do in this situation"

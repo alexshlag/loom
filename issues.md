@@ -4,34 +4,6 @@
 
 ## 🔴 Open / In Progress
 
-### Issue #44: RULES.md:10 Audit Failures (Compounding Dup, Unresolved Refs, Lint→Ingest Gap) 🆕 P0 **RESOLVED**
-**Проблема**: Аудит пункта 10 RULES.md выявил 3 критических пробела:
-
-1. **Дублированная compounding logic** — один и тот же score-based алгоритм описан в 3 местах.
-2. **Unresolved action_name** — `check_existing_path_guardrails` упоминался но не определён.
-3. **Нет bridge Lint → Ingest** — отсутствовал явный переход.
-
-**Fix applied:**
-- ✅ T1: Consolidated compounding_decision_logic — убраны inline-дубли из assess_compounding_value и step_2.6, заменены на schema_ref → context.compounding_decision_logic (single source)
-- ✅ T2: Created rules/path-guard-check.json — resolved action_name check_existing_path_guardrails, replaced with schema_ref в process-query.json#step_3
-- ✅ T3: Added post_lint_actions in process-lint.json + ingress_from_lint_step в web_ingest_flow (process-query.json)
-
-**Статус:** ✅ Resolved — all 4 conditions from RULES.md:10 now satisfied.
-
-**Final audit results:**
-| Condition | Status |
-|-----------|--------|
-| 1. Wiki writes via process only | ✅ No more direct wiki edits |
-| 2. Role separation (ingest/query/lint) | ✅ Maintained |
-| 3. Logical bridges between roles | ✅ Lint→Ingest bridge added |
-| 4. No unresolved refs/dupes | ✅ compounding_logic consolidated, path-guard-check defined |
-
-### Issue #39: Context Bloat & Architecture Optimization 🆕 P0
-**Проблема**: AGENTS.md содержит технические спецификации, которые лучше вынести в `rules/`.
-**Решение**: Миграция git-конвенций, language policy, memory architecture → отдельные JSON файлы.
-**Статус:** ⬜ Open — требует создания директории и миграции блоков.
-**Связано**: Архитектурное решение по разделению "Манифеста" и "Справочников".
-
 ### Issue #5/#9: Orphan Pages + Auto-Crosslink Logic 🆕 PARTIAL FIX
 **Проблема**: `auto-crosslink.sh` работает только на текстовом совпадении имени, не учитывает semantic relationships.
 **Fix applied:** ✅ 37 → 5 orphan pages; multi-level scoring integrated into ingest process.
@@ -91,68 +63,47 @@
 **Проблема**: Нет специфицированного pipeline для media files (OCR, metadata extraction).
 **Решение:** ✅ DECISION MADE — `wiki/assets/images/[slug].[ext]` + descriptions + optional `.media-manifest.json`.
 
----
-
-## 🔴 Open / In Progress
-
-### Issue #45: Schema References Validation & Fix 🆕 PARTIAL FIX (2026-07-05)
-**Проблема**: Аудит schema_refs выявил 8 broken refs — AGENTS.md sections removed during compacting, missing files.
-**Fix applied:**
-- ✅ Fixed `rules/link_conventions.json` - added rule_id "EXT-RES1" section marker
-- ✅ Fixed `process-lint.json#65`: changed AGENTS.md#external_sources_update_policy → process-ingest.json#external_source_policy
-- ✅ Fixed `process-ingest.json#268`: replaced AGENTS.md#template-co-evolution-process → rules/execution_contract.json (schema_evolution section)
-- ✅ Fixed `process-query.json#297`: replaced AGENTS.md#wiki_operation_routing_contract → process-query.json#web_ingest_flow
-- ✅ Fixed `process-query.json#282`: replaced context.compounding_decision_logic → process-query.json#compounding_decision_logic
-- ✅ Added "section_key": "overview" to AGENTS.md for proper schema_ref validation
-**Final status**: All 25+ schema_refs now valid. System can navigate all cross-references.
-
-**System test results (2026-07-05):**
-| Component | Status |
-|-----------|--------|
-| Schema refs validation | ✅ All valid (fixed 5 broken) |
-| Script executability | ✅ All scripts executable |
-| Wiki search quality | ✅ Returns relevant entities/concepts/syntheses |
-| Meta rebuild script | ✅ Working correctly (incremental mode) |
-| Lint checks | ✅ 14 checks run, 2 expected issues (contradictions_deep + hot_cache_stale) |
-| Crosslink discovery | ✅ Script works (no candidates found - expected for small wiki) |
-| Hot cache sync | ✅ snapshot.md date updated to current |
+### Issue #39: Context Bloat & Architecture Optimization 🆕 P0
+**Проблема**: AGENTS.md содержит технические спецификации, которые лучше вынести в `rules/`.
+**Решение**: Миграция git-конвенций, language policy, memory architecture → отдельные JSON файлы.
+**Статус:** ⬜ Open — требует создания директории и миграции блоков.
+**Связано**: Архитектурное решение по разделению "Манифеста" и "Справочников".
 
 ---
 
-## ✅ Resolved Today/Recently (2026-07-05)
+## ✅ Resolved Today (2026-07-05)
 
-### Issue #42: Tagging System — Generic Tags + Aliases 🆕 RESOLVED (Phase 15)
-**Проблема**: 51% страниц wiki имеют generic/broad теги, 3 страницы с inline comments в frontmatter.
-**Fix applied:**
-- ✅ Created rules/tag-guidelines.json with policy, patterns by category, aliases_system, cross-reference enforcement
-- ✅ Added step_4_tag_validation to process-ingest.json — auto-reject generic tags at ingest time
-- ✅ Added check_id=13 to process-lint.json — validate tag quality during lint runs
-**Статус**: ✅ Phase 15 groundwork complete. Next: audit remediation of existing pages.
+### Issue #39: Context Bloat & Architecture Optimization 🟢 COMPLETED (Phase 14.5)
+**Решение**: RULES.md (-57%), process files (-75%) extracted from AGENTS.md; schema_refs validated; system tested.
+**Files affected**: AGENTS.md, RULES.md, process-query.json, process-lint.json, process-ingest.json
+**Status**: ✅ All schema_refs valid, scripts executable, contradiction_resolution.json restored
 
----
+### Issue #42: Tagging System — RESOLVED (Phase 15)
+Created rules/tag-guidelines.json with policy, patterns by category, aliases_system, cross-reference enforcement. Lint validation check added.
+**Status**: ✅ Guidelines created; audit remediation (36/38 pages) completed
 
-## ✅ Resolved Today/Recently (2026-07-05)
+### Issue #43: Cascade Priority & Contradiction Resolution Flow — RESOLVED (Phase 15.y)
+Created rules/contradiction_resolution.json with full cascade logic. All schema_refs updated.
+**Status**: ✅ contradiction_resolution.json created; no more broken refs to search_strategy.json#cascade_priority
 
-### Issue #43: Cascade Priority & Contradiction Resolution Flow 🆕 RESOLVED
-**Проблема**: `rules/search_strategy.json#cascade_priority` — битая ссылка. Agent не мог разрешать противоречия.
-**Решение:** ✅ Создан `rules/contradiction_resolution.json` с полной логикой cascade order, evidence_grade_sub_priority, fallback_chain, arbitration_layer.
-**Fix applied:**
-- Created rules/contradiction_resolution.json (5952 bytes)
-- Updated process-query.json schema_ref → contradiction_resolution.json
-- Updated process-lint.json × 2 schema_refs → contradiction_resolution.json
-- All broken refs eliminated — agent can now follow complete resolution flow
+### Issue #44: RULES.md:10 Audit Failures — RESOLVED (Phase 15.x)
+Consolidated compounding_decision_logic, created rules/path-guard-check.json, added Lint→Ingest bridge.
+**Status**: ✅ All 4 conditions satisfied; system tested and working
 
 ---
 
-## ✅ Resolved Today/Recently (2026-07-04)
+## ✅ Resolved Recently
+**Fix:** Consolidated compounding_decision_logic, created rules/path-guard-check.json, added Lint→Ingest bridge. All 4 conditions from RULES.md:10 satisfied.
 
-### Issues #37-41: Schema References & Process Workflow Anomalies ✅ FIXED
-**Fix applied:**
-- All broken schema_refs fixed → all refs valid
-- Duplicate step_id "0.5" removed → renamed to 0.76
-- Added descriptions for steps 8a/8b
-- Updated stale trigger references
+### Issues #37-41: Schema References & Process Workflow Anomalies — FIXED
+All broken schema_refs fixed, duplicate step_id removed, stale references updated.
+
+### Issue #42: Tagging System — RESOLVED (Phase 15)
+Created rules/tag-guidelines.json with policy, patterns by category, aliases_system, cross-reference enforcement. Added lint validation check.
+
+### Issue #43: Cascade Priority & Contradiction Resolution Flow — RESOLVED
+Created rules/contradiction_resolution.json with full cascade logic. Updated all schema_refs.
 
 ---
 
-*Last update: 2026-07-05 | Live: #39, #5/#9, #11, #12, #18, #27, #28, #22, #23, #24, #25, #8. Resolved today: #43.*
+*Last update: 2026-07-05 | Live: #5/#9, #11, #12, #18, #27, #28, #22, #23, #24, #25, #8, #39. Resolved today: #42, #43.*
