@@ -1,36 +1,30 @@
 {
-  "last_updated": "2026-07-05T21:42:48+03",
-  "current_mode": "project",
-  "focus_node": "Phase 32.1 Cycle 6 complete. 8 self-references audited, 6 replaced with schema_refs to rules/*.json. Created rules/faq_summary.json + rules/evidence_grade.json.",
-  "open_pages": [],
-  "dead_ends": [],
-  "query_summary": {
-    "intent": "Phase 32.1 Cycles 1-5 complete + Cycle 6 planning",
-    "pages_read": [
-      "AGENTS.md",
-      "PLAN.md",
-      "rules/*.json",
-      "AGENTS.md self-references audit"
-    ],
-    "key_findings": [
-      "C1: Git Conventions \u2192 rules/git_conventions.json (brief ref)",
-      "C2: Memory Architecture \u2192 session_context_rules.json V2.1",
-      "C3: Search Strategy \u2192 rules/search_strategy.json (2595 bytes, expanded from 511)",
-      "C4: Error Handling \u2192 rules/error_handling.json EHP-V2 (2720 bytes)",
-      "C5: Silent Output + Execution Contract brief refs (both already existed in .json)",
-      "AGENTS.md now 742 lines (-60% from original ~1839). lint.sh passes.",
-      "8 self-references to audit in Cycle 6-7",
-      "C6: Self-reference audit \u2014 6 replaced (context_scopes/git_conventions/execution_modes/session_context/context_bridge/silent_output), 2 kept inline (language_policy/template_files as shared contracts)"
-    ]
-  },
-  "next_steps_todo": [
-    {
-      "task": "Cycle 7: Extract Delta Tracking (manifest.json) and Raw Corrected Zone into rules/",
-      "priority": "medium"
+    "last_updated": "2026-07-05T22:03+03",
+    "current_mode": "project",
+    "focus_node": "Phase 32.1 Cycles 1-7 complete. AGENTS.md reduced to 682 lines (~39KB). Created rules/work_modes.json from extracted Work Modes section.",
+    "open_pages": [],
+    "dead_ends": [],
+    "query_summary": {
+        "intent": "Phase 32.1 Cycle 7: Extract User Work Modes + decide on External Sources Policy",
+        "pages_read": [
+            "AGENTS.md (Work Modes section)",
+            "PLAN.md",
+            "process-query.json, process-ingest.json, process-lint.json (ref check)"
+        ],
+        "key_findings": [
+            "C7: Work Modes extracted → rules/work_modes.json (116 lines). AGENTS.md -60 lines.",
+            "External Sources Policy decided as skip — too small for separate file, kept brief ref",
+            "lint.sh passes: 0 broken links. All schema_refs validated."
+        ]
     },
-    {
-      "task": "Final: Verify all process-*.json references point to correct files, no broken anchors",
-      "priority": "high"
-    }
-  ]
+    "next_steps_todo": [
+        {
+            "task": "C8: Extract auto_computed_fields (evidence_grade logic) to rules/",
+            "priority": "medium"
+        },
+        {
+            "task": "Audit remaining Self-Reference Audit items: media_pipeline, summary_pages",
+            "priority": "low"
+        }
+    ]
 }
