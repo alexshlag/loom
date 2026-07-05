@@ -224,7 +224,21 @@
 
 | # | Block | Target File | Status |
 |---|-------|-------------|--------|
-| 8 | Delta Tracking → verify delta_tracking.json completeness | ✅ Verify+expand | 🟢 LOW |
+| 8 | Delta Tracking → verify delta_tracking.json completeness | ✅ Verified + standardized (schema_ref added, RU→EN) | **DONE** |
+
+### Extraction Complete — C1–C8 Summary
+| # | Block | Status |
+|---|-------|--------|
+| 1 | Git Conventions | Extracted (C1) |
+| 2 | Memory Architecture + Session Context | Exists, verified |
+| 3 | Wiki Categories | Exists, verified |
+| 4 | Search & Discovery | Exists, verified |
+| 5 | External Sources Policy | Extracted (C8) |
+| 6 | Compounding Workflow | Inline in query — needs audit |
+| 7 | User Work Modes | Extracted (C7) |
+| 8 | Delta Tracking | Verified + standardized (C9) |
+
+**Note**: Items 2–4 already existed from prior cycles. C1, C7, C8 were new extractions.
 | 9 | Compounding Workflow | add to process-query.json | ⚠️ Inline, needs audit |
 | 10 | External Sources Update Policy | `rules/external_sources_policy.json` | ✅ Created (C8) | **DONE** |
 

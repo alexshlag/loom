@@ -1,31 +1,30 @@
 {
-    "last_updated": "2026-07-05T22:13+03",
+    "last_updated": "2026-07-05T22:16+03",
     "current_mode": "project",
-    "focus_node": "Phase 32.1 Self-reference audit complete. All 9 anchors resolved (7 done, 2 kept inline). AGENTS.md reduced to 682 lines (~39KB). Next: extract external_sources_policy.json.",
+    "focus_node": "Phase 32.1 Cycles 1-8 complete. AGENTS.md reduced to 676 lines (~39KB). All self-reference anchors resolved + external_sources_policy extracted.",
     "open_pages": [],
     "dead_ends": [],
     "query_summary": {
-        "intent": "Complete self-reference audit — resolve remaining anchors (context_management, execution_modes, media_pipeline)",
+        "intent": "Complete extraction cycles C1-C8, finalize self-reference audit",
         "pages_read": [
-            "AGENTS.md sections: context_management, work_modes, summary_pages, auto_computed_fields",
-            "PLAN.md (self-ref audit table)",
-            "rules/faq_summary.json, rules/evidence_grade.json"
+            "AGENTS.md sections: work_modes (C7), wiki_operation_routing (C8)",
+            "PLAN.md (extraction priority map + cycle log)",
+            "rules/external_sources_policy.json"
         ],
         "key_findings": [
-            "C6/C7 already extracted: faq_summary.json + evidence_grade.json exist from prior cycle",
-            "context_management_phase_32 — already has brief ref to context-scopes.json ✅",
-            "execution_modes — already has schema_ref to rules/execution_modes.json ✅",
-            "media_pipeline — kept inline per AGENTS.md policy (workflow description, not rule)",
-            "All 9 anchors audited: 7 resolved, 2 kept inline as shared contracts"
+            "C8: Wiki Operation Routing Contract extracted → rules/external_sources_policy.json",
+            "AGENTS.md reduced from 682→676 lines (-13 lines, table removed)",
+            "All external_sources references now via schema_ref only",
+            "lint.sh passes: 0 broken links"
         ]
     },
     "next_steps_todo": [
         {
-            "task": "Extract external_sources_policy.json — web_ingest_flow routing contract (~6 строк table in AGENTS.md)",
-            "priority": "high"
+            "task": "Complete remaining extraction candidates: Delta Tracking (item 8 from priority map) → verify delta_tracking.json completeness",
+            "priority": "low"
         },
         {
-            "task": "Final verification: grep process-*.json for any broken schema_refs",
+            "task": "Create separate audit task in PLAN.md for all rules/*.json files — verify each has schema_ref_to_agent_rules, proper structure, no orphaned references",
             "priority": "medium"
         }
     ]

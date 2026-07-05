@@ -1,6 +1,7 @@
 {
   "protocol_name": "Delta Tracking",
-  "description": "Механизм отслеживания изменений источников для предотвращения re-ingest уже обработанных файлов.",
+  "description": "Hash-based deduplication mechanism to prevent re-ingest of already processed sources. Compares original file hashes against corrected copies in manifest.",
+  "schema_ref_to_agent_rules": "AGENTS.md#delta_tracking",
   "canonical_source": {
     "script": "scripts/rebuild-source-manifest.sh",
     "manifest_file": "meta/source-manifest.json"
@@ -45,7 +46,7 @@
     "status": "processed | stale | unprocessed"
   },
   "contradiction_resolution": {
-    "priority": "Use corrected copy from manifest for contradiction detection. If hash mismatch → source changed, re-ingest required.",
+    "priority": "Use corrected copy from manifest for contradiction detection. Hash mismatch indicates source change — re-ingest required.",
     "flow": [
       "Read manifest.json for source",
       "Compare hash_original with current file",
@@ -54,4 +55,3 @@
     ]
   }
 }
-echo "✅ Created rules/delta_tracking.json"
