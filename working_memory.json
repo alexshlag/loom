@@ -1,30 +1,34 @@
 {
-  "last_updated": "2026-07-05T20:20:00+03",
+  "last_updated": "2026-07-05T21:05:00+03",
   "current_mode": "project",
-  "focus_node": "Phase 32.1 Cycle 2: Memory Architecture consolidated into session_context_rules.json (SCM-V2)",
+  "focus_node": "Phase 32.1 Cycles 3-4 complete: Wiki Categories + Search Strategy + Error Handling consolidated",
   "open_pages": [],
   "dead_ends": [],
   "query_summary": {
-    "intent": "Phase 32.1 Cycle 2: consolidate all memory architecture rules from AGENTS.md into session_context_rules.json",
+    "intent": "Phase 32.1 Cycles 3-4: Wiki Categories + Search Strategy + Error Handling consolidated",
     "pages_read": [
-      "AGENTS.md (lines 556-679)",
-      "rules/session_context_rules.json"
+      "AGENTS.md (Wiki Categories, Search & Discovery, Error Handling sections)"
     ],
     "key_findings": [
-      "All old self-references in AGENTS.md removed during extraction",
-      "session_context_rules.json now contains: layers, flow, save_triggers, write_algorithm, read_algorithm, constraints, operational_rules",
-      "lint.sh passes: 14 checks, hot_cache_stale fixed to false",
-      "AGENTS.md reduced from ~1305 to ~1198 lines (-22%)"
+      "Wiki Categories \u2192 brief summary in AGENTS.md + link to rules/categories.json (no extraction needed)",
+      "Search Strategy extracted \u2192 rules/search_strategy.json SD-V2 (2595 bytes, expanded from 511\u21922595)",
+      "Error Handling Protocol consolidated \u2192 rules/error_handling.json EHP-V2 (2720 bytes)",
+      "All old self-references removed: AGENTS.md#wiki_categories, #smart_search_priority, #error_handling_protocol",
+      "AGENTS.md now ~1030 lines (-275 from original 1305 = -21%)",
+      "lint.sh passes: 14 checks, no broken links"
     ]
   },
   "next_steps_todo": [
     {
-      "task": "Cycle 3: Wiki Categories consolidation + Search Strategy expansion",
+      "task": "Cycle 5: Execute Contract \u2192 rules/execution_contract.json (current AGENTS.md section)",
       "priority": "high"
     },
     {
-      "task": "Cycle 4: External Sources Policy extraction to new rules/external_sources_policy.md",
-      "priority": "high"
+      "task": "Cycle 6: Silent Output + Execution Modes extraction",
+      "priority": "medium"
+    },
+    {
+      "task": "Review remaining blocks for extraction candidates"
     }
   ]
 }

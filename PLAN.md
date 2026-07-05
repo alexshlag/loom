@@ -181,8 +181,10 @@
 
 | Cycle | Block Extracted | Target File | Status | Validation |
 |-------|-----------------|-------------|--------|------------|
-| **C1** | Git Conventions | `rules/git_conventions.json` | ✅ Done | lint.sh: 14 checks, 0 errors |
-| **C2** | Memory Architecture + Session Context → consolidated | `rules/session_context_rules.json` (SCM-V2) | ✅ Done | All old refs replaced; lint.sh passes; hot_cache stale fixed |
+│ **C1** │ Git Conventions │ `rules/git_conventions.json` │ ✅ Done │ lint.sh: 14 checks, 0 errors │
+│ **C2** │ Memory Architecture + Session Context → consolidated & optimized │ `rules/session_context_rules.json` (SCM-V2.1) │ ✅ Done │ All old refs replaced; duplicate golden_rules removed; write_workflow merged; ~5362 bytes (-11% from initial V2) │
+│ **C3** │ Wiki Categories + Search Strategy → extracted & consolidated │ `rules/categories.json` (brief ref), `rules/search_strategy.json` (SD-V2) │ ✅ Done │ AGENTS.md reduced to ~1030 lines; search_strategy expanded to 2595 bytes; no broken refs │
+│ **C4** │ Error Handling Protocol → consolidated into rules/error_handling.json │ `rules/error_handling.json` (EHP-V2) │ ✅ Done │ All examples + golden rule preserved; references updated; no stale anchors | `rules/session_context_rules.json` (SCM-V2.1) | ✅ Done | All old refs replaced; duplicate golden_rules removed; write_workflow merged; ~5362 bytes (-11% from initial V2) |
 
 ### Extraction Priority Map (8 blocks identified)
 

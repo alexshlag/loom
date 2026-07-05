@@ -388,43 +388,13 @@ Detailed page templates stored in `wiki/templates/`.
 
 ---
 
-### 🗂 Wiki Categories (canonical source)
+### 🗂 Wiki Categories
 
-All scripts and agent read category order from single source:
+Category order and definitions are stored in **`rules/categories.json`**. Agent reads them from there — never hardcodes. All scripts (rebuild-meta.sh, wiki-search.sh, duplicate-titles.sh) also read from this JSON.
 
-**File**: `rules/categories.json`
-
-Structure:
-
-```json
-{
-  "version": "1.0",
-  "categories": [
-    { "key": "entities",       "label": { "en": "Entities",         "ru": "Сущности" },        "description": "..." },
-    { "key": "concepts",       "label": { "en": "Concepts",          "ru": "Концепции" },         "description": "..." }
-  ]
-}
-```
-
-**Fields:**
-| Field | Description |
-|-------|-------------|
-| `key` | Identifier — corresponds to directory name under wiki/ |
-| `label` | Display name in `{lang: name}` format (supports en, ru, de, fr...) |
-| `description` | Category purpose description |
-
-**Where to read:**
-
-- `scripts/rebuild-meta.sh` — builds index.md from CATEGORY_ORDER + CATEGORIES_LABELS_RAW
-- `scripts/wiki-search.sh` — computes order at script start in `CATEGORY_ORDER`
-- `scripts/duplicate-titles.sh` — reads CATEGORIES for duplicate checking
-- **Agent**: when creating page, checks category from frontmatter → does it match wiki/ directory?
-
-**Rule**: never hardcode categories. Always read from JSON.
-
-> Canonical: `AGENTS.md#wiki_categories` — agent must reference this file when adding/changing categories.
-
+> File: `rules/categories.json`.
 ---
+
 
 ### Compounding Workflow
 
@@ -595,119 +565,12 @@ Full specification for memory layers, save triggers, read patterns, grep contrac
 
 ## 🔧 Error Handling Protocol
 
-Upon detecting any error, contradiction, or dead end — **do not stall**, but follow steps:
+Error resolution is fully defined in **`rules/error_handling.json`**. Agent reads the 4-step loop (Detect → Analyze → Resolve → Continue) and strategies from there.
 
-### 4-step loop
-
-1. **Detect & Log** `[!]` → See `process-query.json#error_handling.logging_actions`
-   Write to log.md with type [error], description, and context. Always append (`>>`), never overwrite.
-2. **Analyze** → Brief analysis: what went wrong, why instruction broke (not just "error", but root cause)
-3. **Resolve** → Choose strategy:
-
-- `local-fix`: local problem (path, link, logic) → fix independently
-- `schema-patch`: contradiction in Schema/AGENTS.md → propose patch to user for review
-- `source-conflict`: two sources say opposite things → mark as `CONFLICT` on page and continue
-- `dead-end`: approach doesn't work (e.g., grep gave noise) → document reason, change strategy
-
-4. **Continue** → Move forward on task, not stuck on broken instruction
-
-### Application examples
-
-| Situation                                      | Action                                                                               |
-| ------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `git add *` blocked by guardrails           | `[!] Log: protected zone blocked` → `local-fix: switch to git add wiki/`             |
-| fetch_content returned truncated markdown   | `[!] Log: truncation detected` → `local-fix: fallback web_search + get_search_content` |
-| New command incompatible with current Schema | `[!] Log: schema conflict` → `schema-patch: propose AGENTS.md patch to user`         |
-| Grep gave >100 matches without meaning      | `[!] Log: grep noise` → `dead-end: switch to index.md`                               |
-
-### Rule
-
-> **Error ≠ stop.** Every error is a signal for action, not reason to stall. Agent logs, analyzes, resolves, and moves forward.
-
+> Canonical: `rules/error_handling.json#error_handling_protocol` — agent follows 4-step loop (Detect → Analyze → Resolve → Continue).
 ---
 
-## 🛡 Rules & Guardrails
 
-### Guardrails Reference
-
-Guardrails enforced via `scripts/validate-path.sh`. For path validation and protected zones schema — see `process-ingest.json` (capture flow validation).
-
-#### Schema References
-
-- `process-ingest.json` references this for capture flow validation
-- `scripts/validate-path.sh` implements the actual guardrails
-
-### Fetch Content Truncation Handling
-
-```json
-{
-  "fetch_content_truncation": {
-    "condition": "response_markdown_contains '[Content truncated...]' or output is visibly cut off mid-sentence",
-    "primary_action": "fallback to web_search(query) + get_search_content(responseId) for complete coverage",
-    "logging_verbose_template": [
-      "[!] Fetch truncation detected in X.md, length ~{N} chars",
-      "[✓] Fallback activated: web_search + get_search_content called"
-    ]
-  }
-}
-```
-
-### Protected Zones
-
-```json
-{
-  "protected_zones": {
-  "raw/**": {"owner": "user", "access": "read-only via capture flow"},
-  "raw/corrected/": {"rule_id": "RAW-CORRECTED-V1", "owner": "agent", "access": "full read/write for processed copies (scripts/raw-correct.sh)"},
-  "wiki/**": {"owner": "agent", "access": "full read/write/manage"},
-  "meta/**": {"rule": "auto-generated", "files": ["registry.json", "backlinks.json"], "rebuild_command": "./scripts/rebuild-meta.sh"},
-  "tracking/": {"rule_id": "TRACKING-V1", "owner": "agent", "access": "full read/write for ingest registry files", "note": "raw_registry.json, similarity_index.json and other tracking files. Agent writes directly."},
-  ".vault-meta/": {"rule": "gitignored-system", "files": ["locks/", ".wiki-lock.meta"], "owner": "agent", "access": "read/write for system state only", "note": "Not committed to git — contains system lock files and agent logs."}
-  },
-  "zone_def1": {
-  "rule_id": "ZONE-DEF1",
-  "raw/**": {"owner": "user", "access": "read-only via capture flow"},
-  "raw/corrected/": {"owner": "agent", "access": "full read/write for processed copies (scripts/raw-correct.sh)"},
-  "wiki/**": {"owner": "agent", "access": "full read/write/manage"},
-  "tracking/": {"owner": "agent", "access": "full read/write for registry and tracking files"},
-  "implications": ["Agent manages all wiki links/structure. User controls raw/. Agent writes to raw/corrected/ and tracking/."
-  ],
-  "meta_def1": {
-  "rule_id": "META-DEF1",
-  "rules": [
-  "NEVER edit meta files directly",
-  "All operations through scripts only"
-  ],
-  "protected_by": "validate-path.sh blocks direct write to meta/**"
-  },
-  "never_do": [
-  "directly_edit_protected_zones",
-  "skip_capture_flow_for_raw_sources",
-  "manually_modify_meta_files"
-  ]
-}
-```
-
-#### `.vault-meta/` — agent system files
-
-System directory that is **not committed to git** (.gitignore). Contains:
-
-| File/Directory       | Purpose                                         |
-| ------------------- | ----------------------------------------------- |
-| `locks/`            | Temporary directories for locks (wiki-lock.sh)  |
-| `.wiki-lock.meta`   | Meta-layer lock state                            |
-| `hook.log`          | Auto-commit log (git-auto-commit.sh)            |
-| `auto-commit.disabled` | Auto-commit disable flag                       |
-
-**Rules:**
-
-- Agent can read and write to this directory for managing system state
-- **Never commit** — this is runtime state, not project artifact
-- On failure: check lock integrity (`ls .vault-meta/locks/`), remove stale locks if needed
-
-> Canonical: `AGENTS.md#vault_meta` — agent must understand this zone when debugging lock corruption or auto-commit failures.
-
----
 
 ### Delta Tracking (Phase 29)
 
@@ -1008,42 +871,11 @@ Agent manages two independent modes:
 
 ## 🔍 Search & Discovery
 
-### Search Contract
+Search strategy is fully defined in **`rules/search_strategy.json`**. Agent reads from there — no hardcoded rules.
 
-**Primary**: `./scripts/wiki-search.sh --dynamic "<query>"` — analyzes intent, category priority, relevance scoring.
-
-**Fallback chain (strict order):**
-
-1. `grep -m 30 "<keyword>" wiki/index.md` → if ≥2 matches → use
-2. `grep -m 20 "<keyword>" meta/search-index.json`
-
-**Constraints**: [find/ls/cat prohibited for search — only wiki-search.sh --dynamic first]
-
-**If_broken**: STOP_SEARCH → ./scripts/wiki-search.sh --dynamic <query>
-
+> File: `rules/search_strategy.json`.
 ---
 
-### Dynamic Priority + Relevance Scoring (Phase 5)
-
-`scripts/wiki-search.sh --dynamic "query"` — dynamic category order based on query intent.
-
-**Query Intent Analysis:**
-
-- Entity keywords → `entities/`, `concepts/`, `syntheses/` priority
-- Comparison keywords (`vs`, `compared to`) → `comparisons/`, `syntheses/`, `concepts/` priority
-- Concept keywords → `concepts/`, `syntheses/`, `entities/` priority
-- Fallback: static priority (syntheses→concepts→entities)
-
-**Relevance Scoring:**
-
-1. Position weight: query in H1 = +3, body = +1 per occurrence
-2. Frequency weight: total occurrences × 1
-3. Backlink weight: mentions in other wiki pages × 5
-4. Category bonus: earlier priority category gets +10×(max_priority - index)
-
-**Usage**: `./scripts/wiki-search.sh --dynamic "query"` — results sorted by combined score descending.
-
-> Full workflow: `AGENTS.md#smart_search_priority` → extended with dynamic intent analysis.
 
 ---
 

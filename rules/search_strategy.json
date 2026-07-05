@@ -1,7 +1,103 @@
 {
-  "protocol_name": "Search Strategy",
-  "description": "Алгоритм поиска информации в wiki.",
-  "canonical_flow": "index_lookup → semantic_search → wiki-search.sh",
-  "fallback": "meta/search-index.json (структурированный индекс с ключевыми словами/тегами/первыми предложениями для быстрого поиска)",
-  "exclusions": "System files excluded as per process-query.json#step_1.system_files_exclusion"
+  "rule_name": "search_and_discovery",
+  "rule_id": "SD-V2",
+  "version": "2.0 (extracted from AGENTS.md, 2026-07-05)",
+  "description": "Search strategy: primary tool, fallback chain, query intent analysis, relevance scoring algorithm",
+  "primary_tool": {
+    "command": "./scripts/wiki-search.sh --dynamic \"<query>\"",
+    "purpose": "Analyzes intent, category priority, relevance scoring"
+  },
+  "fallback_chain": [
+    {
+      "step": 1,
+      "pattern": "grep -m 30 \"<keyword>\" wiki/index.md",
+      "condition": "if >=2 matches \u2192 use"
+    },
+    {
+      "step": 2,
+      "pattern": "grep -m 20 \"<keyword>\" meta/search-index.json"
+    }
+  ],
+  "constraints": {
+    "prohibited_tools": [
+      "find",
+      "ls",
+      "cat"
+    ],
+    "rule": "only wiki-search.sh --dynamic first for search"
+  },
+  "if_broken": {
+    "action": "STOP_SEARCH \u2192 ./scripts/wiki-search.sh --dynamic <query>",
+    "description": "If search fails, stop and retry with dynamic mode"
+  },
+  "relevance_scoring": {
+    "tool": "./scripts/wiki-search.sh --dynamic \"query\"",
+    "description": "Dynamic category order based on query intent, results sorted by combined score descending"
+  },
+  "intent_analysis": [
+    {
+      "keywords": "entity keywords",
+      "priority_order": [
+        "entities/",
+        "concepts/",
+        "syntheses/"
+      ]
+    },
+    {
+      "keywords": "comparison (vs, compared to)",
+      "priority_order": [
+        "comparisons/",
+        "syntheses/",
+        "concepts/"
+      ]
+    },
+    {
+      "keywords": "concept keywords",
+      "priority_order": [
+        "concepts/",
+        "syntheses/",
+        "entities/"
+      ]
+    },
+    {
+      "fallback": "static priority",
+      "order": [
+        "syntheses/",
+        "concepts/",
+        "entities/"
+      ]
+    }
+  ],
+  "scoring_weights": [
+    {
+      "factor": "position_weight",
+      "rule": "query in H1 = +3, body = +1 per occurrence"
+    },
+    {
+      "factor": "frequency_weight",
+      "rule": "total occurrences \u00d7 1"
+    },
+    {
+      "factor": "backlink_weight",
+      "rule": "mentions in other wiki pages \u00d7 5"
+    },
+    {
+      "factor": "category_bonus",
+      "rule": "earlier priority category gets +10\u00d7(max_priority - index)"
+    }
+  ],
+  "scoring_thresholds": [
+    {
+      "score_min": 5,
+      "action": "Strong candidate \u2014 suggest crosslink with confidence"
+    },
+    {
+      "score_range": "3-4",
+      "action": "Weak signal \u2014 suggest review, agent decides"
+    },
+    {
+      "score_max": 2,
+      "action": "Ignore (below noise floor)"
+    }
+  ]
 }

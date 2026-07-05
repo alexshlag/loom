@@ -592,3 +592,8 @@ Current task: Phase 15 (Tagging System). Next pending: Phase 15.1 (Aliases).
 ## [2026-07-05] schema | Phase 32.1 Cycle 2 - Memory Architecture Consolidation
 Consolidated all memory rules (3-layer model, session context, grep contract, compaction handling) into rules/session_context_rules.json (SCM-V2)
 AGENTS.md reduced from ~1305 to ~1198 lines (-107 lines). lint.sh passes.
+
+## [2026-07-05] schema | Phase 32.1 Cycles 3-4 - Wiki Categories + Search Strategy + Error Handling Consolidation
+C3: Extracted Search & Discovery rules into rules/search_strategy.json SD-V2 (2595 bytes)
+C4: Consolidated Error Handling Protocol into rules/error_handling.json EHP-V2 (2720 bytes)
+AGENTS.md reduced to ~1030 lines (-21% from original 1305). lint.sh passes.
