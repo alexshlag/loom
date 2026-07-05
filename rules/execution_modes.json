@@ -1,22 +1,30 @@
 {
   "protocol_name": "Execution Modes",
-  "description": "Режимы работы агента, определяющие содержание (что делать) и способ отображения (как показывать) результата.",
+  "description": "Agent mode definitions controlling scope (what to do) and output style (how results are shown).",
   "modes": {
     "current_mode": {
-      "values": ["query", "ingest", "project"],
+      "values": [
+        "query",
+        "ingest",
+        "project"
+      ],
       "storage": "working_memory.json",
-      "description": "Определяет, ЧТО делает агент в текущий момент."
+      "description": "Defines WHAT the agent does in current moment."
     },
     "execution_mode": {
-      "values": ["silent", "verbose"],
+      "values": [
+        "silent",
+        "verbose"
+      ],
       "storage": "working_memory.json",
-      "description": "Определяет, КАК агент показывает результат пользователю."
+      "description": "Defines HOW the agent shows result to user."
     }
   },
   "rules": {
     "default_execution_mode": "silent",
-    "verbose_trigger": "Пользователь явно просит 'verbose', 'debug mode', 'покажи шаги' -> агент ставит 'verbose' в WM и работает один turn.",
-    "auto_reset": "После verbose-answer агент сбрасывает на 'silent'.",
-    "explicit_reset": "Пользователь говорит 'quiet', 'silent', 'тише' -> мгновенный сброс."
-  }
+    "verbose_trigger": "When user explicitly requests 'verbose', 'debug mode', or 'show steps' → agent sets 'verbose' in WM and works one turn.",
+    "auto_reset": "After verbose answer, agent resets to 'silent'.",
+    "explicit_reset": "When user says 'quiet', 'silent', or 'less' → instant reset."
+  },
+  "schema_ref_to_agent_rules": "AGENTS.md#execution-modes"
 }

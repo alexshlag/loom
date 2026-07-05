@@ -161,5 +161,6 @@
   "_notes": {
     "golden_rules_removed": "All 4 golden_rules were duplicates of existing constraints. Removed redundancy.",
     "write_workflow_merged": "Combined save_triggers + write_algorithm into unified trigger_chain to avoid duplication and clarify concurrent handling."
-  }
+  },
+  "schema_ref_to_agent_rules": "AGENTS.md#memory-architecture-contract-system-rules"
 }

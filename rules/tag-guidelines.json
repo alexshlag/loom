@@ -4,32 +4,65 @@
   "policy": {
     "rule": "All pages MUST have 3-7 tags. No generic/broad terms alone.",
     "pattern": "[domain-entity] + [specific-concept] + [technology/role]",
-    "prohibited_patterns": ["generic standalone (architecture, admin, ai, cms)", "empty array without comment", "comment inline after tags"]
+    "prohibited_patterns": [
+      "generic standalone (architecture, admin, ai, cms)",
+      "empty array without comment",
+      "comment inline after tags"
+    ]
   },
   "recommended_tags_by_category": {
     "entities/": {
       "description": "Specific tools, projects, people — use their actual names + domain category",
       "pattern": "{primary-name} + {category-sub} + {language-tech}",
-      "examples_good": ["symfony", "doctrine-orm", "twig", "rust-linter"],
-      "examples_bad": ["cms", "framework", "tool"]
+      "examples_good": [
+        "symfony",
+        "doctrine-orm",
+        "twig",
+        "rust-linter"
+      ],
+      "examples_bad": [
+        "cms",
+        "framework",
+        "tool"
+      ]
     },
     "concepts/": {
       "description": "Architectural patterns, principles — use precise technical terms",
       "pattern": "{concept-name} + {pattern-type} + {implementation}",
-      "examples_good": ["hexagonal-architecture", "event-dispatcher", "state-machine"],
-      "examples_bad": ["architecture", "workflow", "testing"]
+      "examples_good": [
+        "hexagonal-architecture",
+        "event-dispatcher",
+        "state-machine"
+      ],
+      "examples_bad": [
+        "architecture",
+        "workflow",
+        "testing"
+      ]
     },
     "syntheses/": {
       "description": "Topic-specific synthesis — use combined domain tags",
       "pattern": "{topic} + {comparison-type} + {methodology}",
-      "examples_good": ["rag-vs-llm-wiki", "compounding-pattern"],
-      "examples_bad": ["knowledge-base", "platform"]
+      "examples_good": [
+        "rag-vs-llm-wiki",
+        "compounding-pattern"
+      ],
+      "examples_bad": [
+        "knowledge-base",
+        "platform"
+      ]
     },
     "comparisons/": {
       "description": "Compare-specific tags — both entities being compared",
       "pattern": "{entity-a} + {entity-b} + {comparison-dimension}",
-      "examples_good": ["symfony-ux-packages", "loom-vs-claude-obsidian"],
-      "examples_bad": ["architecture", "platform"]
+      "examples_good": [
+        "symfony-ux-packages",
+        "loom-vs-claude-obsidian"
+      ],
+      "examples_bad": [
+        "architecture",
+        "platform"
+      ]
     }
   },
   "aliases_system": {
@@ -44,8 +77,16 @@
     ],
     "example": {
       "page": "Loomana",
-      "tags": ["llm-wiki", "compounding-knowledge", "rag-alternative"],
-      "aliases": ["Loomana", "LLM Wiki Pattern", "Karpathy wiki"]
+      "tags": [
+        "llm-wiki",
+        "compounding-knowledge",
+        "rag-alternative"
+      ],
+      "aliases": [
+        "Loomana",
+        "LLM Wiki Pattern",
+        "Karpathy wiki"
+      ]
     }
   },
   "cross_reference_enforcement": {
@@ -55,15 +96,27 @@
   "language_consistency": {
     "rule": "Use EITHER English OR Russian within one document — never mix languages in tags",
     "recommendation": "English preferred for consistency with AGENTS.md conventions",
-    "exceptions": ["Russian-only content pages may use ru-tags exclusively"]
+    "exceptions": [
+      "Russian-only content pages may use ru-tags exclusively"
+    ]
   },
   "lint_validation_check": {
     "check_id": "13b",
     "description": "Validate tag quality — empty, generic, or comment-embedded tags",
     "actions": [
-      {"condition": "tags_is_empty_or_whitespace", "action": "warn: missing domain-specific tags"},
-      {"condition": "tags_contain_comment_after_array", "action": "error: inline comments break YAML parsing"},
-      {"condition": "all_tags_are_generic (architecture, admin, ai without context)", "action": "warn: replace with domain-specific alternatives"}
+      {
+        "condition": "tags_is_empty_or_whitespace",
+        "action": "warn: missing domain-specific tags"
+      },
+      {
+        "condition": "tags_contain_comment_after_array",
+        "action": "error: inline comments break YAML parsing"
+      },
+      {
+        "condition": "all_tags_are_generic (architecture, admin, ai without context)",
+        "action": "warn: replace with domain-specific alternatives"
+      }
     ]
-  }
+  },
+  "schema_ref_to_agent_rules": "AGENTS.md#universal-frontmatter-all-types"
 }

@@ -2,7 +2,9 @@
   "rule_id": "EVIDENCE-GRADE-V1",
   "protocol_name": "Evidence Grade Auto-computation",
   "description": "Auto-computed field for fact evidence level. Agent assigns grade during ingest based on source authority.",
-  "applicable_to": ["documentation"],
+  "applicable_to": [
+    "documentation"
+  ],
   "auto_status_for_code_reality_live_state": "documented",
   "grade_levels": [
     {
@@ -38,5 +40,6 @@
   "_notes": {
     "extracted_from": "AGENTS.md#auto_computed_fields_section",
     "created_for": "Cycle_6_extraction"
-  }
+  },
+  "schema_ref_to_agent_rules": "AGENTS.md#evidence-grade---fact-evidence-level"
 }

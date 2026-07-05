@@ -1,15 +1,86 @@
 {
   "version": "1.0",
   "categories": [
-    { "key": "entities",       "label": { "en": "Entities",         "ru": "Сущности" },        "description": "Конкретные идентифицируемые объекты (люди, компании, технологии)" },
-    { "key": "concepts",       "label": { "en": "Concepts",          "ru": "Концепции" },         "description": "Абстрактные идеи, принципы, методологии" },
-    { "key": "comparisons",    "label": { "en": "Comparisons",       "ru": "Сравнения" },         "description": "Сравнительный анализ сущностей и концептов" },
-    { "key": "syntheses",      "label": { "en": "Syntheses",        "ru": "Синтезы" },          "description": "Глубокий анализ, объединяющий несколько источников/страниц" },
-    { "key": "overviews",      "label": { "en": "Overviews",         "ru": "Обзоры" },            "description": "Страницы обобщённых данных (timeline.md, overview.md)" },
-    { "key": "notes",          "label": { "en": "Notes",             "ru": "Заметки" },           "description": "Личные заметки, транскрипты встреч, наблюдения" },
-    { "key": "meetings",       "label": { "en": "Meetings",          "ru": "Встречи" },           "description": "Встречи с решениями" },
-    { "key": "projects",       "label": { "en": "Projects",          "ru": "Проекты" },           "description": "Проекты со статусом и вехами" },
-    { "key": "bibliography",   "label": { "en": "Bibliography",      "ru": "Библиография" },      "description": "Книги, статьи, исследования" },
-    { "key": "resources",      "label": { "en": "Resources",         "ru": "Ресурсы" },           "description": "Инструменты, плагины, библиотеки" }
-  ]
+    {
+      "key": "entities",
+      "label": {
+        "en": "Entities",
+        "ru": "Entities"
+      },
+      "description": "Concrete identifiable objects (people, companies, technologies)"
+    },
+    {
+      "key": "concepts",
+      "label": {
+        "en": "Concepts",
+        "ru": "Concepts"
+      },
+      "description": "Abstract ideas, principles, methodologies"
+    },
+    {
+      "key": "comparisons",
+      "label": {
+        "en": "Comparisons",
+        "ru": "Comparisons"
+      },
+      "description": "Comparative analysis of entities and concepts"
+    },
+    {
+      "key": "syntheses",
+      "label": {
+        "en": "Syntheses",
+        "ru": "Syntheses"
+      },
+      "description": "Deep analysis combining several sources/pages"
+    },
+    {
+      "key": "overviews",
+      "label": {
+        "en": "Overviews",
+        "ru": "Overviews"
+      },
+      "description": "Pages with aggregated data (timeline.md, overview.md)"
+    },
+    {
+      "key": "notes",
+      "label": {
+        "en": "Notes",
+        "ru": "Notes"
+      },
+      "description": "Personal notes, meeting transcripts and observations"
+    },
+    {
+      "key": "meetings",
+      "label": {
+        "en": "Meetings",
+        "ru": "Meetings"
+      },
+      "description": "Meetings with decisions"
+    },
+    {
+      "key": "projects",
+      "label": {
+        "en": "Projects",
+        "ru": "Projects"
+      },
+      "description": "Projects with status and milestones"
+    },
+    {
+      "key": "bibliography",
+      "label": {
+        "en": "Bibliography",
+        "ru": "Bibliography"
+      },
+      "description": "Books, articles, research"
+    },
+    {
+      "key": "resources",
+      "label": {
+        "en": "Resources",
+        "ru": "Resources"
+      },
+      "description": "Tools, plugins, libraries"
+    }
+  ],
+  "schema_ref_to_agent_rules": "AGENTS.md#wiki-categories"
 }

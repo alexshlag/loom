@@ -1,6 +1,6 @@
 {
   "protocol_name": "Link Conventions & Auto-Fix",
-  "description": "Правила использования внутренних и внешних ссылок, а также логика автоматического исправления.",
+  "description": "Internal and external link usage conventions plus auto-fix logic.",
   "internal_links": {
     "format": "[text](wiki-relative-path.md)",
     "prohibited": "./ (never use dot-relative paths)",
@@ -27,5 +27,6 @@
       "ignore": "< 3 (below noise floor)"
     },
     "system_file_exclusion": "log.md, issues.md, timeline.md, overview.md, snapshot.md, index.md, hot.md, AGENTS.md, context.md, PLAN.md"
-  }
+  },
+  "schema_ref_to_agent_rules": "AGENTS.md#wiki-operation-routing-contract"
 }

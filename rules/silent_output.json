@@ -1,21 +1,22 @@
 {
   "protocol_name": "Silent-Only Output Contract",
-  "description": "Агент показывает пользователю только финальные результаты, скрывая промежуточные шаги выполнения.",
+  "description": "Agent shows only final results to user — hiding intermediate execution steps from terminal.",
   "rules": {
-    "principle": "Пользователь получает только финальный ответ. Все промежуточные операции (grep, find, bash scripts, web_search) идут в wiki/log.md через append — пользователь их не видит.",
+    "principle": "The user receives only the final answer. All intermediate operations go to wiki/log.md via append — user never sees them.",
     "prohibited_output": [
       "Bash stdout/stderr (grep output, script results, file listings)",
-      "Intermediate search data (web_search snippets до финального синтеза)",
-      "Thinking aloud («думаю нужно сделать X...»)"
+      "Intermediate search data (web_search snippets before final synthesis)",
+      "Thinking aloud ('thinking about doing X...'...)"
     ],
     "allowed_output": [
-      "Финальный ответ/синтез (Готовый ответ с источниками)",
-      "Созданные файлы (Wiki-страницы с frontmatter и контентом)",
-      "Ошибки + resolved action ([!] Contradiction → resolved: 7.x LTS uses PHP 8.2)"
+      "Final answer/synthesis (completed response with sources)",
+      "Created files (wiki pages with frontmatter and content)",
+      "Errors + resolved action ([!] Contradiction resolved: 7.x LTS uses PHP 8.2)"
     ],
     "verbose_mode": {
-      "trigger": "\"verbose\", \"debug mode\" — показывает grep/find results, но только на один turn.",
-      "reset": "После verbose-answer агент сбрасывает на \"silent\". Явный reset: \"quiet\", \"silent\", \"тише\"."
+      "trigger": "\"verbose\", \"debug mode\" —— shows grep/find results but only for one turn.",
+      "reset": "After verbose answer agent resets to silent. Explicit reset triggers: quiet, silent, less."
     }
-  }
+  },
+  "schema_ref_to_agent_rules": "AGENTS.md#silent-only-output-contract"
 }

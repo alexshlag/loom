@@ -272,3 +272,38 @@
 ---
 
 *Last update: 2026-07-05 | Completed: Phase 16, Phase 14.5, Phases 15.x/y, C1-C8. AGENTS.md: 676 lines (~39KB). Next: remaining audit blocks (Delta Tracking) or planned audit phase.*
+### 🚨 Phase 32.z: Rules/*.json Cyrillic Cleanup + Schema Ref Standardization 🔴 P0
+
+**Цель**: Все файлы rules/*.json должны быть на английском (RULES.md #2) и иметь schema_ref_to_agent_rules.
+**Проблема**: 12 файлов содержат ~400+ русскоязычных сегментов, 21 файл без schema_ref_to_agent_rules.
+
+| # | File | Cyrillic Segments | Priority |
+|---|------|-------------------|----------|
+| 1 | silent_output.json | 22 | 🔴 CRITICAL (agent output contract) |
+| 2 | categories.json | 33 | 🔴 CRITICAL (used by scripts) |
+| 3 | execution_modes.json | 19 | 🟡 HIGH |
+| 4 | delta_tracking.json | 18 | ✅ Done (partial fix above) |
+| 5 | structural_requirements.json | 15 | 🟡 HIGH |
+| 6 | non_blocking_lint.json | 12 | 🟡 HIGH |
+| 7 | execution_contract.json | 8 | 🟡 HIGH |
+| 8 | context-scopes.json | 8 | 🟢 MEDIUM |
+| 9 | batch_ingest_trigger.json | 6 | 🟢 MEDIUM |
+| 10 | date_convention.json | 3 | 🟢 LOW |
+| 11 | link_conventions.json | 2 | 🟢 LOW |
+| 12 | auto_rebuild_metadata.json + auto_update_index.json | 4+3 | 🟢 LOW |
+
+**Требования:**
+- Все описания на английском (RULES.md #2)
+- Каждый файл имеет schema_ref_to_agent_rules: "AGENTS.md#<section>"
+- schema_ref в AGENTS.md → rules/<file>.json#<rule_id> или просто schema_ref к file
+
+**Алгоритм:**
+1. Прочитать файл → найти все Cyrillic сегменты
+2. Перевести на английский (контекстно)
+3. Добавить schema_ref_to_agent_rules в top-level JSON
+4. Найти соответствующую секцию в AGENTS.md и добавить schema_ref
+5. Фиксировать в git commit
+
+> **R07-Compliance**: Не удалять примеры/edge cases без аудита (они работают как conditional logic).
+
+---

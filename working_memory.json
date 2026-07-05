@@ -1,30 +1,30 @@
 {
-    "last_updated": "2026-07-05T22:16+03",
+    "last_updated": "2026-07-05T23:18+03",
     "current_mode": "project",
-    "focus_node": "Phase 32.1 Cycles 1-8 complete. AGENTS.md reduced to 676 lines (~39KB). All self-reference anchors resolved + external_sources_policy extracted.",
+    "focus_node": "Phase 32 completion + rules/*.json Cyrillic cleanup and schema_ref standardization",
     "open_pages": [],
     "dead_ends": [],
     "query_summary": {
-        "intent": "Complete extraction cycles C1-C8, finalize self-reference audit",
+        "intent": "Complete extraction cycles C1-C8, finalize self-reference audit, clean all rules/*.json from Cyrillic, add schema_ref_to_agent_rules",
         "pages_read": [
-            "AGENTS.md sections: work_modes (C7), wiki_operation_routing (C8)",
+            "AGENTS.md sections (work_modes, wiki_operation_routing)",
             "PLAN.md (extraction priority map + cycle log)",
-            "rules/external_sources_policy.json"
+            "All 25 rules/*.json files"
         ],
         "key_findings": [
-            "C8: Wiki Operation Routing Contract extracted → rules/external_sources_policy.json",
-            "AGENTS.md reduced from 682→676 lines (-13 lines, table removed)",
-            "All external_sources references now via schema_ref only",
-            "lint.sh passes: 0 broken links"
+            "✅ All 12 Cyrillic-containing rules/*.json now English-only (~400+ Cyrillic segments removed)",
+            "✅ schema_ref_to_agent_rules added to all 21 missing files (standard pattern applied)",
+            "✅ 4 existing files already had schema_ref",
+            "📊 Total: 25/25 rules/*.json now compliant with RULES.md #2"
         ]
     },
     "next_steps_todo": [
         {
-            "task": "Complete remaining extraction candidates: Delta Tracking (item 8 from priority map) → verify delta_tracking.json completeness",
-            "priority": "low"
+            "task": "Commit comprehensive Cyrillic cleanup + schema_ref standardization across all rules/*.json",
+            "priority": "high"
         },
         {
-            "task": "Create separate audit task in PLAN.md for all rules/*.json files — verify each has schema_ref_to_agent_rules, proper structure, no orphaned references",
+            "task": "Update PLAN.md audit task to reflect completion of Cyrillic cleanup phase",
             "priority": "medium"
         }
     ]

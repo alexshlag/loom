@@ -10,16 +10,16 @@
     {
       "step_id": "0_delta_check",
       "name": "delta_tracking_hash_check",
-      "description": "Проверка хешей оригинального файла против существующих corrected копий — предотвращает re-ingest уже обработанных источников.",
+      "description": "Hash check of original file against existing corrected copies — prevents re-ingest of already processed sources.",
       "actions": [
         {
           "action": "run_hash_check",
           "command": "./scripts/rebuild-source-manifest.sh --scan-only",
-          "description": "Сканирует все источники, определяет что уже processed, что stale/unprocessed"
+          "description": "Scans all sources to determine which are already processed vs stale/unprocessed"
         },
         {
           "action": "check_specific_source_status",
-          "note": "Если текущий ${SOURCE_PATH} имеет status=processed → пропустить re-ingest. Если unprocessed/stale → продолжить ingest flow.",
+          "note": "If current ${SOURCE_PATH} has status=processed → skip re-ingest. If unprocessed/stale → continue to ingest flow.",
           "on_skip_condition": "source_already_ingested AND corrected_copy_up_to_date",
           "on_proceed_condition": "no_corrected_copy OR hash_mismatch OR source_is_new"
         }
@@ -28,12 +28,12 @@
         {
           "condition": "source_status == processed",
           "action": "SKIP_INGEST — SOURCE_ALREADY_PROCESSED",
-          "note": "Уже есть corrected copy с актуальным хешем → перейти к Step 2 (discussion)"
+          "note": "Corrected copy exists with current hash → proceed to Step 2 (discussion)"
         },
         {
           "condition": "source_status == unprocessed OR stale",
           "action": "PROCEED_TO_ANALYSIS",
-          "note": "Нужен новый/обновлённый ingest — продолжить к Step 1 (source_analysis)"
+          "note": "New or updated ingest required → continue to Step 1 (source_analysis)"
         }
       ]
     }

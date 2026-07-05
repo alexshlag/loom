@@ -58,5 +58,6 @@
     "removed_self_references": [
       "process-query.json#error_handling.logging_actions -> updated to rules/error_handling.json#logging_actions"
     ]
-  }
+  },
+  "schema_ref_to_agent_rules": "AGENTS.md#error-handling-policy"
 }

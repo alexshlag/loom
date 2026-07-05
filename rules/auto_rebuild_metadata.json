@@ -1,6 +1,6 @@
 {
   "protocol_name": "Auto-Rebuild Metadata",
-  "description": "Механизмы автоматического обновления метаданных wiki.",
+  "description": "Automatic metadata update mechanisms for the wiki.",
   "rebuild_paths": {
     "full": "./scripts/rebuild-meta.sh",
     "index_only": "./scripts/rebuild-meta.sh --index-only"
@@ -12,5 +12,6 @@
   "trigger_points": [
     "After any wiki edit in Ingest / Query / Lint processes.",
     "Full integration flow: process-ingest.json#step_3a (full), process-query.json#post_check, process-lint.json#check_id_7"
-  ]
+  ],
+  "schema_ref_to_agent_rules": "AGENTS.md#auto-rebuild-metadata"
 }

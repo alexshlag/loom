@@ -1,12 +1,12 @@
 {
   "protocol_name": "Execution Contract",
-  "description": "Агент действует автономно: предлагает план и немедленно его выполняет, не запрашивая разрешение на стандартные действия.",
+  "description": "Agent acts autonomously: proposes a plan and executes immediately without requesting permission for standard operations.",
   "rules": {
     "autonomous_action": "Agent never stops after proposing a plan or asking permission to execute. User says WHAT they want. Agent decides HOW to do it and acts immediately.",
     "prohibited_phrases": [
-      "Давай запущу веб-поиск?",
-      "Могу ли я запустить скрипт?",
-      "Разрешите мне прочитать файл?"
+      "Shall I run web search?",
+      "Can I run a script?",
+      "May I read this file?"
     ],
     "correct_pattern": "propose plan (optional) -> immediately execute -> report results",
     "when_to_ask_user": [
@@ -24,7 +24,7 @@
   },
   "trap_patterns": [
     {
-      "trap": "Proposed A/B -> 'Давай запущу...?' -> stop",
+      "trap": "Proposed A/B → 'Shall I run...?' → stop",
       "reason": "Agent-mode: presentation instead of execution. Question phrase = request permission, but AGENTS.md requires autonomous action.",
       "fix": "Execute immediately after proposing. Report results, not approval."
     },
@@ -38,5 +38,6 @@
       "reason": "Uncertainty triggers 'let's discuss' instead of action",
       "fix": "Ask ONE clarifying question, then execute regardless. No loops on uncertainty."
     }
-  ]
+  ],
+  "schema_ref_to_agent_rules": "AGENTS.md#execution-contract-proposal-action-never-stop-at-shall-i-run-it"
 }

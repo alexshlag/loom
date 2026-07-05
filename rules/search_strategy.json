@@ -99,5 +99,6 @@
       "score_max": 2,
       "action": "Ignore (below noise floor)"
     }
-  ]
+  ],
+  "schema_ref_to_agent_rules": "AGENTS.md#search--discovery"
 }

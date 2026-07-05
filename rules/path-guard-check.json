@@ -2,18 +2,31 @@
   "rule_id": "PATH-GUARD-Check-V1",
   "name": "check_existing_path_guardrails",
   "description": "Validate wiki page path and check if it already exists before write. Returns exit_code 0 (new) or >0 (exists with last_update). Used to prevent accidental overwrites.",
-
   "implementation": {
     "type": "bash_script_or_inline_logic",
     "steps": [
-      {"step": 1, "action": "./scripts/validate-path.sh ${EXISTING_PAGE_PATH}.md"},
-      {"condition": "exit_code != 0", "action": "STOP_AND_REPORT: invalid path"},
-      {"step": 2, "action": "check if file exists in wiki/"},
-      {"condition": "file_exists == true", "action": "read frontmatter date → last_update = YYYY-MM-DD → return exit_code 1 with timestamp"},
-      {"condition": "file_exists == false", "action": "return exit_code 0 (new page)"}
+      {
+        "step": 1,
+        "action": "./scripts/validate-path.sh ${EXISTING_PAGE_PATH}.md"
+      },
+      {
+        "condition": "exit_code != 0",
+        "action": "STOP_AND_REPORT: invalid path"
+      },
+      {
+        "step": 2,
+        "action": "check if file exists in wiki/"
+      },
+      {
+        "condition": "file_exists == true",
+        "action": "read frontmatter date → last_update = YYYY-MM-DD → return exit_code 1 with timestamp"
+      },
+      {
+        "condition": "file_exists == false",
+        "action": "return exit_code 0 (new page)"
+      }
     ]
   },
-
   "usage_in_processes": [
     {
       "process": "process-query.json#step_3.pre_check",
@@ -25,6 +38,6 @@
       "note": "duplicate_check_before_fixation uses validate-path.sh directly (no need for this guard)"
     }
   ],
-
-  "schema_ref_for_query_process": "rules/path-guard-check.json"
+  "schema_ref_for_query_process": "rules/path-guard-check.json",
+  "schema_ref_to_agent_rules": "AGENTS.md#raw-sources-raw"
 }

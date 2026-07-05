@@ -1,39 +1,103 @@
 {
   "version": "2.0",
-  "description": "Определяет scope (область видимости) для каждой группы правил wiki. Все правила — Transient, поскольку AGENTS.md auto-read перед каждым процессом.",
+  "description": "Defines scope for each rules group across the wiki. All rules are Transient — AGENTS.md auto-read before every process.",
   "scope_policy": {
     "rule": "ALL rules are Transient. Agent reads fresh from source before every action. No persistent memory required since AGENTS.md is automatically read at process start.",
     "reason": "Process files (process-ingest.json, process-query.json, process-lint.json) contain 'agent_read_instructions' that mandate reading AGENTS.md before execution — guaranteeing context refresh."
   },
   "scopes": {
     "transient_all_rules": {
-      "label": "Все правила читаются fresh из источника",
+      "label": "All rules are read fresh from source",
       "rule": "Agent reads rules from source files only when needed. Never stores in persistent memory.",
       "rules_to_read_fresh": [
-        {"id": "MEMORY_CONTRACT", "title": "Memory Architecture Contract", "source_file": "AGENTS.md#memory_architecture_contract"},
-        {"id": "EXECUTION_CONTRACT", "title": "Execution Contract — Proposal → Action", "source_file": "AGENTS.md#execution_contract"},
-        {"id": "ERROR_HANDLING", "title": "Error Handling Protocol — 4-step loop", "source_file": "AGENTS.md#error_handling_protocol"},
-        {"id": "GIT_CONVENTIONS", "title": "Git Conventions", "source_file": "AGENTS.md#git_conventions"},
-        {"id": "PROTECTED_ZONES", "title": "Protected Zones & Guardrails", "source_file": "AGENTS.md#protected_zones"},
-        {"id": "SILENT_OUTPUT", "title": "Silent-Only Output Contract", "source_file": "AGENTS.md#silent_output_contract"},
-        {"id": "EXECUTION_MODES", "title": "Execution Modes (silent/verbose)", "source_file": "AGENTS.md#execution_modes"},
-        {"id": "NATURAL_MEMORY", "title": "Natural Memory Translation", "source_file": "AGENTS.md#natural_memory_translation"},
-        {"id": "LOG_APPEND_ONLY", "title": "Log Append Only Rule", "source_file": "AGENTS.md#log_append_only"}
+        {
+          "id": "MEMORY_CONTRACT",
+          "title": "Memory Architecture Contract",
+          "source_file": "AGENTS.md#memory_architecture_contract"
+        },
+        {
+          "id": "EXECUTION_CONTRACT",
+          "title": "Execution Contract — Proposal → Action",
+          "source_file": "AGENTS.md#execution_contract"
+        },
+        {
+          "id": "ERROR_HANDLING",
+          "title": "Error Handling Protocol — 4-step loop",
+          "source_file": "AGENTS.md#error_handling_protocol"
+        },
+        {
+          "id": "GIT_CONVENTIONS",
+          "title": "Git Conventions",
+          "source_file": "AGENTS.md#git_conventions"
+        },
+        {
+          "id": "PROTECTED_ZONES",
+          "title": "Protected Zones & Guardrails",
+          "source_file": "AGENTS.md#protected_zones"
+        },
+        {
+          "id": "SILENT_OUTPUT",
+          "title": "Silent-Only Output Contract",
+          "source_file": "AGENTS.md#silent_output_contract"
+        },
+        {
+          "id": "EXECUTION_MODES",
+          "title": "Execution Modes (silent/verbose)",
+          "source_file": "AGENTS.md#execution_modes"
+        },
+        {
+          "id": "NATURAL_MEMORY",
+          "title": "Natural Memory Translation",
+          "source_file": "AGENTS.md#natural_memory_translation"
+        },
+        {
+          "id": "LOG_APPEND_ONLY",
+          "title": "Log Append Only Rule",
+          "source_file": "AGENTS.md#log_append_only"
+        }
       ],
       "hybrid_rules_read_on_demand": [
-        {"id": "PAGE_TEMPLATES", "title": "Page Templates & Frontmatter structure", "read_when": "creating/updating wiki pages"},
-        {"id": "LINK_CONVENTIONS", "title": "Link Conventions — basic rules + auto-fix details", "source_file_rules": "process-ingest.json#external_source_policy"},
-        {"id": "CROSSLINK_DISCOVERY", "title": "Crosslink Discovery scoring system", "read_when": "building crosslinks"},
-        {"id": "ADVISORY_LOCKING", "title": "Advisory Locking usage pattern for ingest", "source_file_rules": "scripts/wiki-lock.sh"}
+        {
+          "id": "PAGE_TEMPLATES",
+          "title": "Page Templates & Frontmatter structure",
+          "read_when": "creating/updating wiki pages"
+        },
+        {
+          "id": "LINK_CONVENTIONS",
+          "title": "Link Conventions — basic rules + auto-fix details",
+          "source_file_rules": "process-ingest.json#external_source_policy"
+        },
+        {
+          "id": "CROSSLINK_DISCOVERY",
+          "title": "Crosslink Discovery scoring system",
+          "read_when": "building crosslinks"
+        },
+        {
+          "id": "ADVISORY_LOCKING",
+          "title": "Advisory Locking usage pattern for ingest",
+          "source_file_rules": "scripts/wiki-lock.sh"
+        }
       ]
     },
     "process_specific_transient": {
       "label": "Process-specific rules (read only during process)",
       "rule": "Agent reads these rules when entering process mode. After process completes, agent forgets them unless user explicitly asks to keep context.",
       "rules_to_include_in_context": [
-        {"id": "INGEST_SPECIFICS", "title": "Ingest-specific steps: capture → integrate flow, corrected copy zone, delta tracking manifest", "source_file": "process-ingest.json"},
-        {"id": "QUERY_SPECIFICS", "title": "Query-specific: search priority, web_ingest_flow, compounding workflow logic", "source_file": "process-query.json"},
-        {"id": "LINT_SPECIFICS", "title": "Lint-specific: check IDs, cron setup, script usage patterns", "source_file": "process-lint.json"}
+        {
+          "id": "INGEST_SPECIFICS",
+          "title": "Ingest-specific steps: capture → integrate flow, corrected copy zone, delta tracking manifest",
+          "source_file": "process-ingest.json"
+        },
+        {
+          "id": "QUERY_SPECIFICS",
+          "title": "Query-specific: search priority, web_ingest_flow, compounding workflow logic",
+          "source_file": "process-query.json"
+        },
+        {
+          "id": "LINT_SPECIFICS",
+          "title": "Lint-specific: check IDs, cron setup, script usage patterns",
+          "source_file": "process-lint.json"
+        }
       ]
     }
   },
@@ -50,5 +114,6 @@
     "read_on_demand": [
       "For hybrid rules (templates, link conventions, crosslinks) → read from source only when actively working on that topic."
     ]
-  }
+  },
+  "schema_ref_to_agent_rules": "AGENTS.md#why-this-matters"
 }

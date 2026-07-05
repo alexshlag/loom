@@ -4,7 +4,10 @@
       "access": "scripts_only",
       "owner": "system",
       "rebuild_command": "./scripts/rebuild-meta.sh",
-      "files": ["registry.json", "backlinks.json"]
+      "files": [
+        "registry.json",
+        "backlinks.json"
+      ]
     },
     "raw/**": {
       "access": "read-only",
@@ -13,7 +16,9 @@
     "raw/corrected/": {
       "access": "read-write",
       "owner": "agent",
-      "tools": ["scripts/raw-correct.sh"]
+      "tools": [
+        "scripts/raw-correct.sh"
+      ]
     },
     "tracking/": {
       "access": "read-write",
@@ -24,5 +29,6 @@
       "owner": "agent"
     }
   },
-  "implications": "Agent manages wiki and corrected/ tracking/. User controls raw/."
+  "implications": "Agent manages wiki and corrected/ tracking/. User controls raw/.",
+  "schema_ref_to_agent_rules": "AGENTS.md#architecture-layers"
 }
