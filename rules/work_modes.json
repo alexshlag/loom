@@ -1,0 +1,116 @@
+{
+  "protocol_name": "User Work Modes",
+  "description": "Defines how agent manages context for different types of user requests. Determines compaction, session persistence, and memory layer behavior.",
+  "schema_ref_to_agent_rules": "AGENTS.md#work_modes",
+
+  "determination_algorithm": {
+    "rule": "Agent does not wait for explicit marker — determines mode itself from task context.",
+    "paths": [
+      {
+        "method": "direct_user_instruction",
+        "when_triggered": "User explicitly says 'working on project' or sets marker",
+        "example": "[WORK_MODE: project] in query"
+      },
+      {
+        "method": "task_context",
+        "when_triggered": "Agent understands from phrasing that this is iterative work",
+        "example": "\"Migrating auth to JWT → what token rotation schemas?\""
+      },
+      {
+        "method": "clarifying_question",
+        "when_triggered": "Agent uncertain — asks user",
+        "example": "\"Is this a one-off question or part of a project?\""
+      }
+    ]
+  },
+
+  "mode_definitions": [
+    {
+      "id": "one_off_reference",
+      "name": "One-off Reference Question",
+      "context_definition": "Short fact, definition, comparison of two terms.",
+      "compaction_policy": true,
+      "session_persistence": false,
+      "rules": [
+        "Dismiss all read pages (except snapshot) after answer",
+        "Context not carried forward to new session — agent starts with snapshot.md"
+      ]
+    },
+    {
+      "id": "deep_dive_study",
+      "name": "Deep-dive Topic Study",
+      "context_definition": "Multiple iterations question→answer→clarification→new question.",
+      "compaction_policy": false,
+      "session_persistence": true,
+      "rules": [
+        "Retain all previous questions/answers across turns",
+        "Context carried forward in working_memory.json to new session"
+      ]
+    },
+    {
+      "id": "discussion_debate",
+      "name": "Discussion / Debate",
+      "context_definition": "User builds argumentation, agent participates in debate.",
+      "compaction_policy": false,
+      "session_persistence": true,
+      "rules": [
+        "Retain everything until topic-switch marker",
+        "No compaction — entire discussion context carried forward in working_memory.json"
+      ]
+    },
+    {
+      "id": "project_work",
+      "name": "Project Work",
+      "context_definition": "Iterative development, wiki = context source (architecture decisions).",
+      "compaction_policy": "partial",
+      "session_persistence": true,
+      "rules": [
+        "Partial compaction — unload tool results, keep project state",
+        "Project context carried forward via working_memory.json"
+      ]
+    },
+    {
+      "id": "synthesis_creation",
+      "name": "Synthesis / Creating New Wiki Page from Query Result",
+      "context_definition": "Answer contains novel insight → agent proposes saving as new page.",
+      "trigger_condition": "agent detects ≥3 wiki pages used for answer synthesis",
+      "compaction_policy": false,
+      "session_persistence": false,
+      "approval_rule": "Never auto-create without explicit fixation flag (DR-4). Web-sourced data requires user approval.",
+      "rules": [
+        "Compaction=false until page fixation in wiki",
+        "Context not carried forward — agent starts with snapshot.md"
+      ],
+      "technical_calls": {
+        "from_ingest": "FLUSH_RAWS after extraction, read only pages to update",
+        "from_lint": "Agent does NOT read wiki directly — only report from bash/Python script"
+      }
+    }
+  ],
+
+  "management_rules": [
+    {
+      "action": "agent_identifies_project",
+      "steps": [
+        "Set `current_mode = 'project'` in working_memory.json",
+        "Update wiki/snapshot.md — add project to Active Projects",
+        "Load snapshot.md on subsequent invocations"
+      ]
+    },
+    {
+      "action": "explicit_marker_received",
+      "rule": "[WORK_MODE: project] → accept immediately"
+    },
+    {
+      "action": "ambiguous_context",
+      "rule": "Clarify with user before proceeding"
+    }
+  ],
+
+  "global_rule": "Agent manages mode itself — flexible mechanism based on context, direct instruction, or clarification.",
+
+  "integration_with_memory": {
+    "schema_ref_to_session_rules": "rules/session_context_rules.json",
+    "note": "Work Modes determine WHEN to apply the rules defined in session_context_rules.json. Compaction=true/false controls which memory files are preserved across sessions."
+  }
+}

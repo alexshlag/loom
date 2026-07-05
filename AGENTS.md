@@ -454,72 +454,12 @@ Answer is considered compound (requires saving as new wiki page) if:
 
 ---
 
-## 🧠 User Work Modes (Schema-level)
+## 🧠 User Work Modes
 
-These modes define how agent manages context for different types of user requests.
+**Schema ref**: `rules/work_modes.json` — full specification of 5 work modes with compaction policies, session persistence rules, and mode determination algorithm.
 
-### How Agent Determines [WORK_MODE: project]
-
-Agent **does not wait for explicit marker** — it determines mode itself from task context. Three paths:
-
-| Method                              | When triggered                                                   | Example                                              |
-| ----------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------- |
-| **Direct user instruction**         | User explicitly says "working on project" or sets marker         | `[WORK_MODE: project]` in query                      |
-| **Task context**                    | Agent understands from phrasing that this is iterative work      | "Migrating auth to JWT → what token rotation schemas?"|
-| **Clarifying question**             | Agent uncertain → asks user                                      | "Is this a one-off question or part of a project?"   |
-
-### Managing Mode Flags:
-
-1. If agent identifies project (iterative work with wiki as context source):
-
-- Sets `current_mode = "project"` in `working_memory.json`
-- Updates `wiki/snapshot.md` — adds project to Active Projects
-- Loads snapshot.md on subsequent invocations
-
-2. Explicit marker `[WORK_MODE: project]` → accept immediately.
-3. Ambiguous context → clarify with user.
-
-**Rule**: agent manages mode itself — flexible mechanism based on context, direct instruction, or clarification.
-
+> Agent reads this file before any context management decision. Contains conditional behavior logic (R07-compliant).
 ---
-
-### 1. One-off Reference Question
-
-- **Context**: short fact, definition, comparison of two terms.
-- **Policy**: Compaction=true after answer. Dismiss all read pages (except snapshot).
-- **New session**: false — context not carried forward, agent starts with snapshot.md
-
-### 2. Deep-dive Topic Study
-
-- **Context**: multiple iterations question→answer→clarification→new question.
-- **Policy**: Compaction=false (discussion mode). Retain all previous questions/answers.
-- **New session**: true — previous context carried forward in working_memory.json
-
-### 3. Discussion / Debate
-
-- **Context**: user builds argumentation, agent participates in debate.
-- **Policy**: Retain everything until topic-switch marker. No compaction.
-- **New session**: true — entire discussion context carried forward in working_memory.json
-
-### 4. Project Work
-
-- **Context**: iterative development, wiki = context source (architecture decisions).
-- **Policy**: Partial compaction — unload tool results, keep project state.
-- **New session**: true — project context carried forward via working_memory.json
-
-### 5. Synthesis / Creating New Wiki Page from Query Result
-
-**Trigger**: agent detects ≥3 wiki pages used for answer synthesis → proposes save to user.
-**Rule**: Never auto-create without explicit fixation flag (DR-4). Web-sourced data requires user approval.
-
-- **Context**: answer contains novel insight → agent proposes saving as new page.
-- **Policy**: Compaction=false until page fixation in wiki.
-- **New session**: false — context not carried forward, agent starts with snapshot.md
-
-**Technical calls (Ingest / Lint)**:
-
-- Call from Ingest: FLUSH_RAWS after extraction, read only pages to update.
-- Call from Lint: agent does NOT read wiki directly — only report from bash/Python script.
 
 ---
 
