@@ -181,10 +181,25 @@
 
 | Cycle | Block Extracted | Target File | Status | Validation |
 |-------|-----------------|-------------|--------|------------|
-│ **C1** │ Git Conventions │ `rules/git_conventions.json` │ ✅ Done │ lint.sh: 14 checks, 0 errors │
-│ **C2** │ Memory Architecture + Session Context → consolidated & optimized │ `rules/session_context_rules.json` (SCM-V2.1) │ ✅ Done │ All old refs replaced; duplicate golden_rules removed; write_workflow merged; ~5362 bytes (-11% from initial V2) │
-│ **C3** │ Wiki Categories + Search Strategy → extracted & consolidated │ `rules/categories.json` (brief ref), `rules/search_strategy.json` (SD-V2) │ ✅ Done │ AGENTS.md reduced to ~1030 lines; search_strategy expanded to 2595 bytes; no broken refs │
-│ **C4** │ Error Handling Protocol → consolidated into rules/error_handling.json │ `rules/error_handling.json` (EHP-V2) │ ✅ Done │ All examples + golden rule preserved; references updated; no stale anchors | `rules/session_context_rules.json` (SCM-V2.1) | ✅ Done | All old refs replaced; duplicate golden_rules removed; write_workflow merged; ~5362 bytes (-11% from initial V2) |
+| **C1** | Git Conventions → extracted to JSON. Brief ref in AGENTS.md. | `rules/git_conventions.json` | ✅ Done | lint.sh: 0 broken links |
+| **C2** | Memory Architecture + Session Context → consolidated into session_context_rules.json V2.1 (SCM-V2). Write triggers merged, duplicate golden_rules removed. | `rules/session_context_rules.json` (SCM-V2) | ✅ Done | All old refs replaced; write_workflow merged |
+| **C3** | Wiki Categories brief ref in AGENTS.md + link to rules/categories.json. Search Strategy extracted → rules/search_strategy.json SD-V2 (expanded from 511→{sz}). All old self-refs removed. | `rules/search_strategy.json` SD-V2 | ✅ Done | AGENTS.md reduced to ~1030 lines; no broken refs |
+| **C4** | Error Handling Protocol consolidated → rules/error_handling.json EHP-V2. Examples + golden rule preserved. All references updated to point to JSON file. | `rules/error_handling.json` EHP-V2 | ✅ Done | All examples preserved; references updated |
+| **C5** | Silent Output + Execution Contract brief refs in AGENTS.md (both already existed as .json). No new files created, just unified references. | `rules/silent_output.json` + execution_contract.json | ✅ Done | AGENTS.md → 742 lines (-60% from original ~1839) |
+
+### Remaining Self-Reference Audit (AGENTS.md)
+
+| Anchor | Section | Status | Action Required |
+|--------|---------|--------|-----------------|
+| `AGENTS.md#context_management_phase_32` | Context Management Transient → context-scopes.json exists ✅ | brief ref needed |
+| `AGENTS.md#git_conventions` | Git Conventions brief ref (already extracted) | brief ref in AGENTS.md |
+| `AGENTS.md#media_pipeline` | Wiki Assets & Media Pipeline → needs audit | audit required |
+| `AGENTS.md#summary_pages` | FAQ Pages creation rules → needs audit | audit required |
+| `AGENTS.md#auto_computed_fields` | Auto-computed Fields extraction candidate | extract to JSON |
+| `AGENTS.md#language_policy` | Language Policy → keep in AGENTS.md (shared contract) | keep as-is |
+| `AGENTS.md#template_files` | Template Files → shared contract with user, keep in AGENTS.md | keep as-is |
+| `AGENTS.md#execution_modes` | Execution Modes → needs audit (already has rules/execution_modes.json) | brief ref needed |
+
 
 ### Extraction Priority Map (8 blocks identified)
 
