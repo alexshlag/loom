@@ -1,7 +1,7 @@
 {
     "last_updated": "2026-07-06T15:50+03",
     "current_mode": "project",
-    "focus_node": "Memory Layer Architecture — Phase 1a complete (Tasks #3+#4), Phase 2 planning next",
+    "focus_node": "Phase 16.2 planning — Trajectory capture system (scripts/memory/traj-capture.sh)",
     "open_pages": [
         {"path": "scripts/memory/recall-spec.md", "status": "reading"}
     ],
