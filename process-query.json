@@ -340,16 +340,19 @@
         {
           "condition": "compounding_flagged: true",
           "action_if_met": "PROPOSE_SAVE_TO_USER",
+          "fallback_if_not_matched": "CHECK_evaluation_criteria_sum_score (if >=2 → same action)",
           "note": "AUTO_SAVE_NEW_PAGE replaced — must route through process-ingest.json#step_8a_new_page or step_8b_update_page"
         },
         {
           "condition": "contradiction_resolution_completed",
           "action_if_met": "PROPOSE_UPDATE_TO_USER",
+          "fallback_if_not_matched": "CREATE_COMPARISON_PAGE (if multiple_sources_same_priority)",
           "note": "CREATE_COMPARISON_OR_UPDATE_OLD_PAGE replaced — must route through process-ingest.json"
         },
         {
           "condition": "new_facts_for_existing_entity",
           "action_if_met": "PROPOSE_UPDATE_TO_USER",
+          "fallback_if_not_matched": "ADD_FACTS_TO_EXISTING (if source_layer matches existing)",
           "note": "UPDATE_EXISTING_PAGE replaced — must route through process-ingest.json#step_8b_update_page"
         }
       ],
