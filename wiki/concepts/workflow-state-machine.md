@@ -1,5 +1,5 @@
 ---
-tags: [ workflow, state-machine, finite-state-machine]
+tags: [state-machinery-pattern, symfony-workflow, fsm-implementation]
 date: 2026-06-25
 sources: [raw/corrected/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md]
 related: [wiki/entities/symfony.md]

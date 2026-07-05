@@ -1,5 +1,5 @@
 ---
-tags: [ architecture, wiki-framework, ingest, workflow]
+tags: [vault-architecture, knowledge-workflow, loomana-comparison, claude-obsidian]
 date: 2026-07-01
 type: comparison
 category: comparison

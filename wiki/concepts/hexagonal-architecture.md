@@ -1,5 +1,5 @@
 ---
-tags: [ architecture, hexagonal, clean-architecture, domain-driven-design]
+tags: [hexagonal-pattern, ports-and-adapters, clean-architecture, ddd-patterns]
 date: 2026-06-25
 sources: [raw/corrected/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md]
 related: [wiki/entities/symfony.md, wiki/concepts/symfony-dependency-injection.md]

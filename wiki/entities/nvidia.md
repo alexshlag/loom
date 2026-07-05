@@ -1,5 +1,5 @@
 ---
-tags: [ hardware, ai, semiconductor]
+tags: [gpu-manufacturer, semiconductor, ai-hardware]
 date: 2026-06-24
 sources: [web_search]
 related: [wiki/concepts/llm-wiki.md]

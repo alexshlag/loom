@@ -1,5 +1,5 @@
 ---
-tags: [ llm-wiki, architecture, platform]
+tags: [llm-wiki-patterns, wiki-implementations, compounding-knowledge]
 date: 2026-06-25
 sources: []
 related: [wiki/concepts/llm-wiki.md, wiki/syntheses/rag-vs-llm-wiki-pattern.md, wiki/comparisons/loom-vs-claude-obsidian.md]

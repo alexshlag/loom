@@ -1,5 +1,5 @@
 ---
-tags: [ admin, symfony-bundle, cruds]
+tags: [easyadmin-admin-ui, symfony-bundle, crud-generation]
 date: 2026-07-01
 type: documentation
 category: concept

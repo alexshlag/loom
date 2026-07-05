@@ -1,5 +1,5 @@
 ---
-tags: [ runtime, javascript, server-side, npm, nixos, nixpkgs ]
+tags: [node-runtime, javascript-runtime, backend-npm, nixos-package]
 date: 2026-07-04
 type: documentation
 category: entity

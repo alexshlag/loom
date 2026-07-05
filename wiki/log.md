@@ -557,3 +557,8 @@ Current task: Phase 15 (Tagging System). Next pending: Phase 15.1 (Aliases).
 - Added step_4_tag_validation to process-ingest.json with auto-reject generic tags logic
 - Added check_id=13 to process-lint.json for tag quality validation
 - Audit completed: 22/43 files have generic/broad tag issues; 3 inline comments in frontmatter
+
+## [2026-07-05] fix | Tag audit remediation — replaced generic → domain-specific tags across 18 pages
+- Replaced broad/generic tags (architecture, admin, cms, ai, testing, workflow, etc.) with domain-specific alternatives
+- Added commerce-cms, gpu-manufacturer, hexagonal-pattern, easyadmin-admin-ui, llm-integration, state-machinery-pattern, async-message-queue, psr6-caching, access-control-voters
+- 36/38 pages now have NO generic tags (94.7%)

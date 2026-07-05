@@ -1,5 +1,5 @@
 ---
-tags: [ security, authentication, authorization, voters]
+tags: [access-control-voters, symfony-security, authz-patterns]
 date: 2026-06-25
 sources: [raw/corrected/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md]
 related: [wiki/entities/symfony.md]

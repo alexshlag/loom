@@ -1,5 +1,5 @@
 ---
-tags: [ ai, llm, rag, vector-database]
+tags: [llm-integration, symfony-ai, rag-patterns, embedding-vector]
 date: 2026-06-25
 sources: [raw/corrected/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md]
 related: [wiki/entities/symfony.md]
