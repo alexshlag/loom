@@ -82,5 +82,5 @@
       "description": "Tools, plugins, libraries"
     }
   ],
-  "schema_ref_to_agent_rules": "AGENTS.md#wiki-categories"
+  "rule": "Agent reads from this file \u2014 never hardcodes order or definitions."
 }

@@ -602,3 +602,12 @@ AGENTS.md reduced to ~1030 lines (-21% from original 1305). lint.sh passes.
 C5a: Replaced full Silent Output section with brief ref → rules/silent_output.json (already existed)
 C5b: Replaced full Execution Contract section with brief ref → rules/execution_contract.json (already existed)
 AGENTS.md now 742 lines. lint.sh passes.
+
+## [2026-07-05] schema | C9 Compounding Workflow extraction + Wiki Categories deletion
+C9: Extracted compounding workflow from AGENTS.md#compounding-workflow + process-query.json → rules/compounding_workflow.json (130 lines)
+  - Updated AGENTS.md with brief ref to new file
+  - Updated process-query.json: inline JSON replaced by schema_ref, duplicate_check_before_fixation updated
+  - Deleted wiki-categories block from AGENTS.md (zero loss — no direct refs in processes)
+  - Deleted search&discovery block from AGENTS.md; removed schema_ref_to_agent_rules from rules/search_strategy.json
+  - Updated rules/categories.json: schema_ref → concise inline rule
+  - ⚠️ context-scopes.json still has stale schema_ref_to_agent_rules — to be addressed next session

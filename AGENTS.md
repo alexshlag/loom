@@ -388,12 +388,6 @@ Detailed page templates stored in `wiki/templates/`.
 
 ---
 
-### 🗂 Wiki Categories
-
-Category order and definitions are stored in **`rules/categories.json`**. Agent reads them from there — never hardcodes. All scripts (rebuild-meta.sh, wiki-search.sh, duplicate-titles.sh) also read from this JSON.
-
-> File: `rules/categories.json`.
----
 
 
 ### Compounding Workflow
@@ -517,18 +511,6 @@ Agent manages two independent modes:
 - Explicit reset: user says `"quiet"`, `"silent"`, `"less"` → instant reset.
 
 > Schema ref: `rules/execution_modes.json`.
-
----
-
-## 🔍 Search & Discovery
-
-Search strategy is fully defined in **`rules/search_strategy.json`**. Agent reads from there — no hardcoded rules.
-
-> File: `rules/search_strategy.json`.
----
-
-
----
 
 ## 📅 Date Convention Rule
 

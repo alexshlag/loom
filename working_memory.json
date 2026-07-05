@@ -1,34 +1,33 @@
 {
-    "last_updated": "2026-07-05T23:38+03",
+    "last_updated": "2026-07-05T23:48+03",
     "current_mode": "project",
-    "focus_node": "Compounding Workflow extraction — C9 (inline → rules/compounding_workflow.json)",
-    "open_pages": [
-        {"path": "rules/compounding_workflow.md", "status": "updating"}
+    "focus_node": "Session end — schema cleanup (C9 compounding extraction, wiki categories deletion)",
+    "open_pages": [],
+    "dead_ends": [
+        {"approach": "mem.pdf text extraction via pdf-oxide", "reason": "PDF layout broken, content fragmented across pages"}
     ],
-    "dead_ends": [],
     "query_summary": {
-        "intent": "Extract compounding workflow from AGENTS.md + process-query.json into standalone rules file with schema_ref",
+        "intent": "Cleanup AGENTS.md blocks: compounding workflow extraction (C9), wiki categories deletion, search & discovery deletion; verify schema_refs integrity",
         "pages_read": [
-            "AGENTS.md#compounding-workflow (lines 395-406)",
+            "AGENTS.md#compounding-workflow",
             "process-query.json context.compounding_decision_logic + steps[2.5, 2.6]",
-            "rules/compounding_workflow.json (newly created)"
+            "rules/compounding_workflow.json (new)",
+            "rules/categories.json",
+            "rules/search_strategy.json"
         ],
         "key_findings": [
-            "✅ Created rules/compounding_workflow.json (~130 lines extracted)",
-            "✅ AGENTS.md: replaced inline definition with schema_ref + summary",
-            "✅ process-query.json: compounding_decision_logic → schema_ref",
-            "✅ process-query.json: duplicate_check_before_fixation → schema_ref",
-            "📊 Total: 26 rules/*.json files, all valid JSON"
+            "✅ Created rules/compounding_workflow.json (~130 lines extracted from process-query.json + AGENTS.md)",
+            "✅ Deleted wiki-categories block from AGENTS.md (zero loss — no direct refs in processes)",
+            "✅ Updated rules/categories.json: schema_ref → concise inline rule",
+            "✅ Deleted search&discovery block from AGENTS.md; removed schema_ref_to_agent_rules from search_strategy.json",
+            "⚠️ context-scopes.json still has stale schema_ref — to be addressed in next session"
         ]
     },
     "next_steps_todo": [
         {
-            "task": "Commit compounding_workflow extraction (C9)",
+            "task": "Next session: memory management & agent context architecture overhaul (mem.pdf Plan B)",
             "priority": "high"
-        },
-        {
-            "task": "Update PLAN.md audit table — mark C9 as completed",
-            "priority": "medium"
         }
-    ]
+    ],
+    "session_log_ref": "wiki/log.md#2026-07-05-schema-cleanup"
 }
