@@ -1,43 +1,30 @@
 {
-  "last_updated": "2026-07-05T19:50:00+03",
+  "last_updated": "2026-07-05T20:20:00+03",
   "current_mode": "project",
-  "focus_node": "Phase 32.1 Cycle 1: Git Conventions extracted to rules/git_conventions.json",
+  "focus_node": "Phase 32.1 Cycle 2: Memory Architecture consolidated into session_context_rules.json (SCM-V2)",
   "open_pages": [],
   "dead_ends": [],
   "query_summary": {
-    "intent": "Complete documentation language standardization (Phase 16) and wrap up all resolved phases for today",
+    "intent": "Phase 32.1 Cycle 2: consolidate all memory architecture rules from AGENTS.md into session_context_rules.json",
     "pages_read": [
-      "AGENTS.md",
-      "RULES.md",
-      "process-query.json",
-      "issues.md",
-      "PLAN.md",
-      "working_memory.json"
+      "AGENTS.md (lines 556-679)",
+      "rules/session_context_rules.json"
     ],
     "key_findings": [
-      "Phase 16 completed: AGENTS.md + RULES.md fully translated to English; process-query.json Russian strings cleaned",
-      "Phase 15.x completed: compounding_decision_logic consolidated, path-guard-check created, lint\u2192ingest bridge added",
-      "Phase 14.5 completed: contradiction_resolution.json restored with full cascade logic",
-      "Phase 15 completed: tag-guidelines.json created; 36/38 pages audited and fixed",
-      "Issues #39, #42, #43, #44 all resolved today"
+      "All old self-references in AGENTS.md removed during extraction",
+      "session_context_rules.json now contains: layers, flow, save_triggers, write_algorithm, read_algorithm, constraints, operational_rules",
+      "lint.sh passes: 14 checks, hot_cache_stale fixed to false",
+      "AGENTS.md reduced from ~1305 to ~1198 lines (-22%)"
     ]
   },
   "next_steps_todo": [
     {
-      "task": "Cycle 2: Memory Architecture consolidation into session_context_rules.json",
+      "task": "Cycle 3: Wiki Categories consolidation + Search Strategy expansion",
       "priority": "high"
     },
     {
-      "task": "Verify test suite (tests/test_process_query.py) passes with new English-only instructions",
+      "task": "Cycle 4: External Sources Policy extraction to new rules/external_sources_policy.md",
       "priority": "high"
-    },
-    {
-      "task": "Run lint.sh to verify wiki health after documentation changes",
-      "priority": "medium"
-    },
-    {
-      "task": "Consider Phase 15.1 (aliases system) \u2014 depends on user priority",
-      "priority": "low"
     }
   ]
 }

@@ -1,8 +1,8 @@
 {
   "rule_name": "session_context_management",
   "rule_id": "SCM-V2",
-  "version": "2.0 (extracted from AGENTS.md, 2026-07-05)",
-  "description": "Memory architecture: Three-Layer Model + save triggers + read patterns + compaction handling + grep contract",
+  "version": "2.1 (algorithm optimization, 2026-07-05)",
+  "description": "Memory architecture: Three-Layer Model + save triggers + read patterns + operational constraints",
   "layers": {
     "working_memory.json": {
       "role": "current-session operational memory \u2014 focus_node, open_pages, next_steps_todo, dead_ends, query_summary",
@@ -33,55 +33,53 @@
       },
       {
         "step": 2,
-        "action": "restore-hot-cache.sh \u2192 read hot.md for project/session context"
+        "action": "./scripts/restore-hot-cache.sh"
       },
       {
         "step": 3,
-        "action": "grep -m 20 '' wiki/log.md | tail -20 \u2192 understand previous discussion"
+        "action": "grep -m 20 '' wiki/log.md | tail -20"
       }
     ],
     "session_end": [
       {
         "step": 1,
-        "action": "write_to_working_memory \u2014 update WM (next_steps_todo, open_pages)"
+        "action": "write_to_working_memory",
+        "fields": [
+          "next_steps_todo",
+          "open_pages"
+        ]
       },
       {
         "step": 2,
-        "action": "write_session_context_to_hot.md \u2014 write snapshot to hot.md"
+        "action": "write_session_context_to_hot.md",
+        "section": "Active Session Context or Active Project"
       }
     ]
   },
-  "save_triggers": [
-    {
-      "trigger_id": "user_message",
-      "rule_id": "HOT-SAVE-QUERY-V1",
-      "action": "write query intent + project_context to hot.md Active Session Context"
-    },
-    {
-      "trigger_id": "action_completed",
-      "rule_id": "HOT-SAVE-ACTION-V1",
-      "action": "write action_summary + wiki_pages_used + key_findings to hot.md"
-    },
-    {
-      "trigger_id": "wiki_modified",
-      "rule_id": "HOT-WIKI-CHANGES-V1",
-      "priority": "immediate",
-      "action": "update System State \u2192 Recent Changes section"
-    }
-  ],
-  "write_algorithm": {
-    "step_1_user_message": {
-      "rule_id": "HOT-SAVE-QUERY-V1",
-      "hot_section": "Active Session Context \u2192 topic, query_intent"
-    },
-    "step_2_action_done": {
-      "rule_id": "HOT-SAVE-ACTION-V1",
-      "hot_section": "Active Session Context \u2192 pages read, key findings"
-    },
-    "step_3_wiki_modified": {
-      "rule_id": "HOT-WIKI-CHANGES-V1",
-      "hot_section": "System State \u2192 Recent Changes section",
-      "priority": "immediate"
+  "write_workflow": {
+    "trigger_chain": [
+      {
+        "event": "user_message",
+        "rule_id": "HOT-SAVE-QUERY-V1",
+        "target_section": "Active Session Context \u2192 topic, query_intent"
+      },
+      {
+        "event": "action_completed",
+        "rule_id": "HOT-SAVE-ACTION-V1",
+        "target_section": "pages read + key_findings"
+      },
+      {
+        "event": "wiki_modified",
+        "rule_id": "HOT-WIKI-CHANGES-V1",
+        "priority": "immediate",
+        "target_section": "System State \u2192 Recent Changes"
+      }
+    ],
+    "concurrent_handling": {
+      "description": "When multiple triggers fire simultaneously, write ALL relevant sections in one pass (not sequentially)",
+      "example": [
+        "user_message + action_completed \u2192 query_intent AND pages_read written together"
+      ]
     }
   },
   "read_algorithm": {
@@ -90,26 +88,25 @@
       "steps": [
         {
           "step": 1,
-          "action": "read working_memory.json \u2192 restore focus_node, next_steps_todo"
+          "action": "read working_memory.json"
         },
         {
           "step": 2,
-          "action": "restore-hot-cache.sh \u2192 read hot.md for active project/session context"
+          "action": "./scripts/restore-hot-cache.sh"
         }
       ]
     },
     "log_read_pattern": {
       "rule_id": "HOT-LOG-READ-V1",
-      "when": "session_start if working_memory.json empty or stale (>30 days without updates)",
+      "when": "working_memory.json is empty or stale (>30 days without updates)",
       "how": [
         {
           "pattern": "grep -m 20 '' wiki/log.md | tail -20"
         },
         {
-          "pattern": "grep -m 10 'project_name' wiki/log.md (keyword-specific reads)"
+          "pattern": "grep -m 10 'project_name' wiki/log.md"
         }
       ],
-      "goal": "understand previous discussion context, active projects, where we stopped",
       "constraint": "NEVER read entire log (~250+ lines expensive in tokens)"
     }
   },
@@ -161,22 +158,8 @@
       "reference": "wiki/concepts/natural-memory.md"
     }
   },
-  "golden_rules": [
-    {
-      "rule_id": "IMMEDIATE_WRITE",
-      "value": "Write hot.md immediately, not at session end"
-    },
-    {
-      "rule_id": "SLICE_NOT_FULL_LOG",
-      "value": "hot.md = summary slice, never full log copy"
-    },
-    {
-      "rule_id": "RESTORE_ON_COMPACT",
-      "value": "restore-hot-cache.sh restores hot.md after compact"
-    },
-    {
-      "rule_id": "SYSTEM_STATE_ALWAYS",
-      "value": "System State section updated on every wiki create/update"
-    }
-  ]
+  "_notes": {
+    "golden_rules_removed": "All 4 golden_rules were duplicates of existing constraints. Removed redundancy.",
+    "write_workflow_merged": "Combined save_triggers + write_algorithm into unified trigger_chain to avoid duplication and clarify concurrent handling."
+  }
 }

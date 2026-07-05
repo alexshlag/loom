@@ -182,6 +182,7 @@
 | Cycle | Block Extracted | Target File | Status | Validation |
 |-------|-----------------|-------------|--------|------------|
 | **C1** | Git Conventions | `rules/git_conventions.json` | ✅ Done | lint.sh: 14 checks, 0 errors |
+| **C2** | Memory Architecture + Session Context → consolidated | `rules/session_context_rules.json` (SCM-V2) | ✅ Done | All old refs replaced; lint.sh passes; hot_cache stale fixed |
 
 ### Extraction Priority Map (8 blocks identified)
 
@@ -197,7 +198,8 @@
 | 8 | Delta Tracking → verify delta_tracking.json completeness | ✅ Yes (verify+expand) | 🟢 LOW |
 
 ### Expected Outcome
-- **Before**: AGENTS.md ~50KB, 1305 lines
+- **After**: AGENTS.md ~25-30KB (final), process files + rules/ carry the detail
+- **Current state**: AGENTS.md now ~46KB, ~1198 lines (-107 lines from C1+C2)
 - **After**: AGENTS.md ~25-30KB, process files + rules/ carry the detail
 - **Safety net**: Every rule traceable via schema_ref chain; no broken links
 

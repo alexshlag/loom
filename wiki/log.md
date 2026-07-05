@@ -588,3 +588,7 @@ Current task: Phase 15 (Tagging System). Next pending: Phase 15.1 (Aliases).
 **System test results**: All schema_refs valid, scripts executable, lint working correctly
 **Session status**: Paused — next steps: verify test suite, run full lint.sh, consider Phase 15.1 (aliases)
 
+
+## [2026-07-05] schema | Phase 32.1 Cycle 2 - Memory Architecture Consolidation
+Consolidated all memory rules (3-layer model, session context, grep contract, compaction handling) into rules/session_context_rules.json (SCM-V2)
+AGENTS.md reduced from ~1305 to ~1198 lines (-107 lines). lint.sh passes.
