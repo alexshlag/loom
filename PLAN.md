@@ -271,7 +271,7 @@
 
 ---
 
-*Last update: 2026-07-05 | Completed: Phase 16, Phase 14.5, Phases 15.x/y, C1-C8, Phase 32.z.1 (Cyrillic cleanup + schema_ref standardization). AGENTS.md: 676 lines (~39KB). Next: remaining audit blocks or planned audit phase.*
+*Last update: 2026-07-05 | Completed: Phase 16, Phase 14.5, Phases 15.x/y, C1-C8, Phase 32.z.1 (Cyrillic cleanup), C9 (Compounding Workflow extraction). AGENTS.md: 676 lines (~39KB). Next: remaining audit blocks or planned audit phase.*
 ### 🚨 Phase 32.z: Rules/*.json Cyrillic Cleanup + Schema Ref Standardization 🔴 P0
 
 **Цель**: Все файлы rules/*.json должны быть на английском (RULES.md #2) и иметь schema_ref_to_agent_rules.
@@ -317,4 +317,15 @@
 - All JSON validated — no structural violations
 
 **Commit**: `a8568aa fix | schema: standardize all rules/*.json (Cyrillic→EN, schema_ref added)`
+---
+
+---
+### ✅ C9 COMPLETE: Compounding Workflow Extraction 🔴 DONE
+
+**Результат**: 
+- `rules/compounding_workflow.json` создан (~130 строк извлечены)
+- `AGENTS.md#compounding-workflow` заменён на schema_ref + summary
+- `process-query.json`: inline compounding_decision_logic → schema_ref, duplicate_check_before_fixation → schema_ref
+
+**Коммит**: `caf0c33 feat | schema: extract Compounding Workflow to rules/compounding_workflow.json (C9)`
 ---
