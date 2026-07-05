@@ -1,0 +1,49 @@
+{
+  "rule_id": "FAQ-SUMMARY-V1",
+  "protocol_name": "FAQ Summary Pages Management",
+  "description": "Rules for creating, maintaining and managing summary/FAQ pages in wiki/syntheses/",
+  "search_priority": ["syntheses/", "concepts/", "entities/"],
+  "creation_triggers": [
+    {
+      "scenario": "answer_aggregates_from_three_or_more_wiki_pages",
+      "action": "auto_create_summary_page_in_syntheses_dir, establish_internal_links_crosslinks, add_external_sources_via_ingest_flow"
+    },
+    {
+      "scenario": "answer_from_internet_web_search",
+      "action": "propose_to_user_create_faq_page. If agreed -> full_ingest + links",
+      "requires_user_approval": true
+    },
+    {
+      "scenario": "answer_from_1-2_sources_no_new_insight",
+      "action": "do_not_create_summary — just answer, possibly_add_to_existing_entity_or_concept"
+    }
+  ],
+  "lifecycle_rules": [
+    {
+      "event": "two_summaries_cover_same_topic",
+      "action": "merge_to_one_page, old_links_updated_to_new"
+    },
+    {
+      "event": "summary_outdated_last_seen_more_than_30_days_without_queries",
+      "action": "decay: minus_fifty_percent_popularity_boost. Agent may merge_into_fresher_page_or_delete_if_duplicate"
+    },
+    {
+      "event": "new_query_different_top_path_for_same_topic",
+      "action": "update_existing_summary_set_last_seen_to_current, increment_popularity_score"
+    },
+    {
+      "event": "summary_page_requires_user_approval_external_sources",
+      "action": "do_not_create_without_explicit_confirmation_from_user",
+      "requires_user_approval": true
+    }
+  ],
+  "frontmatter_type_field": {
+    "field": "type",
+    "value": "faq_summary",
+    "description": "Explicitly mark summary pages as question response"
+  },
+  "_notes": {
+    "extracted_from": "AGENTS.md#summary_pages_section",
+    "created_for": "Cycle_6_extraction"
+  }
+}

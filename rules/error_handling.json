@@ -1,6 +1,6 @@
 {
   "protocol_name": "Error Handling Protocol",
-  "description": "\u0418\u043d\u0441\u0442\u0440\u0443\u043a\u0446\u0438\u0438 \u0434\u043b\u044f \u0430\u0433\u0435\u043d\u0442\u0430 \u043f\u0440\u0438 \u043e\u0431\u043d\u0430\u0440\u0443\u0436\u0435\u043d\u0438\u0438 \u043e\u0448\u0438\u0431\u043e\u043a, \u043f\u0440\u043e\u0442\u0438\u0432\u043e\u0440\u0435\u0447\u0438\u0439 \u0438\u043b\u0438 dead end \u0441\u0438\u0442\u0443\u0430\u0446\u0438\u0439.",
+  "description": "Instructions for the agent when encountering errors, contradictions, or dead-end situations.",
   "steps": {
     "loop": [
       {
@@ -18,10 +18,10 @@
         "step": 3,
         "action": "Resolve",
         "strategies": {
-          "local-fix": "local problem (path, link, logic) \u2192 fix independently",
-          "schema-patch": "contradiction in Schema/AGENTS.md \u2192 propose patch to user for review",
-          "source-conflict": "two sources say opposite things \u2192 mark as CONFLICT on page and continue",
-          "dead-end": "approach doesn't work (e.g., grep gave noise) \u2192 document reason, change strategy"
+          "local-fix": "local problem (path, link, logic) -> fix independently",
+          "schema-patch": "contradiction in Schema/AGENTS.md -> propose patch to user for review",
+          "source-conflict": "two sources say opposite things -> mark as CONFLICT on page and continue",
+          "dead-end": "approach doesn't work (e.g., grep gave noise) -> document reason, change strategy"
         }
       },
       {
@@ -37,26 +37,26 @@
   "examples": [
     {
       "situation": "git add * blocked by guardrails",
-      "action": "[!] Log: protected zone blocked \u2192 local-fix: switch to git add wiki/"
+      "action": "[!] Log: protected zone blocked -> local-fix: switch to git add wiki/"
     },
     {
       "situation": "fetch_content returned truncated markdown",
-      "action": "[!] Log: truncation detected \u2192 local-fix: fallback web_search + get_search_content"
+      "action": "[!] Log: truncation detected -> local-fix: fallback web_search + get_search_content"
     },
     {
       "situation": "New command incompatible with current Schema",
-      "action": "[!] Log: schema conflict \u2192 schema-patch: propose AGENTS.md patch to user"
+      "action": "[!] Log: schema conflict -> schema-patch: propose AGENTS.md patch to user"
     },
     {
       "situation": "Grep gave >100 matches without meaning",
-      "action": "[!] Log: grep noise \u2192 dead-end: switch to index.md"
+      "action": "[!] Log: grep noise -> dead-end: switch to index.md"
     }
   ],
-  "golden_rule": "Error \u2260 stop. Every error is a signal for action, not reason to stall.",
+  "golden_rule": "Error != stop. Every error is a signal for action, not reason to stall.",
   "_notes": {
     "extracted_from": "AGENTS.md#error_handling_protocol",
     "removed_self_references": [
-      "process-query.json#error_handling.logging_actions \u2192 updated to rules/error_handling.json#logging_actions"
+      "process-query.json#error_handling.logging_actions -> updated to rules/error_handling.json#logging_actions"
     ]
   }
 }

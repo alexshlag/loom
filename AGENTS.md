@@ -61,7 +61,7 @@ AGENTS.md and process files (`process-ingest.json`, `process-query.json`, `proce
 - Full scope definitions: `rules/context-scopes.json` (v2.0)
 - Auto-read mechanism in process files: `agent_read_instructions` field mandates AGENTS.md refresh
 
-> Canonical: `AGENTS.md#context_management_phase_32` — agent must follow this rule to prevent context bloat.
+> Schema ref: `rules/context-scopes.json`.
 
 ### Current Scope Breakdown
 
@@ -94,7 +94,7 @@ During the period of script writing and debugging, the following code developmen
 
 Full specification including allowed/prohibited commands, pre-commit memory sync workflow (`rules/session_context_rules.json`), and regular wiki memory sync → **see [rules/git_conventions.json](rules/git_conventions.json)**.
 
-> Canonical: `AGENTS.md#git_conventions` — detailed rules in extracted file.
+> Schema ref: `rules/git_conventions.json`.
 
 ---
 
@@ -174,7 +174,7 @@ Two related subdirectories for image work:
 - Description files contain: `[OCR text]`, `[entities detected]`, `[metadata: dimensions, format, date_ingested]`
 - Agent auto-generates descriptions during ingest — no manual filling required
 
-> Canonical: `AGENTS.md#media_pipeline`
+> Media pipeline is a workflow description (not a rule) — kept inline. Brief ref to asset conventions in process files.
 
 ### 3. Summary / FAQ Pages (`wiki/syntheses/`)
 
@@ -209,7 +209,7 @@ related: []
 ---
 ```
 
-> Canonical: `AGENTS.md#summary_pages` — agent must set type=faq_summary for all summary pages.
+> Schema ref: `rules/faq_summary.json`.
 
 ### 4. Schema (this document)
 
@@ -233,7 +233,7 @@ related: []
 
 **Canonical rules source**: `rules/session_context_rules.json` defines complete algorithm for memory layer work (working_memory.json, hot.md, log.md), save_triggers, and read_algorithm. Agent reads this file before every memory action.
 
-> Schema ref: `AGENTS.md#context_bridge`. Canonical: `rules/session_context_rules.json`.
+> Schema ref: `rules/session_context_rules.json`.
 
 **Format:**
 
@@ -333,7 +333,7 @@ Some fields are automatically computed by agent during ingest — no manual fill
 3. During contradiction resolution: `documented(1) > corroborated(2) > assertion_only(3)` — works as sub-priority for documentation sources
 4. **Never set manually** — only by agent from source authority analysis
 
-> Canonical: `AGENTS.md#auto_computed_fields`
+> Schema ref: `rules/evidence_grade.json`.
 
 ---
 
@@ -547,7 +547,7 @@ Full specification for memory layers, save triggers, read patterns, grep contrac
 
 Agent never stops after proposing a plan or asking permission to execute. Full rules and trap patterns in extracted file.
 
-> File: `rules/execution_contract.json`. Canonical: `AGENTS.md#execution_contract`.
+> Schema ref: `rules/execution_contract.json`.
 ---
 
 
@@ -557,7 +557,7 @@ Agent never stops after proposing a plan or asking permission to execute. Full r
 
 Agent shows only final results. All intermediate operations go to `wiki/log.md` via append — user does not see them. Full rules in extracted file.
 
-> File: `rules/silent_output.json`. Canonical: `AGENTS.md#silent_output_contract`.
+> Schema ref: `rules/silent_output.json`.
 ---
 
 
@@ -577,7 +577,7 @@ Agent manages two independent modes:
 - Auto-reset: after verbose-answer agent resets to `"silent"`.
 - Explicit reset: user says `"quiet"`, `"silent"`, `"less"` → instant reset.
 
-> Canonical: `AGENTS.md#execution_modes`
+> Schema ref: `rules/execution_modes.json`.
 
 ---
 

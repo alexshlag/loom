@@ -185,7 +185,8 @@
 | **C2** | Memory Architecture + Session Context → consolidated into session_context_rules.json V2.1 (SCM-V2). Write triggers merged, duplicate golden_rules removed. | `rules/session_context_rules.json` (SCM-V2) | ✅ Done | All old refs replaced; write_workflow merged |
 | **C3** | Wiki Categories brief ref in AGENTS.md + link to rules/categories.json. Search Strategy extracted → rules/search_strategy.json SD-V2 (expanded from 511→{sz}). All old self-refs removed. | `rules/search_strategy.json` SD-V2 | ✅ Done | AGENTS.md reduced to ~1030 lines; no broken refs |
 | **C4** | Error Handling Protocol consolidated → rules/error_handling.json EHP-V2. Examples + golden rule preserved. All references updated to point to JSON file. | `rules/error_handling.json` EHP-V2 | ✅ Done | All examples preserved; references updated |
-| **C5** | Silent Output + Execution Contract brief refs in AGENTS.md (both already existed as .json). No new files created, just unified references. | `rules/silent_output.json` + execution_contract.json | ✅ Done | AGENTS.md → 742 lines (-60% from original ~1839) |
+| **C5** | Silent Output + Execution Contract brief refs in AGENTS.md (both already existed as .json). No new files created, just unified references. | `rules/silent_output.json` + execution_contract.json | ✅ Done | AGENTS.md → 742 lines (-60% from original ~1839)
+| **C6** | Self-referencing anchors audit + schema_ref replacement → context_scopes/git_conventions/execution_modes/session_context/context_bridge/silent_output (6 replaced). Created faq_summary.json + evidence_grade.json. | `rules/faq_summary.json` + `rules/evidence_grade.json` | ✅ Done | 2 kept inline (language_policy/template_files shared contracts) |
 
 ### Remaining Self-Reference Audit (AGENTS.md)
 
@@ -241,4 +242,4 @@
 
 ---
 
-*Last update: 2026-07-05 | Current task: Phase 15.x (RULES.md:10 remediation). Next: Phase 32.1 (AGENTS.md extraction loop).*
+*Last update: 2026-07-05 | Current task: Phase 32.1 Cycle 6 complete. Next: Cycle 7 + final verification.*
