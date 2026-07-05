@@ -1,42 +1,182 @@
 {
   "rule_name": "session_context_management",
-  "rule_id": "SCM-V1",
-
-  "memory_layers": {
-    "working_memory.json": {"lifecycle": "turn → turn"},
-    "hot.md": {"lifecycle": "inter-session, updated on every important action"},
-    "log.md": {"lifecycle": "append-only"}
+  "rule_id": "SCM-V2",
+  "version": "2.0 (extracted from AGENTS.md, 2026-07-05)",
+  "description": "Memory architecture: Three-Layer Model + save triggers + read patterns + compaction handling + grep contract",
+  "layers": {
+    "working_memory.json": {
+      "role": "current-session operational memory \u2014 focus_node, open_pages, next_steps_todo, dead_ends, query_summary",
+      "lifespan": "short: one session. Cleared on dismissal/compaction.",
+      "rw": "agent writes every turn"
+    },
+    "hot.md": {
+      "role": "long-term snapshot \u2014 active project/session context, wiki changes summary. Survives compaction.",
+      "lifespan": "between sessions. Updated after important actions AND on any wiki page change.",
+      "rw": "agent writes snapshot (not full log tape)",
+      "structure": {
+        "active_project": "WORK_MODE: project \u2014 name, focus_node, related_pages, findings, next_steps",
+        "session_context": "WORK_MODE: query/discussion \u2014 topic, pages_read, key_findings",
+        "system_state": "Active Threads + Recent Changes (updated on every wiki create/update)"
+      }
+    },
+    "log.md": {
+      "role": "append-only chronicle of all actions and wiki changes. Chronological tape.",
+      "lifespan": "forever",
+      "rw": "agent appends every entry"
+    }
   },
-
+  "flow": {
+    "session_start": [
+      {
+        "step": 1,
+        "action": "read working_memory.json"
+      },
+      {
+        "step": 2,
+        "action": "restore-hot-cache.sh \u2192 read hot.md for project/session context"
+      },
+      {
+        "step": 3,
+        "action": "grep -m 20 '' wiki/log.md | tail -20 \u2192 understand previous discussion"
+      }
+    ],
+    "session_end": [
+      {
+        "step": 1,
+        "action": "write_to_working_memory \u2014 update WM (next_steps_todo, open_pages)"
+      },
+      {
+        "step": 2,
+        "action": "write_session_context_to_hot.md \u2014 write snapshot to hot.md"
+      }
+    ]
+  },
   "save_triggers": [
-    {"trigger_id": "user_message_received",        "rule_id": "HOT-SAVE-QUERY-V1",         "fields": ["query_intent", "project_context", "timestamp"]},
-    {"trigger_id": "action_completed",              "rule_id": "HOT-SAVE-ACTION-V1",        "fields": ["action_summary", "wiki_pages_used", "key_findings"]},
-    {"trigger_id": "wiki_page_modified",            "rule_id": "HOT-WIKI-CHANGES-V1",       "fields": ["pages_modified", "changes_summary", "sources_added"]},
-    {"trigger_id": "page_created_or_updated",       "rule_id": "WM-SYNC-AFTER-WIKI-V1",     "fields": ["focus_node", "next_steps_todo (auto-cleanup)", "query_summary"]}
+    {
+      "trigger_id": "user_message",
+      "rule_id": "HOT-SAVE-QUERY-V1",
+      "action": "write query intent + project_context to hot.md Active Session Context"
+    },
+    {
+      "trigger_id": "action_completed",
+      "rule_id": "HOT-SAVE-ACTION-V1",
+      "action": "write action_summary + wiki_pages_used + key_findings to hot.md"
+    },
+    {
+      "trigger_id": "wiki_modified",
+      "rule_id": "HOT-WIKI-CHANGES-V1",
+      "priority": "immediate",
+      "action": "update System State \u2192 Recent Changes section"
+    }
   ],
-
   "write_algorithm": {
-    "step_1_capture_user_query":   {"rule_id": "HOT-SAVE-QUERY-V1",         "hot_section": "Active Session Context → topic, query_intent"},
-    "step_2_update_after_action":  {"rule_id": "HOT-SAVE-ACTION-V1",        "hot_section": "Active Session Context → pages read, key findings"},
-    "step_3_wiki_page_modified":   {"rule_id": "HOT-WIKI-CHANGES-V1",       "hot_section": "System State → Recent Changes section", "priority": "immediate"},
-    "step_4_working_memory_sync":  {"rule_id": "WM-SYNC-AFTER-WIKI-V1",     "hot_section": "System State → Recent Changes section", "priority": "immediate"}
+    "step_1_user_message": {
+      "rule_id": "HOT-SAVE-QUERY-V1",
+      "hot_section": "Active Session Context \u2192 topic, query_intent"
+    },
+    "step_2_action_done": {
+      "rule_id": "HOT-SAVE-ACTION-V1",
+      "hot_section": "Active Session Context \u2192 pages read, key findings"
+    },
+    "step_3_wiki_modified": {
+      "rule_id": "HOT-WIKI-CHANGES-V1",
+      "hot_section": "System State \u2192 Recent Changes section",
+      "priority": "immediate"
+    }
   },
-
   "read_algorithm": {
-    "session_start":           {"rule_id": "HOT-LOAD-V1",         "steps": [{"step": 1, "action": "read working_memory.json"}, {"step": 2, "action": "restore-hot-cache.sh read Active Project + Session Context"}]},
-    "log_context_reading":     {"rule_id": "HOT-LOG-READ-V1",     "pattern": "grep -m 20 '' wiki/log.md | tail -20 (NEVER cat)"}
+    "session_start": {
+      "rule_id": "HOT-LOAD-V1",
+      "steps": [
+        {
+          "step": 1,
+          "action": "read working_memory.json \u2192 restore focus_node, next_steps_todo"
+        },
+        {
+          "step": 2,
+          "action": "restore-hot-cache.sh \u2192 read hot.md for active project/session context"
+        }
+      ]
+    },
+    "log_read_pattern": {
+      "rule_id": "HOT-LOG-READ-V1",
+      "when": "session_start if working_memory.json empty or stale (>30 days without updates)",
+      "how": [
+        {
+          "pattern": "grep -m 20 '' wiki/log.md | tail -20"
+        },
+        {
+          "pattern": "grep -m 10 'project_name' wiki/log.md (keyword-specific reads)"
+        }
+      ],
+      "goal": "understand previous discussion context, active projects, where we stopped",
+      "constraint": "NEVER read entire log (~250+ lines expensive in tokens)"
+    }
   },
-
   "constraints": [
-    "NEVER wait until session end to write hot.md — write immediately after action",
-    "NEVER duplicate log.md content in hot.md — only summary slice",
-    "NEVER append to JSON files — read entire file → modify → write complete document"
+    {
+      "rule_id": "IMMEDIATE_WRITE",
+      "value": "Write hot.md immediately after action, NOT at session end"
+    },
+    {
+      "rule_id": "SLICE_NOT_FULL_LOG",
+      "value": "hot.md = summary slice only, never full log copy"
+    },
+    {
+      "rule_id": "RESTORE_ON_COMPACT",
+      "value": "After context compaction: call restore-hot-cache.sh || true"
+    },
+    {
+      "rule_id": "SYSTEM_STATE_ALWAYS",
+      "value": "System State section updated on every wiki create/update"
+    },
+    {
+      "rule_id": "NO_APPEND_TO_JSON",
+      "value": "Never append to JSON files \u2014 read full file \u2192 modify \u2192 write complete document"
+    },
+    {
+      "rule_id": "LOG_APPEND_ONLY",
+      "value": "wiki/log.md is append-only. NEVER cat > or write(). Always use cat >> (append)."
+    }
   ],
-
+  "operational_rules": {
+    "context_bubble": {
+      "max_active_pages": 3,
+      "description": "No more than 3 active pages in context simultaneously"
+    },
+    "grep_contract": {
+      "allowed": [
+        "grep -m N pattern wiki/",
+        "head -20 file.md",
+        "sed -n 'X,Yp'"
+      ],
+      "prohibited": [
+        "cat large_file.md",
+        "grep pattern wiki/ (no -m flag)"
+      ]
+    },
+    "natural_memory_translation": {
+      "description": "Translate timestamps to human-time: 'the day before yesterday', 'a week ago'",
+      "rule": "Use 'we' instead of 'system/agent' when speaking about shared experience",
+      "reference": "wiki/concepts/natural-memory.md"
+    }
+  },
   "golden_rules": [
-    {"rule_id": "IMMEDIATE_WRITE",       "value": "Write hot.md immediately, not at session end"},
-    {"rule_id": "SLICE_NOT_FULL_LOG",    "value": "hot.md = summary slice, never full log copy"},
-    {"rule_id": "RESTORE_ON_COMPACT",    "value": "restore-hot-cache.sh restores hot.md after compact"},
-    {"rule_id": "SYSTEM_STATE_ALWAYS",   "value": "System State section updated on every wiki create/update"}
+    {
+      "rule_id": "IMMEDIATE_WRITE",
+      "value": "Write hot.md immediately, not at session end"
+    },
+    {
+      "rule_id": "SLICE_NOT_FULL_LOG",
+      "value": "hot.md = summary slice, never full log copy"
+    },
+    {
+      "rule_id": "RESTORE_ON_COMPACT",
+      "value": "restore-hot-cache.sh restores hot.md after compact"
+    },
+    {
+      "rule_id": "SYSTEM_STATE_ALWAYS",
+      "value": "System State section updated on every wiki create/update"
+    }
   ]
 }

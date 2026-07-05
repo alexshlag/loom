@@ -555,109 +555,25 @@ Agent **does not wait for explicit marker** — it determines mode itself from t
 
 ## 🧠 Memory Architecture Contract (system rules)
 
-These contracts define how agent manages memory and reads files via bash.
+Full specification for memory layers, save triggers, read patterns, grep contract, compaction handling → **see [rules/session_context_rules.json](rules/session_context_rules.json)**.
 
-### Three-Layer Memory Model
+> Canonical: `rules/session_context_rules.json` — full specification for memory architecture, save triggers, read patterns, constraints.
 
-Wiki uses three memory layers — each fulfills its role without duplicating:
+### Three-Layer Model Summary
 
-| File                    | Role                                                                                                                                                                       | Lifespan                                                                                     | Read/Write                              |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | --------------------------------------- |
-| **working_memory.json** | Operational memory of _current_ session — focus_node, open_pages, next_steps_todo. Periodically rewritten (turn → turn).                                                 | Short: one session. Cleared on dismissal/compaction.                                         | Agent writes every turn.                |
-| **hot.md**              | Snapshot of _active project and questions_ — where we stopped, which wiki pages were useful, key conclusions from discussions. Survives compaction via restore-hot-cache.sh. | Long-term: between sessions. Updated at end-of-session, after important actions **and** on any wiki page change. | Agent writes snapshot, not full tape.   |
-| **log.md**              | Append-only chronicle of all actions and wiki changes. Chronological tape.                                                                                                  | Forever. Never rewritten, only appended to.                                                  | Agent appends every entry.              |
+| File | Role | Lifespan | RW |
+|------|------|----------|----|
+| **working_memory.json** | Current-session operational memory (focus_node, next_steps_todo) | Short: one session | Agent writes every turn |
+| **hot.md** | Long-term snapshot — active project/session context. Survives compaction via restore-hot-cache.sh | Between sessions | Agent writes snapshot |
+| **log.md** | Append-only chronicle of actions and wiki changes | Forever | Agent appends only |
 
-**How they interact:**
+**Quick interaction flow**: Session start → read WM → restore-hot-cache.sh → grep log (last 20 entries). Session end → write to WM → write snapshot to hot.md.
 
-```
-Session start:
-  ├── read working_memory.json → restore focus_node, next_steps_todo
-  ├── restore-hot-cache.sh → read hot.md for active project/question context
-  └── grep log.md recent entries → understand what was discussed earlier
-
-Session end:
-  ├── write_to_working_memory → update WM (next_steps_todo, open_pages)
-  └── write_session_context_to_hot.md → write snapshot to hot.md
-```
-
-**What should be in each file:**
-
-- **working_memory.json**: `current_mode`, `focus_node`, `open_pages`, `next_steps_todo`, `dead_ends`, `query_summary`.
-- **hot.md**: `Active Project` (WORK_MODE: project) — project name, focus node, related wiki pages, key findings, next steps. `Active Session Context` (WORK_MODE: query/discussion) — topic, pages read, key findings. `System State` — Active Threads as-is.
-- **log.md**: `[YYYY-MM-DD] type | description`, sources, append-only. Agent reads at session start for previous discussion context (grep last 10-20 entries).
-
-> Canonical: `AGENTS.md#three_layer_memory_model`
-
-### Session Context Management (Global Rule)
-
-Agent saves session context to hot.md **immediately after every action** — not waiting until end of session when agent disconnects.
-
-- **Global rule**: `rules/session_context_rules.json` defines algorithm for saving and reading context.
-- **Triggers**: 1) question received → write query essence; 2) answer/action completed → write summary + used wiki pages.
-- **Read at session start**: `restore-hot-cache.sh` → read hot.md for active project/question context.
-
-> Schema ref: `rules/session_context_rules.json`. Canonical: `AGENTS.md#session_context_management`
-
-### CONTEXT_BUBBLE & GREP CONTRACT
-
-#### 📝 Grep Contract
-
-```json
-{
-  "allowed": ["grep -m N pattern wiki/", "head -20 file.md", "sed -n 'X,Yp'"],
-  "prohibited": ["cat large_file.md", "grep pattern wiki/ (no -m)"]
-}
-```
-
-> **Rule**: Always use `-m` flag with grep. Never `cat >50-line files`. Read working_memory.json#grep_contract for full details.
-
-- **CONTEXT_BUBBLE**: no more than 3 active pages in context simultaneously.
-- **GREP CONTRACT**: use only allowed bash patterns (see `process-query.json#grep_contract`).
-  > Canonical: `process-query.json#grep_contract`.
-
-### Log.md Read Pattern
-
-Agent reads log.md at session start to understand previous discussion context:
-
-- **Rule**: Agent uses grep (not cat) for reading recent entries — no more than 10-20 lines.
-- **When to read**: At session start, if `working_memory.json` empty or stale (>30 days without updates).
-- **How to read**: `grep -m 20 "" wiki/log.md | tail -20` for recent entries. Or by keywords: `grep -m 10 "project_name" wiki/log.md`.
-- **Goal**: Understand what was discussed, which projects were active, in what context we stopped.
-- **Do not read entire log**: This is ~250+ lines, expensive in tokens. Only relevant entries.
-
-> Canonical: `AGENTS.md#log_read_pattern`
-
-### CONTEXT COMPACTION HANDLING
-
-- Context compaction ejects injected content (tool results, pages read) from current turn.
-- **After compaction** → agent MUST call:
-  ```bash
-  bash scripts/restore-hot-cache.sh || true
-  ```
-- This restores `hot.md` from file — long-term memory layer that survives compact.
-- **Important**: Working memory (focus_node, next_steps_todo) may be truncated in WM.json at compact. But `hot.md` contains project/session snapshot and is restored via restore-hot-cache.sh.
-
-> Canonical: `AGENTS.md#context_compaction_handling`
-
-### LOG_APPEND_ONLY — wiki/log.md never overwritten, always appended
-
-- **Rule**: `wiki/log.md` is append-only. Never use `write()` or `cat > file`. Always use `cat >> file` (append).
-- Violation example: `cat > wiki/log.md` → destroys entire history (~250 lines).
-- Correct pattern: read existing log → append new entries at end → write back. Or better: always append via bash `>>`.
-- **Canonical reference**: `AGENTS.md#log_append_only` — canonical source for log.md edit rules.
-
-### NATURAL MEMORY TRANSLATION
-
-- Facts from frontmatter / git → translate to human-time: "the day before yesterday", "a week ago"
-- Refer to "we" instead of "system/agent" when speaking about shared project experience
-- Factual accuracy not compromised — just phrasing becomes natural
-- Living page for examples and evolution: `wiki/concepts/natural-memory.md`
-
-> Canonical: `AGENTS.md#natural_memory_translation`
+> Full details: `rules/session_context_rules.json#flow` and `rules/session_context_rules.json#constraints`.
 
 ---
 
-### EXECUTION CONTRACT — Proposal → Action, Never Stop at "Shall I run it?"
+## ⚡ Execution Contract — Proposal → Action, Never Stop at "Shall I run it?"
 
 - **Rule**: Agent never stops after proposing a plan or asking permission to execute.
   - User says _what_ they want. Agent decides _how_ to do it and acts immediately.
