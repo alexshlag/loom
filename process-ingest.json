@@ -184,7 +184,8 @@
             "rule_id": "HOT-WIKI-CHANGES-V1"
           },
           {
-            "command": "./scripts/text-similarity.sh --scan-all --threshold 90"
+            "command": "./scripts/text-similarity.sh --scan-all --threshold 90",
+            "rule_id": "DR-1_DR-2"
           },
           {
             "command": "./scripts/unified-pass.sh --quiet --skip-meta --skip-crosslinks"
