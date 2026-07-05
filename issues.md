@@ -121,6 +121,18 @@
 
 ## ✅ Resolved Today/Recently (2026-07-05)
 
+### Issue #42: Tagging System — Generic Tags + Aliases 🆕 RESOLVED (Phase 15)
+**Проблема**: 51% страниц wiki имеют generic/broad теги, 3 страницы с inline comments в frontmatter.
+**Fix applied:**
+- ✅ Created rules/tag-guidelines.json with policy, patterns by category, aliases_system, cross-reference enforcement
+- ✅ Added step_4_tag_validation to process-ingest.json — auto-reject generic tags at ingest time
+- ✅ Added check_id=13 to process-lint.json — validate tag quality during lint runs
+**Статус**: ✅ Phase 15 groundwork complete. Next: audit remediation of existing pages.
+
+---
+
+## ✅ Resolved Today/Recently (2026-07-05)
+
 ### Issue #43: Cascade Priority & Contradiction Resolution Flow 🆕 RESOLVED
 **Проблема**: `rules/search_strategy.json#cascade_priority` — битая ссылка. Agent не мог разрешать противоречия.
 **Решение:** ✅ Создан `rules/contradiction_resolution.json` с полной логикой cascade order, evidence_grade_sub_priority, fallback_chain, arbitration_layer.
