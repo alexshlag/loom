@@ -188,6 +188,7 @@
 | **C5** | Silent Output + Execution Contract brief refs in AGENTS.md (both already existed as .json). No new files created, just unified references. | `rules/silent_output.json` + execution_contract.json | ✅ Done | AGENTS.md → 742 lines (-60% from original ~1839)
 | **C6** | Self-referencing anchors audit + schema_ref replacement → context_scopes/git_conventions/execution_modes/session_context/context_bridge/silent_output (6 replaced). Created faq_summary.json + evidence_grade.json. | `rules/faq_summary.json` + `rules/evidence_grade.json` | ✅ Done | 2 kept inline (language_policy/template_files shared contracts) |
 | **C7** | User Work Modes → extracted to JSON with determination algorithm, mode_definitions, management_rules, integration_with_memory schema_ref. AGENTS.md reduced by -60 lines. | `rules/work_modes.json` | ✅ Done | lint.sh: 0 broken links; 1 expected contradictions_deep |
+| **C8** | Wiki Operation Routing Contract → extracted to JSON with routing_table, ingress_points_from_lint/query. AGENTS.md reduced by -13 lines (table removed). | `rules/external_sources_policy.json` | ✅ Done | lint.sh: 0 broken links
 
 ### Self-Reference Audit — Final Status (Complete)
 
@@ -215,7 +216,7 @@
 | 2 | Memory Architecture + Session Context → consolidate into session_context_rules.json | ✅ Yes (expand) | 🟡 HIGH |
 | 3 | Wiki Categories → move full defs from AGENTS.md to categories.json | ✅ Yes (consolidate) | 🟡 HIGH |
 | 4 | Search & Discovery → verify search_strategy.json completeness | ✅ Yes (verify+expand) | 🟡 HIGH |
-| 5 | External Sources Update Policy + Auto-ingest scenarios | brief ref in AGENTS.md (too small for extraction) | Skipped | 🟡 HIGH |
+| 5 | External Sources Update Policy + Auto-ingest scenarios | `rules/external_sources_policy.json` | ✅ Created (C8) | 🔴 **DONE** |
 | 6 | Compounding Workflow → add to existing compounding_decision_logic (in process-query) | ⚠️ Inline in query | 🟢 MEDIUM |
 | 7 | User Work Modes | `rules/work_modes.json` | ✅ Created (C7) | 🔴 **DONE** |
 
@@ -225,14 +226,14 @@
 |---|-------|-------------|--------|
 | 8 | Delta Tracking → verify delta_tracking.json completeness | ✅ Verify+expand | 🟢 LOW |
 | 9 | Compounding Workflow | add to process-query.json | ⚠️ Inline, needs audit |
-| 10 | External Sources Update Policy | brief ref only (skip) | Skipped |
+| 10 | External Sources Update Policy | `rules/external_sources_policy.json` | ✅ Created (C8) | **DONE** |
 
 **Note**: Items 2-4 already exist as .json files from prior cycles — need expand/verify, not new extraction.
 | 8 | Delta Tracking → verify delta_tracking.json completeness | ✅ Yes (verify+expand) | 🟢 LOW |
 
 ### Expected Outcome
 - **Target**: AGENTS.md ~25-30KB (final), process files + rules/ carry the detail
-- **Current state**: AGENTS.md 682 lines (~39KB). Processed: C1-C7. All self-references audited.
+- **Current state**: AGENTS.md 676 lines (~39KB). Processed: C1-C8. Self-reference audit complete (all anchors resolved).
 - **Safety net**: Every rule traceable via schema_ref chain; no broken links verified by lint.sh
 
 ---
@@ -256,4 +257,4 @@
 
 ---
 
-*Last update: 2026-07-05 | Completed: Phase 16, Phase 14.5, Phases 15.x/y, C1-C7. AGENTS.md: 682 lines (~39KB). Next: C8 (auto_computed_fields) or remaining audit blocks.*
+*Last update: 2026-07-05 | Completed: Phase 16, Phase 14.5, Phases 15.x/y, C1-C8. AGENTS.md: 676 lines (~39KB). Next: remaining audit blocks (Delta Tracking) or planned audit phase.*

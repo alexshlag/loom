@@ -670,13 +670,7 @@ Process files inherit from AGENTS.md via `schema_ref` (never duplicate rules).
 
 ### Wiki Operation Routing Contract
 
-**Rule**: All wiki create/update operations MUST go through process-ingest.json or process-query.json steps. Never direct edit() without process flow.
+**Schema ref**: `rules/external_sources_policy.json` — full routing contract for wiki create/update operations.
 
-**Flow routing table:**  
- | Scenario | Process File | Transition Trigger | User Confirm? |
- |----------|-------------|-------------------|---------------|
- | Web search → update existing wiki page | process-query.json#web_ingest_flow → process-ingest.json | `existing_page_identified_from_web_data` | ❌ Auto (scenario 1) |
- | Web search → topic expansion (create new subpage of existing topic) | process-query.json#web_ingest_flow → process-ingest.json | `new_subtopic_of_existing_topic` | ❌ Auto, no confirm required (scenario 2) |
- | Web search → new independent topic (first page) | process-query.json#web_ingest_flow → process-ingest.json | `new_independent_topic_not_in_wiki` | ✅ Required only for first page of this topic (scenario 3) |
- | Update existing page with new facts | process-ingest.json#step_8b_update_page | source_identifies_existing_page | ❌ Auto (no confirm) |
- | Simple query answer (no save) | process-query.json only | no compounding_flag | N/A |
+> Rule: never duplicate AGENTS.md rules in process files. Always add `schema_ref` for canonical source.
+---
