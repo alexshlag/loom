@@ -90,9 +90,18 @@
 
 ## 🔄 Pending Tasks (Next Steps)
 
-### Phase 15.x: RULES.md:10 Audit Remediation — Fix Compounding Dup, Unresolved Refs, Lint→Ingest Bridge 🆕 P0 **NEW**
+### Phase 15.x: Tag Quality Audit Remediation ✅ COMPLETED (2026-07-05)
+
+**Цель**: Исправить generic/broad теги на 22 страницах wiki → заменить на domain-specific.
+**Результат**: ✅ 36/38 pages (94.7%) теперь имеют чистые доменные тега без generic-broad.
+
+---
+
+### Phase 15.y: RULES.md:10 Audit Remediation — Fix Compounding Dup, Unresolved Refs, Lint→Ingest Bridge ✅ COMPLETED
 
 **Цель**: Устранить все пробелы из аудита RULES.md пункт 10 (Issue #44). Обеспечить: единый источник compounding logic, resolve all action_names, bridge Lint→Ingest.
+
+***Результат**: ✅ Завершено. Все 4 условия из RULES.md:10 выполнены — compounding_logic consolidated, path-guard-check defined, lint→ingest bridge added.
 
 **Зависит от**: `RULES.md` — **ЧИТАТЬ ПЕРЕД ВЫПОЛНЕНИЕМ** (пункт 10, правила автоматизации). Canonical: `RULES.md#10`
 
