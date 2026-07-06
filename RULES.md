@@ -117,3 +117,24 @@ This is NOT meta-information — it is **conditional behavior specification**. A
 2. Role separation principle maintained: ingest | query | lint;
 3. All logical connections and transitions between roles ensured — before completing any instruction and receiving expected result.
 4. No gaps and/or conflicts in instructions — agent doesn't need to wonder: "what to do in this situation"
+
+## 11. TASK EXECUTION CYCLE — Problem → Plan → Implement → Verify → Document → Git
+
+**Workflow for any non-trivial change:**
+
+```
+1. PROBLEM IDENTIFIED → documented in issues.md (or new issue created)
+2. DISCUSSION → agent proposes solution, user approves approach
+3. PLAN CREATED → explicit steps in PLAN.md with dependencies, priorities, expected outputs
+4. IMPLEMENTATION → execute plan tasks one by one, validate after each step
+5. VERIFICATION → test functionality, check no regressions, run existing checks (lint/shellcheck)
+6. DOCUMENT UPDATE → refresh issues.md (close resolved), update PLAN.md (mark done), update AGENTS.md if needed
+7. GIT COMMIT → git add -A && git commit -m "<type> | <scope>: <description>"
+8. MEMORY SYNC → working_memory.json + wiki/hot.md updated with current state
+```
+
+**Critical rules:**
+- Never implement without plan (unless trivial one-liner)
+- Never update documentation after implementation — must be step 6, before git
+- Never skip verification — test on real data before committing
+- Never commit without updating issues.md and PLAN.md

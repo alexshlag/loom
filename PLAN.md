@@ -174,6 +174,52 @@ Agent auto-detects type by source analysis (API docs → `-api` suffix, CLI docs
 
 ---
 
+## 🆕 Phase 19: Wiki Naming Collision Audit 🔴 P0
+**Цель:** Предотвратить коллизии имён файлов при наполнении wiki из разных проектов. Добавить auto-detection + audit в lint workflow.
+
+### Текущее состояние (аудит)
+- **21 страница** нарушает rule `rules/naming_conventions.json#NAMES-CORE-V1`
+- Symfony-specific concepts без префикса: messenger-component, twig-templating, assetmapper, routing-system, event-dispatcher, security-system, service-container, testing-strategy, workflow-state-machine
+- **Exception list** не определён — агент не знает, что cache-system.md и hexagonal-architecture.md действительно абстрактные
+
+### 📋 Tasks
+
+| # | Component | Description | Dependencies | Status |
+|---|-----------|-------------|--------------|--------|
+| **N1** | Add exception list to `rules/naming_conventions.json` | Explicitly mark truly abstract concepts: cache-system.md, hexagonal-architecture.md, doctrine-orm.md. Add detection logic for framework-specific vs abstract. | None | ⬜ Pending |
+| **N2** | Create `scripts/filename-audit.sh` | Scan wiki/ for naming violations: (a) concepts without project prefix when tags/sources indicate framework-specific; (b) entities/docs with bare concept names; (c) detect duplicates by base_name. Output JSON array of violations. | None | ⬜ Pending |
+| **N3** | Add `filename_collision_audit` to process-lint.json check_id=6 | Integration into mechanical_linting: add check to existing array, reference schema_ref, define output format (severity: LOW/MEDIUM/HIGH). | N2 | ⬜ Pending |
+| **N4** | Update `scripts/lint.sh` integration | Call filename-audit.sh from check 6, parse JSON output, update TOTAL_ISSUES counter. Add auto-fix detection for simple renames. | N3 | ✅ Done |
+| **N5** | Fix process-query.json execute_save_path | Remove unnecessary schema_ref on naming_conventions — query doesn't write files directly, delegates to ingest. Clean up references. | None | ✅ Done |
+
+---
+
+### 📊 Results (Post-Implementation)
+- **Found:** 10 pages in wiki/concepts/ violating naming conventions
+- **Exceptions defined:** cache-system.md, hexagonal-architecture.md, doctrine-orm.md (truly abstract)
+- **Violations flagged:** assetmapper, event-dispatcher, messenger-component, routing-system, security-system, service-container, sonata-admin-bundle, testing-strategy, twig-templating, workflow-state-machine
+- **Auto-fix pending:** All 10 violations require user approval before rename (HIGH severity)
+- **Lint integration:** Check 6 now includes filename_collision_audit → returns JSON with file path, severity, suggested new path
+
+### Execution Order
+```
+✅ N1 (exception list) → ✅ N2 (audit script)
+    ↓
+✅ N3 (lint integration) ← depends on N2
+    ↓
+✅ N4 (lint.sh wiring) ← depends on N3
+    ↓
+✅ N5 (cleanup process-query.json)
+```
+
+### Expected Outputs
+- `scripts/filename-audit.sh` — standalone audit script with --help, exit codes 0/1
+- `process-lint.json` updated: check_id=6 includes filename_collision_audit
+- `rules/naming_conventions.json` updated: exceptions section added
+- Existing wiki pages flagged for rename (not auto-fixed — user approval required)
+
+---
+
 ## ✅ Completed Sessions (Archived)
 
 - **Phase 16** (2026-07-05): Wiki Documentation Language Standardization → AGENTS.md + RULES.md fully translated, process files cleaned

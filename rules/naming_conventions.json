@@ -37,7 +37,24 @@
           ],
           "rule": "Always prefix with project name. Use hyphenated lowercase kebab-case."
         }
-      ]
+      ],
+      "exceptions": {
+        "abstract_concepts": [
+          { "file": "cache-system.md", "reason": "Universal caching patterns (PSR-6, cache-invalidation), framework-agnostic" },
+          { "file": "hexagonal-architecture.md", "reason": "Clean architecture pattern (ports-and-adapters), universal across frameworks" },
+          { "file": "doctrine-orm.md", "reason": "Doctrine ORM works with any PHP framework, not Symfony-specific" }
+        ],
+        "detection_logic": [
+          {
+            "rule": "If tags contain project-name (e.g., symfony-cache) AND filename lacks project prefix → VIOLATION",
+            "exception_check": "Is file in exceptions/abstract_concepts? If yes → ALLOW. If no → ENFORCE_PREFIX"
+          },
+          {
+            "rule": "If related contains entities/<project>.md AND filename lacks project prefix → VIOLATION",
+            "exception_check": "Same exception list check above"
+          }
+        ]
+      }
     },
     "docs_directory": {
       "path": "wiki/docs/",

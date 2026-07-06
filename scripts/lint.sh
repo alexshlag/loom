@@ -87,14 +87,22 @@ echo "[✓] Check 5/10: new_topics_proposal — skipped (requires external sourc
 
 # --- Check 6: Mechanical linting (frontmatter, duplicate titles) ---
 DUPLICATE_TITLES=0
+FILENAME_VIOLATIONS=0
+FIX_ITER=0
 if [[ "$SKIP_CHECKS" != *",6,"* ]]; then
   local_dup=""
   safe_run "./scripts/duplicate-titles.sh $WIKI_DIR" local_dup || true
   if echo "$local_dup" | grep -q "Duplicate"; then
     DUPLICATE_TITLES=1
   fi
+  
+  # Filename collision audit — always capture output regardless of exit code
+  local_filename=$(bash scripts/filename-audit.sh "$WIKI_DIR" 2>/dev/null || true)
+  if echo "$local_filename" | grep -q "VIOLATIONS: [1-9]"; then
+    FILENAME_VIOLATIONS=$(echo "$local_filename" | grep 'VIOLATIONS:' | grep -oE '[0-9]+' | tail -1) || FILENAME_VIOLATIONS=0
+  fi
 fi
-TOTAL_ISSUES=$((TOTAL_ISSUES + DUPLICATE_TITLES))
+TOTAL_ISSUES=$((TOTAL_ISSUES + DUPLICATE_TITLES + FILENAME_VIOLATIONS))
 
 # --- Check 7: Date consistency ---
 DATE_ISSUES=0
@@ -298,6 +306,7 @@ cat <<EOF | grep -v "^="
     "orphan_paths": ${ORPHAN_PATHS_JSON:-"[]"},
     "new_sources_unprocessed": ${NEW_SOURCES},
     "duplicate_titles": ${DUPLICATE_TITLES},
+    "filename_collisions": ${FILENAME_VIOLATIONS:-0},
     "date_inconsistencies": ${DATE_ISSUES},
     "broken_links": ${BROKEN_LINKS},
     "auto_repaired_links": ${AUTO_REPAIRED:-0},

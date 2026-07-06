@@ -70,6 +70,24 @@
 **Риск:** +2-5s overhead per run. Each python3 fork ≈ 0.2-0.3s.
 **Fix:** Один `python3 << PYEOF` → все данные извлечь из одного dict → return structured output.
 
+### Issue #49: Filename Collision — Wiki Page Naming Violations
+**Проблема:** `wiki/concepts/` содержит 21 страницу без префикса проекта (symfony-*, doctrine-*, etc.) при наличии framework-specific тегов. Нарушает rule `rules/naming_conventions.json#NAMES-CORE-V1`.
+**Затронутые файлы:** messenger-component.md, twig-templating.md, assetmapper.md, routing-system.md, event-dispatcher.md, security-system.md, service-container.md, testing-strategy.md, workflow-state-machine.md, easyadmin-bundle.md, sonata-admin-bundle.md + 8 других.
+**Риск:** При добавлении новых источников от других проектов (React, Laravel) — коллизии имён, невозможность различить framework-specific vs abstract concepts.
+**Fix:**
+1. Добавить exception list в `rules/naming_conventions.json` для абстрактных концептов
+2. Create `scripts/filename-audit.sh` — scan wiki/ for naming violations
+3. Add check to process-lint.json → mechanical_linting (check_id=6)
+4. Auto-prefix existing pages: `messenger-component.md` → `symfony-messenger-component.md`
+5. Update AGENTS.md §10 cycle rules for problem→plan→implement→verify→document→git workflow
+**Status:** 🟡 In Progress — N1-N5 done (exception list, audit script, lint integration). Pending: user approval to rename 10 pages.
+**Delivered:**
+- `rules/naming_conventions.json` → exceptions/abstract_concepts + detection logic
+- `scripts/filename-audit.sh` — standalone audit with exit codes, JSON output
+- `process-lint.json#check_id=6` → filename_collision_audit in mechanical_linting
+- `scripts/lint.sh` → integrated filename-audit.sh parsing (10 violations detected)
+- `process-query.json` → cleaned up unnecessary schema_ref
+
 ---
 
-*Last update: 2026-07-06 | Open issues: #5/#9, #11, #18, #27, #28, #22, #23, #24+#45, #25, #8, #46, #47, #48.*
+*Last update: 2026-07-07 | Open issues: #5/#9, #11, #18, #27, #28, #22, #23, #24+#45, #25, #8, #46, #47, #48, #49.*
