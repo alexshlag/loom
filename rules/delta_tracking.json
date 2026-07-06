@@ -29,5 +29,5 @@
 
   "_priority": "Use corrected copy from manifest for contradiction detection. Hash mismatch = re-ingest required.",
 
-  "schema_ref_to_agent_rules": "AGENTS.md#delta_tracking"
+  "schema_ref_to_agent_rules": "AGENTS.md#6-agent-rules-conventions-rules"
 }

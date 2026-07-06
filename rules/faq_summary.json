@@ -34,5 +34,5 @@
     "user_proposed_and_approved":  "transition to process-ingest.json via web_ingest_flow → user_confirm_passed"
   },
 
-  "schema_ref_to_agent_rules": "AGENTS.md#summary_pages"
+  "schema_ref_to_agent_rules": "AGENTS.md#3-summary-faq-pages-wikisyntheses"
 }

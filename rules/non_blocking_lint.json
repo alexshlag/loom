@@ -10,7 +10,7 @@
     "stderr": "Human-readable summary"
   },
   "checks_table": [
-    { "id": 1, "name": "Contradictions (soft)", "method": "grep -m 10 '## Updated \[.*\]'", "result": "Pages count for agent review" },
+    { "id": 1, "name": "Contradictions (soft)", "method": "grep -m 10 '## Updated \\[.*\\]'", "result": "Pages count for agent review" },
     { "id": 2, "name": "Orphan pages", "method": "orphan-pages.sh", "result": "Count + paths" },
     { "id": 3, "name": "Knowledge gaps", "method": "—", "result": "Skipped (agent review required)" },
     { "id": 4, "name": "New sources available", "method": "check-new-sources.sh --max 10", "result": "Package list" },
@@ -27,6 +27,6 @@
     "skip_checks": "Use --skip-checks ID1,ID2 to skip specific checks (e.g., 3,5 — knowledge gaps and topics)",
     "cron_safety": "Safe for cron: 0 */4 * * * cd /path/to/loomana && ./scripts/lint.sh --quiet >> logs/lint.log 2>&1"
   },
-  "schema_ref_to_agent_rules": "AGENTS.md#auto-rebuild-metadata-meta-rebuild-path",
+  "schema_ref_to_agent_rules": "AGENTS.md#auto-rebuild-metadata-non-blocking-lint",
   "agent_note": "Lint runs separately — does not block agent turn. Can be called by cron or process-lint. Output always JSON on stdout."
 }

@@ -74,5 +74,5 @@
       "source": "process-lint.json"
     }
   ],
-  "schema_ref_to_agent_rules": "AGENTS.md#context_management"
+  "schema_ref_to_agent_rules": "AGENTS.md#context-management-all-rules-transient-phase-32"
 }

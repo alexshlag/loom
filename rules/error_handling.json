@@ -25,5 +25,5 @@
   ],
 
   "_notes": {"extracted_from": "AGENTS.md#error_handling_protocol"},
-  "schema_ref_to_agent_rules": "AGENTS.md#error-handling-policy"
+  "schema_ref_to_agent_rules": "AGENTS.md#6-agent-rules-conventions-rules"
 }

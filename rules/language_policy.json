@@ -7,6 +7,6 @@
     "agent_response_translation": "When synthesizing answer: translate section headers to match user's question language. Content paraphrasing is agent's discretion — can quote directly, summarize, or translate.",
     "mixed_language_pages": "Allowed and encouraged when reflecting bilingual sources. Agent treats each section independently for translation at response time."
   },
-  "schema_ref_to_agent_rules": "AGENTS.md#language-policy-for-wiki-pages--agent-responses",
+  "schema_ref_to_agent_rules": "AGENTS.md#language-policy",
   "agent_note": "Headers stay English in templates. Response language matches user's question language. Mixed-language pages allowed."
 }

@@ -50,5 +50,5 @@
 
   "decision_rules_integration": {"schema_ref": "rules/decision-rules.md"},
   "if_broken": "STOP_GENERATION -> Classify fact type as objective or subjective -> Apply cascade priority -> Continue",
-  "schema_ref_to_agent_rules": "AGENTS.md#contradiction-resolution-cascade"
+  "schema_ref_to_agent_rules": "AGENTS.md#6-agent-rules-conventions-rules"
 }

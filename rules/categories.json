@@ -83,5 +83,5 @@
     }
   ],
   "rule": "Agent reads from this file — never hardcodes order or definitions.",
-  "schema_ref_to_agent_rules": "AGENTS.md#architecture_layers"
+  "schema_ref_to_agent_rules": "AGENTS.md#architecture-layers"
 }

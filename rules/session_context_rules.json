@@ -5,7 +5,7 @@
 
   "layers": {
     "working_memory.json": {"role": "current-session ops memory (focus_node, open_pages, next_steps_todo)", "lifespan": "one session", "rw": "write every turn"},
-    "hot.md":             {"role": "long-term snapshot (project context, wiki changes). Survives compaction.",      "path": "wiki/hot.md",  "lw": "agent writes snapshots",   "structure": {"active_project": "WORK_MODE: project — name, focus_node, related_pages, findings, next_steps", "session_context": "WORK_MODE: query/discussion — topic, pages_read, key_findings", "system_state": "Active Threads + Recent Changes (updated on every wiki create/update)"}}},
+    "hot.md":             {"role": "long-term snapshot (project context, wiki changes). Survives compaction.",      "path": "wiki/hot.md",  "lw": "agent writes snapshots",   "structure": {"active_project": "WORK_MODE: project — name, focus_node, related_pages, findings, next_steps", "session_context": "WORK_MODE: query/discussion — topic, pages_read, key_findings", "system_state": "Active Threads + Recent Changes (updated on every wiki create/update)"}},
     "log.md":             {"role": "append-only chronicle of all actions and wiki changes.", "path": "wiki/log.md", "lifespan": "forever",               "rw": "agent appends only"}
   },
 

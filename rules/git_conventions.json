@@ -67,5 +67,5 @@
       "action": "wiki/hot.md Recent Changes: summary of wiki edits"
     }
   ],
-  "schema_ref_to_agent_rules": "AGENTS.md#git_conventions"
+  "schema_ref_to_agent_rules": "AGENTS.md#git-conventions"
 }

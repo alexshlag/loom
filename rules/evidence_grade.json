@@ -41,5 +41,5 @@
     "extracted_from": "AGENTS.md#auto_computed_fields_section",
     "created_for": "Cycle_6_extraction"
   },
-  "schema_ref_to_agent_rules": "AGENTS.md#evidence-grade---fact-evidence-level"
+  "schema_ref_to_agent_rules": "AGENTS.md#auto-computed-fields-agent-level"
 }

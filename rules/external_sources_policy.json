@@ -1,7 +1,7 @@
 {
   "protocol_name": "Wiki Operation Routing Contract",
   "description": "All wiki create/update operations MUST go through process-ingest.json or process-query.json steps. Never direct edit() without process flow.",
-  "schema_ref_to_agent_rules": "AGENTS.md#wiki_operation_routing",
+  "schema_ref_to_agent_rules": "AGENTS.md#wiki-operation-routing-contract",
 
   "core_rule": {
     "rule": "all_wiki_create_update_operations_must_go_through_process_files",
