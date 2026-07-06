@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# scripts/lint.sh — Автономный lint-скрипт, не блокирующий agent turn
+# scripts/lint.sh — Standalone lint script, non-blocking for agent turn
 # Usage: ./scripts/lint.sh [--quiet] [--skip-checks ID1,ID2] [wiki_dir]
-# Exit code: 0 = all checks passed, 1 = issues found (но не блокирует flow)
+# Exit code: 0 = all checks passed, 1 = issues found (but does not block flow)
 
 set -uo pipefail
 
@@ -40,7 +40,7 @@ TOTAL_ISSUES=0
 # --- Check 1: Contradictions (read all pages, compare facts) ---
 CONTRADICTIONS=0
 if [[ "$SKIP_CHECKS" != *",1,"* ]]; then
-  CONTRADICTION_PAGES=$({ grep -r "^## Обновлено" "$WIKI_DIR/" --include="*.md" -l 2>/dev/null | head -20; } || true)
+  CONTRADICTION_PAGES=$({ grep -r "^## Updated" "$WIKI_DIR/" --include="*.md" -l 2>/dev/null | head -20; } || true)
   if [ -n "$CONTRADICTION_PAGES" ]; then
     CONTRADICTIONS=$(echo "$CONTRADICTION_PAGES" | wc -l)
   fi

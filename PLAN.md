@@ -313,7 +313,7 @@
 
 ---
 
-*Last update: 2026-07-06 | Completed: Phase 16, Phase 14.5, Phases 15.x/y, C1-C8, Phase 32.z.1 (Cyrillic cleanup), C9 (Compounding Workflow extraction), **Phase 16.1** (memory hooks + traj-capture + distill). AGENTS.md: 676 lines (~39KB). Next: remaining audit blocks or planned audit phase.*| Completed: Phase 16, Phase 14.5, Phases 15.x/y, C1-C8, Phase 32.z.1 (Cyrillic cleanup), C9 (Compounding Workflow extraction). AGENTS.md: 676 lines (~39KB). Next: remaining audit blocks or planned audit phase.*
+*Last update: 2026-07-06 | Completed: Phase 16, Phase 14.5, Phases 15.x/y, C1-C8, Phase 32.z.1 (Cyrillic cleanup), C9, **Phase 17** (#12 resolved). Next: T2-T5 — script architecture hardening.*| Completed: Phase 16, Phase 14.5, Phases 15.x/y, C1-C8, Phase 32.z.1 (Cyrillic cleanup), C9 (Compounding Workflow extraction). AGENTS.md: 676 lines (~39KB). Next: remaining audit blocks or planned audit phase.*
 ### 🚨 Phase 32.z: Rules/*.json Cyrillic Cleanup + Schema Ref Standardization 🔴 P0
 
 **Цель**: Все файлы rules/*.json должны быть на английском (RULES.md #2) и иметь schema_ref_to_agent_rules.
@@ -373,4 +373,21 @@
 - `process-query.json`: inline compounding_decision_logic → schema_ref, duplicate_check_before_fixation → schema_ref
 
 **Коммит**: `caf0c33 feat | schema: extract Compounding Workflow to rules/compounding_workflow.json (C9)`
+---
+
+### Phase 17: Script Architecture Hardening 🆕 P0-2 🆕 NEW SESSION
+**Цель:** Устранить критические проблемы скриптов: JSON safety, set -e consistency, triple walks, N+1 python3 calls.
+
+| # | Task | Description | Priority | Est. Time |
+|---|------|-------------|----------|-----------|
+| **T1** | ✅ Resolve Issue #12: Update issue tracking | Test suite already created (53 tests across 8 modules). Mark issue as resolved. | 🔴 DONE | ⏱️ — completed |
+| **T2** | Fix JSON safety (#45/#24) — Replace `echo/printf` → `jq/python` | `classify-source.sh:43,180,186,192`, `auto-crosslink.sh:260`, `link-validator.sh:239,250,261,348,394`. All manual JSON construction → `jq -n --arg` or Python `json.dumps()`. | 🔴 **P0** CRITICAL | 1h |
+| **T3** | Standardize `set -euo pipefail` (#46) — Add errexit to all scripts | 7 missing `-e`: `batch-ingest.sh`, `check-structural.sh`, `classify-source.sh`, `detect-contradications.sh`, `lint.sh`, `raw-correct.sh`, `rebuild-source-manifest.sh`. Where `set +e` intentional → add comment why. | 🟡 **P1** HIGH | 30m |
+| **T4** | Unified walk in `rebuild-meta.sh` (#47) — Replace triple os.walk() | Merge lines 99, 187, 358 into single `os.walk(wiki_dir)` pass. Collect all needed data in one traversal (like `unified-pass.sh`). | 🟡 **P2** MEDIUM | 45m |
+| **T5** | Batch JSON reads (#48) — Replace N+1 python3 calls with single call | `lint.sh:194-197` → one Python call extract all tag counts. `classify-source.sh`, `text-similarity.sh` → consolidate subcalls. Expected savings: +2-5s/run. | 🟡 **P2** MEDIUM | 1h |
+| **T6** | Cleanup temp files via lib.sh | Integrate `cleanup_temp_files()` from lib.sh — currently unused dead code. Replace individual trap handlers with centralized cleanup_add(). | 🟢 P3 LOW | 30m |
+
+> **Dependencies**: T2 must complete before T5 (JSON safety prerequisite for batch reads).
+> **Rollback plan**: All changes are additive/structural — safe to revert individual scripts.
+
 ---

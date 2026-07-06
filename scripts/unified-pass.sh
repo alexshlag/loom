@@ -37,7 +37,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# --- System file exclusion (единый список) ---
+# --- System file exclusion (unified list) ---
 # Excluded from metadata and crosslinks, but NOT from link validation
 WIKI_SYSTEM_FILES=(
   "log.md" "issues.md" "timeline.md" "overview.md"

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# duplicate-titles.sh — проверяет дубли заголовков в пределах категорий wiki
-# Оптимизация: Python + hash-set O(n) вместо многократных subprocess head calls
+# duplicate-titles.sh — checks for duplicate titles within wiki categories
+# Optimization: Python + hash-set O(n) instead of multiple subprocess head calls
 # Usage: ./scripts/duplicate-titles.sh [wiki_dir]
 # Exit code: 0 = no duplicates, 1 = duplicates found
 

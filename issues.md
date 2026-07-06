@@ -15,8 +15,22 @@
 **Проблема**: Часть скриптов не использует `trap EXIT/cleanup`.
 **Статус:** ✅ `wiki-search.sh`, `link-validator.sh`, `auto-crosslink.sh` используют `mktemp + trap`. ⬜ Осталось: `rebuild-meta.sh`, `check-new-sources.sh`, `text-similarity.sh`, `lint.sh`.
 
-### Issue #12: Unit Tests для Скриптов 🆕 BROKEN
+### Issue #12: Unit Tests для Скриптов 🆕 RESOLVED (Phase 17)
 **Проблема**: Единственный тест `tests/text-similarity.bats` — broken (typo в `$BATS_TEST_DIRTEXT`). Остальные скрипты не покрыты.
+**Решение:** ✅ **DONE (2026-07-05)**: 8 Python test modules, 53+ tests created. All passing.
+
+| File | Tests | Coverage |
+|------|-------|----------|
+| `test_process_ingest.py` | 27 | Ingest + Query basic structure, cross-process consistency |
+| `test_process_integration.py` | 15 | Step ordering, schema refs, git conventions, scripts exist |
+| `test_process_additional.py` | 6 | Branching logic, triggers, evaluation criteria |
+| `test_process_commands.py` | 3 | Script existence verification |
+| `test_process_query.py` | — | Query-specific tests |
+| `test_process_lint.py` | — | Lint-specific tests |
+| `test_integration_cross_references.py` | — | Cross-reference validation |
+
+**Status:** ✅ All 53+ tests pass. Coverage: process-*.json structure, schema_refs, step ordering, script existence.
+> **Next**: Script-level unit tests (lib.sh, link-validator.sh, auto-crosslink.sh) — separate issue.
 
 ### Issue #18: Hardcoded /tmp/ Overlap File 🆕 PARTIAL FIX
 **Fix applied:** ✅ `process-ingest.json` updated with `mktemp`.
@@ -55,6 +69,42 @@
 **Fix applied:** ✅ DR-4 в AGENTS.md; syntheses_rule в process-ingest.json step 3a; compounding_decision_logic differentiate fact collection vs new logical inference.
 
 **Remaining**: Добавить rule → `syntheses not processed like regular wiki pages`.
+
+---
+
+### Issue #45: JSON Safety — Unicode Break in Manual Construction 🆕 P0 CRITICAL
+**Проблема**: ~15 мест в 8 скриптах генерируют JSON через `echo "..."` или `printf '%s'`. Если данные содержат `"`, `\`, unicode — JSON ломается.
+**Затронутые файлы:**
+- `classify-source.sh:43,180,186,192` — `echo "{\"source":"$URL",...}`
+- `auto-crosslink.sh:260` — `echo "{\"path":"$REL_PATH","score":$score,...}`
+- `link-validator.sh:239,250,261,348,394` — `printf '{"file":"%s",...}'`
+- `rebuild-meta.sh` — несколько мест
+**Риск:** Silent data corruption on unicode paths/URLs. Can break downstream JSON parsers.
+**Fix:** Replace all manual JSON output with `jq -n --arg ...` or Python `json.dumps()`. Issue #24 is the same root cause.
+**Priority:** 🔴 P0 — structural data integrity
+
+### Issue #46: Inconsistent `set -euo pipefail` 🆕 P1 HIGH
+**Проблема**: Из 30 скриптов только 16 используют полный `set -euo pipefail`. Остальные либо без `-e`, либо `set +e`.
+**Затронутые:**
+- ❌ Без `-e`: `batch-ingest.sh`, `check-structural.sh`, `classify-source.sh`, `detect-contradications.sh`, `lint.sh`, `raw-correct.sh`, `rebuild-source-manifest.sh`
+- ⚠️ Явный `set +e` только в `detect-contradications.sh:23` — единственный скрипт с отключённым errexit
+**Риск:** Silent failures — команды падают, но exit code не propagated. В `lint.sh` это критично.
+**Fix:** Добавить `set -euo pipefail` ко всем скриптам; где нужен `set +e` — добавить комментарий почему.
+
+### Issue #47: Triple Walk in `rebuild-meta.sh` 🆕 P2 MEDIUM
+**Проблема**: Три независимых `os.walk(wiki_dir)` вызова → O(3n) disk I/O вместо O(n).
+- Line 99, 187, 358 — три полных обхода wiki/
+**Риск:** +30% latency при каждом rebuild. На 1000+ страницах становится заметным.
+**Fix:** Объединить в один `os.walk()` как в `unified-pass.sh`. Собрать все нужные данные за один проход.
+
+### Issue #48: N+1 Python3 Calls Pattern 🆕 P2 MEDIUM
+**Проблема**: Десятки отдельных subprocess вызовов в циклах. Fork overhead × 10-40 на один скрипт.
+**Затронутые:**
+- `lint.sh:59,119,134-136,152,164-167,194-197,275` — 8+ отдельных python3 вызовов
+- `classify-source.sh:88,127` — отдельный python3 для каждого domain check
+- `text-similarity.sh:95,136,171,253,261,278,438,455,468` — 9+ вызовов
+**Риск:** +2-5s overhead per run. Each python3 fork ≈ 0.2-0.3s.
+**Fix:** Один `python3 << PYEOF` → все данные извлечь из одного dict → return structured output.
 
 ### Issue #29/30: Delta Tracking & Batch Ingest ✅ RESOLVED
 **Решение:** `scripts/rebuild-source-manifest.sh` + `scripts/batch-ingest.sh` — оба работают, интегрированы.
@@ -106,4 +156,4 @@ Created rules/contradiction_resolution.json with full cascade logic. Updated all
 
 ---
 
-*Last update: 2026-07-05 | Live: #5/#9, #11, #12, #18, #27, #28, #22, #23, #24, #25, #8, #39. Resolved today: #42, #43.*
+*Last update: 2026-07-06 | Live: #5/#9, #11, #18, #27, #28, #22, #23, #45(P0), #46(P1), #47(P2), #48(P2). Resolved: #12 (Phase 17 tests created), #42, #43.*

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # apply-contradiction-fix.sh — Semi-auto generation of diff for contradiction sections
 # Usage: ./scripts/apply-contradiction-fix.sh [--dry-run] [--target <page_path>]
-# Output: Diff-ready markdown with "## Обновлено" section, ready for agent review
+# Output: Diff-ready markdown with "## Updated" section, ready for agent review
 
 set -euo pipefail
 
@@ -111,7 +111,7 @@ for c in conflict_data["issues_found"]:
     
     # Generate the section content for agent to review/apply
     today = datetime.now().strftime("%Y-%m-%d")
-    section_template = f"""## Обновлено {today} — conflicting info
+    section_template = f"""## Updated {today} — conflicting info
 - **Conflicting fact**: `{c['group_key']}` found in multiple pages with different contexts.
 - **Sources involved**: {[e['path'].replace('.md','') for e in c['entries']]}.
 - **Action needed**: Agent must review which source is authoritative (see issue #4: Authoritative Sources Criteria)."""

@@ -13,6 +13,8 @@
 
 **AGENT INSTRUCTION LANGUAGE:** All agent instructions for wiki (process files, rules/*.json, AGENTS.md) must be written **only in English**. File names, variables, comments — in English. Exception: wiki page content may be in any language.
 
+**SCRIPT COMMENTS:** All script code and comments (**every `.sh` file**) must use English exclusively. This matches the instruction language rule above — no Russian/other-language comments anywhere in scripts.
+
 ## 3. RELIABILITY
 * Validate all external data (null/undefined checks).
 * Explicit error handling — never swallow exceptions.

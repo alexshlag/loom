@@ -46,7 +46,7 @@ Niche technical specs → `rules/*.json` (read on demand via schema_ref)
 
 - **[PLAN.md](PLAN.md)** — project roadmap, phase statuses, pending tasks. **Read before starting work**.
 - **[FEATURES_PLAN.md](FEATURES_PLAN.md)** — architectural improvements implementation plan.
-- **[wiki/issues.md](wiki/issues.md)** — bug registry. **Read during ingest/query/lint** to avoid known issues.
+- **[issues.md](issues.md)** — bug registry. **Read during ingest/query/lint** to avoid known issues.
 
 ### Code Conventions
 
@@ -103,7 +103,7 @@ Three process files — each defines a complete workflow:
     ...
     "assets/images/": "copies of original images (.png, .jpg, .jpeg, .gif)",
     "assets/descriptions/": "markdown descriptions of images: OCR + entities + metadata",
-    "wiki/snapshot.md": "one-page snapshot of current facts from all wiki pages"
+    "snapshot.md": "one-page snapshot of current facts from all wiki pages"
   }
 }
 ```

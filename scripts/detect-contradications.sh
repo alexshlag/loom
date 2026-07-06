@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# detect-contradications.sh — Soft scan для поиска потенциальных противоречий в wiki
-# Парсит frontmatter dates + ключевые факты, строит матрицу для сравнения
+# detect-contradications.sh — Soft scan for potential contradictions in wiki
+# Parses frontmatter dates + key facts, builds comparison matrix
 # 
 # Usage: ./scripts/detect-contradications.sh [--quiet]
-# Output: JSON на stdout, human-readable summary на stderr
+# Output: JSON on stdout, human-readable summary on stderr
 
 # Note: not using set -e — exit code propagated from python3
 

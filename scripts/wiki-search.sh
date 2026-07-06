@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# wiki-search.sh — Умный поиск по категориям wiki с приоритетом релевантности
+# wiki-search.sh — Smart category-based wiki search with relevance prioritization
 # 
 # Usage: ./wiki-search.sh "query" [wiki_dir] [--max N] [--dynamic]
 #
-# Логика (Phase 2 + Phase 5)
+# Logic (Phase 2 + Phase 5)
 #   1. Static mode: priority-categories из DEFAULT_PRIORITY (syntheses → concepts → entities)
 #   2. Dynamic mode (--dynamic): query intent analysis → entity/concept/comparison keywords → dynamic order categories
 #   4. Relevance scoring: position weight (H1 = x3), frequency count, backlink weight + category bonus

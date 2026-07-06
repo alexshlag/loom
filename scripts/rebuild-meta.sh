@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# rebuild-meta.sh — пересобирает meta-файлы из wiki/ (инкрементальный режим)
+# rebuild-meta.sh — regenerates meta files from wiki/ (incremental mode)
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -414,7 +414,7 @@ lines_out.extend([
     '---',
     '*Created: auto-generated | Last updated: ' + now_str + '*',
     '',
-    '## Хронология',
+    '## Timeline',
     '| Дата | Событие |',
     '|------|---------|',
     '| [Timeline](timeline.md) — полная хронологическая лента всех изменений.'

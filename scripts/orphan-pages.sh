@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# orphan-pages.sh — находит страницы wiki без входящих ссылок (orphan pages)
-# Оптимизация: использует meta/backlinks.json вместо O(n²) grep → O(1) lookup
+# orphan-pages.sh — finds wiki pages without incoming links (orphan pages)
+# Optimization: uses meta/backlinks.json instead of O(n²) grep → O(1) lookup
 # Usage: ./scripts/orphan-pages.sh [wiki_dir] [backlinks_json]
 # Exit code: 0 = no orphans, 1 = orphans found
 
@@ -11,7 +11,7 @@ PROJECT_ROOT="${SCRIPT_DIR}/.."
 WIKI_DIR="${1:-$PROJECT_ROOT/wiki}"
 BACKLINKS_JSON="${2:-$PROJECT_ROOT/meta/backlinks.json}"
 
-# Fallback: если backlinks.json отсутствует — используем grep
+# Fallback: if backlinks.json is missing, fall back to grep
 if [ ! -f "$BACKLINKS_JSON" ]; then
     echo "[!] Warning: $BACKLINKS_JSON not found, falling back to grep..." >&2
 fi
@@ -58,7 +58,7 @@ for root, dirs, files in os.walk(wiki_dir):
         rel_path = os.path.relpath(full_path, wiki_dir)
         all_pages.append(rel_path)
 
-# Загружаем backlinks.json — извлекаем все target'ы (ключи JSON)
+# Load backlinks.json — extract all target keys (JSON keys)
 backlink_targets = set()
 with open(backlinks_json_path) as f:
     data = json.load(f)
@@ -69,15 +69,15 @@ if isinstance(data, dict):
     else:
         keys = list(data.keys())
 
-# Преобразуем ключи JSON обратно в wiki-пути для сравнения
+# Convert JSON keys back to wiki paths for comparison
 normalized_keys = set()
 for key in keys:
     normalized_keys.add(key)
 
-# Находим орфанов — страницы без входящих ссылок (нет ключа в backlinks.json)
+# Find orphans — pages without incoming links (no key in backlinks.json)
 orphans = []
 for page in all_pages:
-    # Создаём ключ из пути: wiki/entities/pi-coding-agent.md → entities-pi-coding-agent-md
+    # Build key from path: wiki/entities/pi-coding-agent.md → entities-pi-coding-agent-md
     normalized_key = page.replace('/', '-').replace('.', '-')  
     
     if normalized_key not in normalized_keys:
