@@ -1,13 +1,10 @@
 ---
 tags: [skill, memory, skill-process]
 date: 2026-07-06
-name: memory-hooks-integration-with-process
-description: Extract reusable process hook patterns from trajectories and integrate them into ingest/query/lint workflows.
 type: documentation
 category: note
 aliases: []
 sources: ["raw/trajectories/TRJ-20260706-0653-fcc8626d"]
-related_docs: []
 ---
 
 # Skill: Memory Hooks Integration With Process

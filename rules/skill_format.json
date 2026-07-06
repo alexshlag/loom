@@ -32,16 +32,6 @@
           "live_state"
         ],
         "default": "documentation"
-      },
-      {
-        "name": "name",
-        "pattern": "<lowercase_skill_name>",
-        "description": "Unique identifier for the skill — matches filename without .md extension. Used for indexing, cross-referencing, and external search resolution."
-      },
-      {
-        "name": "description",
-        "pattern": "<one-sentence summary>",
-        "description": "What this skill does. Appears in index.md summaries, used for semantic matching during query fallback search."
       }
     ]
   },
