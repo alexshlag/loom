@@ -255,9 +255,10 @@ find_and_score() {
     # Output candidate if above threshold
     [[ $score -ge $SCORE_THRESHOLD ]] || return 0
     
-    # Normalize path for output
+    # Normalize path for output — JSON via python json.dumps() to handle special chars safely
     REL_PATH="${filepath#$WIKI_DIR/}"
-    echo "{\"path\":\"$REL_PATH\",\"score\":$score,\"match_types\":\"$types\"}" >> "$RESULTS_FILE"
+    python3 -c 'import json,sys; print(json.dumps({"path":sys.argv[1],"score":int(sys.argv[2]),"match_types":sys.argv[3]}))' \
+        "$REL_PATH" "$score" "$types" >> "$RESULTS_FILE"
 }
 
 # Scan all wiki pages to find candidates

@@ -9,3 +9,4 @@
 2026-06-27T00:31:47Z | classified: L1_Official for docs.openai.com (whitelist=openai.com)
 2026-06-27T00:31:53Z | classified: L2_Expert for docs.openai.com (author=OpenAI Research Team)
 2026-06-27T00:31:53Z | classified: L3_Community for karpathy.github.io/article (no authority match)
+2026-07-06T18:22:36Z | classified: L3_Community for https://github.com/user/repo (no authority match)

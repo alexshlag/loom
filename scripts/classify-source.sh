@@ -2,7 +2,7 @@
 # classify-source.sh — Domain classification for documentation sources
 # Graceful by design: never fails, always returns JSON result
 
-set -uo pipefail  # no errexit — we handle errors ourselves
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/.."
@@ -40,7 +40,7 @@ done
 
 # ─── Validation: input must be present ──────────────────────────────
 if [[ -z "${URL:-}" ]]; then
-    echo '{"source":"unknown","level":"L3_Community","confidence":0,"reason":"no_url_provided"}'
+    python3 -c 'import json; print(json.dumps({"source": "unknown", "level": "L3_Community", "confidence": 0, "reason": "no_url_provided"}))'
     exit 0
 fi
 
@@ -72,6 +72,20 @@ extract_domain() {
     domain="${domain%%@*}"
     
     echo "$domain" | tr '[:upper:]' '[:lower:]'
+}
+
+# ─── Output JSON result safely (using Python json.dumps) ──────────────
+classify_output() {
+    local src="$1" dom="$2" lvl="$3" conf="$4" rson="$5"
+    python3 -c '
+import json, sys
+src = sys.argv[1]
+dom = sys.argv[2]
+lvl = sys.argv[3]
+conf = float(sys.argv[4])
+rson = sys.argv[5]
+print(json.dumps({"source": src, "domain": dom, "level": lvl, "confidence": conf, "reason": rson}))
+' "$src" "$dom" "$lvl" "$conf" "$rson"
 }
 
 # ─── Check whitelist → L1 Official (auto-apply) ─────────────────────
@@ -173,23 +187,23 @@ if [[ $? -eq 0 ]]; then
     AUTHOR_MATCH="$AUTHOR_RESULT"
 fi
 
-# Decision tree based on matches
+# Decision tree based on matches — JSON via classify_output() for safety
 if [[ -n "$WHITLIST_MATCH" ]]; then
     verbose_log "L1_Official: domain whitelist match ($WHITLIST_MATCH)"
     log_msg "classified: L1_Official for $URL (whitelist=$WHITLIST_MATCH)"
-    echo "{\"source\":\"$URL\",\"domain\":\"$DOMAIN\",\"level\":\"L1_Official\",\"confidence\":1,\"reason\":\"matched_domain_whitelist\"}"
+    classify_output "$URL" "$DOMAIN" "L1_Official" "1" "matched_domain_whitelist"
     exit 0
 
 elif [[ -n "$AUTHOR_MATCH" ]]; then
     verbose_log "L2_Expert: known author match ($AUTHOR_MATCH)"
     log_msg "classified: L2_Expert for $URL (author=$AUTHOR_MATCH)"
-    echo "{\"source\":\"$URL\",\"domain\":\"$DOMAIN\",\"level\":\"L2_Expert\",\"confidence\":0.7,\"reason\":\"matched_known_author\"}"
+    classify_output "$URL" "$DOMAIN" "L2_Expert" "0.7" "matched_known_author"
     exit 0
 
 else
     verbose_log "L3_Community: no authority match (fallback)"
     log_msg "classified: L3_Community for $URL (no authority match)"
-    echo "{\"source\":\"$URL\",\"domain\":\"$DOMAIN\",\"level\":\"L3_Community\",\"confidence\":0.3,\"reason\":\"no_authority_match\"}"
+    classify_output "$URL" "$DOMAIN" "L3_Community" "0.3" "no_authority_match"
     exit 0
 fi
 

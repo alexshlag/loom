@@ -55,13 +55,13 @@
 
 | # | Task | Description | Priority | Est. Time |
 |---|------|-------------|----------|-----------|
-| **T2** | Fix JSON safety (#45/#24) → `jq/python` | Replace manual echo/printf in `classify-source.sh`, `auto-crosslink.sh`, `link-validator.sh`. All JSON output via `jq -n --arg ...` or Python. | 🔴 P0 CRITICAL | 1h |
-| **T3** | Standardize `set -euo pipefail` (#46) | Add errexit to 7 scripts: `batch-ingest.sh`, `check-structural.sh`, `classify-source.sh`, `detect-contradications.sh`, `lint.sh`, `raw-correct.sh`, `rebuild-source-manifest.sh`. Where `set +e` intentional → comment why. | 🟡 P1 HIGH | 30m |
+| **T2** | Fix JSON safety (#45/#24) → `jq/python` | ✅ Completed — replaced all manual echo/printf with Python json.dumps() in classify-source.sh, auto-crosslink.sh, link-validator.sh, text-similarity.sh. Zero remaining manual JSON constructions. | 🔴 P0 CRITICAL | 1h |
+| **T3** | Standardize `set -euo pipefail` (#46) | Add errexit to remaining scripts: `batch-ingest.sh`, `check-structural.sh`, `detect-contradications.sh`, `lint.sh`, `raw-correct.sh`, `rebuild-source-manifest.sh`. classify-source.sh already fixed. Where `set +e` intentional → comment why. | 🟡 P1 HIGH | 30m |
 | **T4** | Unified walk in `rebuild-meta.sh` (#47) | Merge triple os.walk() (lines 99, 187, 358) into single pass like `unified-pass.sh`. Expected savings: -66% disk I/O. | 🟡 P2 MEDIUM | 45m |
-| **T5** | Batch JSON reads (#48) → single python3 call | Consolidate N+1 calls in `lint.sh` (8+), `classify-source.sh`, `text-similarity.sh`. One Python process per script instead of fork-heavy loops. Expected savings: +2-5s/run. | 🟡 P2 MEDIUM | 1h |
+| **T5** | Batch JSON reads (#48) → single python3 call | Consolidate N+1 calls in `lint.sh` (8+), `text-similarity.sh`. One Python process per script instead of fork-heavy loops. Expected savings: +2-5s/run. | 🟡 P2 MEDIUM | 1h |
 | **T6** | Cleanup temp files via lib.sh | Integrate `cleanup_temp_files()` from lib.sh — currently dead code. Replace individual trap handlers with centralized cleanup_add(). | 🟢 P3 LOW | 30m |
 
-> **Dependencies:** T2 must complete before T5 (JSON safety prerequisite for batch reads).
+> **Dependencies:** T5 requires T2 complete (prerequisite done).
 > **Rollback plan:** All changes are additive/structural — safe to revert individual scripts.
 
 ---

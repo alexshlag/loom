@@ -67,7 +67,7 @@ fi
 
 # ─── Validation: input must be present for pairwise mode ──────────────
 if [[ "$SCAN_ALL" == "false" ]] && [[ -z "${FILE1:-}" ]]; then
-    echo '{"mode":"error","reason":"no_files_provided","matches":[]}'
+    python3 -c 'import json; print(json.dumps({"mode": "error", "reason": "no_files_provided", "matches": []}))'
     exit 0
 fi
 
@@ -427,7 +427,7 @@ else
     
     if [[ ! -f "$FILE1" ]] || [[ ! -f "$FILE2" ]]; then
         verbose_log "One or both files not found"
-        echo '{"mode":"pairwise","file1":"'"$FILE1"'","file2":"'"$FILE2"'","similarity":0,"match_level":"no_match","common_ngrams":0}'
+        python3 -c 'import json,sys; print(json.dumps({"mode":"pairwise","file1":sys.argv[1],"file2":sys.argv[2],"similarity":0,"match_level":"no_match","common_ngrams":0}))' "$FILE1" "$FILE2"
         log_msg "files_missing | $FILE1, $FILE2"
         exit 0
     fi
@@ -457,7 +457,7 @@ import json, sys
 
 match = json.load(sys.stdin)
 print(json.dumps({\"mode\": \"pairwise\", \"file1\": \"$FILE1\", \"file2\": \"$FILE2\", **match}, indent=2))
-" 2>/dev/null || echo '{"mode":"pairwise","similarity":0}'
+" 2>/dev/null || python3 -c 'import json; print(json.dumps({"mode":"pairwise","similarity":0}))'
         exit 0
     fi
     

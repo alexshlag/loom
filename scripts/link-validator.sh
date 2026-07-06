@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# ─── Safe JSON output — use this instead of printf/echo with manual escaping ──
+safe_json_emit_file() {
+    python3 -c 'import json,sys; print(json.dumps({"file":sys.argv[1],"line":int(sys.argv[2]),"link":sys.argv[3],"target_path":sys.argv[4],"auto_fixed":bool(sys.argv[5]) if sys.argv[5] else None}))'         "$1" "$2" "$3" "$4" "${6:-}" >> "${7:-/dev/stdout}"
+}
+
+
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/.."
 WIKI_DIR="$PROJECT_ROOT/wiki"
@@ -226,29 +232,23 @@ check_file() {
                 echo "[✓] Auto-fixed: $file:$linenum -> $(echo "$match" | sed "s/](${target_path})/]($best_file/")" >&2
                 
                 # Rewrite JSON with auto_fixed flag and corrected target
-                local safe_file=$(echo "$file" | sed 's/\\/\\\\/g; s/"/\\"/g')
-                local safe_link=$(echo "$match" | sed 's/\\/\\\\/g; s/"/\\"/g')
-                
+                # Rewrite JSON with auto_fixed flag — safe via python json.dumps()
                 if [[ $BROKEN_COUNT -gt 1 ]]; then
                   printf ',' >> "$TMP_RESULTS"
                 fi
-                
-                # Use the fixed target path in JSON output for audit trail
+
                 local fixed_target="${best_file#wiki/}"
-                local safe_fixed=$(echo "$fixed_target" | sed 's/\\/\\\\/g; s/"/\\"/g')
-                printf '{"file":"%s","line":%d,"link":"%s","target_path":"%s","auto_fixed":true}' \
-                  "$safe_file" "$linenum" "$safe_link" "$safe_fixed" >> "$TMP_RESULTS"
+                python3 -c 'import json,sys; print(json.dumps({"file":sys.argv[1],"line":int(sys.argv[2]),"link":sys.argv[3],"target_path":sys.argv[4],"auto_fixed":True}))' \
+                  "$file" "$linenum" "$match" "$fixed_target" >> "$TMP_RESULTS"
               fi
             else
               # Auto mode but no good match — add to results as not auto-fixed
-              local safe_file=$(echo "$file" | sed 's/\\/\\\\/g; s/"/\\"/g')
-              local safe_match=$(echo "$match" | sed 's/\\/\\\\/g; s/"/\\"/g')
-              
+              # Auto mode but no good match — safe via python json.dumps()
               if [[ $BROKEN_COUNT -gt 1 ]]; then
                 printf ',' >> "$TMP_RESULTS"
               fi
-              printf '{"file":"%s","line":%d,"link":"%s","target_path":"%s","auto_fixed":false}' \
-                "$safe_file" "$linenum" "$safe_match" "$target_path" >> "$TMP_RESULTS"
+              python3 -c 'import json,sys; print(json.dumps({"file":sys.argv[1],"line":int(sys.argv[2]),"link":sys.argv[3],"target_path":sys.argv[4],"auto_fixed":False}))' \
+                "$file" "$linenum" "$match" "$target_path" >> "$TMP_RESULTS"
             fi
           else
             # Normal mode: just add to results
@@ -258,8 +258,8 @@ check_file() {
             if [[ $BROKEN_COUNT -gt 1 ]]; then
               printf ',' >> "$TMP_RESULTS"
             fi
-            printf '{"file":"%s","line":%d,"link":"%s","target_path":"%s"}' \
-              "$safe_file" "$linenum" "$safe_match" "$target_path" >> "$TMP_RESULTS"
+            python3 -c 'import json,sys; print(json.dumps({"file":sys.argv[1],"line":int(sys.argv[2]),"link":sys.argv[3],"target_path":sys.argv[4]}))' \
+              "$file" "$linenum" "$match" "$target_path" >> "$TMP_RESULTS"
           fi
         fi
       done < <(echo "$line" | grep -oE '\[[^]]+\]\([^)]+\)')
@@ -345,8 +345,8 @@ elif [[ "$MODE" == "pattern" ]]; then
             if [[ $BROKEN_COUNT -gt 1 ]]; then
               printf ',' >> "$TMP_RESULTS"
             fi
-            printf '{"file":"%s","line":%d,"link":"%s","target_path":"%s"}' \
-              "$safe_filepath" "$local_linenum" "$safe_match" "$local_target" >> "$TMP_RESULTS"
+            python3 -c 'import json,sys; print(json.dumps({"file":sys.argv[1],"line":int(sys.argv[2]),"link":sys.argv[3],"target_path":sys.argv[4]}))' \
+              "$file" "$linenum" "$match" "$target_path" >> "$TMP_RESULTS"
           fi
         done < <(echo "$local_content" | grep -oE '\[[^]]+\]\([^)]+\)')
       fi
