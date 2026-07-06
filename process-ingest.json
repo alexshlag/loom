@@ -440,6 +440,18 @@
             "command": "./scripts/memory/distill.sh --check-undistilled 2>/dev/null || true"
           }
         ]
+      },
+      {
+        "trigger": "on_capture_complete",
+        "description": "Auto-distill captured trajectory into wiki skill/case — D2 Phase 20.2",
+        "actions": [
+          {
+            "action_name": "distill_captured_trajectory",
+            "command": "./scripts/memory/distill.sh --trajectory '${TRAJECTORY_PATH}' 2>/dev/null || true",
+            "condition": "trajectories_path_set",
+            "schema_ref": "rules/skill_format.json"
+          }
+        ]
       }
     ],
     "schema_ref": "scripts/memory/recall-spec.md#process_integration"

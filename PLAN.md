@@ -323,7 +323,8 @@ related: [<other wiki pages or skills>]
 | # | Component | Description | Dependencies | Status |
 |---|------|-------------|--------------|--------|
 | **D1** | Fix `scripts/memory/distill.sh` naming — `{slug}-skill.md`. ✅ Done |
-| **D2** | Add auto-distillation trigger after capture в memory_hooks — `distill.sh --trajectory <path>` after `traj-capture.sh`. Trigger: on_capture_complete. | D1, S5 | ⬜ Pending |
+| **D2** | Add auto-distillation trigger after capture в memory_hooks — `distill.sh --trajectory <path>` after `traj-capture.sh`. Trigger: on_capture_complete. | D1, S5 | ✅ Done |
+
 | **D3** | Update duplicate detection logic — slug regex for `-skill.md`. ✅ Done |
 
 ### Execution Order

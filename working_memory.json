@@ -1,9 +1,10 @@
 {
-  "last_updated": "2026-07-07T04:15+03",
+  "last_updated": "2026-07-07T04:35+03",
   "current_mode": "project",
-  "focus_node": "Phase 20.2 D1/D3 complete — naming convention fixed, duplicate detection updated.",
+  "focus_node": "Phase 20.2 D1-D3 complete — all distillation pipeline fixes done.",
   "next_steps_todo": [
-    "D2: Add auto-distillation trigger in memory_hooks (process-ingest.json + process-query.json)"
+    "Consider Phase 17 T2-T6 (script hardening) or user-driven priorities",
+    "Add wiki/skills/ → .pi sync to user's agent config if desired"
   ],
   "open_pages": [],
   "dead_ends": [],
@@ -18,16 +19,9 @@
       "raw/trajectories/*"
     ],
     "key_findings": [
-      "✅ Created rules/skill_format.json (SKILL-FORMAT-V1) — canonical format for wiki skills",
-      "✅ Refactored wiki/skills/memory-hooks-integration-with-process.md to new format",
-      "✅ Updated session_bootstrap.json: added skill scan step 4 (non-blocking)",
-      "✅ Updated process-ingest.json: added skill_generation_trigger hook",
-      "✅ Updated process-query.json: added skill_awareness_check step 0.25",
-      "✅ Created scripts/export-skill.sh — bridge wiki → .pi export",
-      "✅ Created scripts/memory/skill-pattern-match.sh — actual pattern matching logic (tag overlap + tool sequence analysis)",
-      "✅ Debugged & fixed regex: bracket extraction using sed instead of broken (?<=\\()[^]]+",
-      "D1: distill.sh naming fixed — `{slug}-skill.md` per skill_format.json#naming_convention",
-      "D3: check_duplicate_skill() updated for -skill.md glob pattern"
+      "✅ D1: distill.sh naming fixed — `{slug}-skill.md` format",
+      "✅ D2: auto-distillation hooks added to process-ingest.json + process-query.json (on_capture_complete trigger)",
+      "✅ D3: check_duplicate_skill() updated for -skill.md glob pattern"
     ]
   },
   "broken_links_resolved": [],
