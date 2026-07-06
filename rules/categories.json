@@ -82,5 +82,6 @@
       "description": "Tools, plugins, libraries"
     }
   ],
-  "rule": "Agent reads from this file \u2014 never hardcodes order or definitions."
+  "rule": "Agent reads from this file — never hardcodes order or definitions.",
+  "schema_ref_to_agent_rules": "AGENTS.md#architecture_layers"
 }

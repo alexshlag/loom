@@ -10,7 +10,7 @@
     "stderr": "Human-readable summary"
   },
   "checks_table": [
-    { "id": 1, "name": "Contradictions (soft)", "method": "grep ## Обновлено", "result": "Pages count for agent review" },
+    { "id": 1, "name": "Contradictions (soft)", "method": "grep -m 10 '## Updated \[.*\]'", "result": "Pages count for agent review" },
     { "id": 2, "name": "Orphan pages", "method": "orphan-pages.sh", "result": "Count + paths" },
     { "id": 3, "name": "Knowledge gaps", "method": "—", "result": "Skipped (agent review required)" },
     { "id": 4, "name": "New sources available", "method": "check-new-sources.sh --max 10", "result": "Package list" },

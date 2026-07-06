@@ -4,29 +4,75 @@
     "all_transient": true,
     "auto_read_source": "AGENTS.md (via agent_read_instructions in process files)"
   },
-
   "fresh_rules": [
-    {"id": "MEMORY_CONTRACT",        "schema_ref": "AGENTS.md#memory_architecture_contract"},
-    {"id": "EXECUTION_CONTRACT",     "schema_ref": "AGENTS.md#execution_contract"},
-    {"id": "ERROR_HANDLING",         "schema_ref": "AGENTS.md#error_handling_protocol"},
-    {"id": "GIT_CONVENTIONS",        "schema_ref": "AGENTS.md#git_conventions"},
-    {"id": "PROTECTED_ZONES",        "schema_ref": "AGENTS.md#protected_zones"},
-    {"id": "SILENT_OUTPUT",          "schema_ref": "AGENTS.md#silent_output_contract"},
-    {"id": "EXECUTION_MODES",        "schema_ref": "AGENTS.md#execution_modes"},
-    {"id": "NATURAL_MEMORY",         "schema_ref": "AGENTS.md#natural_memory_translation"},
-    {"id": "LOG_APPEND_ONLY",        "schema_ref": "AGENTS.md#log_append_only"}
+    {
+      "id": "MEMORY_CONTRACT",
+      "schema_ref": "AGENTS.md#memory_architecture_contract"
+    },
+    {
+      "id": "EXECUTION_CONTRACT",
+      "schema_ref": "AGENTS.md#execution_contract"
+    },
+    {
+      "id": "ERROR_HANDLING",
+      "schema_ref": "AGENTS.md#error_handling_protocol"
+    },
+    {
+      "id": "GIT_CONVENTIONS",
+      "schema_ref": "AGENTS.md#git_conventions"
+    },
+    {
+      "id": "PROTECTED_ZONES",
+      "schema_ref": "AGENTS.md#protected_zones"
+    },
+    {
+      "id": "SILENT_OUTPUT",
+      "schema_ref": "AGENTS.md#silent_output_contract"
+    },
+    {
+      "id": "EXECUTION_MODES",
+      "schema_ref": "AGENTS.md#execution_modes"
+    },
+    {
+      "id": "NATURAL_MEMORY",
+      "schema_ref": "AGENTS.md#natural_memory_translation"
+    },
+    {
+      "id": "LOG_APPEND_ONLY",
+      "schema_ref": "AGENTS.md#log_append_only"
+    }
   ],
-
   "hybrid_rules_read_on_demand": [
-    {"id": "PAGE_TEMPLATES",     "read_when": "creating/updating pages"},
-    {"id": "LINK_CONVENTIONS",   "source": "process-ingest.json#external_source_policy"},
-    {"id": "CROSSLINK_DISCOVERY","read_when": "building crosslinks"},
-    {"id": "ADVISORY_LOCKING",   "source": "scripts/wiki-lock.sh"}
+    {
+      "id": "PAGE_TEMPLATES",
+      "read_when": "creating/updating pages"
+    },
+    {
+      "id": "LINK_CONVENTIONS",
+      "source": "process-ingest.json#external_source_policy"
+    },
+    {
+      "id": "CROSSLINK_DISCOVERY",
+      "read_when": "building crosslinks"
+    },
+    {
+      "id": "ADVISORY_LOCKING",
+      "source": "scripts/wiki-lock.sh"
+    }
   ],
-
   "process_transient": [
-    {"id": "INGEST_SPECIFICS",   "source": "process-ingest.json"},
-    {"id": "QUERY_SPECIFICS",    "source": "process-query.json"},
-    {"id": "LINT_SPECIFICS",     "source": "process-lint.json"}
-  ]
+    {
+      "id": "INGEST_SPECIFICS",
+      "source": "process-ingest.json"
+    },
+    {
+      "id": "QUERY_SPECIFICS",
+      "source": "process-query.json"
+    },
+    {
+      "id": "LINT_SPECIFICS",
+      "source": "process-lint.json"
+    }
+  ],
+  "schema_ref_to_agent_rules": "AGENTS.md#context_management"
 }

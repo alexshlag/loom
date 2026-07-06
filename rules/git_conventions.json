@@ -1,49 +1,71 @@
 {
   "rule_id": "GIT-CONVENTIONS-V1",
-
   "commit_format": {
     "pattern": "<type> | <scope>: <description>",
-    "types": ["feat", "fix", "refactor", "schema", "lint", "ingest", "query"],
+    "types": [
+      "feat",
+      "fix",
+      "refactor",
+      "schema",
+      "lint",
+      "ingest",
+      "query"
+    ],
     "constraints": {
       "scope": "lowercase component/module name",
       "description": "lowercase imperative summary"
     }
   },
-
   "staging_by_mode": {
-    "wiki": ["git add wiki/"],
-    "dev":   ["git add -A"]
+    "wiki": [
+      "git add wiki/"
+    ],
+    "dev": [
+      "git add -A"
+    ]
   },
-
   "mode_detection": {
     "auto": "only wiki/*.md → wiki; any .sh/.json in root/rules/scripts/ → dev",
     "override": "user says 'wiki mode' or 'dev mode'"
   },
-
   "pre_commit_workflow": [
-    {"action": "git status --short"},
-    {"action": "detect staging mode (auto: see mode_detection)"},
-    {"action": "stage with correct command from staging_by_mode"},
-    {"action": "git status --short — verify no untracked/unstaged remain"},
-    {"prohibited": ["git add *", "git commit -a"]}
+    {
+      "action": "git status --short"
+    },
+    {
+      "action": "detect staging mode (auto: see mode_detection)"
+    },
+    {
+      "action": "stage with correct command from staging_by_mode"
+    },
+    {
+      "action": "git status --short — verify no untracked/unstaged remain"
+    },
+    {
+      "prohibited": [
+        "git add *",
+        "git commit -a"
+      ]
+    }
   ],
-
   "post_commit_check": {
     "action": "if git status shows unstaged files → stage + amend or separate commit"
   },
-
   "memory_sync_on_dev_commit": [
-    {"action": "working_memory.json: focus_node + filter completed next_steps_todo"},
-    {"action": "wiki/hot.md Active Project: update phase status"}
+    {
+      "action": "working_memory.json: focus_node + filter completed next_steps_todo"
+    },
+    {
+      "action": "wiki/hot.md Active Project: update phase status"
+    }
   ],
-
   "memory_sync_after_wiki_change": [
-    {"action": "working_memory.json: focus_node + next_steps_todo (auto-cleanup) + query_summary"},
-    {"action": "wiki/hot.md Recent Changes: summary of wiki edits"}
+    {
+      "action": "working_memory.json: focus_node + next_steps_todo (auto-cleanup) + query_summary"
+    },
+    {
+      "action": "wiki/hot.md Recent Changes: summary of wiki edits"
+    }
   ],
-
-  "schema_ref": {
-    "memory_details": "rules/session_context_rules.json",
-    "canonical_in_agents": "AGENTS.md#git_conventions"
-  }
+  "schema_ref_to_agent_rules": "AGENTS.md#git_conventions"
 }

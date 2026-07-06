@@ -1,16 +1,19 @@
 {
   "module": "process_ingest",
   "description": "Ingest new data into wiki - only path: capture - integrate",
-
   "pre_conditions": [
-    { "condition": "user_provided_source", "action": "START_INGEST" },
-    { "condition": "source_layer_unknown", "action": "CLASSIFY_SOURCE" }
+    {
+      "condition": "user_provided_source",
+      "action": "START_INGEST"
+    },
+    {
+      "condition": "source_layer_unknown",
+      "action": "CLASSIFY_SOURCE"
+    }
   ],
-
   "external_source_policy": {
     "schema_ref": "rules/link_conventions.json#EXT-RES1"
   },
-
   "cross_process_triggers": [
     {
       "name": "backfill_existing_wiki_references",
@@ -19,7 +22,6 @@
       "schema_ref": "rules/protected_zones.json"
     }
   ],
-
   "steps": [
     {
       "step_id": "step_1_guardrails",
@@ -27,7 +29,10 @@
       "description": "Validate source path via guardrails - first step always.",
       "command": "./scripts/validate-path.sh ${SOURCE_PATH}",
       "evaluation": [
-        { "exit_code": 0, "action": "PROCEED_TO_ANALYSIS" },
+        {
+          "exit_code": 0,
+          "action": "PROCEED_TO_ANALYSIS"
+        },
         {
           "exit_code": 1,
           "stdout_contains": "BLOCKED",
@@ -41,7 +46,10 @@
       "description": "Hash check - prevents re-ingest of processed sources.",
       "command": "./scripts/rebuild-source-manifest.sh --scan-only",
       "evaluation": [
-        { "condition": "source_status == processed", "action": "HALT_AND_LOG" },
+        {
+          "condition": "source_status == processed",
+          "action": "HALT_AND_LOG"
+        },
         {
           "condition": "source_status == unprocessed OR stale",
           "action": "PROCEED_TO_ANALYSIS"
@@ -53,11 +61,22 @@
       "name": "source_analysis",
       "description": "Analyze source: read, classify, evidence_grade, entities, contradictions, link repair.",
       "actions": [
-        { "action": "read_file", "path": "${SOURCE_PATH}" },
-        { "action_name": "CLASSIFY_SOURCE" },
-        { "action_name": "extract_evidence_grade" },
-        { "action_name": "identify_entities_and_concepts" },
-        { "action_name": "check_for_contradications" },
+        {
+          "action": "read_file",
+          "path": "${SOURCE_PATH}"
+        },
+        {
+          "action_name": "CLASSIFY_SOURCE"
+        },
+        {
+          "action_name": "extract_evidence_grade"
+        },
+        {
+          "action_name": "identify_entities_and_concepts"
+        },
+        {
+          "action_name": "check_for_contradications"
+        },
         {
           "action_name": "raw_source_link_repair",
           "command": "./scripts/raw-link-repair.sh ${SOURCE_PATH} --dry-run"
@@ -69,16 +88,24 @@
       "name": "auto_extract_aliases_for_frontmatter",
       "description": "Extract aliases (discoverability synonyms) from title, source content, bilingual variants.",
       "actions": [
-        { "action_name": "extract_from_title" },
-        { "action_name": "extract_from_source_content" },
+        {
+          "action_name": "extract_from_title"
+        },
+        {
+          "action_name": "extract_from_source_content"
+        },
         {
           "action_name": "apply_tag_guidelines_recommendation",
           "schema_ref": "rules/tag-guidelines.json#aliases_system"
         },
-        { "action_name": "set_aliases_in_frontmatter" }
+        {
+          "action_name": "set_aliases_in_frontmatter"
+        }
       ],
       "rules": [
-        { "rule_id": "ALIAS-SOURCES" },
+        {
+          "rule_id": "ALIAS-SOURCES"
+        },
         {
           "rule_id": "ALIAS-MINIMAL",
           "schema_ref": "rules/tag-guidelines.json#aliases_system"
@@ -91,8 +118,12 @@
       "description": "Create corrected copy in raw/corrected/SRC-*/* via scripts/raw-correct.sh.",
       "schema_ref": "rules/protected_zones.json",
       "actions": [
-        { "action_name": "read_original_and_analyze" },
-        { "action_name": "check_existing_corrected_copy" },
+        {
+          "action_name": "read_original_and_analyze"
+        },
+        {
+          "action_name": "check_existing_corrected_copy"
+        },
         {
           "condition": "corrected_copy_not_exists OR needs_update",
           "action_name": "create_corrected_if_missing"
@@ -105,12 +136,16 @@
       "description": "Validate tags against guidelines — 3-7 domain-specific, no generics. Auto-fix empty/generic.",
       "schema_ref": "rules/tag-guidelines.json",
       "actions": [
-        { "action_name": "extract_current_tags_from_frontmatter" },
+        {
+          "action_name": "extract_current_tags_from_frontmatter"
+        },
         {
           "condition": "tags_are_empty OR tags_contain_generic",
           "action_name": "auto_reject_generic_and_suggest_domain_tags"
         },
-        { "action_name": "apply_tag_guidelines_recommendation" }
+        {
+          "action_name": "apply_tag_guidelines_recommendation"
+        }
       ],
       "rules": [
         {
@@ -129,8 +164,12 @@
       "description": "If ≥3 related sources - batch-ingest.sh for clustering.",
       "schema_ref": "rules/batch_ingest_trigger.json",
       "actions": [
-        { "command": "./scripts/batch-ingest.sh --scan" },
-        { "action_name": "present_clusters_to_user" }
+        {
+          "command": "./scripts/batch-ingest.sh --scan"
+        },
+        {
+          "action_name": "present_clusters_to_user"
+        }
       ]
     },
     {
@@ -152,7 +191,10 @@
             }
           ]
         },
-        { "user_rejected": true, "action": "HALT_AND_REPORT" }
+        {
+          "user_rejected": true,
+          "action": "HALT_AND_REPORT"
+        }
       ]
     },
     {
@@ -160,13 +202,23 @@
       "name": "template_read_and_section_selection",
       "description": "Agent reads template.json for page structure. Template is recommended, not mandatory.",
       "actions": [
-        { "action_name": "read_template" },
-        { "action_name": "select_applicable_sections" }
+        {
+          "action_name": "read_template"
+        },
+        {
+          "action_name": "select_applicable_sections"
+        }
       ],
       "rules": [
-        { "rule_id": "TEMPLATE-READ-V1" },
-        { "rule_id": "FLEXIBLE_ZONES" },
-        { "rule_id": "TEMPLATE_EDIT_WRITE" }
+        {
+          "rule_id": "TEMPLATE-READ-V1"
+        },
+        {
+          "rule_id": "FLEXIBLE_ZONES"
+        },
+        {
+          "rule_id": "TEMPLATE_EDIT_WRITE"
+        }
       ]
     },
     {
@@ -174,7 +226,9 @@
       "name": "integration_new_page",
       "description": "Create NEW wiki page. Syntheses require DR-4 novel inference check.",
       "pre_check": [
-        { "command": "./scripts/validate-path.sh wiki/${PAGE_PATH}.md" }
+        {
+          "command": "./scripts/validate-path.sh wiki/${PAGE_PATH}.md"
+        }
       ],
       "syntheses_rule": {
         "rule_id": "DR-4",
@@ -188,12 +242,21 @@
       "name": "integration_update_existing_page",
       "description": "Update EXISTING page - preserve old_info, append '## Updated [date]'.",
       "pre_check": [
-        { "command": "./scripts/validate-path.sh ${EXISTING_PAGE_PATH}" }
+        {
+          "command": "./scripts/validate-path.sh ${EXISTING_PAGE_PATH}"
+        }
       ],
       "actions": [
-        { "action_name": "read_existing_page" },
-        { "action_name": "identify_additions_and_changes" },
-        { "action_name": "write_update", "preserve_old_info": true }
+        {
+          "action_name": "read_existing_page"
+        },
+        {
+          "action_name": "identify_additions_and_changes"
+        },
+        {
+          "action_name": "write_update",
+          "preserve_old_info": true
+        }
       ]
     },
     {
@@ -201,8 +264,12 @@
       "name": "post_integration_checks",
       "step_9_post_checks": {
         "actions": [
-          { "action_name": "acquire_page_lock" },
-          { "command": "./scripts/rebuild-meta.sh" },
+          {
+            "action_name": "acquire_page_lock"
+          },
+          {
+            "command": "./scripts/rebuild-meta.sh"
+          },
           {
             "action_name": "update_hot_with_wiki_changes",
             "rule_id": "HOT-WIKI-CHANGES-V1"
@@ -217,8 +284,12 @@
           {
             "command": "./scripts/auto-crosslink.sh '${NEW_PAGE_PATH}' --include-root 2>/dev/null || true"
           },
-          { "command": "./scripts/rebuild-source-manifest.sh" },
-          { "action_name": "release_page_lock" }
+          {
+            "command": "./scripts/rebuild-source-manifest.sh"
+          },
+          {
+            "action_name": "release_page_lock"
+          }
         ]
       }
     },
@@ -255,14 +326,16 @@
       "command": "./scripts/rebuild-meta.sh --index-only"
     }
   ],
-
   "working_memory_hooks": [
     {
       "trigger": "on_start",
       "actions": [
         {
           "action_name": "update_working_memory",
-          "fields": ["current_mode=ingest", "focus_node"]
+          "fields": [
+            "current_mode=ingest",
+            "focus_node"
+          ]
         }
       ]
     },
@@ -285,8 +358,9 @@
       ]
     }
   ],
-
-  "error_handling": { "schema_ref": "rules/error_handling.json" },
+  "error_handling": {
+    "schema_ref": "rules/error_handling.json"
+  },
   "schema_evolution": {
     "rule": "Never auto-modify templates - user-approved only, schema-patch requires user approval",
     "schema_ref": "rules/execution_contract.json"
@@ -295,5 +369,58 @@
     "rule": "Agent MUST read AGENTS.md before executing any steps.",
     "schema_ref": "AGENTS.md#overview"
   },
-  "context_scope": "transient"
+  "context_scope": "transient",
+  "memory_hooks": {
+    "description": "Memory layer hooks — async, non-blocking. Main process emits events; memory subsystem handles storage/recall/distillation.",
+    "hooks": [
+      {
+        "trigger": "on_source_ingested",
+        "actions": [
+          {
+            "action_name": "register_in_registry",
+            "command": "./scripts/rebuild-source-manifest.sh"
+          }
+        ]
+      },
+      {
+        "trigger": "on_page_update_completed",
+        "actions": [
+          {
+            "action_name": "update_hot_cache_if_changed",
+            "command": "./scripts/memory/hot-cache-update.sh --check-only || true"
+          }
+        ]
+      },
+      {
+        "trigger": "on_new_page_created",
+        "actions": [
+          {
+            "action_name": "auto_crosslink_new_page",
+            "command": "./scripts/auto-crosslink.sh '${NEW_PAGE_PATH}' --include-root 2>/dev/null || true"
+          }
+        ]
+      },
+      {
+        "trigger": "on_ingest_complete",
+        "actions": [
+          {
+            "action_name": "capture_trajectory_if_nontrivial",
+            "command": "./scripts/memory/traj-capture.sh --prompt '<user_query>' --steps '<tool_calls>' --outcome 'success' --complexity 'high'",
+            "condition": "new_page_created OR page_updated",
+            "schema_ref": "scripts/memory/traj-capture.sh"
+          }
+        ]
+      },
+      {
+        "trigger": "on_distillation_ready",
+        "actions": [
+          {
+            "action_name": "check_pending_distillations",
+            "command": "./scripts/memory/distill.sh --check-undistilled 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
+    "schema_ref": "scripts/memory/recall-spec.md#process_integration"
+  }
 }

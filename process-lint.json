@@ -1,16 +1,18 @@
 {
   "module": "process_lint",
   "description": "Wiki maintenance — automated checks and fixes",
-
   "trigger_conditions": [
     {
       "condition": "wiki_stagnation_detected",
       "threshold": "no_new_pages_3_days"
     },
-    { "condition": "contradications_found" },
-    { "condition": "orphan_pages_detected" }
+    {
+      "condition": "contradications_found"
+    },
+    {
+      "condition": "orphan_pages_detected"
+    }
   ],
-
   "lint_checks": [
     {
       "check_id": "1",
@@ -93,7 +95,6 @@
       "schema_ref": "rules/tag-guidelines.json#lint_validation_check"
     }
   ],
-
   "primary_command": {
     "command": "./scripts/lint.sh [--quiet] [--skip-checks ID1,ID2] [wiki_dir]",
     "note": "Single entry point for all lint checks — do not call helper scripts separately."
@@ -122,10 +123,45 @@
     "rule": "Lint outputs JSON findings → user reviews → user decides → agent executes ingest/update via appropriate process file. Lint never writes wiki directly, only reports."
   },
   "git_conventions_reference": "rules/git_conventions.json#GIT-CONVENTIONS-V1",
-  "error_handling": { "schema_ref": "rules/error_handling.json" },
+  "error_handling": {
+    "schema_ref": "rules/error_handling.json"
+  },
   "agent_read_instructions": {
     "rule": "Agent MUST read AGENTS.md before executing any lint checks.",
     "schema_ref": "AGENTS.md#overview"
   },
-  "context_scope": "transient"
+  "context_scope": "transient",
+  "memory_hooks": {
+    "description": "Memory layer hooks — triggered after lint operations.",
+    "hooks": [
+      {
+        "trigger": "post_lint_check",
+        "actions": [
+          {
+            "action_name": "check_pending_distillations",
+            "command": "./scripts/memory/distill.sh --check-undistilled 2>/dev/null || true"
+          }
+        ]
+      },
+      {
+        "trigger": "on_hot_cache_stale_detected",
+        "actions": [
+          {
+            "action_name": "prompt_user_refresh_hot",
+            "command": "./scripts/memory/hot-cache-update.sh --rebuild || true"
+          }
+        ]
+      },
+      {
+        "trigger": "on_orphan_pages_found",
+        "actions": [
+          {
+            "action_name": "update_backlinks_after_merge",
+            "command": "./scripts/auto-crosslink.sh '${PAGE_PATH}' --include-root 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
+    "schema_ref": "scripts/memory/recall-spec.md#process_integration"
+  }
 }

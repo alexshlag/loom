@@ -261,9 +261,9 @@
 | 2 | Current state audit: what we have vs gaps identified | ✅ Documented — inline hooks, lexical-only recall, no trajectory capture |
 | 3 | Phase 16.1 Task #3: PRF-enhanced recall engine (`scripts/memory/recall.sh`) | ✅ Done — Stage 1 (links-first ranking) + Stage 2 (content expansion), integrated into process-query.json |
 | 4 | Phase 16.1 Task #4: Hot cache optimization (`scripts/memory/hot-cache-update.sh`) | ✅ Done — check-only mode implemented, process-query.json step_0.25 updated to use check-first approach |
-| 5 | Process file refactoring: extract memory ops into hooks | ⬜ Pending — query/ingest/lint emit events → memory layer async |
-| 6 | Phase 2: Trajectory capture (`scripts/memory/traj-capture.sh`) | ⬜ Pending — record sessions to `raw/trajectories/TRJ-*` |
-| 7 | Phase 2: Distillation pipeline (`scripts/memory/distill.sh`) | ⬜ Pending — convert trajectories to skills/cases via wiki_ensure_page |
+| 5 | Process file refactoring: extract memory ops into hooks (async) | ✅ Done — `memory_hooks` added to process-query.json, process-ingest.json, process-lint.json; scripts/traj-capture.sh and distill.sh created |
+| 6 | Phase 2: Trajectory capture (`scripts/memory/traj-capture.sh`) | ✅ Done — script created, integrated into process-query.json and process-ingest.json memory_hooks |
+| 7 | Phase 2: Distillation pipeline (`scripts/memory/distill.sh`) | ✅ Done — script created with skill/case generation, duplicate detection, and check-undistilled mode |
 
 **Design principles:**
 - Background processing: memory hooks → async, non-blocking  
@@ -291,7 +291,7 @@
 
 ---
 
-*Last update: 2026-07-05 | Completed: Phase 16, Phase 14.5, Phases 15.x/y, C1-C8, Phase 32.z.1 (Cyrillic cleanup), C9 (Compounding Workflow extraction). AGENTS.md: 676 lines (~39KB). Next: remaining audit blocks or planned audit phase.*
+*Last update: 2026-07-06 | Completed: Phase 16, Phase 14.5, Phases 15.x/y, C1-C8, Phase 32.z.1 (Cyrillic cleanup), C9 (Compounding Workflow extraction), **Phase 16.1** (memory hooks + traj-capture + distill). AGENTS.md: 676 lines (~39KB). Next: remaining audit blocks or planned audit phase.*| Completed: Phase 16, Phase 14.5, Phases 15.x/y, C1-C8, Phase 32.z.1 (Cyrillic cleanup), C9 (Compounding Workflow extraction). AGENTS.md: 676 lines (~39KB). Next: remaining audit blocks or planned audit phase.*
 ### 🚨 Phase 32.z: Rules/*.json Cyrillic Cleanup + Schema Ref Standardization 🔴 P0
 
 **Цель**: Все файлы rules/*.json должны быть на английском (RULES.md #2) и иметь schema_ref_to_agent_rules.
@@ -329,14 +329,17 @@
 ---
 
 ---
-### ✅ Phase 32.z.1 COMPLETE: Cyrillic Cleanup + Schema Ref Standardization 🔴 DONE
+### ✅ Phase 32.z COMPLETE: Cyrillic Cleanup + Schema Ref Standardization 🔴 DONE
 
-**Результат**: Все 25 files rules/*.json теперь на английском (RULES.md #2 compliance).
-- ~400+ Cyrillic segments → English translations across 12 files
-- `schema_ref_to_agent_rules` added to 21 missing files, 4 already had it
-- All JSON validated — no structural violations
+**Результат**: All 28 files in rules/*.json now fully English + have schema_ref_to_agent_rules.
+- ~400+ Cyrillic segments → English translations across all files (RULES.md #2 compliance)
+- `schema_ref_to_agent_rules` added to all 28 files (pointing to AGENTS.md sections)
+- All JSON validated — no structural violations, schema_refs consistent
+- Last Cyrillic fix: non_blocking_lint.json "## Обновлено" → English grep pattern
 
-**Commit**: `a8568aa fix | schema: standardize all rules/*.json (Cyrillic→EN, schema_ref added)`
+**Commits**: 
+- `a8568aa fix | schema: standardize all rules/*.json (Cyrillic→EN, schema_ref added)`
+- Latest: final cleanup of remaining files + git_conventions.json
 ---
 
 ---
