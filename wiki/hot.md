@@ -9,7 +9,7 @@ related: []
 
 ## Active Project (WORK_MODE: project)
 - **Project**: Loomana wiki architecture optimization + knowledge management
-- **Status**: 🟢 ACTIVE SESSION — Wiki maintenance and expansion
+- **Status**: 🟢 ACTIVE SESSION — Phase 20.2 D1/D3 complete (naming convention fix + duplicate detection)
 
 ## Active Session Context
   WM read failed — using defaults
