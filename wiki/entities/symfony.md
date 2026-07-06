@@ -41,14 +41,17 @@ Page covering Symfony — entity information, architecture details, and usage pa
 | **7.x** | 8.2+ | LTS (Nov 2025) | July 2026+ |
 
 ### Архитектура
-- **Компоненты**: DependencyInjection, EventDispatcher, HttpKernel, Routing, Cache, Messenger, Workflow, Console, HTTP-клиент, Form, Validator, Translation, Locale, Serializer, Yaml, Dotenv — все работают независимо
+- **Компоненты** (~40): DependencyInjection, EventDispatcher, HttpKernel, Routing, Cache, Messenger, Workflow, Console, HTTP Foundation (Request/Response), HTTP Client, Form, Validator, Translation, Locale, Serializer, Yaml, Dotenv, Clock, Config, Filesystem, Finder, Process, VarDumper, VarExporter, PropertyInfo, PropertyAccess, PHPUnit Bridge, Contracts, CssSelector, DomCrawler, ExpressionLanguage, BrowserKit, Ldap, Lock, Semaphore, Intl, JsonPath, Mime, OptionsResolver, PSR-7 Bridge, Runtime, TypeInfo, UID
+  - Все работают независимо (PSR-compatible)
 - **Bundles**: FrameworkBundle, SecurityBundle, DoctrineBridge, TwigBundle и 250+ пакетов от SensioLabs
 - **Symfony AI**: Новый компонент (2025+) для унификации LLM-интеграций — ~35 мостов к провайдерам, Store для векторных БД
 
 ### Экосистема
 - **Symfony Flex**: Composer-плагин для автоматической конфигурации пакетов через recipes
-- **Symfony UX**: Stimulus (JS), Turbo (SPA feel), Chart.js, Twig Components — интеграция фронтенда без тяжёлых билд-систем
+- **Symfony UX**: Stimulus (JS controllers), Turbo (SPA feel), Chart.js, Twig Components, Live Components, React/Vue integration — фронтенд без тяжёлых билд-систем. Полный список: [ux.symfony.com/packages](https://ux.symfony.com/packages)
 - **AssetMapper**: Zero-build управление CSS/JS через ES modules и importmaps — замена Webpack Encore
+- **Symfony Cloud (Upsun)**: PaaS для хостинга Symfony приложений с автоматическим деплоем, scaling и Blackfire integration
+- **Symfony Insight**: Automated quality checks и security audits для PHP проектов
 
 ## Паттерны архитектуры
 
@@ -98,6 +101,7 @@ your_project/
 - [Doctrine ORM Integration](concepts/doctrine-orm.md) — работа с БД
 - [Symfony Flex](concepts/symfony-flex.md) — автоматизация установки пакетов
 - [Deployment & Production Setup](concepts/symfony-deployment.md) — системные требования, конфигурация сервера, performance tuning
+- [Dependency Injection в Symfony](concepts/symfony-dependency-injection.md) — service container, autowiring, compiler passes, service tags
 
 ### Экосистемные проекты (Symfony-based)
 - [API Platform](entities/api-platform.md) — REST/GraphQL API фреймворк поверх Symfony
@@ -107,8 +111,10 @@ your_project/
 - [Ibexa DXP](entities/ibexa-dxp.md) — enterprise CMS + commerce platform на Symfony
 
 ### Взаимное влияние
-- Symfony UX → Stimulus + Turbo определяют подход к фронтенду
-- Symfony AI → Platform/Agent/Store компоненты расширяют возможности фреймворка
+- Symfony UX → Stimulus + Turbo определяют подход к фронтенду. Live Components обеспечивают real-time reactivity без custom JS.
+- Symfony AI → Platform/Agent/Store компоненты расширяют возможности фреймворка (LLM integration, RAG patterns)
+- Symfony Cloud + Blackfire → managed hosting и performance profiling
+- Symfony Insight → automated code quality and security
 
 ## Источники
 - `https://symfony.com/doc/current/` — официальная документация

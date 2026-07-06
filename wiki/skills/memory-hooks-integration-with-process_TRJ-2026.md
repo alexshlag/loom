@@ -10,6 +10,8 @@ related: []
 
 # Skill: Memory Hooks Integration With Process
 
+Шаблон описания навыков (skills) для интеграции с process workflows — определяет триггеры, действия и lifecycle hooks.
+
 ## Procedure
 
 - read: OK

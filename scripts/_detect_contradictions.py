@@ -60,31 +60,39 @@ for root, dirs, files in os.walk(wiki_dir):
         except Exception:
             continue
 
-# Detect contradictions: same version/date in different contexts across pages
+# Detect contradictions: only version conflicts are errors — date-only groups are informational
 contradictions = []
+informational_notes = []
 for group_key, entries in fact_groups.items():
     if len(entries) < 2:
         continue
     
-    # Check if contexts differ significantly (potential conflict)
-    contexts = [e["context"] for e in entries]
+    is_version_group = "version:" in group_key.lower()
     
-    # Build resolution hint for agent to use
-    first_entry = entries[0]
-    second_entries = entries[1:3]  # Top 2 conflicting sources
-    hints_list = [e["path"] for e in second_entries]
-    
-    contradictions.append({
-        "type": "version_conflict",
-        "group_key": group_key,
-        "entries": [{"path": e["path"], "context": e["context"][:150]} for e in entries],
-        "resolution_hint": {
-            "action": "add_updated_section",
-            "target_page": first_entry["path"],
-            "references": hints_list,
-            "template": "## Updated [DATE] — conflicting info\n- **[CONFLICTING_SOURCE]**: [brief].\n- **Source:** `[PATH]`.\n- **Conflicts with:** `TARGET_PAGE`, [OLD_DATE] (old statement)."
-        }
-    })
+    if is_version_group:
+        first_entry = entries[0]
+        second_entries = entries[1:3]
+        hints_list = [e["path"] for e in second_entries]
+        
+        contradictions.append({
+            "type": "version_conflict",
+            "group_key": group_key,
+            "entries": [{"path": e["path"], "context": e["context"][:150]} for e in entries],
+            "resolution_hint": {
+                "action": "add_updated_section",
+                "target_page": first_entry["path"],
+                "references": hints_list,
+                "template": "## Updated [DATE] — conflicting info\\n- **[CONFLICTING_SOURCE]**: [brief].\\n- **Source:** `[PATH]`.\\n- **Conflicts with:** `TARGET_PAGE`, [OLD_DATE] (old statement)."
+            }
+        })
+    else:
+        # Date-only groups are NOT contradictions — informational only
+        informational_notes.append({
+            "type": "date_group",
+            "group_key": group_key,
+            "pages": [e["path"] for e in entries],
+            "note": "Multiple pages share this date — not a contradiction, just temporal grouping"
+        })
 
 # Output JSON on stdout
 output = {
@@ -92,7 +100,8 @@ output = {
     "total_pages_scanned": len(pages_with_dates),
     "fact_groups_analyzed": len(fact_groups),
     "potential_contradictions": len(contradictions),
-    "issues_found": contradictions,
+    "informational_notes": informational_notes,
+    "issues_found": contradictions if contradictions else None,
     "status": "ISSUES_FOUND" if contradictions else "CLEAN"
 }
 
@@ -104,6 +113,8 @@ if not quiet_mode and contradictions:
     for c in contradictions[:5]:
         entries_str = " | ".join(f"{e['path']} -> {e['context'][:80]}" for e in c["entries"])
         logging.info(f"  • {c['group_key']}: {entries_str}")
+if not quiet_mode and informational_notes:
+    logging.info(f"[i] Informational date groups ({len(informational_notes)}):")
 
 # Exit code: 1 if issues found, 0 if clean
 if contradictions:

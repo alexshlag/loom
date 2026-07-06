@@ -14,10 +14,9 @@ BACKLINKS_JSON="${2:-$PROJECT_ROOT/meta/backlinks.json}"
 # Fallback: если backlinks.json отсутствует — используем grep
 if [ ! -f "$BACKLINKS_JSON" ]; then
     echo "[!] Warning: $BACKLINKS_JSON not found, falling back to grep..." >&2
-    # Оригинальная O(n²) логика (fallback)
 fi
 
-python3 -c "
+python3 << PYEOF
 import json, os, sys
 
 wiki_dir = '${WIKI_DIR}'
@@ -29,21 +28,35 @@ SYSTEM_FILES = {
     'GIT-WORKFLOW.md', 'Home_Manager.md'
 }
 
-# Собираем все wiki-страницы (исключая meta/)
+# Trajectory/process artifact files — not wiki pages, exclude from orphan check
+TRAJECTORY_PATTERNS = {'_TRJ-', 'TRJ-'}
+
 all_pages = []
 for root, dirs, files in os.walk(wiki_dir):
     if 'meta' in dirs:
         dirs.remove('meta')
     for f in files:
-        if f.endswith('.md'):
-            full_path = os.path.join(root, f)
-            rel_path = os.path.relpath(full_path, wiki_dir)
+        if not f.endswith('.md'):
+            continue
+        
+        basename = os.path.basename(f)
+        
+        # Skip system files
+        if basename in SYSTEM_FILES:
+            continue
+        
+        # Skip trajectory/process artifact files
+        skip = False
+        for pattern in TRAJECTORY_PATTERNS:
+            if pattern in f:
+                skip = True
+                break
+        if skip:
+            continue
             
-            basename = os.path.basename(f)
-            if basename in SYSTEM_FILES:
-                continue
-                
-            all_pages.append(rel_path)
+        full_path = os.path.join(root, f)
+        rel_path = os.path.relpath(full_path, wiki_dir)
+        all_pages.append(rel_path)
 
 # Загружаем backlinks.json — извлекаем все target'ы (ключи JSON)
 backlink_targets = set()
@@ -57,10 +70,8 @@ if isinstance(data, dict):
         keys = list(data.keys())
 
 # Преобразуем ключи JSON обратно в wiki-пути для сравнения
-# Формат ключа: entities/page-name-md → нормализуем все к единому виду
 normalized_keys = set()
 for key in keys:
-    # Ключ типа 'wiki/entities/pi-coding-agent.md' или 'entities-pi-coding-agent-md'
     normalized_keys.add(key)
 
 # Находим орфанов — страницы без входящих ссылок (нет ключа в backlinks.json)
@@ -82,4 +93,4 @@ if len(orphans) > 0:
 
 print('[✓] No orphan pages found')
 sys.exit(0)
-" 2>/dev/null
+PYEOF
