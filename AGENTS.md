@@ -94,32 +94,28 @@ Before working with `process-*.json` and `rules/*.json`: read §9 INSTRUCTION CO
 
 ## 🔖 Git Conventions
 
-**Commit format**: `<type> | <scope>: <description>` (feat|fix|refactor|schema|lint|ingest|query; description lowercase).
+Commit format, staging modes, pre-commit workflow (incl. prohibited commands), memory sync triggers → `rules/git_conventions.json`.
 
-Full specification including allowed/prohibited commands, pre-commit memory sync workflow (`rules/session_context_rules.json`), and regular wiki memory sync → **see [rules/git_conventions.json](rules/git_conventions.json)**.
-
-> Schema ref: `rules/git_conventions.json`.
+> Agent reads this file before every commit.
 
 ---
 
 ## 🔄 Process Roles
 
-- Each role is a separate process file in the root directory.
-- Each role inherits common rules from AGENTS.md.
+Three role files — each defines its full workflow:
+- **Ingest**: `process-ingest.json`
+- **Query**: `process-query.json`
+- **Lint**: `process-lint.json`
 
-**Full workflow for each role** — defined in the corresponding file:
-
-| Role   | File                                       | Description                                                                        |
-| ------ | ------------------------------------------ | ---------------------------------------------------------------------------------- |
-| Ingest | [process-ingest.json](process-ingest.json) | Ingest new sources: capture → integrate                                            |
-| Query  | [process-query.json](process-query.json)   | Answers via knowledge base, synthesis, compounding                                 |
-| Lint   | [process-lint.json](process-lint.json)     | Periodic wiki health check — **non-blocking** via `scripts/lint.sh`                |
-
----
+> Agent reads process file before starting work. No inline definitions.
 
 ### Batch Ingest Trigger
 
-When agent receives ≥3 related sources or user provides multiple files: `scripts/batch-ingest.sh --scan` scans all files, extracts H1/tags/keywords, groups by shared entities. Result → clusterized JSON for user decision-making.
+`scripts/batch-ingest.sh --scan` — clusters ≥3 related sources by shared entities → JSON for user decision-making.
+
+**Trigger**: User provides multiple files or agent receives ≥3 related sources.
+
+> Details: `rules/batch_ingest_trigger.json`.
 
 ---
 
@@ -182,38 +178,9 @@ Two related subdirectories for image work:
 
 ### 3. Summary / FAQ Pages (`wiki/syntheses/`)
 
-- Summary answer pages — synthesis from ≥3 wiki sources forming complete coverage of a specific topic
-- **Search priority**: syntheses/ → concepts/ → entities/ (FAQ layer searched first)
-- Agent manages this layer autonomously: creates, merges, splits, removes outdated pages
+Creation triggers, lifecycle rules (decay/merge/update), frontmatter template → `rules/faq_summary.json`.
 
-**Creation Trigger:**
-| Scenario | Agent Action |
-|----------|--------------|
-| Answer aggregates from **≥3 wiki pages** | ✅ Auto-create summary page in syntheses/, establish internal links (crosslinks), add external sources via ingest flow |
-| Answer from internet (web_search) | ⚠️ Propose to user create FAQ page. If agreed → full ingest + links |
-| Answer from 1-2 sources, no new insight | ❌ Do not create summary — just answer, possibly add to existing entity/concept |
-
-**Lifecycle Rules:**
-| Event | Action |
-|-------|--------|
-| Two summaries cover the same topic | Merge → one page, old links updated to new |
-| Summary outdated (last_seen > 30 days without queries) | Decay: -50% popularity boost. Agent may merge into fresher page or delete if duplicate |
-| New query → different top_path for same topic | Update existing summary + last_seen = current, popularity_score++ |
-| Summary page requires user approval (external sources) | ⚠️ Do not create without explicit confirmation from user |
-
-**Frontmatter type for FAQ pages:**
-
-```yaml
----
-tags: [summary, faq, ...]
-date: YYYY-MM-DD
-type: faq_summary # ← explicitly mark as question response
-sources: [...]
-related: []
----
-```
-
-> Schema ref: `rules/faq_summary.json`.
+> Agent reads this file before any summary page operation.
 
 ### 4. Schema (this document)
 
@@ -318,56 +285,22 @@ related: [] # related wiki pages (wiki-relative paths)
 
 ### 🔍 Auto-computed Fields (Agent-level)
 
-Some fields are automatically computed by agent during ingest — no manual filling required.
+Some fields are automatically computed during ingest — no manual filling required.
 
-#### `evidence_grade` — fact evidence level
-
-**When applied**: Only for sources with `type: documentation`. For `code_reality` and `live_state` — auto-status `documented` (machine verification = high grade).
-
-| Grade            | When to assign                                                                        | Meaning                    |
-| ---------------- | ------------------------------------------------------------------------------------- | -------------------------- |
-| `documented`     | Fact from authoritative source (official docs, project wiki, core-maintainer blog)   | High confidence            |
-| `corroborated`   | Fact confirmed by 2+ independent sources                                            | Medium-high confidence     |
-| `assertion_only` | Assertion without confirmation or from weak source (generic blog, forum post)        | Low confidence             |
-
-**Auto-compute rules:**
-
-1. Agent analyzes source during ingest → automatically assigns grade to each fact
-2. Grade recorded in page metadata (not in body)
-3. During contradiction resolution: `documented(1) > corroborated(2) > assertion_only(3)` — works as sub-priority for documentation sources
-4. **Never set manually** — only by agent from source authority analysis
+- **evidence_grade**: auto-assigned based on source authority → `rules/evidence_grade.json`
 
 > Schema ref: `rules/evidence_grade.json`.
 
 ---
 
-### 🌐 Language Policy for Wiki Pages & Agent Responses
+### 🌐 Language Policy
 
-#### Page Structure Headers (Templates)
+- Section headers in templates: **always English** (`## Definition`, etc.) — structural anchors.
+- Page content: follows source language. Bilingual allowed.
+- Agent responses: translate headers to match user's question language.
+- Mixed-language pages: encouraged when reflecting bilingual sources.
 
-- **All section titles in templates are English** — `## Definition`, `## Key Characteristics`, `## Principles`, `## Context`, `## Analysis`, `## Conclusions`, etc.
-- This provides consistent structural anchors for agent navigation, regardless of content language
-- Templates serve as machine-readable guide for agent — headers don't change with user language preference
-
-#### Page Content Language
-
-- Content follows source language
-- Bilingual sources → bilingual sections (allowed and normal)
-- No forced translation required at ingest time
-
-#### Agent Response Translation
-
-- When synthesizing answer: **translate section headers to match user's question language**
-  - User asked in Russian → agent uses `Определение`, `Ключевые характеристики`, etc.
-  - User asked in English → agent uses `Definition`, `Key Characteristics`, etc.
-- Content paraphrasing is agent's discretion — can quote directly, summarize, or translate
-
-#### Mixed-Language Pages
-
-- Allowed and encouraged when reflecting bilingual sources
-- Agent treats each section independently for translation at response time
-
-**Canonical reference:** `AGENTS.md#language_policy`
+> Details: `rules/language_policy.json`.
 
 ---
 
@@ -406,48 +339,11 @@ Answer is considered compound (requires saving as new wiki page) if synthesis fr
 
 ### Wiki Snapshot (`wiki/snapshot.md`)
 
-```json
-{
-  "format": {
-    "title": "# Wiki Snapshot — Active Projects",
-    "description": "One-page file for project context — list of user's active projects and related wiki pages.",
-    "structure": {
-      "header": "# Wiki Snapshot — Active Projects",
-      "sections": [
-        { "name": "## Active Projects", "type": "project_list" },
-        {
-          "name": "### [Project Name]",
-          "properties": [
-            "status: active/completed/on-hold",
-            "context: brief project goal and current status",
-            "related_pages: links to Entity/Concept pages"
-          ]
-        },
-        { "name": "---\\n*Last updated: YYYY-MM-DD*", "type": "footer" }
-      ]
-    },
-    "load_conditions": {
-      "read_when": "WORK_MODE is project and snapshot contains entry for this project",
-      "never_read": [
-        "oneoff questions",
-        "deep-dive study (query/discussion modes)"
-      ]
-    },
-    "update_rules": [
-      { "action": "create", "trigger": "user declares new project" },
-      {
-        "action": "update",
-        "trigger": "every ingest/query that adds or changes related wiki pages"
-      },
-      {
-        "action": "archive",
-        "trigger": "project completed — entry moved to wiki/projects/, removed from wiki/snapshot.md"
-      }
-    ],
-    "rule": "agent never loads wiki/snapshot.md if user is not working on a project. session starts with wiki/index.md + wiki/overview.md."
-  }
-}
-```
+**Purpose**: One-page active projects context — loaded only when WORK_MODE=project AND snapshot has entry for this project.
+
+**Format & lifecycle rules**: `rules/snapshot_format.json` — structure, triggers (create/update/archive), load conditions.
+
+> Agent: never load snapshot.md unless user is working on a project. Session starts with wiki/index.md + overview.md.
 
 ---
 
@@ -528,128 +424,20 @@ Agent manages two independent modes:
 
 ## 🔧 Auto-Rebuild Metadata & Non-blocking Lint
 
-### Meta Rebuild Path
+### Schema References
 
-#### Canonical: `scripts/rebuild-meta.sh [--index-only]`
+- **Auto-rebuild**: `rules/auto_rebuild_metadata.json` — modes, triggers per process (ingest→full, query→post-check, lint→index-only)
+- **Non-blocking lint**: `rules/non_blocking_lint.json` — check table, usage rules (quiet mode, skip flags), cron safety
 
-- Full rebuild: `./scripts/rebuild-meta.sh` (registry + backlinks)
-- Index only: `./scripts/rebuild-meta.sh --index-only` (wiki/index.md H1+first sentences)
-
-`./scripts/rebuild-meta.sh` → rebuilds all meta files (`registry.json` + `backlinks.json` + `wiki/index.md`)
-
-`--index-only` flag → rebuilds only `wiki/index.md` (H1 headers + first sentences per category)
-
-**Trigger points**: After any wiki edit in Ingest / Query / Lint processes.
-
-> Full integration flow: `process-ingest.json#step_3a` (full), `process-query.json#post_check`, `process-lint.json#check_id_7`
-
-### Auto-update Index
-
-`./scripts/rebuild-meta.sh --index-only` → rebuilds `wiki/index.md` (H1 headers + first sentences per category)
-
-**Trigger**: Ingest process after create_page/update_existing. Lint after link_validation.
-
-> Logic details: script parses wiki/*/_.md, groups by subdirectory, sorts alphabetically.
-
-### Non-blocking Lint (Phase 3)
-
-`scripts/lint.sh` — autonomous lint-audit script that does not block agent turn.
-
-#### When Called
-
-| Process            | Trigger                                                                                      |
-| ------------------ | -------------------------------------------------------------------------------------------- |
-| **Standalone**     | `./scripts/lint.sh [--quiet] [--skip-checks ID1,ID2]` — can be run separately or by cron    |
-| **Process-lint**   | Instead of inline lint → call `./scripts/lint.sh --quiet`                                    |
-
-#### How to Use
-
-```bash
-# Full check (stdout = JSON report, stderr = human-readable)
-cd /path/to/loomana && ./scripts/lint.sh
-
-# Quiet mode (JSON only on stdout, no output on stderr)
-cd /path/to/loomana && ./scripts/lint.sh --quiet
-
-# Skip specific checks
-cd /path/to/loomana && ./scripts/lint.sh --skip-checks 3,5
-```
-
-#### Output Format (JSON on stdout)
-
-```json
-{
-  "timestamp": "YYYY-MM-DDTHH:MM:SS",
-  "wiki_dir": "wiki/",
-  "checks_run": 11,
-  "issues_found": {
-    "contradictions": 0,
-    "orphan_pages": 3,
-    "orphan_paths": [],
-    "new_sources_unprocessed": 5,
-    "duplicate_titles": 0,
-    "date_inconsistencies": 0,
-    "broken_links": 2,
-    "auto_repaired_links": 1,
-    "agent_review_required": 0,
-    "agent_review_details": [],
-    "contradictions_deep": 0,
-    "text_similarity_overlaps": 0,
-    "hot_cache_stale": false
-  },
-  "total_issues": 10,
-  "status": "ISSUES_FOUND"
-}
-```
-
-#### Checks Performed by Script
-
-| Check ID | Name                  | Script                                     | Result                                                    |
-| -------- | --------------------- | ------------------------------------------ | --------------------------------------------------------- |
-| 1        | Contradictions (soft) | `## Обновлено` grep                        | Pages count for agent review                              |
-| 2        | Orphan pages          | `orphan-pages.sh`                          | Count + paths of orphaned wiki pages                      |
-| 3        | Knowledge gaps        | —                                          | Skipped (agent review required)                           |
-| 4        | New sources available | `check-new-sources.sh --max 10`            | NEW: package list                                         |
-| 5        | New topics proposal   | —                                          | Skipped (requires external sources)                       |
-| 6        | Mechanical linting    | `duplicate-titles.sh` + frontmatter checks | Duplicate count, missing fields                           |
-| 7        | Date consistency      | `date-consistency.sh`                      | Inconsistencies count                                     |
-| 8        | Broken links auto-resolve | `unified-pass.sh --auto`               | JSON: broken_links[] + auto_repaired + agent_review_required |
-| 9        | Contradictions deep scan | `detect-contradications.sh`             | potential_contradictions count + conflicts[]              |
-| 10       | Text similarity scan  | `text-similarity.sh --scan-all`            | matches[] with similarity_score, file1, file2             |
-| 11       | Hot cache stale check | `check-wiki-changes.sh`                    | WIKI CHANGES DETECTED / no changes                        |
-
-#### Why This Matters
-
-- **Does not block agent turn**: lint runs separately, does not require inline execution
-- **Scalability**: can be run by cron (e.g., every 4 hours)
-- **Single entry point**: all checks in one script → simple call from any process
-- **JSON output for machine parsing**: stdout = structured report, stderr = human-readable
-
-#### Cron example (optional)
-
-```bash
-# crontab -e — automatic lint every N hours
-0 */4 * * * cd /path/to/loomana && ./scripts/lint.sh --quiet >> logs/lint.log 2>&1
-```
+> Agent: read these files when you need to know which rebuild mode to use and how to call lint.sh.
 
 ---
 
 ## 🔄 Schema Inheritance & Routing
 
-### Schema Inheritance
+> Rule: never duplicate AGENTS.md rules in process files. Always add `schema_ref` to canonical source.
 
-> Rule: never duplicate AGENTS.md rules in process files. Always add `schema_ref` for canonical source.
-
-#### Canonical References
-
-| Reference                | Path                                                                                        |
-| ------------------------ | ------------------------------------------------------------------------------------------- |
-| Meta rebuild             | `./scripts/rebuild-meta.sh`                                                                 |
-| Search priority          | `process-query.json#search_priority_details`                                                |
-| Lint script              | `./scripts/lint.sh`                                                                         |
-| Contradiction resolution | `process-query.json#contradiction_resolution_flow → authoritative > temporal > user_review` |
-
----
+All canonical references are in the schema_ref field of each process file (`process-ingest.json`, `process-query.json`, `process-lint.json`). Agent reads them from there.
 
 ### Wiki Operation Routing Contract
 

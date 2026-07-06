@@ -1,14 +1,32 @@
 {
   "protocol_name": "Non-blocking Lint",
-  "description": "Periodic wiki health-check mechanism that does not block agent operations.",
+  "description": "Autonomous wiki health-check that runs separately from agent turn. Does not block workflow.",
   "entry_points": {
-    "manual": "./scripts/lint.sh [--quiet] [--skip-checks ID1,ID2]",
-    "cron": "0 */4 * * * cd /path/to/loomana && ./scripts/lint.sh --quiet >> logs/lint.log 2>&1"
+    "standalone": "./scripts/lint.sh [--quiet] [--skip-checks ID1,ID2] — can be run manually or via cron",
+    "process_lint": "Instead of inline lint → call ./scripts/lint.sh --quiet"
   },
   "output_format": {
-    "stdout": "JSON report",
-    "stderr": "human-readable summary"
+    "stdout": "JSON report (machine-parseable)",
+    "stderr": "Human-readable summary"
   },
-  "checks_summary": "Includes contradiction checks, orphan pages, knowledge gaps, new sources, mechanical errors, date consistency, broken links, deep contradiction scanning, textual similarity and stale hot cache.",
-  "schema_ref_to_agent_rules": "AGENTS.md#auto-rebuild-metadata-meta-rebuild-path"
+  "checks_table": [
+    { "id": 1, "name": "Contradictions (soft)", "method": "grep ## Обновлено", "result": "Pages count for agent review" },
+    { "id": 2, "name": "Orphan pages", "method": "orphan-pages.sh", "result": "Count + paths" },
+    { "id": 3, "name": "Knowledge gaps", "method": "—", "result": "Skipped (agent review required)" },
+    { "id": 4, "name": "New sources available", "method": "check-new-sources.sh --max 10", "result": "Package list" },
+    { "id": 5, "name": "New topics proposal", "method": "—", "result": "Skipped (requires external sources)" },
+    { "id": 6, "name": "Mechanical linting", "method": "duplicate-titles.sh + frontmatter checks", "result": "Duplicate count, missing fields" },
+    { "id": 7, "name": "Date consistency", "method": "date-consistency.sh", "result": "Inconsistencies count" },
+    { "id": 8, "name": "Broken links auto-resolve", "method": "unified-pass.sh --auto", "result": "JSON: broken_links[] + auto_repaired + agent_review_required" },
+    { "id": 9, "name": "Contradictions deep scan", "method": "detect-contradications.sh", "result": "potential_contradictions count + conflicts[]" },
+    { "id": 10, "name": "Text similarity scan", "method": "text-similarity.sh --scan-all", "result": "matches[] with similarity_score, file1, file2" },
+    { "id": 11, "name": "Hot cache stale check", "method": "check-wiki-changes.sh", "result": "WIKI CHANGES DETECTED / no changes" }
+  ],
+  "usage_rules": {
+    "agent_call_mode": "Use --quiet for JSON-only output (silent contract). Never block agent turn.",
+    "skip_checks": "Use --skip-checks ID1,ID2 to skip specific checks (e.g., 3,5 — knowledge gaps and topics)",
+    "cron_safety": "Safe for cron: 0 */4 * * * cd /path/to/loomana && ./scripts/lint.sh --quiet >> logs/lint.log 2>&1"
+  },
+  "schema_ref_to_agent_rules": "AGENTS.md#auto-rebuild-metadata-meta-rebuild-path",
+  "agent_note": "Lint runs separately — does not block agent turn. Can be called by cron or process-lint. Output always JSON on stdout."
 }

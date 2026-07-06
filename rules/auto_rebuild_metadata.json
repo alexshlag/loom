@@ -1,17 +1,19 @@
 {
   "protocol_name": "Auto-Rebuild Metadata",
-  "description": "Automatic metadata update mechanisms for the wiki.",
+  "description": "Automatic metadata update mechanisms for the wiki. Agent triggers rebuilds after any wiki edit.",
   "rebuild_paths": {
     "full": "./scripts/rebuild-meta.sh",
     "index_only": "./scripts/rebuild-meta.sh --index-only"
   },
-  "actions": {
-    "full_rebuild": "Rebuilds all meta files (registry.json, backlinks.json, wiki/index.md)",
-    "index_rebuild": "Rebuilds only wiki/index.md (H1 headers + first sentences per category)"
-  },
-  "trigger_points": [
-    "After any wiki edit in Ingest / Query / Lint processes.",
-    "Full integration flow: process-ingest.json#step_3a (full), process-query.json#post_check, process-lint.json#check_id_7"
+  "modes": [
+    { "command": "./scripts/rebuild-meta.sh", "rebuilds": ["registry.json", "backlinks.json", "wiki/index.md"], "use_when": "After any wiki edit (create/update/delete) in Ingest/Query/Lint." },
+    { "command": "./scripts/rebuild-meta.sh --index-only", "rebuilds": ["wiki/index.md"], "use_when": "Index-only rebuild: H1 headers + first sentences per category. Trigger: after create_page/update_existing (Ingest), or after link_validation (Lint)." }
   ],
-  "schema_ref_to_agent_rules": "AGENTS.md#auto-rebuild-metadata"
+  "trigger_by_process": {
+    "ingest": "After create_page → full rebuild (step_3a)",
+    "query": "Post-checks: rebuild-meta + link-validator.sh",
+    "lint": "After link_validation → index-only rebuild"
+  },
+  "schema_ref_to_agent_rules": "AGENTS.md#auto-rebuild-metadata",
+  "agent_note": "Never call manually outside process flow. Triggered automatically at defined hook points in process files."
 }
