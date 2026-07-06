@@ -30,6 +30,6 @@
     ],
     "rule": "agent never loads wiki/snapshot.md if user is not working on a project. session starts with wiki/index.md + wiki/overview.md."
   },
-  "schema_ref_to_agent_rules": "AGENTS.md#wiki-snapshot-wikisnapshotmd",
+  "schema_ref_to_agent_rules": "AGENTS.md#rules-reference",
   "agent_note": "Read only when WORK_MODE=project AND snapshot has entry for this project. Never load for oneoff queries or deep-dive study."
 }

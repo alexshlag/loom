@@ -18,5 +18,5 @@
       "reset": "After verbose answer agent resets to silent. Explicit reset triggers: quiet, silent, less."
     }
   },
-  "schema_ref_to_agent_rules": "AGENTS.md#silent-only-output-contract"
+  "schema_ref_to_agent_rules": "AGENTS.md#rules-reference"
 }

@@ -158,10 +158,6 @@
   "error_handling": {
     "schema_ref": "rules/error_handling.json"
   },
-  "agent_read_instructions": {
-    "rule": "Agent MUST read AGENTS.md before executing any lint checks.",
-    "schema_ref": "AGENTS.md#overview"
-  },
   "context_scope": "transient",
   "memory_hooks": {
     "description": "Memory layer hooks — triggered after lint.sh completes. Async, non-blocking.",

@@ -26,5 +26,5 @@
     "auto_reset": "After verbose answer, agent resets to 'silent'.",
     "explicit_reset": "When user says 'quiet', 'silent', or 'less' → instant reset."
   },
-  "schema_ref_to_agent_rules": "AGENTS.md#execution-modes"
+  "schema_ref_to_agent_rules": "AGENTS.md#rules-reference"
 }

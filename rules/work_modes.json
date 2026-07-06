@@ -44,5 +44,5 @@
     "note": "Work Modes determine WHEN to apply session_context_rules.json rules. Compaction=true/false controls which memory files are preserved across sessions."
   },
 
-  "schema_ref_to_agent_rules": "AGENTS.md#user-work-modes"
+  "schema_ref_to_agent_rules": "AGENTS.md#rules-reference"
 }

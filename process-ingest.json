@@ -333,10 +333,6 @@
     "rule": "Never auto-modify templates - user-approved only, schema-patch requires user approval",
     "schema_ref": "rules/execution_contract.json"
   },
-  "agent_read_instructions": {
-    "rule": "Agent MUST read AGENTS.md before executing any steps.",
-    "schema_ref": "AGENTS.md#overview"
-  },
   "context_scope": "transient",
   "memory_hooks": {
     "description": "Memory layer hooks — async, non-blocking. Main process emits events; memory subsystem handles storage/recall/distillation.",

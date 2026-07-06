@@ -43,5 +43,5 @@
     "natural_memory_translation": {"rule": "Use 'we' instead of 'system/agent'; translate timestamps to human-time ('the day before yesterday')", "reference": "wiki/concepts/natural-memory.md"}
   },
 
-  "schema_ref_to_agent_rules": "AGENTS.md#memory-architecture-contract-system-rules"
+  "schema_ref_to_agent_rules": "AGENTS.md#5-context-bridge-working_memoryjson"
 }

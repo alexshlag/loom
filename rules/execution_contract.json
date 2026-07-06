@@ -16,5 +16,5 @@
     {"trap": "New topic → unsure → offer discussion → stop",       "fix": "Ask ONE clarifying question, then execute regardless. No loops on uncertainty."}
   ],
 
-  "schema_ref_to_agent_rules": "AGENTS.md#execution-contract-proposal-action-never-stop-at-shall-i-run-it"
+  "schema_ref_to_agent_rules": "AGENTS.md#rules-reference"
 }

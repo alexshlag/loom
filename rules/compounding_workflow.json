@@ -1,5 +1,5 @@
 {
-  "schema_ref_to_agent_rules": "AGENTS.md#compounding-workflow",
+  "schema_ref_to_agent_rules": "AGENTS.md#rules-reference",
   "name": "Compounding Workflow",
   "description": "Decision logic for when query answer should be saved as new wiki page. Triggers: novel synthesis, contradiction resolution, or entity/concept supplementation.",
 

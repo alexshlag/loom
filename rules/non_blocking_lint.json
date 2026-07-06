@@ -27,6 +27,6 @@
     "skip_checks": "Use --skip-checks ID1,ID2 to skip specific checks (e.g., 3,5 — knowledge gaps and topics)",
     "cron_safety": "Safe for cron: 0 */4 * * * cd /path/to/loomana && ./scripts/lint.sh --quiet >> logs/lint.log 2>&1"
   },
-  "schema_ref_to_agent_rules": "AGENTS.md#auto-rebuild-metadata-non-blocking-lint",
+  "schema_ref_to_agent_rules": "AGENTS.md#rules-reference",
   "agent_note": "Lint runs separately — does not block agent turn. Can be called by cron or process-lint. Output always JSON on stdout."
 }

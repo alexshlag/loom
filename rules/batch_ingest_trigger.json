@@ -35,5 +35,5 @@
     "wiki_section": "AGENTS.md#batch_ingest_trigger",
     "script": "./scripts/batch-ingest.sh"
   },
-  "schema_ref_to_agent_rules": "AGENTS.md#batch-ingest-trigger"
+  "schema_ref_to_agent_rules": "AGENTS.md#process-roles"
 }

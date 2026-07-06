@@ -4,5 +4,5 @@
   "command": "./scripts/rebuild-meta.sh --index-only",
   "trigger": "Ingest process after create_page/update_existing. Lint after link_validation.",
   "logic_details": "Script parses wiki/*/__.md, groups by subdirectory, sorts alphabetically.",
-  "schema_ref_to_agent_rules": "AGENTS.md#auto-rebuild-metadata-non-blocking-lint"
+  "schema_ref_to_agent_rules": "AGENTS.md#rules-reference"
 }

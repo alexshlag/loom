@@ -23,5 +23,5 @@
     "system_file_exclusion": ["wiki/log.md", "wiki/issues.md", "wiki/timeline.md", "wiki/overview.md", "wiki/snapshot.md", "wiki/index.md", "wiki/hot.md", "AGENTS.md", "context.md", "PLAN.md"]
   },
 
-  "schema_ref_to_agent_rules": "AGENTS.md#wiki-operation-routing-contract"
+  "schema_ref_to_agent_rules": "AGENTS.md#rules-reference"
 }
