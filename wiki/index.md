@@ -78,3 +78,5 @@
 | Дата | Событие |
 |------|---------|
 | [Timeline](timeline.md) — полная хронологическая лента всех изменений.
+- [[wiki/skills/test-real-query_TRJ-2026.md]] → test-real-query_TRJ-2026
+- [[wiki/skills/test-real-query-skill_TRJ-2026.md]] → test-real-query-skill_TRJ-2026

@@ -308,6 +308,46 @@ related: [<other wiki pages or skills>]
 ```
 
 ### Status: All S1-S5 Complete ✅
+
+---
+
+## 🆕 Phase 20.2: Distillation Pipeline Fix & Auto-Trigger 🔴 P1
+**Цель:** Исправить distill.sh (нарушает naming_convention) и добавить фактический auto-distillation trigger в memory_hooks.
+
+### Problem Statement
+
+`scripts/memory/distill.sh` создаёт скиллы без `-skill.md` суффикса → нарушение `rules/skill_format.json#naming_convention`. Memory hooks в process files вызывают только `--check-undistilled`, который сканирует, но не дистиллирует. Получается: траектории копились в `raw/trajectories/`, хуки проверяли их, но **нигде нет шага для автодистилляции**.
+
+### 📋 Tasks
+
+| # | Component | Description | Dependencies | Status |
+|---|------|-------------|--------------|--------|
+| **D1** | Fix `scripts/memory/distill.sh` naming — add `-skill.md` suffix | В Python-блоке: к имени файла для type_label == 'skill' добавлять `-skill`. Формат: `{slug}-skill_{tid[:8]}.md`. Соответствует `rules/skill_format.json#naming_convention`. | None | ⬜ Pending |
+| **D2** | Add auto-distillation trigger after capture в memory_hooks | В process-ingest.json и process-query.json: после `traj-capture.sh` добавить второй action — `distill.sh --trajectory <path>` (не только check). Trigger: on_capture_complete. | D1 | ⬜ Pending |
+| **D3** | Update duplicate detection logic | `check_duplicate_skill()` в distill.sh ищет по тегам slug → обновить regex для `-skill.md` суффикса. Проверить на существующих скиллах wiki/skills/. | D1 | ⬜ Pending |
+
+### Execution Order
+
+```
+✅ D1 (fix naming) ← foundational — без него не работает D3
+    ↓
+✅ D3 (duplicate detection) ← depends on D1 for correct slug matching
+    ↓
+✅ D2 (auto-trigger hooks) ← depends on D3, can be tested after
+```
+
+### Design Principles
+
+1. **Naming convention is contract** — `distill.sh` должен следовать `rules/skill_format.json#naming_convention`, не игнрировать его (R07: naming rules ARE conditional logic)
+2. **Hooks must distill, not just check** — `--check-undistilled` полезен как audit, но auto-trigger должен реально создавать скиллы из захваченных траекторий
+3. **Idempotency preserved** — `check_duplicate_skill()` обновлён для нового формата, повторный дистилл одного trajectory → detect duplicate → skip
+4. **No manual intervention required** — capture → distill цикл автоматический через hooks
+
+### Expected Outputs
+- Updated `scripts/memory/distill.sh` (naming + duplicate detection)
+- Updated `process-ingest.json` memory_hooks → auto-distillation action after capture
+- Updated `process-query.json` memory_hooks → same auto-distillation logic
+
 ## Phase 20.1: External Skill Search & Cross-Linking 🔴 P1
 **Цель:** Когда query не находит релевантного скилла — проактивно предложить поискать в интернете, безопасно импортировать и связать с wiki docs.
 

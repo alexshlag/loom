@@ -1,20 +1,22 @@
 {
-  "last_updated": "2026-07-07T02:45+03",
+  "last_updated": "2026-07-07T03:55+03",
   "current_mode": "project",
-  "focus_node": "Skill format uses standard 'related' field — no new fields needed. Cross-links via wiki-relative paths.",
+  "focus_node": "Phase 20 S5 complete — pattern scan integrated into distill.sh auto-flow.",
   "next_steps_todo": [
-    "S3/S4 refinement: implement actual pattern matching logic for skill auto-generation (currently placeholder hook)",
-    "Add wiki/skills/ → .pi sync to user's agent config if desired",
-    "Consider Phase 20.1: skill discovery & retrieval system (semantic search over skills)"
+    "S6-S9: Phase 20.1 skill discovery & retrieval system (semantic search over skills)",
+    "Add wiki/skills/ → .pi sync to user's agent config if desired"
   ],
   "open_pages": [],
   "dead_ends": [],
   "query_summary": {
-    "intent": "Phase 20 implementation — wiki skills integration infrastructure",
+    "intent": "Phase 20 implementation — wiki skills integration infrastructure + pattern matching refinement",
     "pages_read": [
       "rules/session_context_rules.json",
       "process-ingest.json",
-      "process-query.json"
+      "process-query.json",
+      "scripts/memory/distill.sh",
+      "wiki/skills/*.md",
+      "raw/trajectories/*"
     ],
     "key_findings": [
       "✅ Created rules/skill_format.json (SKILL-FORMAT-V1) — canonical format for wiki skills",
@@ -22,17 +24,18 @@
       "✅ Updated session_bootstrap.json: added skill scan step 4 (non-blocking)",
       "✅ Updated process-ingest.json: added skill_generation_trigger hook",
       "✅ Updated process-query.json: added skill_awareness_check step 0.25",
-      "✅ Created scripts/export-skill.sh — bridge wiki → .pi export"
+      "✅ Created scripts/export-skill.sh — bridge wiki → .pi export",
+      "✅ Created scripts/memory/skill-pattern-match.sh — actual pattern matching logic (tag overlap + tool sequence analysis)",
+      "✅ Debugged & fixed regex: bracket extraction using sed instead of broken (?<=\\()[^]]+"
     ]
   },
   "broken_links_resolved": [],
   "recent_activity": [
-    "2026-07-07 schema | skill-related-field: added standard 'related' to format spec and existing skill, removed custom related_docs",
-    "2026-07-07 schema | skill-format-cleanup: removed name/description/related_docs from frontmatter spec and files, cleaned process-query.json step 0.25",
-    "2026-07-07 schema | skill-naming: added *-skill.md naming convention + name/description to format spec, renamed existing skill file",
     "2026-07-07 phase20_1 | external-skill-integration: S6-S9 complete — skill search sources, safety checks, query fallback chain, cross-linking spec",
     "2026-07-07 phase20 | skill-integration: S1-S5 complete — all infrastructure for wiki skills system ready",
     "2026-07-07 schema | rules-cleanup: simplified TASK EXECUTION CYCLE §11 — removed duplicate commit/memory steps, consolidated via git_conventions.json",
-    "2026-07-07 rules | execution-cycle-fix: corrected COMMIT/SYNC order — memory sync first, then git add/commit"
+    "2026-07-07 rules | execution-cycle-fix: corrected COMMIT/SYNC order — memory sync first, then git add/commit",
+    "2026-07-07 phase20_2 | skill-pattern-match: created scripts/memory/skill-pattern-match.sh with tag overlap + tool sequence analysis, tested successfully (found 'skill' tag in 2 files)",
+    "2026-07-07 debug | pattern-match-fix: fixed bracket regex extraction — switched from (?<=\\()[^]]+ to sed-based bracket parsing"
   ]
 }

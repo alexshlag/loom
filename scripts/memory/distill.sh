@@ -33,6 +33,58 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
+do_pattern_scan() {
+    # Run skill-pattern-match.sh to find reusable patterns before distilling
+    if [[ -x "scripts/memory/skill-pattern-match.sh" ]]; then
+        local scan_output
+        scan_output=$(bash "$SCRIPT_DIR/../memory/skill-pattern-match.sh" --mode report 2>&1 || true)
+        echo "[~] Pattern scan results:" >&2
+        echo "$scan_output" | grep -E '\[\~\]|\!|→' >&2 || true
+    fi
+}
+
+distill_trajectory() {
+    # Helper: distill a single trajectory, skip if already done
+    local traj_path="$1"
+    [[ ! -f "$traj_path/packet.json" ]] && return 0
+
+    local traj_id
+    traj_id=$(python3 -c "import json,sys;print(json.load(open(sys.argv[1])).get('id',''))" "$traj_path/packet.json" 2>/dev/null || echo "")
+
+    # Check if already distilled (referenced in skills/cases)
+    local referenced
+    referenced=$(grep -r "$traj_id" "$SKILLS_DIR/" "$CASES_DIR/" 2>/dev/null | head -1 || true)
+
+    [[ -n "$referenced" ]] && return 0
+
+    export TRAJECTORY_PATH="$traj_path"
+    do_distill 2>/dev/null || true
+}
+
+do_distill_auto() {
+    # Phase 20 S5: Run pattern scan before distilling to prioritize clustered trajectories
+    echo "[~] Phase 20 — Pattern scan before auto-distillation" >&2
+    do_pattern_scan
+
+    local count=0
+    while IFS= read -r pkt; do
+        dir=$(dirname "$pkt")
+        traj_id=$(python3 -c "import json,sys;print(json.load(open(sys.argv[1])).get('id',''))" "$pkt" 2>/dev/null || echo "")
+
+        # Check if already distilled (referenced in skills/cases)
+        referenced=$(grep -r "$traj_id" "$SKILLS_DIR/" "$CASES_DIR/" 2>/dev/null | head -1 || true)
+
+        if [[ -z "$referenced" ]]; then
+            count=$((count + 1))
+            echo "[~] Distilling trajectory: $dir (id=$traj_id)" >&2
+            export TRAJECTORY_PATH="$dir"
+            do_distill 2>/dev/null || true
+        fi
+    done < <(find "$TRAJ_DIR" -name 'packet.json' -type f 2>/dev/null)
+
+    [[ $count -eq 0 ]] && echo "[✓] All trajectories already distilled (auto mode, no new skills)" >&2
+}
+
 if [[ ${#POSITIONAL_ARGS[@]} -gt 0 ]]; then
     TRAJECTORY_PATH="${POSITIONAL_ARGS[0]}"
 fi
@@ -53,14 +105,15 @@ check_procedure_coverage() {
 check_duplicate_skill() {
     local slug="$1"
     [[ ! -d "$SKILLS_DIR" ]] && return 1
-    
-    # Check by frontmatter tags — exact match on tag pattern [skill, skill-{slug}]
+
+    # Check by frontmatter tags — pattern: [skill, skill-{slug}] (D3: updated for -skill.md naming)
     local matches
     matches=$(grep -rl "tags:.*skill.*${slug}" "$SKILLS_DIR/" 2>/dev/null || true)
-    
+
     if [[ -z "$matches" ]]; then
-        # Fallback: check index.md for wiki-relative path
-        matches=$(grep "wiki/skills/${slug}" "wiki/index.md" 2>/dev/null || true)
+        # Fallback: check index.md or direct file existence for {slug}-skill pattern
+        matches=$(grep "wiki/skills/${slug}-skill" "wiki/index.md" 2>/dev/null || true)
+        [[ -z "$matches" ]] && [ -f "${SKILLS_DIR}/${slug}-skill_*.md" ] && matches="${SKILLS_DIR}/${slug}-skill_*.md"
     fi
     
     if [[ -n "$matches" ]]; then echo "$matches"; return 0; fi
@@ -129,8 +182,10 @@ else:
     slug = f"traj-{parts[1]}" if len(parts) >= 3 else 'unknown'
 
 # Ensure uniqueness with date suffix
-final_path = os.path.join(outd, f"{slug}_{tid[:8]}.md")
-if type_label == 'case':
+if type_label == 'skill':
+    # Naming convention: {slug}-skill_{tid[:8]}.md per rules/skill_format.json#naming_convention
+    final_path = os.path.join(outd, f"{slug}-skill_{tid[:8]}.md")
+else:
     final_path = os.path.join(outd, f"{slug}_{tid[:8]}-case.md")
 
 # Check for duplicate by file existence — append counter if needed
@@ -138,7 +193,7 @@ if os.path.exists(final_path):
     counter = 1
     while True:
         if type_label == 'skill':
-            final_path = os.path.join(outd, f"{slug}_{tid[:8]}-{counter}.md")
+            final_path = os.path.join(outd, f"{slug}-skill_{tid[:8]}-{counter}.md")
         else:
             final_path = os.path.join(outd, f"{slug}_{tid[:8]}-case-{counter}.md")
         if not os.path.exists(final_path): break
@@ -260,11 +315,18 @@ do_check_dup() {
     fi
 }
 
+# ─── Auto mode: find undistilled trajectories and distill them all ──────
+
+if [[ "$AUTO_MODE" == true ]]; then
+    ACTION="distill-auto"
+fi
+
 # ─── Dispatch ──────────────────────────────────────────────────────
 
 case "$ACTION" in
     distill)           do_distill ;;
     check-undistilled) do_check_undistilled ;;
     check-dup)         do_check_dup ;;
+    distill-auto)         do_distill_auto ;;
     *)                 echo "[!] Unknown action: $ACTION"; exit 1 ;;
 esac
