@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-07-06T19:58+03",
+  "last_updated": "2026-07-06T22:47+03",
   "current_mode": "project",
   "focus_node": "Phase 16.1 Tasks #3+#4 COMPLETED \u2014 PRF-enhanced recall + hot cache optimization",
   "open_pages": [],
@@ -9,7 +9,8 @@
     "pages_read": [
       "process-query.json",
       "process-ingest.json",
-      "web_search results for PHP history and versions"
+      "web_search results for PHP history and versions",
+      "wiki/hot.md (updated)"
     ],
     "key_findings": [
       "\u2705 Created wiki/entities/php.md \u2014 comprehensive PHP overview",
