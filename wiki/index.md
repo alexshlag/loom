@@ -20,7 +20,7 @@
 * [Agent Memory Management — Techniques and Recommendations](concepts/agent-memory-management.md) — This page explores memory management for LLM agents as a key concept in our knowledge base. — [memory, agent-behavior, recall-system, trajectory-capture]
 * [AssetMapper](concepts/assetmapper.md) — This page explores AssetMapper as a key concept in our knowledge base. — [symfony-assetmapper, frontend-pipeline, static-assets]
 * [Cache System](concepts/cache-system.md) — This page explores Cache System as a key concept in our knowledge base. — [psr6-caching, cache-invalidation, symfony-cache]
-* [Dependency Injection в Symfony](concepts/symfony-dependency-injection.md) — - [[wiki/entities/symfony.md]] (score: 5) - [[wiki/concepts/service-container.md]] (score: 5) - [[wiki/entities/symfony.md]] (score: 5) - [[wiki/concepts/service-container. — [symfony, dependency-injection, service-container, autowiring, di-pattern]
+* [Dependency Injection в Symfony](concepts/symfony-dependency-injection.md) — Dependency Injection (DI) — паттерн проектирования, позволяющий внедрять зависимости объекта извне. — [symfony, dependency-injection, service-container, autowiring, compiler-passes, service-tags]
 * [Doctrine ORM Integration](concepts/doctrine-orm.md) — This page explores Doctrine ORM Integration as a key concept in our knowledge base. — [doctrine, orm, entities, repositories]
 * [EasyAdmin Bundle](concepts/easyadmin-bundle.md) — - [[wiki/concepts/sonata-admin-bundle.md]] (score: 6) - [[wiki/concepts/sonata-admin-bundle.md]] (score: 6) - [[wiki/concepts/sonata-admin-bundle. — [easyadmin-admin-ui, symfony-bundle, crud-generation]
 * [Event Dispatcher](concepts/event-dispatcher.md) — This page explores Event Dispatcher as a key concept in our knowledge base. — [event-dispatcher, symfony-messenger, psr-event, observable-pattern, event-bus]
@@ -44,7 +44,7 @@
 
 ## Сравнения
 * [LOOM vs claude-obsidian — Сравнение двух реализаций LLM Wiki Companion](comparisons/loom-vs-claude-obsidian.md) — Comparative analysis covering LOOM vs claude-obsidian — Сравнение двух реализаций LLM Wiki Companion across different contexts and implementations. — [vault-architecture, knowledge-workflow, loomana-comparison, claude-obsidian]
-* [Symfony UX Initiative — Comparison with AssetMapper](comparisons/symfony-ux-packages.md) — Comparative analysis covering Symfony UX Initiative — Comparison with AssetMapper across different contexts and implementations. — [symfony]
+* [Symfony UX — Packages и экосистема](comparisons/symfony-ux-packages.md) — Symfony UX — коллекция PHP и JavaScript пакетов для добавания rich UI в Symfony приложения. — [symfony, ux, stimulus, turbo, hotwire, assetmapper, frontend]
 * [Сравнение техник управления памятью агента](comparisons/agent-memory-techniques.md) — Сравнительный анализ основных архитектурных подходов к управлению памятью LLM-агентов с точки зрения применимости в нашем проекте (loomana) — [memory, agent-architecture, comparison, zero-dependency]
 * [Сравнение: Loomana (Markdown-driven wiki) vs pi-llm-wiki/ (TypeScript platform)](comparisons/llm-wiki-implementations.md) — - [[wiki/entities/andrej-karpathy. — [llm-wiki-patterns, wiki-implementations, compounding-knowledge]
 
@@ -72,7 +72,7 @@
 
 
 ---
-*Created: auto-generated | Last updated: 2026-07-06 18:17*
+*Created: auto-generated | Last updated: 2026-07-06 19:42*
 
 ## Хронология
 | Дата | Событие |
