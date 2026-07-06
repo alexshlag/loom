@@ -129,12 +129,11 @@ This is NOT meta-information — it is **conditional behavior specification**. A
 4. IMPLEMENTATION → execute plan tasks one by one, validate after each step
 5. VERIFICATION → test functionality, check no regressions, run existing checks (lint/shellcheck)
 6. DOCUMENT UPDATE → refresh issues.md (close resolved), update PLAN.md (mark done), update AGENTS.md if needed
-7. GIT COMMIT → git add -A && git commit -m "<type> | <scope>: <description>"
-8. MEMORY SYNC → working_memory.json + wiki/hot.md updated with current state
+7. COMMIT & SYNC → git_conventions.json#pre_commit_workflow + memory_sync_on_dev_commit
 ```
 
 **Critical rules:**
 - Never implement without plan (unless trivial one-liner)
-- Never update documentation after implementation — must be step 6, before git
+- Never update documentation after implementation — must be step 6, before commit
 - Never skip verification — test on real data before committing
-- Never commit without updating issues.md and PLAN.md
+- Commit & memory sync via git_conventions.json (never duplicate logic)
