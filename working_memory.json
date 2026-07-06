@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-07-07T01:27+03",
+  "last_updated": "2026-07-07T01:34+03",
   "current_mode": "project",
   "focus_node": "Phase 19: Filename collision audit \u2014 N1-N5 complete. Found 10 violations, added exception list for abstract concepts (cache-system, hexagonal-architecture, doctrine-orm). Lint integration working.",
   "next_steps_todo": [
@@ -23,6 +23,7 @@
   },
   "broken_links_resolved": [],
   "recent_activity": [
-    "2026-07-07 schema | rules-cleanup: simplified TASK EXECUTION CYCLE \u00a711 \u2014 removed duplicate commit/memory steps, consolidated via git_conventions.json"
+    "2026-07-07 schema | rules-cleanup: simplified TASK EXECUTION CYCLE \u00a711 \u2014 removed duplicate commit/memory steps, consolidated via git_conventions.json",
+    "2026-07-07 rules | execution-cycle-fix: corrected COMMIT/SYNC order \u2014 memory sync first, then git add/commit"
   ]
 }
