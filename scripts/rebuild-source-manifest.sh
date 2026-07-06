@@ -5,7 +5,7 @@
 # Usage: ./scripts/rebuild-source-manifest.sh [--scan-only]
 #   --scan-only: Only print summary to stdout, don't write manifest
 
-set -uo pipefail
+set -euo pipefail
 
 WIKI_DIR="${WIKI_DIR:-wiki/}"
 RAW_BASE="raw/sources"

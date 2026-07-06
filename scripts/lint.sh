@@ -3,7 +3,7 @@
 # Usage: ./scripts/lint.sh [--quiet] [--skip-checks ID1,ID2] [wiki_dir]
 # Exit code: 0 = all checks passed, 1 = issues found (but does not block flow)
 
-set -uo pipefail
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/.."
@@ -13,6 +13,7 @@ SKIP_CHECKS=""
 
 # Load shared utilities for log_error, safe_run
 source "$SCRIPT_DIR/utilities/common.sh" 2>/dev/null || true
+source "$SCRIPT_DIR/lib.sh" 2>/dev/null || true
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -29,7 +30,12 @@ WIKI_DIR="${1:-$PROJECT_ROOT/wiki}"
 SKIP_CHECKS=",${SKIP_CHECKS// /},"
 
 # Trap cleanup for any temp files on abort — no || true needed, this is best-effort
-trap 'rm -f /tmp/lint_*.json /tmp/overlap_result.json 2>/dev/null' EXIT
+# Centralized cleanup via lib.sh — all temp files registered with cleanup_add()
+# Handled by trap in lib.sh cleanup_temp_files()
+cleanup_add "/tmp/lint_missing_fm.txt"
+cleanup_add "/tmp/lint_structural.json"
+cleanup_add "/tmp/lint_overlap_result.json"
+cleanup_set_trap
 
 echo "========================================" >&2
 echo "[*] LINT AUDIT — $(date +%Y-%m-%d) | wiki: ${WIKI_DIR#/}" >&2

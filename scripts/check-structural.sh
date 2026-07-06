@@ -3,7 +3,7 @@
 # Usage: ./check-structural.sh [wiki_dir]
 # Output: JSON array of violations to stdout, one line per violation on stderr
 
-set -uo pipefail
+set -euo pipefail
 
 WIKI_DIR="${2:-$1}"
 if [ -z "$WIKI_DIR" ]; then

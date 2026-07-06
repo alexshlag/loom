@@ -8,8 +8,16 @@ META_DIR="$PROJECT_ROOT/meta"
 WIKI_DIR="$PROJECT_ROOT/wiki"
 TIMESTAMP_FILE="$WIKI_DIR/.meta_update_timestamp"
 
-# Trap cleanup for .tmp files on crash/abort
-trap 'rm -f "${META_DIR}/registry.json.tmp" "${META_DIR}/backlinks.json.tmp" "${WIKI_DIR}/index.md.tmp" 2>/dev/null' EXIT
+# Load centralized cleanup utilities from lib.sh
+source "$SCRIPT_DIR/lib.sh" 2>/dev/null || true
+
+# Centralized cleanup via lib.sh — replace individual trap handlers
+# Centralized cleanup via lib.sh — replace individual trap handlers
+cleanup_add "${META_DIR}/registry.json.tmp"
+cleanup_add "${META_DIR}/backlinks.json.tmp"
+cleanup_add "${WIKI_DIR}/index.md.tmp"
+cleanup_add "$WALK_JSON_FILE"
+cleanup_add "$CHANGED_FILE"
 
 mkdir -p "$META_DIR"
 
@@ -54,7 +62,10 @@ echo "[*] Single-pass wiki walk (one os.walk for all meta data)..." >&2
 
 WALK_JSON_FILE=$(mktemp --suffix=.json)
 CHANGED_FILE=$(mktemp --suffix=.txt)
-trap 'rm -f "$WALK_JSON_FILE" "$CHANGED_FILE"' EXIT
+
+# Register for centralized cleanup (lib.sh)
+cleanup_add "$WALK_JSON_FILE"
+cleanup_add "$CHANGED_FILE"
 
 python3 "$SCRIPT_DIR/wiki-walk.py" --json >"$WALK_JSON_FILE" 2>/dev/null || {
     echo "[!] Wiki walk failed" >&2

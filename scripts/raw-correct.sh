@@ -3,7 +3,7 @@
 # Purpose: Agent writes processed/corrected markdown files via this script (never direct to protected zones)
 # Usage: ./scripts/raw-correct.sh --add "path" content...
 
-set -uo pipefail
+set -euo pipefail
 
 WIKI_DIR="${WIKI_DIR:-wiki/}"
 CORRECTED_BASE="raw/corrected/"

@@ -45,10 +45,39 @@ atomic_write_content() {
 }
 
 # ─── Cleanup on Exit ─────────────────────────────────────
-# Usage: cleanup_temp_files in trap handler
+# Centralized temp file cleanup via cleanup_add() calls.
+# Scripts: call cleanup_add "path/to/tmpfile" for each temp file.
+# At exit, cleanup_temp_files() removes all registered files.
 _cleanup_patterns=()
 cleanup_add() {
     _cleanup_patterns+=("$1")
+}
+
+# Cleanup handler — call this via trap 'cleanup_temp_files' EXIT
+cleanup_temp_files() {
+    for pattern in "${_cleanup_patterns[@]}"; do
+        # Expand glob patterns (for files matching a prefix)
+        local -a expanded=()
+        if [[ "$pattern" == *\* ]]; then
+            eval 'expanded=("$pattern")' 2>/dev/null || true
+        else
+            expanded=("$pattern")
+        fi
+        for f in "${expanded[@]}"; do
+            [[ -f "$f" ]] && rm -f "$f"
+        done
+    done
+}
+
+# Global cleanup trap — set once in each script that sources lib.sh
+# Usage: source scripts/lib.sh; cleanup_add tmpfile; _set_cleanup_trap
+cleanup_set_trap() {
+    # Only add if not already added (idempotent)
+    local existing_trap
+    existing_trap=$(trap -p EXIT 2>/dev/null || true)
+    if [[ "$existing_trap" != *"cleanup_temp_files"* ]]; then
+        trap 'cleanup_temp_files' EXIT
+    fi
 }
 
 atomic_write_with_cleanup() {

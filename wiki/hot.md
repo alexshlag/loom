@@ -9,13 +9,15 @@ related: []
 
 ## Active Project (WORK_MODE: project)
 - **Project**: Loomana wiki architecture optimization + knowledge management
-- **Status**: 🟢 ACTIVE SESSION — Phase 20.2 D1/D3 complete (naming convention fix + duplicate detection)
+- **Status**: 🟡 ACTIVE — Phase 17 Script Hardening in progress (T3 ✅, T4 ✅, T6 🔄) (naming convention fix + duplicate detection)
 
 ## Active Session Context
   WM read failed — using defaults
 
 ## Recent Changes
-  No recent log entries
+  - **[2026-07-07] phase17 | T3 completed — added errexit to batch-ingest, check-structural, lint, raw-correct, rebuild-source-manifest**
+  - **[2026-07-07] phase17 | T4 confirmed — rebuild-meta.sh already uses wiki-walk.py single-pass (no triple walk)**
+  - **[2026-07-07] phase17 | T6 🔄 — lib.sh cleanup_temp_files() added, lint.sh + rebuild-meta.sh migrated to centralized cleanup_add pattern
 
 ## System State
 ### Active Threads

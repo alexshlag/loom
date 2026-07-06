@@ -3,7 +3,7 @@
 # Purpose: Scan, cluster, and suggest wiki pages for batch processing
 # Usage: ./scripts/batch-ingest.sh --scan <file1> [file2] [--threshold N]
 
-set -uo pipefail
+set -euo pipefail
 
 WIKI_DIR="${WIKI_DIR:-wiki/}"
 LOG_FILE="logs/batch-ingest.log"
