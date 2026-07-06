@@ -2,16 +2,39 @@
   "rule_name": "skill_file_format",
   "rule_id": "SKILL-FORMAT-V1",
   "description": "Standard format for wiki skills — frontmatter, required sections, algorithm structure. Reference via schema_ref in process files.",
-
   "frontmatter_contract": {
-    "required_fields": ["tags", "date", "type", "category", "sources"],
+    "required_fields": [
+      "tags",
+      "date",
+      "type",
+      "category",
+      "sources"
+    ],
     "field_specs": [
-      { "name": "tags", "pattern": "[skill, <domain-tag>, ...]", "count_range": "3-7" },
-      { "name": "category", "allowed_values": ["note", "skill"], "default": "skill" },
-      { "name": "type", "allowed_values": ["documentation", "code_reality", "live_state"], "default": "documentation" }
+      {
+        "name": "tags",
+        "pattern": "[skill, <domain-tag>, ...]",
+        "count_range": "3-7"
+      },
+      {
+        "name": "category",
+        "allowed_values": [
+          "note",
+          "skill"
+        ],
+        "default": "skill"
+      },
+      {
+        "name": "type",
+        "allowed_values": [
+          "documentation",
+          "code_reality",
+          "live_state"
+        ],
+        "default": "documentation"
+      }
     ]
   },
-
   "structure": {
     "required_sections": [
       {
@@ -26,11 +49,14 @@
         "note": "R07 applies: examples/edge cases in algorithm ARE conditional logic, never remove without audit"
       }
     ],
-
     "optional_sections": [
       {
         "section": "Context",
-        "fields": ["Trigger (when to use)", "Outcome (success/partial/blocked)", "Complexity (low/medium/high)"]
+        "fields": [
+          "Trigger (when to use)",
+          "Outcome (success/partial/blocked)",
+          "Complexity (low/medium/high)"
+        ]
       },
       {
         "section": "Dependencies",
@@ -38,23 +64,43 @@
       },
       {
         "section": "Notes",
-        "fields": ["Distilled from trajectory <TRJ-ID>", "Timestamp ISO-8601"]
+        "fields": [
+          "Distilled from trajectory <TRJ-ID>",
+          "Timestamp ISO-8601"
+        ]
       }
     ]
   },
-
   "category_taxonomy": [
-    {"value": "dev", "description": "Development skills — coding patterns, refactoring"},
-    {"value": "tooling", "description": "Tool usage — scripts, CLI tools, automation"},
-    {"value": "wiki-mgmt", "description": "Wiki management — structure, indexing, crosslinks"},
-    {"value": "data-processing", "description": "Data operations — parsing, extraction, transformation"},
-    {"value": "memory", "description": "Memory and context management"},
-    {"value": "search", "description": "Search strategies and discovery"}
+    {
+      "value": "dev",
+      "description": "Development skills — coding patterns, refactoring"
+    },
+    {
+      "value": "tooling",
+      "description": "Tool usage — scripts, CLI tools, automation"
+    },
+    {
+      "value": "wiki-mgmt",
+      "description": "Wiki management — structure, indexing, crosslinks"
+    },
+    {
+      "value": "data-processing",
+      "description": "Data operations — parsing, extraction, transformation"
+    },
+    {
+      "value": "memory",
+      "description": "Memory and context management"
+    },
+    {
+      "value": "search",
+      "description": "Search strategies and discovery"
+    }
   ],
-
   "constraints": [
     "NEVER duplicate logic from rules/ — use schema_ref instead (R01)",
     "Algorithm must be self-contained — no forward references to other skills",
-    "Each skill file = one pattern/pattern-family only (Single Responsibility)"
+    "Each skill file = one pattern/pattern-family only (Single Responsibility)",
+    "Skills SHOULD link to relevant wiki docs (framework/lang/best-practices) — auto-suggested during creation, not enforced"
   ]
 }

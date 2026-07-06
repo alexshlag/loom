@@ -1,0 +1,40 @@
+{
+  "rule_name": "skill_external_safety_check",
+  "rule_id": "SKILL-SAFETY-V1",
+  "description": "Validation rules before importing external skill into wiki. Prevents malicious or unsafe code from entering the knowledge base.",
+
+  "checks": [
+    {
+      "check_id": "no-execution",
+      "pattern": "Any command that executes arbitrary strings / eval() / exec()",
+      "severity": "CRITICAL",
+      "action": "REJECT_AND_REPORT"
+    },
+    {
+      "check_id": "no-credentials",
+      "pattern": "Hardcoded passwords, API keys, tokens in skill code",
+      "severity": "CRITICAL",
+      "action": "REJECT_AND_REPORT"
+    },
+    {
+      "check_id": "scope-limit",
+      "pattern": "Skill attempts to read/write outside defined scope (e.g., accessing system files)",
+      "severity": "HIGH",
+      "action": "FLAG_FOR_REVIEW"
+    },
+    {
+      "check_id": "no-network-spying",
+      "pattern": "Network requests that don't use standard fetch patterns or exfiltrate data",
+      "severity": "CRITICAL",
+      "action": "REJECT_AND_REPORT"
+    }
+  ],
+
+  "approval_chain": {
+    "if_critical_failure": "STOP → Report to user immediately, do not import",
+    "if_high_flagged": "FLAG → Ask user approval before proceeding",
+    "if_passes_all": "PASS → Continue with ingest flow"
+  },
+
+  "schema_ref_to_ingest_flow": "process-ingest.json#step_8a_new_page (for creating wiki/skills/<name>.md after safety check passes)"
+}

@@ -1,7 +1,7 @@
 {
-  "last_updated": "2026-07-07T01:48+03",
+  "last_updated": "2026-07-07T02:15+03",
   "current_mode": "project",
-  "focus_node": "Phase 20: Wiki Skills System Integration — S1-S5 complete. skill_format.json created, bootstrap scan added, auto-generation wired in ingest/query, export script ready.",
+  "focus_node": "Phase 20.1: External skill search + cross-linking — S6-S9 complete. Sources list, safety check, query fallback chain, and related_docs field ready.",
   "next_steps_todo": [
     "S3/S4 refinement: implement actual pattern matching logic for skill auto-generation (currently placeholder hook)",
     "Add wiki/skills/ → .pi sync to user's agent config if desired",
@@ -27,6 +27,7 @@
   },
   "broken_links_resolved": [],
   "recent_activity": [
+    "2026-07-07 phase20_1 | external-skill-integration: S6-S9 complete — skill search sources, safety checks, query fallback chain, cross-linking spec",
     "2026-07-07 phase20 | skill-integration: S1-S5 complete — all infrastructure for wiki skills system ready",
     "2026-07-07 schema | rules-cleanup: simplified TASK EXECUTION CYCLE §11 — removed duplicate commit/memory steps, consolidated via git_conventions.json",
     "2026-07-07 rules | execution-cycle-fix: corrected COMMIT/SYNC order — memory sync first, then git add/commit"

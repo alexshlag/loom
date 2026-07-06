@@ -1,0 +1,32 @@
+{
+  "rule_name": "skill_external_search_sources",
+  "rule_id": "SKILL-SOURCES-V1",
+  "description": "Curated source list for external skill discovery. Agent uses only these sources when local skills don't match query intent.",
+
+  "sources": [
+    {
+      "name": "skills.sh community",
+      "url_pattern": "https://www.skills.sh/skill/{skill_name}",
+      "type": "community_skills_registry",
+      "quality_gate": "must have ≥50 stars or verified by skill creator"
+    },
+    {
+      "name": "GitHub skills.org repos",
+      "url_pattern": "https://github.com/search?q=agent+skill+{skill_name}",
+      "type": "code_repository",
+      "quality_gate": "must have README with clear instructions, no obfuscated code"
+    },
+    {
+      "name": "AI agent frameworks docs",
+      "url_pattern": "https://github.com/{{framework}}/skills/{skill_name}",
+      "type": "official_framework_docs",
+      "quality_gate": "must come from official framework repo (not fork), skill directory exists"
+    }
+  ],
+
+  "constraints": [
+    "NEVER search arbitrary URLs — only sources from this list",
+    "If source returns no results → STOP and report to user, do not continue searching",
+    "Fetch must use fetch_content with safety prompt (no credential extraction)"
+  ]
+}

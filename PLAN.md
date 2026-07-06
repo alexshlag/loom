@@ -308,6 +308,41 @@ related: [<other wiki pages or skills>]
 ```
 
 ### Status: All S1-S5 Complete ✅
+## Phase 20.1: External Skill Search & Cross-Linking 🔴 P1
+**Цель:** Когда query не находит релевантного скилла — проактивно предложить поискать в интернете, безопасно импортировать и связать с wiki docs.
+
+### 📋 Tasks
+
+| # | Component | Description | Dependencies | Status |
+|---|-----------|-------------|--------------|--------|
+| **S6** | `rules/skill_search_sources.json` — sources list for external skills | Curated URLs/repos where agent looks for quality skill definitions (e.g., skills.sh, GitHub org repos). No ad-hoc random search. | None | ✅ Done |
+| **S7** | `rules/skill_safety_check.json` — safety check before importing | Validate: no malicious code execution, no credential harvesting patterns, reasonable scope. Reference existing rules/evidence_grade.json. | S6 | ✅ Done |
+| **S8** | Query fallback chain → update `process-query.json` skill_awareness_check | If local skills don't match → propose external search to user → fetch from sources list → safety check → ask approval → ingest via process-ingest.json flow. | S7, S4 | ✅ Done |
+| **S9** | Cross-linking in format spec → update `rules/skill_format.json` | Add `related_docs` field: skills link to relevant framework/language docs (e.g., skill "React Hooks" → links to wiki/docs/react-core.md). Auto-suggested via semantic matching. | S1 | ✅ Done |
+
+### Execution Order
+
+```
+✅ S6 (sources list) → foundational for external search
+    ↓
+✅ S7 (safety check) ← depends on S6
+    ↓
+✅ S8 (query fallback chain) ← depends on S7 + S4
+    ↓
+✅ S9 (cross-linking spec) ← parallel with S8, updates S1
+```
+
+### Expected Outputs
+- `rules/skill_search_sources.json` — curated source list for external skills
+- `rules/skill_safety_check.json` — validation rules before importing
+- Updated `process-query.json` → skill search fallback chain (if local fails → external)
+- Updated `rules/skill_format.json` → added `related_docs` field with auto-suggestion logic
+
+### Design Principles
+1. **Curated sources only** — no random web crawling, strict source list (S6)
+2. **Safety first** — validate before importing (R07: safety checks ARE conditional logic) (S7)
+3. **User approval mandatory** — external skill import requires explicit user go-ahead
+4. **Cross-links are auto-suggested** — agent proposes but doesn't enforce related docs (S9)
 
 ### Expected Outputs
 - `rules/skill_format.json` — canonical format definition, referenced via schema_ref
