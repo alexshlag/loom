@@ -38,3 +38,5 @@ related: []
 - Phase 16.1: recall.sh PRF engine integrated into process-query.json flow
 
 - **Recent activity**: hot-cache-fix | Replaced agent instructions with enforce commands in process-query.json + process-ingest.json — auto-refresh.sh now triggered on query compaction (step_2.3) and ingest post_checks (step_9)
+
+- **Recent activity**: hot-cache-consolidation | Auto-refresh moved into git-auto-commit.sh pre-hook — runs before git add so same commit captures both wiki pages AND updated hot.md; removed redundant hooks from process-ingest.json and process-query.json
