@@ -30,9 +30,14 @@ Niche technical specs → `rules/*.json` (read on demand via schema_ref)
 - **rules/*.json** — read on demand via schema_ref when a step requires it
 - **Memory layer** (working_memory.json, hot.md, log.md) — read/write per context rules
 
-### Context Lifecycle
+### Session Bootstrap (REQUIRED)
 
-1. **Session start**: Read AGENTS.md + working_memory.json + restore hot cache
+At session start, read [session_bootstrap.json](rules/session_bootstrap.json) and execute ALL steps in order. Do not skip.
+
+> File defines explicit load sequence: `working_memory.json`, `wiki/hot.md`.
+
+### Context Lifecycle (Continued)
+
 2. **Process start**: Read the specific process-*.json file
 3. **During process**: Follow schema_ref → rules/*.json as needed
 4. **Process complete**: Forget transient rules, write to working_memory + hot.md

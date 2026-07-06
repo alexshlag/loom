@@ -1,0 +1,17 @@
+{
+  "name": "session-bootstrap",
+  "trigger": "session_start",
+  "description": "Order-independent, explicit file load sequence for session start. Agent MUST execute all steps in order.",
+  "steps": [
+    {
+      "order": 1,
+      "action": "read_file",
+      "path": "working_memory.json"
+    },
+    {
+      "order": 2,
+      "action": "read_file",
+      "path": "wiki/hot.md"
+    }
+  ]
+}

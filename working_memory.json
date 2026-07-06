@@ -1,7 +1,7 @@
 {
     "last_updated": "2026-07-06T19:58+03",
     "current_mode": "project",
-    "focus_node": "Phase 14.5 test COMPLETE \u2014 all contradiction resolution components verified",
+    "focus_node": "Issue #27 resolved + single-pass wiki walk (Issues #23/#47)",
     "open_pages": [],
     "dead_ends": [],
     "query_summary": {
@@ -17,16 +17,6 @@
             "\u2705 Crosslinks added to symfony, symfony-dependency-injection, hexagonal-architecture"
         ]
     },
-    "next_steps_todo": [
-        {
-            "task": "Issue #27 \u2014 broken link handling escalation rules",
-            "priority": "high"
-        },
-        {
-            "task": "Issue #28 \u2014 page templates co-evolution user approval mechanism",
-            "priority": "medium"
-        }
-    ],
     "session_context": {},
     "broken_links_resolved": []
 }

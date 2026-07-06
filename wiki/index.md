@@ -72,9 +72,9 @@
 
 
 ---
-*Created: auto-generated | Last updated: 2026-07-06 19:42*
+*Created: auto-generated | Last updated: 2026-07-06 22:27*
 
-## Хронология
+## Timeline
 | Дата | Событие |
 |------|---------|
 | [Timeline](timeline.md) — полная хронологическая лента всех изменений.
