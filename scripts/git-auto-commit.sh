@@ -13,6 +13,11 @@ if [ -f .vault-meta/auto-commit.disabled ]; then
   exit 0
 fi
 
+# ─── Pre-commit: refresh hot cache before staging ──────────────────────
+# Ensures wiki/hot.md is fresh from log + working_memory.json,
+# so the same commit captures both page changes AND updated context.
+./scripts/memory/hot-cache-auto-refresh.sh --quiet 2>/dev/null || true
+
 # Respect concurrency via wiki-lock (if available)
 if [ -x scripts/wiki-lock.sh ]; then
   LOCK_LIST=$(bash scripts/wiki-lock.sh list 2>/dev/null) || {

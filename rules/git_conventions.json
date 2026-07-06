@@ -46,6 +46,11 @@
         "git add *",
         "git commit -a"
       ]
+    },
+    {
+      "action": "auto_refresh_hot_cache",
+      "command": "./scripts/memory/hot-cache-auto-refresh.sh --quiet 2>/dev/null || true",
+      "note": "Runs before git add — ensures wiki/hot.md is fresh so same commit captures both page changes and updated context"
     }
   ],
   "post_commit_check": {

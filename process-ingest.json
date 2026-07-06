@@ -271,10 +271,6 @@
             "command": "./scripts/rebuild-meta.sh"
           },
           {
-            "command": "./scripts/memory/hot-cache-auto-refresh.sh",
-            "rule_id": "HOT-WIKI-CHANGES-V1"
-          },
-          {
             "command": "./scripts/text-similarity.sh --scan-all --threshold 90",
             "rule_id": "DR-1_DR-2"
           },

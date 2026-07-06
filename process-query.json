@@ -589,19 +589,6 @@
     "description": "Memory layer hooks — async, non-blocking. Main process emits events; memory subsystem handles storage/recall/distillation.",
     "hooks": [
       {
-        "trigger": "on_compaction_done",
-        "actions": [
-          {
-            "action_name": "write_to_working_memory",
-            "command": "echo 'WM_UPDATE' >> wiki/log.md; echo $(date +%Y-%m-%d) > meta/last-wm-sync.txt"
-          },
-          {
-            "action_name": "write_session_context_to_hot",
-            "command": "./scripts/memory/hot-cache-auto-refresh.sh --quiet || true"
-          }
-        ]
-      },
-      {
         "trigger": "on_search_complete",
         "actions": [
           {
