@@ -1,29 +1,34 @@
 {
-  "last_updated": "2026-07-07T01:34+03",
+  "last_updated": "2026-07-07T01:48+03",
   "current_mode": "project",
-  "focus_node": "Phase 19: Filename collision audit \u2014 N1-N5 complete. Found 10 violations, added exception list for abstract concepts (cache-system, hexagonal-architecture, doctrine-orm). Lint integration working.",
+  "focus_node": "Phase 20: Wiki Skills System Integration — S1-S5 complete. skill_format.json created, bootstrap scan added, auto-generation wired in ingest/query, export script ready.",
   "next_steps_todo": [
-    "User approval: rename 10 wiki/concepts/ files with project prefix",
-    "Consider extending audit to wiki/entities/ and wiki/docs/ directories"
+    "S3/S4 refinement: implement actual pattern matching logic for skill auto-generation (currently placeholder hook)",
+    "Add wiki/skills/ → .pi sync to user's agent config if desired",
+    "Consider Phase 20.1: skill discovery & retrieval system (semantic search over skills)"
   ],
   "open_pages": [],
   "dead_ends": [],
   "query_summary": {
-    "intent": "Created ai-factory documentation page in wiki from GitHub repo docs/",
+    "intent": "Phase 20 implementation — wiki skills integration infrastructure",
     "pages_read": [
-      "wiki/templates/docs-template.json",
-      "rules/structural_requirements.json"
+      "rules/session_context_rules.json",
+      "process-ingest.json",
+      "process-query.json"
     ],
     "key_findings": [
-      "\u2705 Created wiki/docs/ai-factory.md \u2014 comprehensive AI Factory documentation covering CLI, skills system, reflex loop, extensions, security model, configuration",
-      "\u2705 Added related crosslinks: entities/ai-factory, concepts/workflow-state-machine",
-      "\u2705 Fixed See Also nav links to pending references (pages not yet in wiki)",
-      "\u26a0\ufe0f docs-audit.sh reports 8 broken links in See Also \u2014 expected (pending pages)"
+      "✅ Created rules/skill_format.json (SKILL-FORMAT-V1) — canonical format for wiki skills",
+      "✅ Refactored wiki/skills/memory-hooks-integration-with-process.md to new format",
+      "✅ Updated session_bootstrap.json: added skill scan step 4 (non-blocking)",
+      "✅ Updated process-ingest.json: added skill_generation_trigger hook",
+      "✅ Updated process-query.json: added skill_awareness_check step 0.25",
+      "✅ Created scripts/export-skill.sh — bridge wiki → .pi export"
     ]
   },
   "broken_links_resolved": [],
   "recent_activity": [
-    "2026-07-07 schema | rules-cleanup: simplified TASK EXECUTION CYCLE \u00a711 \u2014 removed duplicate commit/memory steps, consolidated via git_conventions.json",
-    "2026-07-07 rules | execution-cycle-fix: corrected COMMIT/SYNC order \u2014 memory sync first, then git add/commit"
+    "2026-07-07 phase20 | skill-integration: S1-S5 complete — all infrastructure for wiki skills system ready",
+    "2026-07-07 schema | rules-cleanup: simplified TASK EXECUTION CYCLE §11 — removed duplicate commit/memory steps, consolidated via git_conventions.json",
+    "2026-07-07 rules | execution-cycle-fix: corrected COMMIT/SYNC order — memory sync first, then git add/commit"
   ]
 }

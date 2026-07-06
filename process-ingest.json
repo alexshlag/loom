@@ -444,6 +444,16 @@
     ],
     "schema_ref": "scripts/memory/recall-spec.md#process_integration"
   },
+  "skill_generation_trigger": {
+    "rule_id": "SKILL-AUTOGEN-V1",
+    "description": "After task completion: check if pattern is reusable. If new → create wiki/skills/<name>.md from distilled trajectory (with schema_ref to rules/skill_format.json). If existing → link.",
+    "when_to_create": [
+      "Pattern found in ≥2 tasks",
+      "Trajectory captured with high complexity + success outcome"
+    ],
+    "create_path": "wiki/skills/<pattern_name>.md",
+    "schema_ref": "rules/skill_format.json"
+  },
   "hook_triggers_in_steps": {
     "step_1_guardrails": {
       "trigger": "on_start",

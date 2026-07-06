@@ -39,3 +39,4 @@ related: []
 - **Recent activity**: compact_json_rules | JSON instruction compactification — rules/*.json and AGENTS.md §9 integration
 - **Recent activity**: fix_json_comments | Removed invalid // inline comments from context-scopes.json — replaced with schema_ref field; validated all 12 rules/*.json files pass json.tool
 - **Recent activity**: docs-system | Created wiki/docs/ai-factory.md from GitHub source — comprehensive coverage of CLI, skills system, reflex loop, extensions, security model
+- **Recent activity**: phase20-skill-integration | Phase 20 S1-S5 complete: skill_format.json created, bootstrap scan added, auto-generation in ingest/query wired, export script ready

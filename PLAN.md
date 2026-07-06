@@ -231,4 +231,95 @@ Agent auto-detects type by source analysis (API docs → `-api` suffix, CLI docs
 
 ---
 
-*Last update: 2026-07-06 | Active: Phase 15, Phase 15.1, Phase 16.1. Next: Phase 17 T2-T5 — script architecture hardening.*
+## 🆕 Phase 20: Wiki Skills System Integration 🔴 P1
+**Цель:** Активировать `wiki/skills/` как рабочую коллекцию навыков — определить формат, добавить в bootstrap, настроить auto-generation из повторяющихся задач.
+
+### Problem Statement
+
+`wiki/skills/` существует с одним файлом (`memory-hooks-integration-with-process_TRJ-2026.md`), но:
+- Нет стандарта формата скилла
+- Агент не сканирует эту директорию при старте
+- Нет триггера для auto-generation из повторяющихся задач в ingest/query/lint
+- Нет связи с `.pi/skills/` (runtime-навыки)
+
+Инфраструктура вики (`schema_ref`, lazy loading, process files) идеально подходит — нужно добавить 4 слоя интеграции.
+
+### 📐 Архитектура скилла в wiki
+
+Файл скилла = `.md` с frontmatter и структурой:
+
+```yaml
+---
+tags: [skill, <category>]
+date: YYYY-MM-DD
+type: documentation
+category: note  # или skill (уникальная категория)
+aliases: []
+sources: [<raw paths>, web_search]
+related: [<other wiki pages or skills>]
+---
+```
+
+**Секции скилла:**
+
+```markdown
+# Skill: <Name>
+
+## Procedure
+- read: OK | edit: REQUIRED | write: NEVER
+
+## Context
+- Trigger: <when to use>
+- Outcome: success | partial | blocked
+- Complexity: low | medium | high
+
+## Algorithm (REQUIRED)
+1. Step one — with conditional logic if applicable
+2. Step two
+3. ...
+
+## Dependencies
+- rules/<name>.json (schema_ref path)
+
+## Notes
+- Distilled from trajectory "<TRJ-ID>".
+```
+
+### 📋 Tasks
+
+| # | Component | Description | Dependencies | Status |
+|---|-----------|-------------|--------------|--------|
+| **S1** | Define skill format spec → `rules/skill_format.json` ... | None | ✅ Done |
+| **S2** | Add skill scan to bootstrap → update `session_bootstrap.json` ... | S1 | ✅ Done |
+| **S3** | Add auto-generation trigger to process-ingest.json ... | S1 | ✅ Done |
+| **S4** | Add skill-awareness to process-query.json ... | S2 | ✅ Done |
+| **S5** | Bridge: `.pi/skills/` ↔ `wiki/skills/` export script ... | None | ✅ Done |
+### Execution Order
+
+```
+✅ S1 (format spec) → foundational reference for all other steps
+    ↓
+✅ S2 (bootstrap integration) ← depends on S1
+    ↓
+✅ S3 (auto-generation in ingest) ← depends on S1
+✅ S4 (query awareness) ← parallel with S3, depends on S2
+    ↓
+✅ S5 (export script) ← optional, done last
+```
+
+### Status: All S1-S5 Complete ✅
+
+### Expected Outputs
+- `rules/skill_format.json` — canonical format definition, referenced via schema_ref
+- Updated `session_bootstrap.json` with skill scan step
+- Updated `process-ingest.json` with auto-generation conditional logic
+- Updated `process-query.json` with skill-awareness check
+- `scripts/export-skill.sh` — optional bridge script
+- Existing `wiki/skills/memory-hooks-integration-with-process_TRJ-2026.md` refactored to new format (via S1)
+
+### Design Principles
+
+1. **Non-blocking scan** — if wiki/skills/ is empty or corrupted, session continues
+2. **Schema_ref for format** — all process files reference `rules/skill_format.json`, no duplication
+3. **Auto-cleanup** — before writing to working_memory: filter completed/outdated skills (per session_context_rules.json)
+4. **No auto-import** — .pi/skills/ remains SDK-managed; wiki/skills/ → .pi export requires explicit command

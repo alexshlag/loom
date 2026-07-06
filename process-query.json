@@ -56,6 +56,21 @@
       "if_broken": "STOP -> read working_memory.json -> set new focus"
     },
     {
+      "step_id": "0.25",
+      "name": "skill_awareness_check",
+      "description": "Before query execution: check working_memory.skills_loaded — if relevant skills exist for the query category, load them into context.",
+      "structure": [
+        {
+          "step_1": "read working_memory.json.skills_loaded"
+        },
+        {
+          "step_2": "if skills exist AND match query intent: read wiki/skills/<matching>.md → add to open_pages (max 3 per session_context_rules.json#operational_rules.context_bubble_max_pages)"
+        }
+      ],
+      "schema_ref": "rules/session_context_rules.json",
+      "note": "Non-blocking — if no skills loaded or none match, continue without error."
+    },
+    {
       "step_id": "0.5",
       "name": "query_intent_decoder",
       "rule_id": "QID-1",
