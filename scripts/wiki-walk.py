@@ -26,27 +26,38 @@ def parse_frontmatter(content):
     """Extract frontmatter fields from markdown content."""
     tags, date_str, sources_list = [], '', []
     aliases_list = []
+    name_str, desc_str = '', ''
+    related_docs_list = []
 
-    for line in content.split('\n')[:10]:
+    for line in content.split('\\n')[:15]:
         if line.startswith('tags:'):
-            raw_tags = re.findall(r'\[(.*?)\]', line)
+            raw_tags = re.findall(r'\\[(.*?)\\]', line)
             tags = [t.strip() for t in ','.join(raw_tags).split(',') if t.strip()]
         elif line.startswith('date:'):
             date_str = line.split(': ', 1)[1].strip() if ': ' in line else ''
         elif line.startswith('sources:'):
-            raw_sources = re.findall(r'\[(.*?)\]', line)
+            raw_sources = re.findall(r'\\[(.*?)\\]', line)
             sources_list = [s.strip().strip('"').strip("'") for s in ','.join(raw_sources).split(',') if s.strip()]
         elif line.startswith('aliases:'):
-            raw_aliases = re.findall(r'["\']([^"\']+)["\']', '[{}]'.format(','.join(raw_tags)) if raw_tags else '')
+            raw_aliases = re.findall(r"""["']([^"']+)[\"']""", '[{}]'.format(','.join(raw_tags)) if raw_tags else '')
             aliases_list = [a.strip() for a in raw_aliases]
+        elif line.startswith('name:'):
+            name_str = line.split(': ', 1)[1].strip()
+        elif line.startswith('description:'):
+            desc_str = line.split(': ', 1)[1].strip()
+        elif line.startswith('related_docs:'):
+            raw_rd = re.findall(r'\\[(.*?)\\]', line)
+            related_docs_list = [s.strip() for s in ','.join(raw_rd).split(',') if s.strip()]
 
     return {
         'tags': tags,
         'date': date_str,
         'sources': sources_list,
-        'aliases': aliases_list
+        'aliases': aliases_list,
+        'name': name_str,
+        'description': desc_str,
+        'related_docs': related_docs_list
     }
-
 
 def extract_summary(content, max_len=180):
     """Extract first paragraph summary from markdown content."""
