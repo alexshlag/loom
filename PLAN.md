@@ -66,6 +66,114 @@
 
 ---
 
+## 🆕 Phase 18: Documentation & Manual Support System 🔴 P0
+**Цель:** Расширить wiki на long-form documentation (user manuals, API references) и пакетную обработку кластеров источников в docs.
+
+---
+
+### 📐 Текущая Архитектура — Gap Analysis
+
+| Компонент | Статус | Применимость к docs |
+|-----------|--------|---------------------|
+| **Ingest flow** (step_6_discussion) | ✅ Работает | Branching: entity_or_concept / update_existing — нет «doc» ветки |
+| **Template system** (wiki/templates/) | ✅ 4 шаблона | entity/concept/synthesis/comparison — нет docs-template.json |
+| **Categories** (categories.json) | ✅ 10 категорий | Нет «docs» категории |
+| **Auto-crosslink** | ✅ Multi-level scoring | Работает для всех wiki pages — routing к wiki/docs/ не настроен |
+| **rebuild-meta.sh → index.md** | ✅ Category-based index | Пока не генерирует docs section (нет docs в categories.json) |
+| **Structural requirements** (FIRST-BLOCK-V1) | ✅ Mandatory body_text | Не подходит для docs — у них intro paragraph, а не «body_text между H1 и ##» |
+
+#### Gaps
+
+| # | Gap | Impact | Fix Required |
+|---|-----|--------|--------------|
+| **G1** | Нет `docs` category в categories.json | Pages в wiki/docs/ не индексируются, auto-crosslink routing не знает путь | Добавить «docs» → update auto_crosslink.sh routing |
+| **G2** | DETERMINE_INTEGRATION_TYPE branching — нет «doc page» ветки | Agent создаёт entity/concept вместо docs при ≥3 framework sources | Добавить branch: `framework_cluster_detected → wiki/docs/<name>.md` |
+| **G3** | Нет docs-template.json | Структура документации не стандартизирована | Создать шаблон с sections hierarchy + navigation pattern |
+| **G4** | FIRST-BLOCK-V1 паттерн конфликтует с docs page | docs имеют intro paragraph, но не требуют body_text между H1 и ## | Добавить conditional rule для docs category |
+
+---
+
+### 🧠 Алгоритм: State Machine Routing (из aif-docs)
+
+Вместо одного «create page» — **state-aware routing**:
+
+```
+STATE A: wiki/docs/ не существует → Generate framework overview + nav skeleton
+         → docs-template.json с getting-started, architecture, api sections
+         → Создать wiki/docs-index.md как landing для docs section
+         → Обновить categories.json (docs category)
+
+STATE B: wiki/docs/ существует, но pages orphaned → Audit & restructure
+         → Запустить audit (broken links, missing crosslinks, stale content)
+         → Предложить пользователю: merge duplicates, add navigation, fix broken links
+
+STATE C: Mature wiki/docs/ → Deep-dive topics only
+         → Только новые deep-dives (не overview — overview уже есть)
+         → Suggest merges если pages are overlapping
+```
+
+#### Routing Logic
+
+Плоская структура `wiki/docs/<name>.md` — **без вложенных директорий**. Префиксы (`php-api.md`, `php-cli.md`) решают группировку без изменения скриптов.
+
+```json
+{
+  "rule_id": "DOC-ROUTING-V1",
+  "routing_table": [
+    { "source_type": "framework_overview_cluster",    "target_path": "wiki/docs/<framework>.md" },
+    { "source_type": "api_reference_cluster",         "target_path": "wiki/docs/<framework>-api.md" },
+    { "source_type": "cli_tool_cluster",              "target_path": "wiki/docs/<tool>-commands.md" }
+  ]
+}
+```
+
+Agent auto-detects type by source analysis (API docs → `-api` suffix, CLI docs → `-commands` suffix). No hardcoded paths.
+
+---
+
+### 🔧 Tasks
+
+| # | Component | Description | Dependencies | Status |
+|---|-----------|-------------|--------------|--------|
+| **D1** | `wiki/templates/docs-template.json` | Шаблон для документации: Getting Started, API Reference, CLI Commands, Configuration. Sections hierarchy + navigation header/footer pattern + crosslinking к entities/concepts. | None | ✅ Done |
+| **D2** | `rules/categories.json` → add "docs" category | `"docs": "Long-form technical documentation, user manuals, guides (not entity profiles)"`. Auto-crosslink.sh routing обновится автоматически (он read categories.json). | D1 | ✅ Done |
+| **D3** | `process-ingest.json` step_6_discussion: docs branching | Agent decision tree: framework cluster → state-aware action. Branching к STATE A/B/C. Добавить condition в action_name `DETERMINE_DOCS_INTEGRATION_TYPE`. | D2, template D1 | ✅ Done |
+| **D4** | `rules/structural_requirements.json` → DOC-PAGE-V1 | Pattern для docs pages: intro paragraph вместо body_text между H1 и ##; navigation header mandatory (prev/next/index); See Also section required. | D3 | ✅ Done |
+| **D5** | `scripts/docs-audit.sh` — audit mode | Check for: broken links in wiki/docs/, missing nav headers, orphaned docs pages, duplicate/overlapping content. Run on STATE B detection. | None | ✅ Done |
+
+#### Execution Order
+
+```
+✅ D1 (template) → ✅ D2 (categories.json) → ✅ D3 (process-ingest branching)
+    ↓
+✅ D4 (structural requirements for docs) ← depends on D2+D3
+    ↓
+✅ D5 (docs-audit.sh) — optional, can be parallel with D4
+```
+
+#### Implementation Notes
+
+- **STATE A ready**: `wiki/docs/` не существует → при next ingest с framework cluster agent запустит STATE A routing (overview generation + docs-index.md)
+- **Auto-crosslink routing**: categories.json обновлён, auto_crosslink.sh автоматически начнёт использовать wiki/docs/ path для docs category
+- **docs-audit.sh**: Tested — correctly detects STATE A and exits clean. Will run on STATE B detection during ingest workflow.
+
+---
+
+### 📚 Источники Информации
+
+| Источник | Что из него взяли | Применимость |
+|----------|-------------------|--------------|
+| [aif-docs SKILL.md](https://github.com/lee-to/ai-factory/blob/2.x/skills/aif-docs/SKILL.md) | State machine (A/B/C), navigation header/footer pattern, prev/next links + See Also footer | ✅ Highly applicable — state-aware routing + nav pattern |
+| [wiki-page-writer (Microsoft)](https://skills.sh/microsoft/agent-skills/wiki-page-writer) | Evidence-based deep-dive pages, source repository resolution | ⚠️ Partially — для entity/concept generation лучше, чем docs |
+
+---
+
+> **Зависит от:** Phase 15.1 P8-P9 (aliases integration affects all new pages).
+> **Связано:** `AGENTS.md#batch_ingest_trigger`, `scripts/batch-ingest.sh --scan`
+> **Rollback plan:** Все изменения — additive/structural, safe to revert individual files.
+
+---
+
 ## ✅ Completed Sessions (Archived)
 
 - **Phase 16** (2026-07-05): Wiki Documentation Language Standardization → AGENTS.md + RULES.md fully translated, process files cleaned

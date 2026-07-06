@@ -188,6 +188,27 @@
             {
               "condition": "source_updates_existing_entity_or_concept",
               "target": "step_8b_update_page"
+            },
+            {
+              "action_name": "DETERMINE_DOCS_INTEGRATION_TYPE",
+              "description": "State-aware routing for docs pages — framework clusters trigger docs workflow. Uses STATE A/B/C logic.",
+              "branching": [
+                {
+                  "condition": "state == no_wiki_docs_exists OR state == generate_overview",
+                  "target": "step_8a_new_page",
+                  "context": "framework_cluster_detected → wiki/docs/<name>.md with overview structure + docs-index.md"
+                },
+                {
+                  "condition": "state == wiki_docs_orphaned_pages OR audit_required",
+                  "target": "step_8b_update_page",
+                  "context": "audit orphan pages, propose fixes (add navigation, merge duplicates)"
+                },
+                {
+                  "condition": "state == mature_wiki_docs OR deep_dive_topic",
+                  "target": "step_8a_new_page",
+                  "context": "deep-dive topic only for existing docs section — suggest merges if overlapping"
+                }
+              ]
             }
           ]
         },

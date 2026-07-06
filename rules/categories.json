@@ -80,6 +80,14 @@
         "ru": "Resources"
       },
       "description": "Tools, plugins, libraries"
+    },
+    {
+      "key": "docs",
+      "label": {
+        "en": "Documentation",
+        "ru": "Документация"
+      },
+      "description": "Long-form technical documentation, user manuals, guides (not entity profiles)"
     }
   ],
   "rule": "Agent reads from this file — never hardcodes order or definitions.",
