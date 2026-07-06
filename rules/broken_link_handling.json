@@ -1,0 +1,92 @@
+{
+  "protocol_name": "Broken Link Handling — Agent Escalation Rules",
+  "description": "Decision rules for broken link repair vs escalation. Agent reads this after linter reports broken links.",
+
+  "auto_fix_rules": [
+    {
+      "condition": "case_mismatch (score=100)",
+      "example": "[Home_Manager](wiki/Home_Manager.md) → [home-manager](wiki/concepts/home-manager.md)",
+      "action": "AUTO-REPAIR: rewrite link path to canonical form",
+      "threshold_score": 100,
+      "note": "Always auto-fix — no user confirmation needed. Perfect match after normalization."
+    },
+    {
+      "condition": "one_contains_other (score=90)",
+      "example": "[hm](wiki/concepts/home-manager.md) → [home-manager](wiki/concepts/home-manager.md)",
+      "action": "AUTO-REPAIR: expand/normalize to match candidate",
+      "threshold_score": 90,
+      "note": "Auto-fix — safe rename when basename is substring/superset of target."
+    },
+    {
+      "condition": "same_directory_close_bname (score=85)",
+      "example": "[concepts/home-manager](wiki/concepts/home-manager.md) → [home-manager](wiki/concepts/home-manager.md) (from concepts/)",
+      "action": "AUTO-REPAIR: resolve relative path in same directory",
+      "threshold_score": 85,
+      "note": "Auto-fix — high confidence when already in correct category folder."
+    }
+  ],
+
+  "escalation_rules": [
+    {
+      "condition": "fuzzy_low_confidence (score<80)",
+      "description": "Ambiguous match — multiple candidates with similar names, cross-category confusion",
+      "action": "ESCALATE_TO_USER: present candidate list + request decision",
+      "format": "Present exactly 3-5 best matches from fuzzy scan. Quote score range.",
+      "constraint": "NEVER auto-fix ambiguous links — risk of wrong category (entity↔concept)"
+    },
+    {
+      "condition": "no_candidate_found",
+      "description": "Zero or very low match (<80) against entire wiki index",
+      "action": "ESCALATE_TO_USER: report missing page + suggest creation path",
+      "format": "{file}:{line} → target '{target}' not found in wiki. Recommend: create {category}/{canonical-name}.md"
+    },
+    {
+      "condition": "raw_link_broken",
+      "description": "Link to raw/ directory that no longer exists",
+      "action": "ESCALATE_TO_USER (unless source still available on disk)",
+      "constraint": "Never auto-fix raw links — they point to external sources, not wiki pages"
+    }
+  ],
+
+  "escalation_template": {
+    "format": "[!broken-link] {{file}}:{{line}} → {{link_target}} (fuzzy: {{score}}, candidates: [{path1}, {path2}])\nUser decision needed — options:\n  - Confirm best match for auto-repair\n  - Create new wiki page at suggested path\n  - Skip and log as dead_end",
+    "non_blocking": true,
+    "note": "Message to user MUST NOT stop process. Agent continues with normal workflow while waiting."
+  },
+
+  "post_escalation_actions": [
+    {
+      "action": "add_to_working_memory_broken_links",
+      "description": "Log unresolved broken links in working_memory.json.broken_links_resolved[] for tracking"
+    },
+    {
+      "action": "continue_normal_workflow",
+      "constraint": "NEVER wait for user response to continue — escalate asynchronously, proceed with query/ingest/lint"
+    }
+  ],
+
+  "integration_points": [
+    {
+      "process": "process-lint.json#check_id=8",
+      "role": "Linter calls link-validator.sh --auto → filters auto-fixed vs agent_review_required"
+    },
+    {
+      "process": "process-query.json#step_0.75",
+      "role": "broken_link_awareness reads WM cache, but must NOT scan wiki — use linter output from working_memory"
+    }
+  ],
+
+  "decision_matrix": {
+    "agent_can_autofix": [
+      "case_mismatch → score=100",
+      "one_contains_other → score=90",
+      "same_dir_close_bname → score=85"
+    ],
+    "agent_esc_to_user": [
+      "fuzzy_low_confidence → score<80",
+      "no_candidate_found",
+      "raw_link_broken (unless source on disk)",
+      "cross_category_ambiguous (entity↔concept)"
+    ]
+  }
+}

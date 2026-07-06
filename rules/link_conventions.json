@@ -1,27 +1,46 @@
 {
   "protocol_name": "Link Conventions & Auto-Fix",
   "description": "Internal and external link usage conventions plus auto-fix logic.",
-
   "internal_links": {
     "format": "[text](wiki-relative-path.md)",
     "prohibited": "./ (never use dot-relative paths)",
-    "cross_category_exception": "../ allowed for cross-category links (e.g. concepts/ → entities/) as long as target exists under wiki/"
+    "cross_category_exception": "../ allowed for cross-category links (e.g. concepts/ \u2192 entities/) as long as target exists under wiki/"
   },
-
   "external_links": {
     "standard": "EXT-LINK-V1 (canonical http/https URLs)",
-    "prohibited": "[text](raw/**) — never link to raw/. [text](../**) — relative paths prohibited.",
-    "unavailability_check": "log broken URLs (404/timeouts) → inform user, do NOT auto-remove"
+    "prohibited": "[text](raw/**) \u2014 never link to raw/. [text](../**) \u2014 relative paths prohibited.",
+    "unavailability_check": "log broken URLs (404/timeouts) \u2192 inform user, do NOT auto-remove"
   },
-
   "crosslink_discovery": {
     "architecture": "Script Suggests, Agent Decides",
     "discovery": "auto-crosslink.sh (score-based candidate generation)",
     "decision": "Agent (semantic validation + contextual reasoning)",
-    "scoring_weights": {"h1_title_match": 3, "shared_sources": "2 base + diminishing factor (+1 per additional shared source)", "frontmatter_related": 4},
-    "thresholds":     {">=5": "Strong candidate — suggest with confidence", "3-4": "Weak signal — suggest review", "<3": "Ignore (below noise floor)"},
-    "system_file_exclusion": ["wiki/log.md", "wiki/issues.md", "wiki/timeline.md", "wiki/overview.md", "wiki/snapshot.md", "wiki/index.md", "wiki/hot.md", "AGENTS.md", "context.md", "PLAN.md"]
+    "scoring_weights": {
+      "h1_title_match": 3,
+      "shared_sources": "2 base + diminishing factor (+1 per additional shared source)",
+      "frontmatter_related": 4
+    },
+    "thresholds": {
+      ">=5": "Strong candidate \u2014 suggest with confidence",
+      "3-4": "Weak signal \u2014 suggest review",
+      "<3": "Ignore (below noise floor)"
+    },
+    "system_file_exclusion": [
+      "wiki/log.md",
+      "wiki/issues.md",
+      "wiki/timeline.md",
+      "wiki/overview.md",
+      "wiki/snapshot.md",
+      "wiki/index.md",
+      "wiki/hot.md",
+      "AGENTS.md",
+      "context.md",
+      "PLAN.md"
+    ]
   },
-
-  "schema_ref_to_agent_rules": "AGENTS.md#rules-reference"
+  "schema_ref_to_agent_rules": "AGENTS.md#rules-reference",
+  "broken_link_resolution": {
+    "rule_file": "rules/broken_link_handling.json",
+    "agent_decision_tree": "score\u226580 \u2192 auto-fix | score<80 \u2192 escalate_non_blocking"
+  }
 }

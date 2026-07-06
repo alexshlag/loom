@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# rebuild-meta.sh — regenerates meta files from wiki/ (incremental mode)
+# rebuild-meta.sh — Single-pass meta regeneration using wiki-walk.py
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -13,19 +13,32 @@ trap 'rm -f "${META_DIR}/registry.json.tmp" "${META_DIR}/backlinks.json.tmp" "${
 
 mkdir -p "$META_DIR"
 
-# ─── Incremental Update Detection (MEDIUM-4 optimization) ──────
+# ─── Incremental Update Detection ──────
 ALL_FILES=$(find "$WIKI_DIR" -name "*.md" -type f ! -path "*/meta/*" 2>/dev/null | wc -l)
 
 FULL_REBUILD=false
-CHANGED_FILES=""
+CHANGED_LIST=""
 if [[ -f "$TIMESTAMP_FILE" ]]; then
-    CHANGED_FILES=$(find "$WIKI_DIR" -name "*.md" -type f ! -path "*/meta/*" -newer "$TIMESTAMP_FILE" 2>/dev/null || true)
-    if [[ -z "$CHANGED_FILES" ]]; then
+    CHANGED_LIST=$(find "$WIKI_DIR" -name "*.md" -type f ! -path "*/meta/*" -newer "$TIMESTAMP_FILE" 2>/dev/null || true)
+    if [[ -z "${CHANGED_LIST:-}" ]]; then
         echo "[*] No changes detected since last rebuild. Skipping." >&2
         exit 0
     fi
-    CHANGED_COUNT=$(echo "$CHANGED_FILES" | wc -l)
+    CHANGED_COUNT=$(echo "$CHANGED_LIST" | wc -l)
     echo "[*] Incremental mode: ${CHANGED_COUNT} changed files (of ${ALL_FILES} total)" >&2
+    
+    # Normalize to relative paths for matching with JSON output
+    REL_CHANGED=""
+    while IFS= read -r fpath; do
+        rel="${fpath#${WIKI_DIR}/}"
+        if [[ -n "$REL_CHANGED" ]]; then
+            REL_CHANGED="$REL_CHANGED
+$fpath"
+        else
+            REL_CHANGED="$fpath"
+        fi
+    done <<< "$CHANGED_LIST"
+    CHANGED_LIST="$REL_CHANGED"
 else
     FULL_REBUILD=true
     echo "[*] Full rebuild (no timestamp found)" >&2
@@ -36,369 +49,150 @@ if [[ "${1:-}" == "--index-only" ]]; then
   INDEX_ONLY=true; shift; echo "Skipping registry.json and backlinks.json (--index-only mode)" >&2
 fi
 
-if [[ "$FULL_REBUILD" == "true" ]]; then
-    CHANGED_LIST="/all"
-else
-    CHANGED_LIST=$(echo "$CHANGED_FILES" | tr '\n' ',' || true)
+# ─── Single-pass wiki walk → unified JSON output (in temp file) ──
+echo "[*] Single-pass wiki walk (one os.walk for all meta data)..." >&2
+
+WALK_JSON_FILE=$(mktemp --suffix=.json)
+CHANGED_FILE=$(mktemp --suffix=.txt)
+trap 'rm -f "$WALK_JSON_FILE" "$CHANGED_FILE"' EXIT
+
+python3 "$SCRIPT_DIR/wiki-walk.py" --json >"$WALK_JSON_FILE" 2>/dev/null || {
+    echo "[!] Wiki walk failed" >&2
+    exit 1
+}
+
+# Write changed files list for incremental mode (one per line)
+if [[ -n "${CHANGED_LIST:-}" ]]; then
+    printf '%s\n' "$CHANGED_LIST" > "$CHANGED_FILE"
 fi
 
-# ─── 1. registry.json (skip if --index-only) ──────────────
+export WALK_JSON="$WALK_JSON_FILE"
+export CHANGED_FILE_PATH="$CHANGED_FILE"
+export META_DIR="${META_DIR}"
+export WIKI_DIR="${WIKI_DIR}"
+export SCRIPT_DIR="${SCRIPT_DIR}"
+export FULL_REBUILD=${FULL_REBUILD}
+
+# ─── 1. registry.json (from unified JSON, skip if --index-only) ──────────────
 if [[ "$INDEX_ONLY" == "false" ]]; then
 echo "Building registry..."
-python3 << PYEOF
-import json, os, re, sys
-sys.path.insert(0, "${SCRIPT_DIR}")
+python3 << 'PYEOF'
+import json, os
 
-wiki_dir = "${WIKI_DIR}"
-meta_path = "${META_DIR}/registry.json"
-changed_str = "${CHANGED_LIST}"
+walk_file = os.environ['WALK_JSON']
+changed_file_path = os.environ.get('CHANGED_FILE_PATH', '')
+full_rebuild = os.environ.get('FULL_REBUILD') == 'true'
+meta_dir = os.environ['META_DIR']
 
-def parse_frontmatter(content):
-    tags, date, sources = [], '', []
-    aliases = []
-    for line in content.split('\n')[:10]:
-        if line.startswith('tags:'):
-            tags = [t.strip() for t in re.findall(r'\[(.*?)\]', line) for t in t.split(',')]
-        elif line.startswith('date:'):
-            date = line.split(': ')[1].strip()
-        elif line.startswith('sources:'):
-            sources = [s.strip().strip('[]').split(',')[0] if ',' not in s else None for s in re.findall(r'\[(.*?)\]', line)]
-        elif line.startswith('aliases:'):
-            raw = re.findall(r'\[(.*?)\]', line)
-            if raw:
-                # Parse individual quoted elements instead of split(',') to avoid bracket artifacts
-                aliases = [a.strip() for a in re.findall(r'["\\']([^"\\']+)["\\']', raw[0])]
-    # Clean None values
-    tags = [t for t in tags if t]
-    sources = [s for s in sources if s]
-    return tags, date, sources, aliases
+pages_data = json.load(open(walk_file))
+pages = pages_data['pages']
 
-def get_page_type(path):
-    rel = os.path.relpath(path, wiki_dir)
-    parts = rel.split('/')
-    if len(parts) > 1:
-        return parts[0].replace('-', '_') + 's'
-    return 'root_file'
-
-existing_registry = {}
-try:
-    with open(meta_path) as f:
-        data = json.load(f)
-        existing_registry = {p['path']: p for p in data.get('pages', [])}
-except Exception:
-    pass
-
-full_rebuild = (changed_str == '/all')
-
-def should_process(filepath):
-    if full_rebuild:
-        return True
-    return filepath in [f.strip() for f in changed_str.split(',')]
-
-pages = [] if full_rebuild else list(existing_registry.values())
-for root, dirs, files in os.walk(wiki_dir):
-    if 'meta' in root or 'raw' in root:
-        continue
-    for fname in sorted(files):
-        if not fname.endswith('.md'):
-            continue
-        fpath = os.path.join(root, fname)
-        if not should_process(fpath):
-            continue
-        rel = os.path.relpath(fpath, wiki_dir).replace('/', '-').replace('.', '-')
-        with open(fpath, 'r', encoding='utf-8') as f:
-            content = f.read(2000)
-        tags, date, sources, aliases = parse_frontmatter(content)
-        title_match = re.search(r'^# (.+)', content, re.MULTILINE)
-        title = title_match.group(1).strip() if title_match else fname.replace('.md', '').replace('-', ' ').title()
-        page_type = get_page_type(fpath)
-        new_entry = {
-            'id': rel.replace('wiki/', '').replace('/', '-').replace('.', '-'),
-            'title': title,
-            'type': page_type,
-            'path': os.path.relpath(fpath, "${PROJECT_ROOT}"),
-            'date_created': date or 'unknown',
-            'tags': tags,
-            'sources': sources,
-            'aliases': aliases
-        }
-        found = False
-        for i, p in enumerate(pages):
-            if p['path'] == new_entry['path']:
-                pages[i] = new_entry
-                found = True
-                break
-        if not found:
-            pages.append(new_entry)
-
-with open(meta_path + '.tmp', 'w') as f:
-    json.dump({'pages': pages}, f, indent=2, ensure_ascii=False)
-print(f'Registry updated: {len(pages)} pages' + (' (incremental)' if changed_str != '/all' else ''))
-PYEOF
-BL_PATH="${META_DIR}/backlinks.json"
-if [ $? -ne 0 ]; then
-    rm -f "${META_DIR}/registry.json.tmp"
-    echo "Warning: registry generation had issues" >&2
-else
-    mv "${META_DIR}/registry.json.tmp" "${META_DIR}/registry.json"
-fi
-
-# ─── 2. backlinks.json (skip if --index-only)
-echo "Building backlinks..."
-python3 << PYEOF2
-import os, re, json, sys
-sys.path.insert(0, "${SCRIPT_DIR}")
-
-wiki_dir = "${WIKI_DIR}"
-meta_path = "${META_DIR}/backlinks.json"
-changed_str = "${CHANGED_LIST}"
-full_rebuild = (changed_str == '/all')
-
-def resolve_target(path):
-    cleaned = path.lstrip('/').lstrip('./') if not path.startswith('../') else path
-    return cleaned.replace('/', '-').replace('.', '-')
-
-existing_backlinks = {}
-if not full_rebuild:
+# Incremental: merge with existing registry
+if not full_rebuild and changed_file_path:
+    existing_pages = {}
     try:
+        meta_path = os.path.join(meta_dir, 'registry.json')
         with open(meta_path) as f:
             data = json.load(f)
-            existing_backlinks = dict(data.get('backlinks', {}))
+            for p in data.get('pages', []):
+                existing_pages[p['path']] = p
     except Exception:
         pass
 
-def should_process(filepath):
-    if full_rebuild:
-        return True
-    return filepath in [f.strip() for f in changed_str.split(',')]
+    changed_set = set(open(changed_file_path).read().strip().split('\n')) - {''}
+    merged = dict(existing_pages)
+    updated_count = 0
+    added_count = 0
+    for p in pages:
+        if p['path'] in changed_set:
+            merged[p['path']] = p
+            updated_count += 1
+        elif p['path'] not in existing_pages:
+            # New file that wasn't caught by incremental detection
+            merged[p['path']] = p
+            added_count += 1
 
-def clean_duplicates(backlink_list):
-    seen_from = set()
-    result = []
-    for b in backlink_list:
-        if not isinstance(b, dict):
-            continue  # skip corrupted entries
-        key = (b.get('from'), b.get('context', ''))
-        if not any(k == key for k in seen_from):
-            seen_from.add(key)
-            result.append(b)
-    return result
+    pages_to_write = list(merged.values())
+    print(f'Registry updated: {len(pages_to_write)} pages (+{added_count} new, ~{updated_count} changed)', file=__import__('sys').stderr)
+else:
+    # Full rebuild
+    pages_to_write = pages
 
-for root, dirs, files in os.walk(wiki_dir):
-    if 'meta' in root or 'raw' in root:
-        continue
-    for fname in sorted(files):
-        if not fname.endswith('.md'):
-            continue
-        fpath = os.path.join(root, fname)
-        if not should_process(fpath):
-            continue
-        rel = os.path.relpath(fpath, wiki_dir).replace('/', '-').replace('.', '-')
-        with open(fpath, 'r', encoding='utf-8') as f:
-            content = f.read()
-        links = re.findall(r'\[([^\]]+)\]\(([^#)]+)(?:#[^)]+)?\)', content)
-        if links:
-            for text, path in links:
-                target_id = resolve_target(path.rstrip('/'))
-                existing_backlinks.setdefault(target_id, []).append({
-                    'from': rel,
-                    'context': '[text](' + path + ') from ' + fname
-                })
-        related_matches = re.findall(r'^related:\s*\[(.*)\]', content, re.MULTILINE)
-        for related_str in related_matches:
-            paths = [p.strip().strip('"').strip("'") for p in related_str.split(',')]
-            for path in paths:
-                if not path:
-                    continue
-                target_id = resolve_target(path.rstrip('/'))
-                existing_backlinks.setdefault(target_id, []).append({
-                    'from': rel,
-                    'context': 'related:[' + path + '] from ' + fname
-                })
+with open(os.path.join(meta_dir, 'registry.json.tmp'), 'w') as f:
+    json.dump({'pages': pages_to_write}, f, indent=2, ensure_ascii=False)
+print(f'Registry written: {len(pages_to_write)} pages')
+PYEOF
 
+mv "${META_DIR}/registry.json.tmp" "${META_DIR}/registry.json"
+fi
+
+# ─── 2. backlinks.json (from unified JSON, skip if --index-only) ──────────────
+if [[ "$INDEX_ONLY" == "false" ]]; then
+echo "Building backlinks..."
+python3 << 'PYEOF'
+import json, os
+
+walk_data = json.load(open(os.environ['WALK_JSON']))
+backlinks = walk_data.get('backlinks', {})
+meta_dir = os.environ['META_DIR']
+
+# Deduplicate and write
 final_backlinks = {}
-for target, sources in existing_backlinks.items():
-    final_backlinks[target] = clean_duplicates(sources)
+for target, sources in backlinks.items():
+    seen = set()
+    deduped = []
+    for s in sources:
+        if not isinstance(s, dict):
+            continue
+        key = (s.get('from'), s.get('context', ''))
+        if key not in seen:
+            seen.add(key)
+            deduped.append(s)
+    final_backlinks[target] = deduped
 
-with open(meta_path + '.tmp', 'w') as f:
+with open(os.path.join(meta_dir, 'backlinks.json.tmp'), 'w') as f:
     json.dump({'backlinks': final_backlinks}, f, indent=2, ensure_ascii=False)
-print(f'Backlinks updated: {len(final_backlinks)} pages with links' + (' (incremental)' if changed_str != '/all' else ''))
-PYEOF2
-if [ $? -ne 0 ]; then
-    rm -f "${BL_PATH}.tmp"
-    echo "Warning: backlinks generation had issues" >&2
-else
-    mv "${BL_PATH}.tmp" "$BL_PATH"
-fi
+print(f'Backlinks updated: {len(final_backlinks)} targets with links')
+PYEOF
+
+mv "${META_DIR}/backlinks.json.tmp" "${META_DIR}/backlinks.json"
 fi
 
-# ─── 3. index.md (always rebuild) ──────
+# ─── 3. index.md (from unified JSON, always rebuild) ──────────────
 echo "Building index.md..."
-python3 << PYEOF3
-import os, re, datetime, sys
-sys.path.insert(0, "${SCRIPT_DIR}")
+python3 << 'PYEOF'
+import json, os, sys, datetime
 
-wiki_dir = "${WIKI_DIR}"
-index_path = os.path.join(wiki_dir, 'index.md')
+walk_data = json.load(open(os.environ['WALK_JSON']))
+category_pages = walk_data.get('categories', {})
+wiki_dir = os.environ['WIKI_DIR']
+script_dir = os.environ['SCRIPT_DIR']
 
-# Read categories from canonical source (rules/categories.json)
-cat_file = os.path.join(os.environ.get("SCRIPT_DIR", "scripts"), "..", "rules", "categories.json")
+# Read categories from rules/categories.json
+cat_file = os.path.join(script_dir, "..", "rules", "categories.json")
+CATEGORY_ORDER = []
+CATEGORIES_LABELS_RAW = {}
 try:
     with open(cat_file) as f:
         cat_data = json.load(f)
-    CATEGORY_ORDER = [c["key"] for c in cat_data.get("categories", [])]
-    # Build label lookup: key -> {lang: display_name}
+    CATEGORY_ORDER = [c['key'] for c in cat_data.get('categories', [])]
+    lang = os.environ.get('LOCALE', 'en')
     CATEGORIES_LABELS_RAW = {}
-    for c in cat_data.get("categories", []):
-        labels = c.get("label", {})
-        lang = os.environ.get("LOCALE", "en")
-        CATEGORIES_LABELS_RAW[c["key"]] = labels.get(lang, labels.get("en", c["key"].title()))
+    for c in cat_data.get('categories', []):
+        labels = c.get('label', {})
+        CATEGORIES_LABELS_RAW[c['key']] = labels.get(lang, labels.get('en', c['key'].title()))
 except Exception:
-    # Fallback to hardcoded if JSON unavailable
     CATEGORY_ORDER = ['entities', 'concepts', 'comparisons', 'syntheses', 'overviews', 'notes', 'meetings', 'projects', 'bibliography', 'resources']
-    CATEGORIES_LABELS_RAW = {'entities': 'Сущности', 'concepts': 'Концепции', 'comparisons': 'Сравнения', 'syntheses': 'Синтезы', 'overviews': 'Обзоры', 'notes': 'Заметки', 'meetings': 'Встречи', 'projects': 'Проекты', 'bibliography': 'Библиография', 'resources': 'Ресурсы'}
+    CATEGORIES_LABELS_RAW = {'entities': 'Entities', 'concepts': 'Concepts', 'comparisons': 'Comparisons', 'syntheses': 'Syntheses', 'overviews': 'Overviews', 'notes': 'Notes'}
 
-# CATEGORIES dict for backward compat with existing code patterns
-def _cat_label(k):
+def cat_label(k):
     raw = CATEGORIES_LABELS_RAW.get(k, k.title())
-    return raw if isinstance(raw, str) else raw.get(lang, raw.get('en', k.title()))
+    return raw if isinstance(raw, str) else raw.get('en', k.title())
 
-CATEGORIES = {k: _cat_label(k) for k in CATEGORY_ORDER}
-
-def extract_summary(content):
-    import re as _re
-    # Parse tags from frontmatter
-    tags = []
-    aliases = []
-    for line in content.split('\n')[:10]:
-        if line.startswith('tags:'):
-            raw_tags = [t.strip() for t in _re.findall(r'\\[(.*?)\\]', line)]
-            tags = [t for t in raw_tags if t and len(t) > 2]
-        elif line.startswith('aliases:'):
-            # Extract content between [ ] — then parse individual quoted elements
-            raw_content = _re.findall(r'\[(.*?)\]', line)
-            if raw_content:
-                # Find all quoted strings inside the brackets
-                aliases = re.findall(r'["\']([^"\']+)["\']', raw_content[0])
-            aliases = [a for a in aliases if a]
-    
-    lines = content.split('\n')
-    fm_end = -1
-    dashes_found = 0
-    for i, line in enumerate(lines):
-        if line.strip() == '---':
-            dashes_found += 1
-            if dashes_found == 2:
-                fm_end = i + 1
-                break
-    if fm_end < 0:
-        fm_end = 0
-    else:
-        fm_end += 1
-    
-    section_lines = []
-    for i in range(fm_end, len(lines)):
-        stripped = lines[i].strip()
-        if not stripped or stripped.startswith('# '):
-            continue
-        if stripped.startswith('## '):
-            break
-        # Skip markdown-only lines like '**text**' without actual body text
-        import re as _re2
-        if _re2.match(r'^\*{1,4}\w+\*{1,4}$', stripped):
-            continue
-        section_lines.append(stripped)
-    
-    if not section_lines:
-        for i in range(fm_end, len(lines)):
-            stripped = lines[i].strip()
-            # Skip empty, H1/H2 headings, and frontmatter-like lines
-            if not stripped or stripped.startswith('# ') or re.match(r'^## ', stripped):
-                continue
-            if re.match(r'^(tags|date|sources|related)\s*:', stripped.lower()):
-                continue
-            # Skip markdown-only lines (bold/italic without real body text)
-            import re as _re2
-            if _re2.match(r'^\*{1,3}\w+\*{1,3}$', stripped):
-                continue
-            if stripped.startswith('>') or stripped.startswith('- ') or stripped.startswith('* '):
-                continue
-            section_lines.append(stripped)
-            if len(section_lines) >= 6:
-                break
-    
-    full_text = ' '.join(section_lines[:6])
-    MAX_SUMMARY_LEN = 180
-    if len(full_text) <= MAX_SUMMARY_LEN:
-        summary = full_text
-    else:
-        # Smart truncation: find best cut point to avoid [ or " in the middle
-        snippet = full_text[:MAX_SUMMARY_LEN]
-        # Prefer end of sentence (dot, exclamation, question mark)
-        last_dot = max(snippet.rfind('.'), snippet.rfind('!'), snippet.rfind('?'))
-        if last_dot > 30:
-            summary = snippet[:last_dot + 1]
-        else:
-            # Try to cut after a closing bracket or comma
-            for ch in [')', ']', '}', ',', ';']:
-                idx = snippet.rfind(ch)
-                if idx > 25:
-                    summary = snippet[:idx + 1].strip()
-                    break
-            else:
-                # No nice cut point — fall back to dot-based
-                if last_dot > 30:
-                    summary = snippet[:last_dot + 1]
-                else:
-                    summary = snippet[:MAX_SUMMARY_LEN - 3] + '...'
-    
-    return summary, tags, [], aliases
-
-category_pages = {cat: [] for cat in CATEGORY_ORDER}
-for root, dirs, files in os.walk(wiki_dir):
-    if 'meta' in root or 'raw' in root:
-        continue
-    for fname in sorted(files):
-        if not fname.endswith('.md'):
-            continue
-        fpath = os.path.join(root, fname)
-        rel_path = os.path.relpath(fpath, wiki_dir).replace(chr(92), '/')
-        with open(fpath, 'r', encoding='utf-8') as f:
-            content = f.read(2000)
-        
-        title_match = re.search(r'^# (.+)', content, re.MULTILINE)
-        title = title_match.group(1).strip() if title_match else fname.replace('.md', '').replace('-', ' ').title()
-        
-        parts = rel_path.split('/')
-        cat_dir = None
-        for part in parts:
-            if part in CATEGORIES:
-                cat_dir = part
-                break
-        
-        if cat_dir is None and len(parts) <= 1:
-            if fname == 'timeline.md':
-                continue
-            elif fname in ['overview.md', 'snapshot.md']:
-                cat_dir = 'overviews'
-            else:
-                continue
-        
-        summary, page_tags, _sources, page_aliases = extract_summary(content)
-        category_pages.setdefault(cat_dir, []).append({
-            'title': title,
-            'path': rel_path,
-            'summary': summary,
-            'tags': page_tags,
-            'aliases': page_aliases
-        })
-
-now_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
 lines_out = ['# Wiki Index', '', '']
 for cat_key in CATEGORY_ORDER:
-    display_name = CATEGORIES.get(cat_key, cat_key.title())
+    display_name = cat_label(cat_key)
     pages_list = category_pages.get(cat_key, [])
-    
     lines_out.append('## ' + display_name)
     if not pages_list:
         lines_out.append('')
@@ -412,7 +206,7 @@ for cat_key in CATEGORY_ORDER:
 
 lines_out.extend([
     '---',
-    '*Created: auto-generated | Last updated: ' + now_str + '*',
+    '*Created: auto-generated | Last updated: ' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M') + '*',
     '',
     '## Timeline',
     '| Дата | Событие |',
@@ -420,25 +214,18 @@ lines_out.extend([
     '| [Timeline](timeline.md) — полная хронологическая лента всех изменений.'
 ])
 
-with open(index_path + '.tmp', 'w', encoding='utf-8') as f:
+with open(os.path.join(wiki_dir, 'index.md.tmp'), 'w', encoding='utf-8') as f:
     f.write('\n'.join(lines_out) + '\n')
 
-print('Index updated: ' + str(sum(len(v) for v in category_pages.values())) + ' entries across ' + str(len(category_pages)) + ' categories')
-PYEOF3
-IDX_PATH="${WIKI_DIR}/index.md"
-if [ $? -ne 0 ]; then
-    rm -f "${WIKI_DIR}/index.md.tmp"
-    echo "Warning: index generation had issues" >&2
-else
-    mv "${WIKI_DIR}/index.md.tmp" "$IDX_PATH"
-fi
+print(f'Index updated: {sum(len(v) for v in category_pages.values())} entries across {len(category_pages)} categories')
+PYEOF
+
+mv "${WIKI_DIR}/index.md.tmp" "${WIKI_DIR}/index.md"
 
 # ─── 4. IDF cache → invalidate on wiki changes (auto-rebuilt by prf_extract.py) ──
 rm -f "${META_DIR}/idf_cache.json"
 echo "IDF cache invalidated (will rebuild on next recall)"
 
-# ─── Move timestamp to START of processing (not end) ────
-# Previously this was at line 400, causing find -newer to never match
-# files that were edited before the last rebuild ran.
+# ─── Move timestamp ────
 touch "$TIMESTAMP_FILE"
 echo "✅ Meta rebuild complete."

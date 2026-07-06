@@ -77,12 +77,13 @@
       "step_id": "0.75",
       "name": "broken_link_awareness",
       "description": "Check known broken links from WM cache — do not scan wiki.",
+      "schema_ref": "rules/broken_link_handling.json#escalation_rules",
       "structure": [
         {
-          "step_1": "read working_memory.json -> check last_known_broken_links key"
+          "step_1": "read working_memory.json -> check broken_links_resolved []"
         },
         {
-          "step_2": "if broken_links exist: report to user, else: continue"
+          "step_2": "if broken_links exist: report via escalation_template (non-blocking), else: continue"
         }
       ],
       "rules": [
@@ -92,7 +93,8 @@
         }
       ],
       "constraints": [
-        "Do NOT scan wiki for broken links — only use WM cache"
+        "Do NOT scan wiki for broken links — only use WM cache",
+        "NEVER wait for user response to continue — escalate asynchronously, proceed with query flow"
       ]
     },
     {

@@ -20,9 +20,14 @@
 ### Issue #27: Broken Link Handling — Agent Escalation Rules
 **Проблема:** Agent escalation rules отсутствуют после DR-EX1 и step 0.75 в process-query.json.
 **Fix:** ✅ External link standard (DR-EX1), lightweight awareness via WM, raw_source_link_repair in step_1.
-**Remaining:**
-- [ ] Agent decision thresholds: autonomously fix case/path mismatches; escalate fuzzy < 50
-- [ ] Document escalation rules in process-query.json → broken_link_awareness
+**Status:** ✅ **RESOLVED** — `rules/broken_link_handling.json` created; lint/query hooks wired; pipeline complete.
+
+**Delivered:**
+- `rules/broken_link_handling.json` — decision matrix (auto-fix ≥80, escalate <80)
+- `process-lint.json#check_id=8` → schema_ref + auto_fix_phase capture action
+- `process-query.json#step_0.75` → reads WM.broken_links_resolved[], non-blocking escalation
+- `scripts/memory/sync-broken-links-to-wm.sh` — bridge linter output → working_memory
+- Memory hook: `on_broken_links_found` triggers sync after unified-pass.sh --auto
 
 ### Issue #28: Page Templates Co-evolution
 **Проблема:** AGENTS.md содержит секции Template Editing Policy и Template Co-evolution Process, но фактическая работа не завершена.

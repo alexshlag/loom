@@ -1,6 +1,6 @@
 {
   "module": "process_lint",
-  "description": "Wiki maintenance — automated checks and fixes",
+  "description": "Wiki maintenance \u2014 automated checks and fixes",
   "trigger_conditions": [
     {
       "condition": "wiki_stagnation_detected",
@@ -24,7 +24,7 @@
       "check_id": "2",
       "name": "orphan_pages_detection",
       "command": "./scripts/lint.sh --run orphan-pages",
-      "note": "Runs via scripts/lint.sh — output JSON with count + paths."
+      "note": "Runs via scripts/lint.sh \u2014 output JSON with count + paths."
     },
     {
       "check_id": "3",
@@ -36,7 +36,7 @@
       "check_id": "4",
       "name": "new_sources_available",
       "command": "./scripts/check-new-sources.sh --max 10",
-      "note": "Full check — lint detects → User decides → Ingest processes."
+      "note": "Full check \u2014 lint detects \u2192 User decides \u2192 Ingest processes."
     },
     {
       "check_id": "5",
@@ -61,7 +61,9 @@
     {
       "check_id": "8",
       "name": "broken_link_auto_resolve",
-      "command": "./scripts/unified-pass.sh --auto"
+      "command": "./scripts/unified-pass.sh --auto",
+      "schema_ref": "rules/broken_link_handling.json#decision_matrix",
+      "note": "Auto-fix score\u226580 (case/path). Agent_review_required score<80 \u2192 escalate non-blocking."
     },
     {
       "check_id": "9",
@@ -72,14 +74,14 @@
     {
       "check_id": "10",
       "name": "text_similarity_scan",
-      "description": "Scan wiki for n-gram overlap ≥90% — detects copy-paste chains.",
+      "description": "Scan wiki for n-gram overlap \u226590% \u2014 detects copy-paste chains.",
       "command": "./scripts/text-similarity.sh --scan-all --threshold 90"
     },
     {
       "check_id": "11",
       "name": "hot_cache_stale_check",
       "command": "./scripts/check-wiki-changes.sh || true",
-      "note": "If changes detected since last wiki/hot.md update → prompt user to refresh."
+      "note": "If changes detected since last wiki/hot.md update \u2192 prompt user to refresh."
     },
     {
       "check_id": "12",
@@ -97,10 +99,10 @@
   ],
   "primary_command": {
     "command": "./scripts/lint.sh [--quiet] [--skip-checks ID1,ID2] [wiki_dir]",
-    "note": "Single entry point for all lint checks — do not call helper scripts separately."
+    "note": "Single entry point for all lint checks \u2014 do not call helper scripts separately."
   },
   "post_lint_actions": {
-    "description": "Actions triggered after lint.sh completes — bridges lint findings to user decision and ingest flow.",
+    "description": "Actions triggered after lint.sh completes \u2014 bridges lint findings to user decision and ingest flow.",
     "trigger_on_exit_code_0": "new_sources_detected OR orphan_pages_found OR contradications_detected",
     "auto_fix_phase": {
       "description": "Automatically fix issues that don't require user intervention. Only non-auto-fixable issues surface to user.",
@@ -119,13 +121,18 @@
           "condition": "broken_links_found AND link_validator_auto_available",
           "action": "run scripts/unified-pass.sh --auto > /dev/null 2>&1 || true",
           "log_only": true
+        },
+        {
+          "condition": "agent_review_required_from_unified_pass",
+          "action": "capture_agent_review_required_to_wm",
+          "note": "non-auto-fixed broken links (score<80) propagate to WM.broken_links_resolved[] for query step_0.75"
         }
       ],
       "rule": "Auto-fix runs BEFORE user-facing output. All auto-fixed issues go to wiki/log.md only, never shown to user.",
       "post_fix_workflow": [
         {
           "condition": "any_auto_fixed",
-          "action": "append_to_log 'Auto-fixed: [issue_type] — see log for details'",
+          "action": "append_to_log 'Auto-fixed: [issue_type] \u2014 see log for details'",
           "silent": true
         },
         {
@@ -133,6 +140,12 @@
           "action": "present_to_user 'Issues requiring your decision:' + list_of_non_fixed_issues"
         }
       ]
+    },
+    "post_fix_broken_links_sync": {
+      "description": "After unified-pass.sh --auto captures agent_review_required, sync to working_memory for query awareness.",
+      "trigger_after_unified_pass_auto": true,
+      "action": "capture_agent_review_required_from_unified_pass_output_to_wm",
+      "note": "non-auto-fixed broken links (score<80) must propagate to WM.broken_links_resolved[] so step_0.75 can report them"
     },
     "actions": [
       {
@@ -152,7 +165,7 @@
         "schema_ref": "rules/contradiction_resolution.json"
       }
     ],
-    "rule": "Lint outputs JSON findings → user reviews → user decides → agent executes ingest/update via appropriate process file. Lint never writes wiki directly, only reports."
+    "rule": "Lint outputs JSON findings \u2192 user reviews \u2192 user decides \u2192 agent executes ingest/update via appropriate process file. Lint never writes wiki directly, only reports."
   },
   "git_conventions_reference": "rules/git_conventions.json#GIT-CONVENTIONS-V1",
   "error_handling": {
@@ -160,7 +173,7 @@
   },
   "context_scope": "transient",
   "memory_hooks": {
-    "description": "Memory layer hooks — triggered after lint.sh completes. Async, non-blocking.",
+    "description": "Memory layer hooks \u2014 triggered after lint.sh completes. Async, non-blocking.",
     "hooks": [
       {
         "trigger": "post_lint_check",
@@ -188,6 +201,16 @@
             "command": "./scripts/auto-crosslink.sh '${PAGE_PATH}' --include-root 2>/dev/null || true"
           }
         ]
+      },
+      {
+        "trigger": "on_broken_links_found",
+        "actions": [
+          {
+            "action_name": "sync_agent_review_required_to_wm",
+            "command": "./scripts/memory/sync-broken-links-to-wm.sh || true",
+            "note": "Captures agent_review_required from unified-pass.sh output \u2192 writes to WM.broken_links_resolved[] for query step_0.75 awareness"
+          }
+        ]
       }
     ],
     "schema_ref": "scripts/memory/recall-spec.md#process_integration"
@@ -200,12 +223,19 @@
     "check_id_9_contradiction_deep": {
       "trigger": "post_lint_check",
       "actions": [
-        { "name": "distillation_check", "command": "./scripts/memory/distill.sh --check-undistilled 2>/dev/null || true" }
+        {
+          "name": "distillation_check",
+          "command": "./scripts/memory/distill.sh --check-undistilled 2>/dev/null || true"
+        }
       ]
     },
     "check_id_2_orphan_pages": {
       "trigger": "on_orphan_pages_found",
       "action": "backlink_update_hook"
+    },
+    "check_id_8_broken_links": {
+      "trigger": "on_broken_links_found",
+      "action": "sync_agent_review_required_to_wm_hook"
     }
   }
 }
