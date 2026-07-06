@@ -322,9 +322,9 @@ related: [<other wiki pages or skills>]
 
 | # | Component | Description | Dependencies | Status |
 |---|------|-------------|--------------|--------|
-| **D1** | Fix `scripts/memory/distill.sh` naming — add `-skill.md` suffix | В Python-блоке: к имени файла для type_label == 'skill' добавлять `-skill`. Формат: `{slug}-skill_{tid[:8]}.md`. Соответствует `rules/skill_format.json#naming_convention`. | None | ⬜ Pending |
-| **D2** | Add auto-distillation trigger after capture в memory_hooks | В process-ingest.json и process-query.json: после `traj-capture.sh` добавить второй action — `distill.sh --trajectory <path>` (не только check). Trigger: on_capture_complete. | D1 | ⬜ Pending |
-| **D3** | Update duplicate detection logic | `check_duplicate_skill()` в distill.sh ищет по тегам slug → обновить regex для `-skill.md` суффикса. Проверить на существующих скиллах wiki/skills/. | D1 | ⬜ Pending |
+| **D1** | Fix `scripts/memory/distill.sh` naming — `{slug}-skill.md`. ✅ Done |
+| **D2** | Add auto-distillation trigger after capture в memory_hooks — `distill.sh --trajectory <path>` after `traj-capture.sh`. Trigger: on_capture_complete. | D1, S5 | ⬜ Pending |
+| **D3** | Update duplicate detection logic — slug regex for `-skill.md`. ✅ Done |
 
 ### Execution Order
 

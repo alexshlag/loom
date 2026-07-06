@@ -106,14 +106,14 @@ check_duplicate_skill() {
     local slug="$1"
     [[ ! -d "$SKILLS_DIR" ]] && return 1
 
-    # Check by frontmatter tags — pattern: [skill, skill-{slug}] (D3: updated for -skill.md naming)
+    # Check by frontmatter tags — pattern: [skill, skill-{slug}] # updated in D1
     local matches
     matches=$(grep -rl "tags:.*skill.*${slug}" "$SKILLS_DIR/" 2>/dev/null || true)
 
     if [[ -z "$matches" ]]; then
         # Fallback: check index.md or direct file existence for {slug}-skill pattern
         matches=$(grep "wiki/skills/${slug}-skill" "wiki/index.md" 2>/dev/null || true)
-        [[ -z "$matches" ]] && [ -f "${SKILLS_DIR}/${slug}-skill_*.md" ] && matches="${SKILLS_DIR}/${slug}-skill_*.md"
+        [[ -z "$matches" ]] && [ -f "${SKILLS_DIR}/${slug}-skill-[0-9]*.md" ] && matches="${SKILLS_DIR}/${slug}-skill-[0-9]*.md"
     fi
     
     if [[ -n "$matches" ]]; then echo "$matches"; return 0; fi
@@ -183,19 +183,19 @@ else:
 
 # Ensure uniqueness with date suffix
 if type_label == 'skill':
-    # Naming convention: {slug}-skill_{tid[:8]}.md per rules/skill_format.json#naming_convention
-    final_path = os.path.join(outd, f"{slug}-skill_{tid[:8]}.md")
+    # Naming convention: {slug}-skill.md per rules/skill_format.json#naming_convention
+    final_path = os.path.join(outd, f"{slug}-skill.md")
 else:
-    final_path = os.path.join(outd, f"{slug}_{tid[:8]}-case.md")
+    final_path = os.path.join(outd, f"{slug}-case.md")
 
 # Check for duplicate by file existence — append counter if needed
 if os.path.exists(final_path):
     counter = 1
     while True:
         if type_label == 'skill':
-            final_path = os.path.join(outd, f"{slug}-skill_{tid[:8]}-{counter}.md")
+            final_path = os.path.join(outd, f"{slug}-skill-{counter}.md")
         else:
-            final_path = os.path.join(outd, f"{slug}_{tid[:8]}-case-{counter}.md")
+            final_path = os.path.join(outd, f"{slug}-case-{counter}.md")
         if not os.path.exists(final_path): break
         counter += 1
 
