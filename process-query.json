@@ -201,6 +201,10 @@
         {
           "step": 4,
           "name": "execute_save_path",
+          "schema_ref": [
+            "rules/naming_conventions.json#NAMES-CORE-V1",
+            "process-ingest.json#step_8a_new_page"
+          ],
           "actions": [
             {
               "if_topic_expansion": "TRANSITION_TO process-ingest.json via web_ingest_flow (create_new_expansion_of_existing, auto)"

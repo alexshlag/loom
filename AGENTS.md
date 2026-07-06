@@ -129,6 +129,7 @@ Three process files — each defines a complete workflow:
 ```
 
 > Categories: `rules/categories.json`
+> Naming conventions (prevent collision): `rules/naming_conventions.json`
 
 #### Assets & Media Pipeline
 
@@ -176,6 +177,7 @@ Consolidated index of all niche/specific rules. Read on demand when a process st
 | Rule File | Purpose | Trigger |
 |---|---|---|
 | `rules/auto_rebuild_metadata.json` | Metadata rebuild modes per process | Before wiki edit |
+| `rules/naming_conventions.json` | Project prefixing — prevent filename collision across projects/frameworks | Page creation/update |
 | `rules/non_blocking_lint.json` | Lint checks, quiet mode, cron safety | Before lint |
 | `rules/contradiction_resolution.json` | Cascade priority for conflicting sources | On contradiction detected |
 | `rules/delta_tracking.json` | Hash-based source deduplication | Before ingest |

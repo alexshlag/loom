@@ -249,6 +249,21 @@
       "pre_check": [
         {
           "command": "./scripts/validate-path.sh wiki/${PAGE_PATH}.md"
+        },
+        {
+          "action_name": "check_filename_collision",
+          "description": "Scan existing wiki filenames for potential collision with proposed PAGE_PATH. If bare concept name (e.g., 'messenger.md') would collide with project-specific page, enforce project prefix.",
+          "rules_ref": "rules/naming_conventions.json#NAMES-CORE-V1",
+          "collision_detection_logic": [
+            {
+              "condition": "proposed_path matches bare concept pattern AND existing_page_with_same_base_name_exists",
+              "action": "ENFORCE_PREFIX — rename to <project-slug>-<path>.md"
+            },
+            {
+              "condition": "existing_bare_concept_is_truly_abstract (framework-agnostic)",
+              "action": "ALLOW_BARE_NAME — verify no project-specific pages exist under same base"
+            }
+          ]
         }
       ],
       "syntheses_rule": {
@@ -256,7 +271,10 @@
         "condition": "page_type == 'synthesis'",
         "action_if_no_novel_inference": "SKIP_SAVE - suggest add to existing page"
       },
-      "schema_ref": "rules/structural_requirements.json#FIRST-BLOCK-V1"
+      "schema_ref": [
+        "rules/structural_requirements.json#FIRST-BLOCK-V1",
+        "rules/naming_conventions.json#NAMES-CORE-V1"
+      ]
     },
     {
       "step_id": "step_8b_update_page",
