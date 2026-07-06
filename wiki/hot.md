@@ -36,3 +36,5 @@ related: []
 - Wiki maintenance and expansion (auto-fixes running on lint errors)
 - Knowledge base growth via query responses and source ingestion
 - Phase 16.1: recall.sh PRF engine integrated into process-query.json flow
+
+- **Recent activity**: hot-cache-fix | Replaced agent instructions with enforce commands in process-query.json + process-ingest.json — auto-refresh.sh now triggered on query compaction (step_2.3) and ingest post_checks (step_9)
