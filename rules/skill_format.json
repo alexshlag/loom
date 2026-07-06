@@ -32,6 +32,16 @@
           "live_state"
         ],
         "default": "documentation"
+      },
+      {
+        "name": "name",
+        "pattern": "<lowercase_skill_name>",
+        "description": "Unique identifier for the skill — matches filename without .md extension. Used for indexing, cross-referencing, and external search resolution."
+      },
+      {
+        "name": "description",
+        "pattern": "<one-sentence summary>",
+        "description": "What this skill does. Appears in index.md summaries, used for semantic matching during query fallback search."
       }
     ]
   },
@@ -102,5 +112,13 @@
     "Algorithm must be self-contained — no forward references to other skills",
     "Each skill file = one pattern/pattern-family only (Single Responsibility)",
     "Skills SHOULD link to relevant wiki docs (framework/lang/best-practices) — auto-suggested during creation, not enforced"
-  ]
+  ],
+  "naming_convention": {
+    "pattern": "<skill_name>-skill.md",
+    "description": "All skill files must end with '-skill.md' suffix for easy differentiation from other wiki pages (concepts, entities, etc.) during directory scan and search.",
+    "example": [
+      "memory-hooks-integration-with-process-skill.md",
+      "pdf-processing-skill.md"
+    ]
+  }
 }

@@ -22,7 +22,7 @@
     {
       "order": 4,
       "action": "scan_directory",
-      "path": "wiki/skills/",
+      "path": "wiki/skills/*-skill.md",
       "output": "working_memory.skills_loaded = [{name, category}]",
       "note": "Non-blocking — failure does not abort session. Skills loaded into WM for agent awareness during processes.",
       "schema_ref": "rules/skill_format.json#category_taxonomy"
