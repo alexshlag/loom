@@ -18,6 +18,10 @@ related: []
   No pending tasks
 
 ## Recent Changes
+  - **[2026-07-07] docs-system | Created wiki/docs/ai-factory.md — comprehensive AI Factory documentation**
+    - Covers: CLI setup, core workflow skills (`/aif-explore`, `/aif-plan`, `/aif-implement`, etc.), reflex loop architecture
+    - Includes: subagent roles (plan-coordinator, implement-coordinator), quality gates schema, security model (two-level scanning)
+    - Related crosslinks added to entities/ai-factory + concepts/workflow-state-machine
   - **[2026-07-06] docs-system | Phase 18 D1-D5 implementation complete**
     - `wiki/templates/docs-template.json` — docs template with navigation pattern + crosslinking strategy
     - `rules/categories.json` → added "docs" category (auto-crosslink routing updated)
@@ -34,4 +38,4 @@ related: []
 
 - **Recent activity**: compact_json_rules | JSON instruction compactification — rules/*.json and AGENTS.md §9 integration
 - **Recent activity**: fix_json_comments | Removed invalid // inline comments from context-scopes.json — replaced with schema_ref field; validated all 12 rules/*.json files pass json.tool
-- **Recent activity**: phase_18_d1d5 | Implemented docs-template.json + categories/docs + ingest branching + DOC-PAGE-V1 rule + docs-audit.sh
+- **Recent activity**: docs-system | Created wiki/docs/ai-factory.md from GitHub source — comprehensive coverage of CLI, skills system, reflex loop, extensions, security model
