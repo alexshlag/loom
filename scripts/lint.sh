@@ -145,9 +145,15 @@ else:
     print("{}")
 ' 2>/dev/null) || local_up_json="{}"
 
-  BROKEN_LINKS=$(echo "$local_up_json" | python3 -c 'import json,sys; print(len(json.load(sys.stdin).get("broken_links",[])))' 2>/dev/null) || BROKEN_LINKS=0
-  AUTO_REPAIRED=$(echo "$local_up_json" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("auto_repaired",0))' 2>/dev/null) || AUTO_REPAIRED=0
-  AGENT_REVIEW_REQUIRED_JSON=$(echo "$local_up_json" | python3 -c 'import json,sys; print(json.dumps(json.load(sys.stdin).get("agent_review_required",[])))' 2>/dev/null) || AGENT_REVIEW_REQUIRED_JSON="[]"
+# Batch extract from local_up_json (single Python call replaces 3 individual ones)
+  read BROKEN_LINKS AUTO_REPAIRED AGENT_REVIEW_REQUIRED_JSON <<< $(echo "$local_up_json" | python3 -c "
+import json, sys
+data = json.loads(sys.stdin.read())
+broken = len(data.get('broken_links', []))
+auto_rep = data.get('auto_repaired', 0)
+ag_req = json.dumps(data.get('agent_review_required', []))
+print(f'{broken}\t{auto_rep}\t{ag_req}')
+" 2>/dev/null || echo "0	0	[]")
 fi
 TOTAL_ISSUES=$((TOTAL_ISSUES + BROKEN_LINKS))
 
@@ -205,10 +211,13 @@ if [[ "$SKIP_CHECKS" != *",12,"* ]]; then
   FIX_ITER=0
   while true; do
     local_tr=$(bash "${SCRIPT_DIR}/tag-audit.sh" --quiet "$WIKI_DIR" 2>/dev/null) || { break; }
-    TAG_EMPTY=$(echo "$local_tr" | python3 -c 'import json,sys;d=json.load(sys.stdin);print(d.get("issues_found",{}).get("empty_tags",0))' 2>/dev/null) || TAG_EMPTY=0
-    TAG_NON_EN=$(echo "$local_tr" | python3 -c 'import json,sys;d=json.load(sys.stdin);print(d.get("issues_found",{}).get("non_en_tags",0))' 2>/dev/null) || TAG_NON_EN=0
-    TAG_GENERIC=$(echo "$local_tr" | python3 -c 'import json,sys;d=json.load(sys.stdin);print(d.get("issues_found",{}).get("generic_type_tags",0))' 2>/dev/null) || TAG_GENERIC=0
-    TAG_XR_GAPS=$(echo "$local_tr" | python3 -c 'import json,sys;d=json.load(sys.stdin);print(d.get("issues_found",{}).get("xr_gaps",0))' 2>/dev/null) || TAG_XR_GAPS=0
+    # Batch extract tag issues (4 individual python3 calls → single process)
+    read TAG_EMPTY TAG_NON_EN TAG_GENERIC TAG_XR_GAPS <<< $(echo "$local_tr" | python3 -c "
+import json, sys
+data = json.loads(sys.stdin.read())
+issues = data.get('issues_found', {})
+print(f'{issues.get("empty_tags", 0)}\t{issues.get("non_en_tags", 0)}\t{issues.get("generic_type_tags", 0)}\t{issues.get("xr_gaps", 0)}')
+" 2>/dev/null || echo "0	0	0	0")
     local_tot=$((TAG_EMPTY + TAG_NON_EN + TAG_GENERIC + TAG_XR_GAPS))
     [ "$local_tot" -eq 0 ] && break
     $QUIET || echo "[~] Tag audit: ${local_tot} issues — auto-fix (iter $((FIX_ITER+1)))..." >&2

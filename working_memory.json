@@ -1,10 +1,10 @@
 {
-  "last_updated": "2026-07-07T04:35+03",
+  "last_updated": "2026-07-07T05:05+03",
   "current_mode": "project",
-  "focus_node": "Phase 20.2 D1-D3 complete — all distillation pipeline fixes done.",
+  "focus_node": "Phase 17 T5 — batch JSON reads complete for lint.sh; text-similarity.sh inline blocks acceptable.",
   "next_steps_todo": [
-    "Consider Phase 17 T2-T6 (script hardening) or user-driven priorities",
-    "Add wiki/skills/ → .pi sync to user's agent config if desired"
+    "Complete T6: migrate remaining scripts to cleanup_add (check-new-sources, link-validator, auto-crosslink)",
+    "Consider Phase 17.1: performance profiling of batched vs original execution times"
   ],
   "open_pages": [],
   "dead_ends": [],
@@ -19,9 +19,11 @@
       "raw/trajectories/*"
     ],
     "key_findings": [
-      "✅ D1: distill.sh naming fixed — `{slug}-skill.md` format",
-      "✅ D2: auto-distillation hooks added to process-ingest.json + process-query.json (on_capture_complete trigger)",
-      "✅ D3: check_duplicate_skill() updated for -skill.md glob pattern"
+      "✅ T3: errexit added to batch-ingest, check-structural, lint, raw-correct, rebuild-source-manifest",
+      "✅ T4: rebuild-meta.sh already uses wiki-walk.py single-pass (triple walk eliminated)",
+      "🔄 T6: lib.sh cleanup_temp_files() created; lint.sh + rebuild-meta.sh migrated to centralized cleanup_add",
+      "✅ T5: lint.sh consolidated — 3+4 individual python3 calls replaced with single batch extracts (local_up_json + tag-audit)",
+      "📝 T5 partial: text-similarity.sh inline blocks are per-invocation, not in loops; acceptable overhead"
     ]
   },
   "broken_links_resolved": [],
