@@ -39,7 +39,7 @@
     {
       "check_id": "5",
       "name": "new_topics_proposal",
-      "description": "Suggest new topics from conversation context and index.md connections."
+      "description": "Suggest new topics from conversation context and wiki/index.md connections."
     },
     {
       "check_id": "6",
@@ -77,7 +77,7 @@
       "check_id": "11",
       "name": "hot_cache_stale_check",
       "command": "./scripts/check-wiki-changes.sh || true",
-      "note": "If changes detected since last hot.md update → prompt user to refresh."
+      "note": "If changes detected since last wiki/hot.md update → prompt user to refresh."
     },
     {
       "check_id": "12",

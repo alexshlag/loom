@@ -32,7 +32,7 @@
   ],
 
   "management_rules": [
-    {"action": "agent_identifies_project",     "steps": ["Set current_mode = 'project' in WM; update snapshot.md → add to Active Projects; load snapshot.md on subsequent invocations"]},
+    {"action": "agent_identifies_project",     "steps": ["Set current_mode = 'project' in WM; update wiki/snapshot.md → add to Active Projects; load wiki/snapshot.md on subsequent invocations"]},
     {"action": "explicit_marker_received",      "rule": "[WORK_MODE: project] → accept immediately"},
     {"action": "ambiguous_context",             "rule": "Clarify with user before proceeding"}
   ],

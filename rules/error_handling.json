@@ -5,7 +5,7 @@
   "golden_rule": "Error != stop. Every error is a signal for action, not reason to stall.",
 
   "steps": {
-    "step_1": "Detect & Log [!] → write to log.md with type [error], description, context. Always append (>>), never overwrite.",
+    "step_1": "Detect & Log [!] → write to wiki/log.md with type [error], description, context. Always append (>>), never overwrite.",
     "step_2": "Analyze — root cause (not just 'error', but why instruction broke)",
     "step_3": "Resolve",
     "strategies": {
@@ -21,7 +21,7 @@
     {"situation": "git add * blocked by guardrails",       "action": "[!] Log: protected zone blocked → local-fix: switch to git add wiki/"},
     {"situation": "fetch_content returned truncated markdown", "action": "[!] Log: truncation detected → local-fix: fallback web_search + get_search_content"},
     {"situation": "New command incompatible with Schema",   "action": "[!] Log: schema conflict → schema-patch: propose AGENTS.md patch to user"},
-    {"situation": "Grep gave >100 matches without meaning",  "action": "[!] Log: grep noise → dead-end: switch to index.md"}
+    {"situation": "Grep gave >100 matches without meaning",  "action": "[!] Log: grep noise → dead-end: switch to wiki/index.md"}
   ],
 
   "_notes": {"extracted_from": "AGENTS.md#error_handling_protocol"},

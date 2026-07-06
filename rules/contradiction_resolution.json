@@ -14,7 +14,7 @@
     {"priority": 3, "layer": "documentation",           "condition": "source_layer == 'documentation' AND evidence_grade > 'assertion_only'", "rule": "only when no code/live available"}
   ],
 
-  "evidence_sub_priority": {documented: 1, corroborated: 2, assertion_only: 3},
+  "evidence_sub_priority": {"documented": 1, "corroborated": 2, "assertion_only": 3},
 
   "constraints": [
     {"id": "NEVER user_override for objective facts"},

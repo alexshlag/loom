@@ -5,13 +5,13 @@
 
   "layers": {
     "working_memory.json": {"role": "current-session ops memory (focus_node, open_pages, next_steps_todo)", "lifespan": "one session", "rw": "write every turn"},
-    "hot.md":             {"role": "long-term snapshot (project context, wiki changes). Survives compaction.",      "lw": "agent writes snapshots",   "structure": {"active_project": "WORK_MODE: project — name, focus_node, related_pages, findings, next_steps", "session_context": "WORK_MODE: query/discussion — topic, pages_read, key_findings", "system_state": "Active Threads + Recent Changes (updated on every wiki create/update)"}},
-    "log.md":             {"role": "append-only chronicle of all actions and wiki changes.",                       "lifespan": "forever",               "rw": "agent appends only"}
+    "hot.md":             {"role": "long-term snapshot (project context, wiki changes). Survives compaction.",      "path": "wiki/hot.md",  "lw": "agent writes snapshots",   "structure": {"active_project": "WORK_MODE: project — name, focus_node, related_pages, findings, next_steps", "session_context": "WORK_MODE: query/discussion — topic, pages_read, key_findings", "system_state": "Active Threads + Recent Changes (updated on every wiki create/update)"}}},
+    "log.md":             {"role": "append-only chronicle of all actions and wiki changes.", "path": "wiki/log.md", "lifespan": "forever",               "rw": "agent appends only"}
   },
 
   "flow": {
     "session_start": ["read working_memory.json → ./scripts/restore-hot-cache.sh → grep -m 20 '' wiki/log.md | tail -20"],
-    "session_end":   ["write_to_working_memory (next_steps_todo, open_pages) → write_session_context_to_hot.md (Active Session Context or Active Project)"]
+    "session_end":   ["write_to_working_memory (next_steps_todo, open_pages) → write session context to wiki/hot.md (Active Session Context or Active Project)"]
   },
 
   "log_read_fallback": {
@@ -29,8 +29,8 @@
   "concurrent_trigger_rule": "When multiple triggers fire simultaneously, write ALL relevant sections in one pass (not sequentially)",
 
   "constraints": {
-    "IMMEDIATE_WRITE":       "Write hot.md immediately after action, NOT at session end",
-    "SLICE_NOT_FULL_LOG":    "hot.md = summary slice only, never full log copy",
+    "IMMEDIATE_WRITE":       "Write wiki/hot.md immediately after action, NOT at session end",
+    "SLICE_NOT_FULL_LOG":    "wiki/hot.md = summary slice only, never full log copy",
     "RESTORE_ON_COMPACT":    "After context compaction: call restore-hot-cache.sh || true",
     "SYSTEM_STATE_ALWAYS":   "System State section updated on every wiki create/update",
     "NO_APPEND_TO_JSON":     "Never append to JSON files - read full file -> modify -> write complete document",

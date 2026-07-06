@@ -6,7 +6,7 @@
     "index_only": "./scripts/rebuild-meta.sh --index-only"
   },
   "actions": {
-    "full_rebuild": "Rebuilds all meta files (registry.json + backlinks.json + index.md)",
+    "full_rebuild": "Rebuilds all meta files (registry.json, backlinks.json, wiki/index.md)",
     "index_rebuild": "Rebuilds only wiki/index.md (H1 headers + first sentences per category)"
   },
   "trigger_points": [

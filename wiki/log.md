@@ -660,3 +660,5 @@ Sources used:
 - Preserved R07-compliant conditional logic (arbitration_layer, resolution_actions)
 - Added AGENTS.md §9 reference + compact-json-instructions skill to Roadmap section
 - Files: git_conventions, context-scopes, session_context_rules, compounding_workflow, tag-guidelines, contradiction_resolution, search_strategy, faq_summary, work_modes, error_handling, link_conventions, execution_contract, delta_tracking
+
+## [2026-07-06] fix_json_comments | Removed invalid // inline comments from context-scopes.json — replaced with schema_ref field; validated all 12 rules/*.json files pass json.tool

@@ -120,12 +120,12 @@
       "step_id": "1",
       "system_files_exclusion": {
         "exclude": [
-          "log.md",
-          "issues.md",
-          "timeline.md",
-          "overview.md",
-          "snapshot.md",
-          "index.md"
+          "wiki/log.md",
+          "wiki/issues.md",
+          "wiki/timeline.md",
+          "wiki/overview.md",
+          "wiki/snapshot.md",
+          "wiki/index.md"
         ]
       },
             "schema_ref": "scripts/memory/recall-spec.md",
@@ -148,7 +148,7 @@
       "if_broken": "STOP_SEARCH -> ./scripts/memory/recall.sh <query>",
       "transition_to_1.5_if_empty": {
         "condition": "all_wiki_search_methods_returned_zero_matches",
-        "description": "If recall.sh + grep from index.md + grep from search-index.json all return 0 results \u2192 trigger step_1.5 knowledge_gap_handling"
+        "description": "If recall.sh + grep from wiki/index.md + grep from meta/search-index.json all return 0 results \u2192 trigger step_1.5 knowledge_gap_handling"
       }
     },
     {
@@ -161,7 +161,7 @@
           "check": "recall.sh returned empty results"
         },
         {
-          "check": "grep -m 30 from index.md returned 0 matches"
+          "check": "grep -m 30 from wiki/index.md returned 0 matches"
         },
         {
           "check": "grep -m 20 from search-index.json returned 0 matches"
@@ -305,7 +305,7 @@
           "step_2": "auto_crosslink_from_query_results -> add to working_memory.json"
         },
         {
-          "step_3": "write session context to hot.md"
+          "step_3": "write session context to wiki/hot.md"
         }
       ],
       "post_action": {
@@ -477,7 +477,7 @@
           "action_name": "update_hot_with_wiki_changes",
           "condition": "IF wiki_page_created_or_updated_during_query",
           "rule_id": "HOT-WIKI-CHANGES-V1",
-          "description": "If query resulted in new/updated wiki page \u2192 summarize changes in hot.md System State"
+          "description": "If query resulted in new/updated wiki page \u2192 summarize changes in wiki/hot.md System State"
         }
       ]
     }

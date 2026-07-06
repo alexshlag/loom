@@ -80,7 +80,7 @@ AGENTS.md and process files (`process-ingest.json`, `process-query.json`, `proce
 
 - **[PLAN.md](PLAN.md)** — project roadmap: phase statuses, pending phases, integration fixes (IF-1..IF-4), theoretical questions. **Always read before starting work** — determines priorities and context.
 - **[FEATURES_PLAN.md](FEATURES_PLAN.md)** — implementation plan for architectural improvements based on research (ingest algorithms comparison): advisory locking, background synthesis, contradiction flagging, mode-aware routing, address assignment.
-- **[issues.md](issues.md)** — bug registry and known issues. Documents found bugs, logs fixes. **Read issues.md during ingest/query/lint** — to avoid duplicating known problems and understand system limitations.
+- **[wiki/issues.md](wiki/issues.md)** — bug registry and known issues. Documents found bugs, logs fixes. **Read issues.md during ingest/query/lint** — to avoid duplicating known problems and understand system limitations.
 
 ### 🛠 Code Conventions
 
@@ -148,7 +148,7 @@ When agent receives ≥3 related sources or user provides multiple files: `scrip
     # Agent reads order and labels from JSON, never hardcodes
     "assets/images/": "copies of original images (.png, .jpg, .jpeg, .gif)",
     "assets/descriptions/": "markdown descriptions of images: OCR + entities + metadata",
-    "snapshot.md": "one-page snapshot of current facts from all wiki pages (see below)"
+    "wiki/snapshot.md": "one-page snapshot of current facts from all wiki pages (see below)"
   }
 }
 ```
@@ -235,7 +235,7 @@ related: []
   - Example: if task completed — remove it from `next_steps_todo` before write()
 - Does not duplicate wiki — stores only session metadata (not the pages themselves)
 
-**Canonical rules source**: `rules/session_context_rules.json` defines complete algorithm for memory layer work (working_memory.json, hot.md, log.md), save_triggers, and read_algorithm. Agent reads this file before every memory action.
+**Canonical rules source**: `rules/session_context_rules.json` defines complete algorithm for memory layer work (working_memory.json, wiki/hot.md, wiki/log.md), save_triggers, and read_algorithm. Agent reads this file before every memory action.
 
 > Schema ref: `rules/session_context_rules.json`.
 
@@ -250,7 +250,7 @@ related: []
   {"path": "wiki/entities/pi-coding-agent.md", "status": "reading" | "updating"}
   ],
   "dead_ends": [
-  {"approach": "grep across all wiki", "reason": "too much noise, index.md works better"}
+  {"approach": "grep across all wiki", "reason": "too much noise, wiki/index.md works better"}
   ],
   "query_summary": {
   "intent": "What user was looking for",
@@ -441,10 +441,10 @@ Answer is considered compound (requires saving as new wiki page) if synthesis fr
       },
       {
         "action": "archive",
-        "trigger": "project completed — entry moved to wiki/projects/, removed from snapshot.md"
+        "trigger": "project completed — entry moved to wiki/projects/, removed from wiki/snapshot.md"
       }
     ],
-    "rule": "agent never loads snapshot.md if user is not working on a project. session starts with index.md + overview.md."
+    "rule": "agent never loads wiki/snapshot.md if user is not working on a project. session starts with wiki/index.md + wiki/overview.md."
   }
 }
 ```
@@ -471,10 +471,10 @@ Full specification for memory layers, save triggers, read patterns, grep contrac
 | File | Role | Lifespan | RW |
 |------|------|----------|----|
 | **working_memory.json** | Current-session operational memory (focus_node, next_steps_todo) | Short: one session | Agent writes every turn |
-| **hot.md** | Long-term snapshot — active project/session context. Survives compaction via restore-hot-cache.sh | Between sessions | Agent writes snapshot |
-| **log.md** | Append-only chronicle of actions and wiki changes | Forever | Agent appends only |
+| **wiki/hot.md** | Long-term snapshot — active project/session context. Survives compaction via restore-hot-cache.sh | Between sessions | Agent writes snapshot |
+| **wiki/log.md** | Append-only chronicle of actions and wiki changes | Forever | Agent appends only |
 
-**Quick interaction flow**: Session start → read WM → restore-hot-cache.sh → grep log (last 20 entries). Session end → write to WM → write snapshot to hot.md.
+**Quick interaction flow**: Session start → read WM → restore-hot-cache.sh → grep log (last 20 entries). Session end → write to WM → write snapshot to wiki/hot.md.
 
 > Full details: `rules/session_context_rules.json#flow` and `rules/session_context_rules.json#constraints`.
 
@@ -533,9 +533,9 @@ Agent manages two independent modes:
 #### Canonical: `scripts/rebuild-meta.sh [--index-only]`
 
 - Full rebuild: `./scripts/rebuild-meta.sh` (registry + backlinks)
-- Index only: `./scripts/rebuild-meta.sh --index-only` (index.md H1+first sentences)
+- Index only: `./scripts/rebuild-meta.sh --index-only` (wiki/index.md H1+first sentences)
 
-`./scripts/rebuild-meta.sh` → rebuilds all meta files (`registry.json` + `backlinks.json` + `index.md`)
+`./scripts/rebuild-meta.sh` → rebuilds all meta files (`registry.json` + `backlinks.json` + `wiki/index.md`)
 
 `--index-only` flag → rebuilds only `wiki/index.md` (H1 headers + first sentences per category)
 
@@ -638,7 +638,7 @@ cd /path/to/loomana && ./scripts/lint.sh --skip-checks 3,5
 
 ### Schema Inheritance
 
-Process files inherit from AGENTS.md via `schema_ref` (never duplicate rules).
+> Rule: never duplicate AGENTS.md rules in process files. Always add `schema_ref` for canonical source.
 
 #### Canonical References
 
@@ -649,13 +649,10 @@ Process files inherit from AGENTS.md via `schema_ref` (never duplicate rules).
 | Lint script              | `./scripts/lint.sh`                                                                         |
 | Contradiction resolution | `process-query.json#contradiction_resolution_flow → authoritative > temporal > user_review` |
 
-> Rule: never duplicate AGENTS.md rules in process files. Always add `schema_ref` for canonical source.
-
 ---
 
 ### Wiki Operation Routing Contract
 
 **Schema ref**: `rules/external_sources_policy.json` — full routing contract for wiki create/update operations.
 
-> Rule: never duplicate AGENTS.md rules in process files. Always add `schema_ref` for canonical source.
 ---

@@ -39,7 +39,7 @@
         "en": "Overviews",
         "ru": "Overviews"
       },
-      "description": "Pages with aggregated data (timeline.md, overview.md)"
+      "description": "Pages with aggregated data (wiki/timeline.md, wiki/overview.md)"
     },
     {
       "key": "notes",
