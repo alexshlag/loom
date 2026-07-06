@@ -176,6 +176,8 @@ def clean_duplicates(backlink_list):
     seen_from = set()
     result = []
     for b in backlink_list:
+        if not isinstance(b, dict):
+            continue  # skip corrupted entries
         key = (b.get('from'), b.get('context', ''))
         if not any(k == key for k in seen_from):
             seen_from.add(key)
@@ -430,6 +432,10 @@ if [ $? -ne 0 ]; then
 else
     mv "${WIKI_DIR}/index.md.tmp" "$IDX_PATH"
 fi
+
+# ─── 4. IDF cache → invalidate on wiki changes (auto-rebuilt by prf_extract.py) ──
+rm -f "${META_DIR}/idf_cache.json"
+echo "IDF cache invalidated (will rebuild on next recall)"
 
 # ─── Move timestamp to START of processing (not end) ────
 # Previously this was at line 400, causing find -newer to never match

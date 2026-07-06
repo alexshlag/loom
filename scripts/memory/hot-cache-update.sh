@@ -21,6 +21,7 @@ POSITIONAL_ARGS=()
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --rebuild) FORCE_REBUILD=true; shift;;
+        --check-only) shift;;  # default mode, explicit flag accepted
         *) POSITIONAL_ARGS+=("$1"); shift;;
     esac
 done

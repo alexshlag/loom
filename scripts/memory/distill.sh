@@ -148,7 +148,7 @@ os.makedirs(os.path.dirname(final_path), exist_ok=True)
 
 # Generate frontmatter + content (direct write to final path)
 lines = ["---"]
-tags_comma = ','.join([f'{type_label}-' + w for w in slug.split('-')])
+tags_comma = ', '.join([f'{type_label}-' + w for w in slug.split('-')])
 lines.append(f'tags: [{type_label}, {tags_comma}]')
 lines.append(f'date: "{datetime.date.today().isoformat()}"')
 lines.append("type: documentation")

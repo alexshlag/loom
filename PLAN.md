@@ -259,11 +259,33 @@
 |---|------|--------|--------|
 | 1 | Research: agent memory management techniques (zero-dependency) | ✅ DONE: `wiki/concepts/agent-memory-management.md` created with full architecture design |
 | 2 | Current state audit: what we have vs gaps identified | ✅ Documented — inline hooks, lexical-only recall, no trajectory capture |
-| 3 | Phase 16.1 Task #3: PRF-enhanced recall engine (`scripts/memory/recall.sh`) | ✅ Done — Stage 1 (links-first ranking) + Stage 2 (content expansion), integrated into process-query.json |
+| 3 | Phase 16.1 Task #3: PRF-enhanced recall engine (`scripts/memory/recall.sh`) | ✅ Done — Stage 1 (JSON output) + Stage 2 (content expansion) + PRF boost phase |
 | 4 | Phase 16.1 Task #4: Hot cache optimization (`scripts/memory/hot-cache-update.sh`) | ✅ Done — check-only mode implemented, process-query.json step_0.25 updated to use check-first approach |
 | 5 | Process file refactoring: extract memory ops into hooks (async) | ✅ Done — `memory_hooks` added to process-query.json, process-ingest.json, process-lint.json; scripts/traj-capture.sh and distill.sh created |
 | 6 | Phase 2: Trajectory capture (`scripts/memory/traj-capture.sh`) | ✅ Done — script created, integrated into process-query.json and process-ingest.json memory_hooks |
 | 7 | Phase 2: Distillation pipeline (`scripts/memory/distill.sh`) | ✅ Done — script created with skill/case generation, duplicate detection, and check-undistilled mode |
+| 8 | **PRF extraction & scoring** — TF-IDF-like term extraction from top-3 candidates, boost phase in recall.sh | ✅ Done — см. детали ниже |
+
+**Implementation details (Task #8):**
+
+**8a. Stopwords**: `scripts/memory/stopwords.txt` — 30-50 English stopwords, читается recall.sh при старте.
+
+**8b. PRF extractor**: `scripts/memory/prf_extract.py` — word-level TF-IDF над первыми 20 строками top-3 кандидатов.
+- Читает wiki-директорию, 3 candidate paths, stopwords
+- TF = term_freq / total_terms_in_page (avg across 3 pages)
+- IDF = log(N / df) across all wiki .md files
+- Вывод: `term:score` pairs, top-10, порог >= 1.5
+
+**8c. Boost phase** в `recall.sh stage_1_rank()`:
+- Для каждого кандидата: base_score (lexical) + PRF_boost (каждый совпавший PRF-терм × 1.5)
+- Флаг `--prf=auto|off` (по умолчанию auto)
+
+**8d. IDLE-кэш**: `meta/idf_cache.json` — инвалидируется при rebuild-meta (step 4), авто-пересобирается prf_extract.py при первом recall.
+
+**Риски (mitigated)**:
+- Ложно-положительный бустинг → стоп-лист (97 слов) + порог IDF (≥1.5)
+- Overhead на малых wiki (N < 5) → fallback на pure lexical (check в prf_extract.py)
+- Синхронизация кэша → cache invalidated via rebuild-meta.sh, auto-rebuild on demand
 
 **Design principles:**
 - Background processing: memory hooks → async, non-blocking  

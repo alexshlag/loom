@@ -11,7 +11,8 @@ cd "$PROJECT_ROOT"
 HOT_FILE="wiki/hot.md"
 LOG_FILE="wiki/log.md"
 WM_FILE="working_memory.json"
-QUIET="${1:-}"
+QUIET=false
+[[ $# -gt 0 && "$1" == "--quiet" ]] && QUIET=true
 
 # ─── Generate new hot.md content ──────────────────────────────
 

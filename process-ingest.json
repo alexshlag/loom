@@ -384,7 +384,7 @@
             "action_name": "capture_trajectory_if_nontrivial",
             "command": "./scripts/memory/traj-capture.sh --prompt '<user_query>' --steps '<tool_calls>' --outcome 'success' --complexity 'high'",
             "condition": "new_page_created OR page_updated",
-            "schema_ref": "scripts/memory/recall-spec.md"
+            "schema_ref": "scripts/memory/traj-capture-spec.md"
           }
         ]
       },

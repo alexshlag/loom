@@ -611,7 +611,7 @@
             "action_name": "capture_trajectory_if_nontrivial",
             "command": "./scripts/memory/traj-capture.sh --prompt '<user_query>' --steps '<tool_calls>' --outcome 'success' --complexity 'medium'",
             "condition": "compounding_flagged OR task_complexity >= medium",
-            "schema_ref": "scripts/memory/recall-spec.md"
+            "schema_ref": "scripts/memory/traj-capture-spec.md"
           }
         ]
       },

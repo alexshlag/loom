@@ -59,8 +59,8 @@ extract_summary() {
         return
     fi
     
-    local steps_count=$(echo "$json" | grep -c '"name"' || true)
-    local errors=$(echo "$json" | grep -c '"is_error":true' || true)
+    local steps_count=$(echo "$json" | grep -o '"name"' | wc -l || true)
+    local errors=$(echo "$json" | grep -o '"is_error":true' | wc -l || true)
     
     cat <<EOF
 - **Steps executed**: ${steps_count:-0}
@@ -97,7 +97,7 @@ do_capture() {
   "id": "${traj_id}",
   "timestamp": "${ts}",
   "prompt": $(echo "$PROMPT" | python3 -c "import sys,json; print(json.dumps(sys.stdin.read().strip()))"),
-  "tool_calls": $(echo "$STEPS_JSON" | tr -d '\n' || echo '[]'),
+  "tool_calls": $(echo "$STEPS_JSON" | python3 -c "import sys,json; d=sys.stdin.read(); print(json.dumps(json.loads(d)) if d.strip() else '[]')" 2>/dev/null || echo '[]'),
   "outcome": "${OUTCOME}",
   "complexity": "${COMPLEXITY}",
   "agent_version": "$(git -C "$PROJECT_ROOT" rev-parse --short HEAD 2>/dev/null || echo 'unknown')"
