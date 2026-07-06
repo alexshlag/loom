@@ -1,18 +1,25 @@
 {
-    "last_updated": "2026-07-06T18:45+03",
+    "last_updated": "2026-07-06T19:35+03",
     "current_mode": "project",
-    "focus_node": "JSON validation fix — removed invalid // comments from context-scopes.json; all 12 rules/*.json validated",
+    "focus_node": "AGENTS.md reduction — Phase 32.1 C10 (extract inline rules to JSON)",
     "open_pages": [],
     "dead_ends": [],
     "query_summary": {
-        "intent": "Исправить валидный JSON: убрать inline // из context-scopes.json, добавить schema_ref вместо комментариев",
-        "pages_read": ["rules/context-scopes.json"],
+        "intent": "Сократить AGENTS.md, вынеся дублирующие inline-описания в rules/*",
+        "pages_read": ["AGENTS.md", "rules/auto_rebuild_metadata.json", "rules/non_blocking_lint.json", "rules/evidence_grade.json", "rules/faq_summary.json", "rules/git_conventions.json", "rules/external_sources_policy.json"],
         "key_findings": [
-            "✅ Fixed context-scopes.json:8-18 — replaced 9 inline comments with schema_ref field",
-            "✅ All 12 rules/*.json now pass python3 -m json.tool validation"
+            "✅ AGENTS.md: 676 → 447 строк (-230 lines, ~14KB saved)",
+            "✅ Extracted: Auto-rebuild + Non-blocking Lint → auto_rebuild_metadata.json, non_blocking_lint.json",
+            "✅ Extracted: Wiki Snapshot JSON-блок → snapshot_format.json (new)",
+            "✅ Extracted: Language Policy → language_policy.json (new)",
+            "✅ Removed: Evidence Grade inline table → already in rules/evidence_grade.json",
+            "✅ Removed: Schema Inheritance Canonical References table → dead weight for agent context",
+            "✅ Total rules/*: 28 JSON files, ~1030 lines total"
         ]
     },
-    "next_steps_todo": [],
+    "next_steps_todo": [
+        {"task": "Review remaining AGENTS.md sections for further reduction opportunities", "priority": "medium"}
+    ],
     "session_context": {},
     "broken_links_resolved": []
 }

@@ -1,11 +1,11 @@
 ---
 tags: [cache, system]
-date: 2026-07-05
+date: 2026-07-06
 category: note
 sources: []
 related: []
 ---
-# Wiki Hot Cache — Last Updated: 2026-07-05
+# Wiki Hot Cache — Last Updated: 2026-07-06
 
 ## Active Project (WORK_MODE: project)
 - **Project**: Loomana wiki architecture optimization + language standardization
@@ -32,12 +32,13 @@ related: []
 - Phase 15: Tagging system → ✅ COMPLETED (tag-guidelines.json + audit remediation)
 - Phase 15.x: RULES.md:10 audit → ✅ COMPLETED (compounding_logic consolidated, lint→ingest bridge)
 - Phase 16: Language standardization → ✅ COMPLETED (AGENTS.md/RULES.md translated)
+- **Phase 32.1**: Deep restructuring — extract rules from AGENTS.md → rules/*.json → 🟡 IN PROGRESS
 
 ### Recent Changes
+- **2026-07-06**: Phase 32.1 C10 — Extract inline rules to JSON: Auto-rebuild (auto_rebuild_metadata.json), Non-blocking Lint (non_blocking_lint.json), Snapshot Format (snapshot_format.json new), Language Policy (language_policy.json new); Evidence Grade table removed; Schema Inheritance canonical references table removed
 - **2026-07-05**: Complete documentation language standardization — AGENTS.md + RULES.md fully translated to English; process-query.json Russian strings cleaned
 - **2026-07-05**: Contradiction resolution flow restored (rules/contradiction_resolution.json) with cascade priority, evidence grades, fallback chain
 - **2026-07-05**: Tagging system created (rules/tag-guidelines.json); 36/38 pages audited and fixed to domain-specific tags
-- **2026-07-05**: RULES.md:10 audit remediation — compounding_decision_logic consolidated, path-guard-check.json created, lint→ingest bridge added
 - **2026-07-04**: process-query.json routing fix — all wiki-write actions routed through process-ingest.json via step_2.7 gateway
 
 ## Session Context — 2026-07-05 Final State
