@@ -12,6 +12,12 @@
       "order": 2,
       "action": "read_file",
       "path": "wiki/hot.md"
+    },
+    {
+      "order": 3,
+      "action": "read_file",
+      "path": "rules/git_conventions.json",
+      "note": "MUST read before any commit operation — defines staging mode, commit format, memory sync rules"
     }
   ]
 }

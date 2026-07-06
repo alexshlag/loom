@@ -237,5 +237,9 @@
       "trigger": "on_broken_links_found",
       "action": "sync_agent_review_required_to_wm_hook"
     }
+  },
+  "git_conventions_trigger": {
+    "trigger": "before_any_commit_from_lint_or_query",
+    "action": "read_rules_git_conventions_json_first"
   }
 }

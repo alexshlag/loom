@@ -65,9 +65,24 @@ Before editing `process-*.json` and `rules/*.json`: read §9 of [RULES.md#instru
 
 ## Git Conventions
 
-Commit format, staging modes, pre-commit workflow, prohibited commands, memory sync → `rules/git_conventions.json`.
+Commit format, staging modes, pre-commit workflow, prohibited commands, memory sync → `rules/git_conventions.json`. Agent **MUST read** this file before EVERY commit operation.
 
-> Agent reads this before every commit.
+### Pre-Commit Workflow (REQUIRED)
+
+1. **Read rule**: `rules/git_conventions.json` — detect mode from changes
+2. **Mode detection**: 
+   - Only `wiki/*.md` → **wiki mode**
+   - Any `.sh/.json/py/md` in root, rules/, scripts/ → **dev mode**
+3. **Stage**: `git add <mode-command>` (never `git add *`, never `git commit -a`)
+4. **Verify**: `git status --short` — ensure no untracked/unstaged remain
+5. **Commit format**: `<type> | <scope>: <description>` (see rules/git_conventions.json#commit_format)
+6. **Memory sync**:
+   - dev mode → update WM + hot.md
+   - wiki mode → update WM focus_node + next_steps_todo
+
+> Rule: Never commit without reading git_conventions.json first. Memory sync on dev commit is REQUIRED.
+
+## Process Roles
 
 ---
 

@@ -33,3 +33,6 @@ related: []
 ## Recent Changes (dev mode)
 - session_bootstrap | Added explicit session start sequence via rules/session_bootstrap.json
 - benchmark-rebuild | Created scripts/benchmark-rebuild.sh for perf comparison single-pass vs triple-walk
+
+## Recent Changes (dev mode)
+- git-conventions | Fixed explicit pre-commit workflow: read rules → detect mode → stage → verify → format → memory sync; added bootstrap trigger for session start
