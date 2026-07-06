@@ -1,57 +1,33 @@
 {
   "protocol_name": "Delta Tracking",
-  "description": "Hash-based deduplication mechanism to prevent re-ingest of already processed sources. Compares original file hashes against corrected copies in manifest.",
-  "schema_ref_to_agent_rules": "AGENTS.md#delta_tracking",
+  "description": "Hash-based deduplication to prevent re-ingest of already processed sources.",
+
   "canonical_source": {
-    "script": "scripts/rebuild-source-manifest.sh",
+    "script":      "scripts/rebuild-source-manifest.sh",
     "manifest_file": "meta/source-manifest.json"
   },
+
   "steps": [
-    {
-      "step_id": "0_delta_check",
-      "name": "delta_tracking_hash_check",
-      "description": "Hash check of original file against existing corrected copies — prevents re-ingest of already processed sources.",
-      "actions": [
-        {
-          "action": "run_hash_check",
-          "command": "./scripts/rebuild-source-manifest.sh --scan-only",
-          "description": "Scans all sources to determine which are already processed vs stale/unprocessed"
-        },
-        {
-          "action": "check_specific_source_status",
-          "note": "If current ${SOURCE_PATH} has status=processed → skip re-ingest. If unprocessed/stale → continue to ingest flow.",
-          "on_skip_condition": "source_already_ingested AND corrected_copy_up_to_date",
-          "on_proceed_condition": "no_corrected_copy OR hash_mismatch OR source_is_new"
-        }
-      ],
-      "evaluation": [
-        {
-          "condition": "source_status == processed",
-          "action": "SKIP_INGEST — SOURCE_ALREADY_PROCESSED",
-          "note": "Corrected copy exists with current hash → proceed to Step 2 (discussion)"
-        },
-        {
-          "condition": "source_status == unprocessed OR stale",
-          "action": "PROCEED_TO_ANALYSIS",
-          "note": "New or updated ingest required → continue to Step 1 (source_analysis)"
-        }
-      ]
-    }
+    {"step_id": "0_delta_check",       "action": "./scripts/rebuild-source-manifest.sh --scan-only"},
+    {"condition": "source_status == processed",        "action": "SKIP_INGEST — Corrected copy exists with current hash → proceed to Step 2 (discussion)"},
+    {"condition": "source_status == unprocessed OR stale", "action": "PROCEED_TO_ANALYSIS"}
   ],
+
   "manifest_structure": {
-    "original_path": "raw/sources/SRC-XXXX/YYYY.md",
-    "corrected_path": "raw/corrected/SRC-XXXX/YYYY.md",
-    "hash_original": "sha256:abc123...",
-    "date_ingested": "2026-07-01",
-    "status": "processed | stale | unprocessed"
+    "original_path":   "raw/sources/SRC-XXXX/YYYY.md",
+    "corrected_path":  "raw/corrected/SRC-XXXX/YYYY.md",
+    "hash_original":   "sha256:abc123...",
+    "date_ingested":   "YYYY-MM-DD",
+    "status":          "processed | stale | unprocessed"
   },
-  "contradiction_resolution": {
-    "priority": "Use corrected copy from manifest for contradiction detection. Hash mismatch indicates source change — re-ingest required.",
-    "flow": [
-      "Read manifest.json for source",
-      "Compare hash_original with current file",
-      "If match → use existing corrected copy",
-      "If mismatch → flag as stale, proceed to ingest"
-    ]
-  }
+
+  "contradiction_resolution_flow": [
+    "Read manifest.json for source → compare hash_original with current file",
+    "If match → use existing corrected copy",
+    "If mismatch → flag as stale, proceed to ingest"
+  ],
+
+  "_priority": "Use corrected copy from manifest for contradiction detection. Hash mismatch = re-ingest required.",
+
+  "schema_ref_to_agent_rules": "AGENTS.md#delta_tracking"
 }

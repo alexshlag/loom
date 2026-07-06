@@ -1,85 +1,54 @@
 {
   "protocol": "contradiction_resolution",
   "rule_id": "CR-V1",
+
   "agent_steps": {
     "step_1": "classify_fact_type: objective | subjective",
     "step_2_if_objective": "apply_cascade_priority. user_override = REJECTED",
-    "step_3_if_subjective": "user_override_accepted → apply_user_decision_to_wiki",
-    "step_4_cascade_order": {
-      "priority_1": "code_reality — deterministic, always wins",
-      "priority_2": "live_state — ephemeral but observable > documentation",
-      "priority_3": "documentation with evidence_grade — only when no code/live available"
-    },
-    "step_5_docs_priority": {
-      "documented": 1,
-      "corroborated": 2,
-      "assertion_only": 3
-    }
+    "step_3_if_subjective": "user_override_accepted → apply_user_decision_to_wiki"
   },
+
+  "cascade_order": [
+    {"priority": 1, "layer": "code_reality",           "condition": "source_layer == 'code' && source_exists_in_repo",     "rule": "deterministic, always wins"},
+    {"priority": 2, "layer": "live_state",             "condition": "timestamp < threshold AND source_layer != 'code'",      "rule": "ephemeral but observable > documentation"},
+    {"priority": 3, "layer": "documentation",           "condition": "source_layer == 'documentation' AND evidence_grade > 'assertion_only'", "rule": "only when no code/live available"}
+  ],
+
+  "evidence_sub_priority": {documented: 1, corroborated: 2, assertion_only: 3},
+
   "constraints": [
-    "NEVER user_override for objective facts",
-    "NEVER skip cascade_order — always apply priority_1 > priority_2 > priority_3",
-    "NEVER use documentation if code_reality or live_state exists"
+    {"id": "NEVER user_override for objective facts"},
+    {"id": "NEVER skip cascade_order — always apply priority_1 > priority_2 > priority_3"},
+    {"id": "NEVER use documentation if code_reality or live_state exists"}
   ],
-  "resolution_flow": {
-    "priority_1_condition": "source_layer == 'code' && source_exists_in_repo",
-    "priority_2_condition": "timestamp < threshold AND source_layer != 'code'",
-    "priority_3_condition": "source_layer == 'documentation' AND evidence_grade > 'assertion_only'",
-    "priority_4_condition": "agent_confidence < threshold OR conflicting_priorities"
-  },
+
   "fallback_chain": [
-    {
-      "condition": "same_priority",
-      "action": "evidence_grade_sub_priority"
-    },
-    {
-      "condition": "same_evidence_and_priority",
-      "action": "temporal_decay_most_recent_wins"
-    },
-    {
-      "condition": "still_ambiguous",
-      "action": "human_override_FLAG_CONFLICT"
-    }
+    {"condition": "same_priority",                             "action": "evidence_grade_sub_priority"},
+    {"condition": "same_evidence_and_priority",                "action": "temporal_decay_most_recent_wins"},
+    {"condition": "still_ambiguous",                           "action": "human_override_FLAG_CONFLICT"}
   ],
+
   "resolution_actions": [
-    {
-      "when": "resolved_via_cascade",
-      "action": "add_update_section_to_old_page"
-    },
-    {
-      "when": "conflicting_priorities OR multiple_live_state_sources",
-      "action": "create_comparison_page_for_complex_conflicts"
-    },
-    {
-      "when": "not_resolved_human_override",
-      "action": "note_in_answer"
-    }
+    {"when": "resolved_via_cascade",         "action": "add_update_section_to_old_page"},
+    {"when": "conflicting_priorities OR multiple_live_state_sources", "action": "create_comparison_page_for_complex_conflicts"},
+    {"when": "not_resolved_human_override",  "action": "note_in_answer"}
   ],
+
   "arbitration_layer": {
-    "objective_fact_types": [
-      "2+2=4",
-      "code_compiles_or_not",
-      "API_returns_specific_status_code",
-      "physical_laws"
-    ],
-    "subjective_fact_types": [
-      "expert_opinions",
-      "historical_claims_without_proof",
-      "source_interpretations"
-    ],
+    "objective_fact_types":      ["2+2=4", "code_compiles_or_not", "API_returns_specific_status_code", "physical_laws"],
+    "subjective_fact_types":     ["expert_opinions", "historical_claims_without_proof", "source_interpretations"],
     "user_override_allowed_for_objective": false,
     "user_override_allowed_for_subjective": true
   },
+
   "detection_output_rule": "IF contradictions_found → prepend '## Contradictions' section before main content",
+
   "post_resolution_verification": {
     "re_read_updated_pages": true,
-    "optional_web_search_if_high_stakes": {
-      "schema_ref": "rules/search_strategy.json"
-    }
+    "optional_web_search_if_high_stakes": {"schema_ref": "rules/search_strategy.json"}
   },
-  "decision_rules_integration": {
-    "schema_ref": "rules/decision-rules.md"
-  },
+
+  "decision_rules_integration": {"schema_ref": "rules/decision-rules.md"},
   "if_broken": "STOP_GENERATION -> Classify fact type as objective or subjective -> Apply cascade priority -> Continue",
   "schema_ref_to_agent_rules": "AGENTS.md#contradiction-resolution-cascade"
 }

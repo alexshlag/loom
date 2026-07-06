@@ -1,32 +1,27 @@
 {
   "protocol_name": "Link Conventions & Auto-Fix",
   "description": "Internal and external link usage conventions plus auto-fix logic.",
+
   "internal_links": {
     "format": "[text](wiki-relative-path.md)",
     "prohibited": "./ (never use dot-relative paths)",
-    "cross_category_exception": "../ allowed for cross-category links (e.g. from concepts/ to entities/) as long as target exists under wiki/"
+    "cross_category_exception": "../ allowed for cross-category links (e.g. concepts/ → entities/) as long as target exists under wiki/"
   },
+
   "external_links": {
-    "rule_id": "EXT-RES1",
     "standard": "EXT-LINK-V1 (canonical http/https URLs)",
     "prohibited": "[text](raw/**) — never link to raw/. [text](../**) — relative paths prohibited.",
     "unavailability_check": "log broken URLs (404/timeouts) → inform user, do NOT auto-remove"
   },
+
   "crosslink_discovery": {
     "architecture": "Script Suggests, Agent Decides",
     "discovery": "auto-crosslink.sh (score-based candidate generation)",
     "decision": "Agent (semantic validation + contextual reasoning)",
-    "scoring": {
-      "h1_title_match": 3,
-      "shared_sources": "2 base + diminishing factor (+1 for each additional shared source)",
-      "frontmatter_related": 4
-    },
-    "thresholds": {
-      "strong_candidate": ">= 5 (suggest with confidence)",
-      "weak_signal": "3-4 (suggest review, agent decides)",
-      "ignore": "< 3 (below noise floor)"
-    },
-    "system_file_exclusion": "log.md, issues.md, timeline.md, overview.md, snapshot.md, index.md, hot.md, AGENTS.md, context.md, PLAN.md"
+    "scoring_weights": {"h1_title_match": 3, "shared_sources": "2 base + diminishing factor (+1 per additional shared source)", "frontmatter_related": 4},
+    "thresholds":     {">=5": "Strong candidate — suggest with confidence", "3-4": "Weak signal — suggest review", "<3": "Ignore (below noise floor)"},
+    "system_file_exclusion": ["log.md", "issues.md", "timeline.md", "overview.md", "snapshot.md", "index.md", "hot.md", "AGENTS.md", "context.md", "PLAN.md"]
   },
+
   "schema_ref_to_agent_rules": "AGENTS.md#wiki-operation-routing-contract"
 }

@@ -1,90 +1,49 @@
 {
   "rule_id": "GIT-CONVENTIONS-V1",
-  "protocol_name": "Git Conventions",
-  "description": "Commit format, allowed/prohibited commands, pre-commit memory sync workflow",
+
   "commit_format": {
     "pattern": "<type> | <scope>: <description>",
     "types": ["feat", "fix", "refactor", "schema", "lint", "ingest", "query"],
-    "scope": "component or module affected (lowercase)",
-    "description": "Summary of change (lowercase, imperative)",
-    "example": "feat | schema: add external_sources_policy.md extraction target"
+    "constraints": {
+      "scope": "lowercase component/module name",
+      "description": "lowercase imperative summary"
+    }
   },
-  "mandatory_staging_before_commit": {
-    "rule": "ALWAYS run git status --short first, then git add -A to stage ALL changed/new files — NEVER manually list files for staging",
-    "rationale": "Manual file lists miss newly created wiki pages (e.g., wiki/comparisons/agent-memory-techniques.md) because agent doesn't track all artifacts across the session",
-    "allowed_staging_commands": [
-      {"command": "git add -A", "priority": 1, "description": "Stage ALL changed/new files — respects .gitignore, catches everything"},
-      {"command": "git add wiki/", "priority": 2, "description": "Stage only wiki directory changes (acceptable if no project-level files)"}
-    ],
-    "prohibited_staging_patterns": [
-      "Manual file paths: git add file1.md file2.md — misses new/untracked files",
-      "git add * — includes system junk, temp files, logs"
-    ]
+
+  "staging_by_mode": {
+    "wiki": ["git add wiki/"],
+    "dev":   ["git add -A"]
   },
-  "allowed_commands": [
-    { "command": "git status --short", "purpose": "Check repository state" },
-    { "command": "git add wiki/", "purpose": "Stage wiki changes only" },
-    { "command": "git rm --cached", "purpose": "Remove from index (not working tree)" },
-    { "command": "git add -A", "purpose": "Safe staging, respects .gitignore automatically" }
+
+  "mode_detection": {
+    "auto": "only wiki/*.md → wiki; any .sh/.json in root/rules/scripts/ → dev",
+    "override": "user says 'wiki mode' or 'dev mode'"
+  },
+
+  "pre_commit_workflow": [
+    {"action": "git status --short"},
+    {"action": "detect staging mode (auto: see mode_detection)"},
+    {"action": "stage with correct command from staging_by_mode"},
+    {"action": "git status --short — verify no untracked/unstaged remain"},
+    {"prohibited": ["git add *", "git commit -a"]}
   ],
-  "prohibited_commands": [
-    { "command": "git add *", "reason": "System junk, temp files, logs — bloated index" },
-    { "command": "git commit -a", "reason": "No staged commits allowed — must be explicit" }
+
+  "post_commit_check": {
+    "action": "if git status shows unstaged files → stage + amend or separate commit"
+  },
+
+  "memory_sync_on_dev_commit": [
+    {"action": "working_memory.json: focus_node + filter completed next_steps_todo"},
+    {"action": "hot.md Active Project: update phase status"}
   ],
-  "pre_commit_memory_sync": {
-    "trigger": "dev_mode_git_commit",
-    "applies_to_files": ["AGENTS.md", "RULES.md", "process-*.json", "PLAN.md", "FEATURES_PLAN.md"],
-    "steps": [
-      {
-        "step": 0,
-        "action": "Run git status --short to check all modified/created files — NEVER rely on manual file lists"
-      },
-      {
-        "step": 1,
-        "action": "Update working_memory.json: set focus_node = current task name; filter completed tasks from next_steps_todo"
-      },
-      {
-        "step": 2,
-        "action": "Update hot.md Active Project with Phase status + what was done"
-      }
-    ],
-    "schema_ref_for_algorithm": "rules/session_context_rules.json",
-    "guardrails": [".git/hooks/pre-commit", "scripts/validate-path.sh"]
-  },
-  "post_commit_verification": {
-    "rule_id": "GIT-POST-COMMIT-V1",
-    "trigger": "after_git_commit",
-    "steps": [
-      {
-        "step": 0,
-        "action": "Run git status --short immediately after commit to check for untracked/unstaged files"
-      },
-      {
-        "step": 1,
-        "condition": "If git status shows uncommitted files",
-        "action": "git add -A && amend the last commit (or create additional commit if needed)"
-      }
-    ],
-    "rationale": "Ensures no artifacts are left behind after commit — catches missed wiki pages, new scripts, updated WM"
-  },
-  "regular_wiki_memory_sync": {
-    "rule_id": "WM-SYNC-AFTER-WIKI-V1",
-    "trigger": "page_created_or_updated",
-    "steps": [
-      {
-        "step": 1,
-        "action": "Update working_memory.json: focus_node + next_steps_todo (auto-cleanup) + query_summary"
-      },
-      {
-        "step": 2,
-        "action": "Update hot.md System State → Recent Changes with summary of wiki changes"
-      }
-    ],
-    "scope": "applies to all wiki operations regardless of work_mode",
-    "note": "Works alongside Pre-commit Memory Sync Rule (dev-mode only) — both can trigger simultaneously"
-  },
-  "canonical_ref": "AGENTS.md#git_conventions",
-  "process_references": {
-    "lint_reference_note": "Previously referenced as AGENTS.md#git-conventions in process-lint.json — now use rules/git_conventions.json#rule_id"
+
+  "memory_sync_after_wiki_change": [
+    {"action": "working_memory.json: focus_node + next_steps_todo (auto-cleanup) + query_summary"},
+    {"action": "hot.md Recent Changes: summary of wiki edits"}
+  ],
+
+  "schema_ref": {
+    "memory_details": "rules/session_context_rules.json",
+    "canonical_in_agents": "AGENTS.md#git_conventions"
   }
 }

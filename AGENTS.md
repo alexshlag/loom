@@ -86,6 +86,10 @@ AGENTS.md and process files (`process-ingest.json`, `process-query.json`, `proce
 
 During the period of script writing and debugging, the following code development standard applies: [RULES.md](RULES.md).
 
+#### JSON Instruction Compactification (R01-R07)
+
+Before working with `process-*.json` and `rules/*.json`: read §9 INSTRUCTION COMPACTIFICATION from [RULES.md#instruction-compactification](RULES.md#9-instruction-compactification) + apply `.pi/skills/compact-json-instructions/SKILL.md` criteria to remove verbosity without losing logic (R07: preserve examples that form conditional `if/else` behavior).
+
 ---
 
 ## 🔖 Git Conventions

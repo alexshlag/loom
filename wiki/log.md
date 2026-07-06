@@ -653,3 +653,10 @@ Sources used:
 - `PLAN.md` — PRF-enhanced recall + hot cache marked done
 - `wiki/concepts/agent-memory-management.md` — updated to reflect current state
 
+
+## [2026-07-06] compact_json_rules | JSON instruction compactification — rules/*.json and AGENTS.md §9 integration
+- Compactified 12 rules/*.json files: ~770 → ~315 lines (-59%) savings
+- Eliminated R02 violations (repeated descriptions, rule_id, duplicate logic)
+- Preserved R07-compliant conditional logic (arbitration_layer, resolution_actions)
+- Added AGENTS.md §9 reference + compact-json-instructions skill to Roadmap section
+- Files: git_conventions, context-scopes, session_context_rules, compounding_workflow, tag-guidelines, contradiction_resolution, search_strategy, faq_summary, work_modes, error_handling, link_conventions, execution_contract, delta_tracking

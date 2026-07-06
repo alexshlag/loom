@@ -1,166 +1,47 @@
 {
   "rule_name": "session_context_management",
   "rule_id": "SCM-V2",
-  "version": "2.1 (algorithm optimization, 2026-07-05)",
   "description": "Memory architecture: Three-Layer Model + save triggers + read patterns + operational constraints",
+
   "layers": {
-    "working_memory.json": {
-      "role": "current-session operational memory - focus_node, open_pages, next_steps_todo, dead_ends, query_summary",
-      "lifespan": "short: one session. Cleared on dismissal/compaction.",
-      "rw": "agent writes every turn"
-    },
-    "hot.md": {
-      "role": "long-term snapshot - active project/session context, wiki changes summary. Survives compaction.",
-      "lifespan": "between sessions. Updated after important actions AND on any wiki page change.",
-      "rw": "agent writes snapshot (not full log tape)",
-      "structure": {
-        "active_project": "WORK_MODE: project - name, focus_node, related_pages, findings, next_steps",
-        "session_context": "WORK_MODE: query/discussion - topic, pages_read, key_findings",
-        "system_state": "Active Threads + Recent Changes (updated on every wiki create/update)"
-      }
-    },
-    "log.md": {
-      "role": "append-only chronicle of all actions and wiki changes. Chronological tape.",
-      "lifespan": "forever",
-      "rw": "agent appends every entry"
-    }
+    "working_memory.json": {"role": "current-session ops memory (focus_node, open_pages, next_steps_todo)", "lifespan": "one session", "rw": "write every turn"},
+    "hot.md":             {"role": "long-term snapshot (project context, wiki changes). Survives compaction.",      "lw": "agent writes snapshots",   "structure": {"active_project": "WORK_MODE: project — name, focus_node, related_pages, findings, next_steps", "session_context": "WORK_MODE: query/discussion — topic, pages_read, key_findings", "system_state": "Active Threads + Recent Changes (updated on every wiki create/update)"}},
+    "log.md":             {"role": "append-only chronicle of all actions and wiki changes.",                       "lifespan": "forever",               "rw": "agent appends only"}
   },
+
   "flow": {
-    "session_start": [
-      {
-        "step": 1,
-        "action": "read working_memory.json"
-      },
-      {
-        "step": 2,
-        "action": "./scripts/restore-hot-cache.sh"
-      },
-      {
-        "step": 3,
-        "action": "grep -m 20 '' wiki/log.md | tail -20"
-      }
-    ],
-    "session_end": [
-      {
-        "step": 1,
-        "action": "write_to_working_memory",
-        "fields": [
-          "next_steps_todo",
-          "open_pages"
-        ]
-      },
-      {
-        "step": 2,
-        "action": "write_session_context_to_hot.md",
-        "section": "Active Session Context or Active Project"
-      }
-    ]
+    "session_start": ["read working_memory.json → ./scripts/restore-hot-cache.sh → grep -m 20 '' wiki/log.md | tail -20"],
+    "session_end":   ["write_to_working_memory (next_steps_todo, open_pages) → write_session_context_to_hot.md (Active Session Context or Active Project)"]
   },
-  "write_workflow": {
-    "trigger_chain": [
-      {
-        "event": "user_message",
-        "rule_id": "HOT-SAVE-QUERY-V1",
-        "target_section": "Active Session Context -> topic, query_intent"
-      },
-      {
-        "event": "action_completed",
-        "rule_id": "HOT-SAVE-ACTION-V1",
-        "target_section": "pages read + key_findings"
-      },
-      {
-        "event": "wiki_modified",
-        "rule_id": "HOT-WIKI-CHANGES-V1",
-        "priority": "immediate",
-        "target_section": "System State -> Recent Changes"
-      }
-    ],
-    "concurrent_handling": {
-      "description": "When multiple triggers fire simultaneously, write ALL relevant sections in one pass (not sequentially)",
-      "example": [
-        "user_message + action_completed -> query_intent AND pages_read written together"
-      ]
-    }
+
+  "log_read_fallback": {
+    "when": "working_memory.json empty or stale (>30 days without updates)",
+    "how": ["grep -m 20 '' wiki/log.md | tail -20", "grep -m 10 'project_name' wiki/log.md"],
+    "constraint": "NEVER read entire log (~250+ lines expensive in tokens)"
   },
-  "read_algorithm": {
-    "session_start": {
-      "rule_id": "HOT-LOAD-V1",
-      "steps": [
-        {
-          "step": 1,
-          "action": "read working_memory.json"
-        },
-        {
-          "step": 2,
-          "action": "./scripts/restore-hot-cache.sh"
-        }
-      ]
-    },
-    "log_read_pattern": {
-      "rule_id": "HOT-LOG-READ-V1",
-      "when": "working_memory.json is empty or stale (>30 days without updates)",
-      "how": [
-        {
-          "pattern": "grep -m 20 '' wiki/log.md | tail -20"
-        },
-        {
-          "pattern": "grep -m 10 'project_name' wiki/log.md"
-        }
-      ],
-      "constraint": "NEVER read entire log (~250+ lines expensive in tokens)"
-    }
-  },
-  "constraints": [
-    {
-      "rule_id": "IMMEDIATE_WRITE",
-      "value": "Write hot.md immediately after action, NOT at session end"
-    },
-    {
-      "rule_id": "SLICE_NOT_FULL_LOG",
-      "value": "hot.md = summary slice only, never full log copy"
-    },
-    {
-      "rule_id": "RESTORE_ON_COMPACT",
-      "value": "After context compaction: call restore-hot-cache.sh || true"
-    },
-    {
-      "rule_id": "SYSTEM_STATE_ALWAYS",
-      "value": "System State section updated on every wiki create/update"
-    },
-    {
-      "rule_id": "NO_APPEND_TO_JSON",
-      "value": "Never append to JSON files - read full file -> modify -> write complete document"
-    },
-    {
-      "rule_id": "LOG_APPEND_ONLY",
-      "value": "wiki/log.md is append-only. NEVER cat > or write(). Always use cat >> (append)."
-    }
+
+  "write_triggers": [
+    {"event": "user_message",              "rule_id": "HOT-SAVE-QUERY-V1",   "target_section": "Active Session Context -> topic, query_intent"},
+    {"event": "action_completed",          "rule_id": "HOT-SAVE-ACTION-V1",  "target_section": "pages read + key_findings"},
+    {"event": "wiki_modified",             "rule_id": "HOT-WIKI-CHANGES-V1", "priority": "immediate", "target_section": "System State -> Recent Changes"}
   ],
+
+  "concurrent_trigger_rule": "When multiple triggers fire simultaneously, write ALL relevant sections in one pass (not sequentially)",
+
+  "constraints": {
+    "IMMEDIATE_WRITE":       "Write hot.md immediately after action, NOT at session end",
+    "SLICE_NOT_FULL_LOG":    "hot.md = summary slice only, never full log copy",
+    "RESTORE_ON_COMPACT":    "After context compaction: call restore-hot-cache.sh || true",
+    "SYSTEM_STATE_ALWAYS":   "System State section updated on every wiki create/update",
+    "NO_APPEND_TO_JSON":     "Never append to JSON files - read full file -> modify -> write complete document",
+    "LOG_APPEND_ONLY":       "wiki/log.md is append-only. NEVER cat > or write(). Always use cat >> (append)."
+  },
+
   "operational_rules": {
-    "context_bubble": {
-      "max_active_pages": 3,
-      "description": "No more than 3 active pages in context simultaneously"
-    },
-    "grep_contract": {
-      "allowed": [
-        "grep -m N pattern wiki/",
-        "head -20 file.md",
-        "sed -n 'X,Yp'"
-      ],
-      "prohibited": [
-        "cat large_file.md",
-        "grep pattern wiki/ (no -m flag)"
-      ]
-    },
-    "natural_memory_translation": {
-      "description": "Translate timestamps to human-time: 'the day before yesterday', 'a week ago'",
-      "rule": "Use 'we' instead of 'system/agent' when speaking about shared experience",
-      "reference": "wiki/concepts/natural-memory.md"
-    }
+    "context_bubble_max_pages": 3,
+    "grep_contract": {"allowed": ["grep -m N pattern wiki/", "head -20 file.md", "sed -n 'X,Yp'"], "prohibited": ["cat large_file.md", "grep pattern wiki/ (no -m flag)"]},
+    "natural_memory_translation": {"rule": "Use 'we' instead of 'system/agent'; translate timestamps to human-time ('the day before yesterday')", "reference": "wiki/concepts/natural-memory.md"}
   },
-  "_notes": {
-    "golden_rules_removed": "All 4 golden_rules were duplicates of existing constraints. Removed redundancy.",
-    "write_workflow_merged": "Combined save_triggers + write_algorithm into unified trigger_chain to avoid duplication and clarify concurrent handling."
-  },
+
   "schema_ref_to_agent_rules": "AGENTS.md#memory-architecture-contract-system-rules"
 }

@@ -1,116 +1,55 @@
 {
   "schema_ref_to_agent_rules": "AGENTS.md#compounding-workflow",
   "name": "Compounding Workflow",
-  "description": "Decision logic for when query answer should be saved as new wiki page. Triggers on novel synthesis, contradiction resolution, or entity/concept supplementation.",
-  "trigger_criteria": [
-    {
-      "id": "TC-1",
-      "condition": "answer_requires_synthesis_from_2_or_more_pages_with_novel_inference",
-      "description": "Synthesis from \u22652 wiki pages producing new logical conclusion (A+B\u2192C), not mere aggregation"
-    },
-    {
-      "id": "TC-2",
-      "condition": "contradiction_resolution_found_during_query",
-      "description": "Contradiction resolved between wiki sources requiring documentation in separate page"
-    },
-    {
-      "id": "TC-3",
-      "condition": "answer_supplements_existing_entity_or_concept_with_new_facts",
-      "description": "Answer adds new facts to existing entity/concept that warrant standalone page"
-    }
+  "description": "Decision logic for when query answer should be saved as new wiki page. Triggers: novel synthesis, contradiction resolution, or entity/concept supplementation.",
+
+  "triggers_and_scoring": [
+    {"id": "TC-1/SC-1", "condition": "synthesis_from_2_or_more_pages_with_novel_inference",     "score": 1},
+    {"id": "TC-2/SC-2", "condition": "compounding_flagged_in_step_2",                         "score": 1},
+    {"id": "TC-3/SC-3", "condition": "contradiction_resolution_found_during_query",           "score": 1}
   ],
-  "scoring_system": {
-    "field_name": "compounding_score",
-    "criteria": [
-      {
-        "id": "SC-1",
-        "condition": "synthesis_from_2_or_more_pages",
-        "score": 1
-      },
-      {
-        "id": "SC-2",
-        "condition": "compounding_flagged_in_step_2",
-        "score": 1
-      },
-      {
-        "id": "SC-3",
-        "condition": "contradiction_resolution_found",
-        "score": 1
-      }
-    ],
-    "thresholds": [
-      {
-        "sum_score_ge_2": true,
-        "action": "PROPOSE_SAVE_TO_USER_NEW_SYNTHESIS_PAGE"
-      },
-      {
-        "sum_score_eq_0": true,
-        "action": "SKIP_SAVE"
-      }
-    ]
+
+  "scoring_thresholds": {
+    "sum_score_ge_2": "PROPOSE_SAVE_TO_USER_NEW_SYNTHESIS_PAGE",
+    "sum_score_eq_0": "SKIP_SAVE"
   },
+
   "save_conditions": {
-    "compounding_flagged_true": {
-      "action_if_met": "PROPOSE_SAVE_TO_USER",
-      "fallback_if_not_matched": "CHECK_evaluation_criteria_sum_score (if >=2 \u2192 same action)"
-    },
-    "contradiction_resolution_completed": {
-      "action_if_met": "PROPOSE_UPDATE_TO_USER"
-    }
+    "compounding_flagged_true":       {"action": "PROPOSE_SAVE_TO_USER",     "fallback": "CHECK_evaluation_criteria_sum_score (if >=2 → same action)"},
+    "contradiction_resolution_done":  {"action": "PROPOSE_UPDATE_TO_USER"}
   },
+
   "duplicate_check_before_fixation": {
-    "pre_action": "read_backlinks_json",
-    "path": "meta/backlinks.json",
+    "pre_action": "read meta/backlinks.json",
     "actions_by_result": [
-      {
-        "condition": "similar_page_found_in_backlinks",
-        "action": "PROPOSE_UPDATE_TO_USER",
-        "transition_after_confirm": "process-ingest.json#step_8b_update_page"
-      },
-      {
-        "condition": "no_similar_page_in_backlinks",
-        "action": "PROPOSE_CREATE_TO_USER",
-        "transition_after_confirm": "process-ingest.json#step_8a_new_page"
-      }
+      {"condition": "similar_page_found_in_backlinks",            "action": "PROPOSE_UPDATE_TO_USER",         "transition_after_confirm": "process-ingest.json#step_8b_update_page"},
+      {"condition": "no_similar_page_in_backlinks",               "action": "PROPOSE_CREATE_TO_USER",         "transition_after_confirm": "process-ingest.json#step_8a_new_page"}
     ]
   },
+
   "guardrails": [
-    {
-      "rule_id": "NEVER_AUTO_SAVE_NEW_PAGE",
-      "enforcement": "All compounding proposals \u2192 user_confirm \u2192 TRANSITION to process-ingest.json. Direct edit() without ingest flow is prohibited."
-    },
-    {
-      "rule_id": "NO_DIRECT_EDIT_FROM_WEB_SEARCH",
-      "enforcement": "All wiki create/update operations MUST go through process-ingest.json steps. Web sources must pass step_2.7 gateway."
-    }
+    {"rule_id": "NEVER_AUTO_SAVE_NEW_PAGE",     "enforcement": "All compounding proposals → user_confirm → TRANSITION to process-ingest.json. Direct edit() prohibited."},
+    {"rule_id": "NO_DIRECT_EDIT_FROM_WEB_SEARCH","enforcement": "All wiki create/update MUST go through process-ingest.json steps. Web sources pass step_2.7 gateway."}
   ],
+
   "web_source_transition_rules": {
     "topic_expansion_rule": {
       "condition": "new_page_relates_to_existing_topic_in_wiki",
-      "action_if_met": "AUTO_INGEST_TOPIC_EXPANSION \u2014 TRANSITION_TO process-ingest.json via web_ingest_flow, create_new_expansion_of_existing (no user_confirm required)",
-      "description": "New page relates to existing topic in wiki \u2192 auto-ingest. Example: Symfony exists in wiki \u2192 new page 'Migrations in Symfony' \u2192 topic expansion"
+      "action_if_met": "AUTO_INGEST_TOPIC_EXPANSION — TRANSITION_TO process-ingest.json via web_ingest_flow (create_new_expansion_of_existing, no user_confirm)",
+      "_note": "Once topic approved in wiki → subsequent pages for same topic become auto_ingest"
     },
     "new_independent_topic_rule": {
       "condition": "independent_topic_not_found_in_wiki",
-      "action_if_met": "PROPOSE_SAVE_TO_USER_NEW_INDEPENDENT_TOPIC \u2014 wait for user_confirm before TRANSITIONING",
-      "description": "Independent topic not found in wiki \u2192 propose to user. Confirm required ONLY FOR FIRST PAGE OF THIS TOPIC.",
-      "post_first_approval_note": "Once topic approved in wiki \u2192 subsequent pages for same topic become topic_expansion (auto_ingest)"
+      "action_if_met": "PROPOSE_SAVE_TO_USER_NEW_INDEPENDENT_TOPIC — wait user_confirm before TRANSITIONING"
     }
   },
-  "transition_to_ingest_if_web_source_confirmed": {
+
+  "web_source_flow": {
     "trigger_condition": "web_search_used",
-    "structure": [
-      {
-        "step_1": "check if web_search_used (determine topic_expansion vs new_independent_topic)"
-      },
-      {
-        "step_2": "IF topic_expansion \u2192 execute process-ingest.json via web_ingest_flow (create_new_expansion_of_existing, auto)",
-        "action_if_expansion": "JUMP_TO process-ingest (auto, no user_confirm)"
-      },
-      {
-        "step_3": "IF new_independent_topic \u2192 PROPOSE_SAVE_TO_USER_NEW_INDEPENDENT_TOPIC",
-        "action_if_new": "WAIT_FOR_USER_RESPONSE"
-      }
+    "steps": [
+      {"step": 1, "action": "determine topic_expansion vs new_independent_topic"},
+      {"step": 2, "condition": "topic_expansion",     "action": "JUMP_TO process-ingest (auto)"},
+      {"step": 3, "condition": "new_independent_topic", "action": "PROPOSE_SAVE_TO_USER_NEW_INDEPENDENT_TOPIC"}
     ]
   }
 }
