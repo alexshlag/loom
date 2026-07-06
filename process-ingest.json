@@ -271,7 +271,7 @@
             "command": "./scripts/rebuild-meta.sh"
           },
           {
-            "action_name": "update_hot_with_wiki_changes",
+            "command": "./scripts/memory/hot-cache-auto-refresh.sh",
             "rule_id": "HOT-WIKI-CHANGES-V1"
           },
           {
@@ -392,7 +392,7 @@
             "command": "echo 'INGEST_COMPLETE' >> wiki/log.md; echo $(date +%Y-%m-%d) > meta/last-ingest-sync.txt"
           },
           {
-            "action_name": "write_session_context_to_hot",
+            "command": "./scripts/memory/hot-cache-auto-refresh.sh --quiet || true",
             "rule_id": "HOT-WIKI-CHANGES-V1"
           }
         ]
@@ -416,8 +416,14 @@
     },
     "step_9_post_checks": {
       "triggers": [
-        { "name": "hot_cache_check", "command": "./scripts/memory/hot-cache-update.sh --check-only || true" },
-        { "name": "auto_crosslink", "command": "./scripts/auto-crosslink.sh '${NEW_PAGE_PATH}' --include-root 2>/dev/null || true" }
+        {
+          "name": "hot_cache_check",
+          "command": "./scripts/memory/hot-cache-update.sh --check-only || true"
+        },
+        {
+          "name": "auto_crosslink",
+          "command": "./scripts/auto-crosslink.sh '${NEW_PAGE_PATH}' --include-root 2>/dev/null || true"
+        }
       ]
     },
     "step_10_register_source": {
@@ -427,8 +433,14 @@
     "step_12_index": {
       "trigger": "on_complete",
       "actions": [
-        { "name": "wm_sync", "command": "echo 'INGEST_COMPLETE' >> wiki/log.md" },
-        { "name": "distillation_check", "command": "./scripts/memory/distill.sh --check-undistilled 2>/dev/null || true" }
+        {
+          "name": "wm_sync",
+          "command": "echo 'INGEST_COMPLETE' >> wiki/log.md"
+        },
+        {
+          "name": "distillation_check",
+          "command": "./scripts/memory/distill.sh --check-undistilled 2>/dev/null || true"
+        }
       ]
     }
   }

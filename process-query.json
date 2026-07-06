@@ -55,7 +55,6 @@
       ],
       "if_broken": "STOP -> read working_memory.json -> set new focus"
     },
-
     {
       "step_id": "0.5",
       "name": "query_intent_decoder",
@@ -301,7 +300,7 @@
           "step_2": "auto_crosslink_from_query_results -> add to working_memory.json"
         },
         {
-          "step_3": "write session context to wiki/hot.md"
+          "step_3": "./scripts/memory/hot-cache-auto-refresh.sh --quiet"
         }
       ],
       "post_action": {
@@ -598,7 +597,7 @@
           },
           {
             "action_name": "write_session_context_to_hot",
-            "command": "./scripts/memory/hot-cache-update.sh --check-only || true"
+            "command": "./scripts/memory/hot-cache-auto-refresh.sh --quiet || true"
           }
         ]
       },
