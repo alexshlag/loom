@@ -52,7 +52,7 @@ try:
     print(f'\n### Pending Tasks')
     print(todo_items)
 except Exception as e:
-    print('  Session context unavailable (working_memory.json error)')
+    print('  WM read failed — using defaults')
     sys.exit(0)
 " 2>/dev/null || echo "  Session context unavailable")
 

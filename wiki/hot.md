@@ -9,34 +9,22 @@ related: []
 
 ## Active Project (WORK_MODE: project)
 - **Project**: Loomana wiki architecture optimization + knowledge management
-- **Status**: 🟢 ACTIVE SESSION — Phase 16.1 recall engine + hot cache optimization
+- **Status**: 🟢 ACTIVE SESSION — Wiki maintenance and expansion
 
 ## Active Session Context
-- **Focus node**: Phase 16.1 Tasks #3+#4 COMPLETED — PRF-enhanced recall (recall.sh) + hot cache optimization (hot-cache-update.sh check-only mode)
+- **Focus node**: Phase 16.1 Tasks #3+#4 COMPLETED — PRF-enhanced recall + hot cache optimization
 
 ### Pending Tasks
-- **Issue #28** — page templates co-evolution user approval mechanism (priority: medium)
-- ~~**Issue #27**~~ ✅ RESOLVED (commit 60963fd, `rules/broken_link_handling.json`)
+  No pending tasks
 
-## Recent Changes (Phase 16.1)
-- **recall-engine** | PRF-enhanced recall engine (`scripts/memory/recall.sh`): Stage 1 links-first ranked paths → Stage 2 content expansion loads only top-K pages; replaced all wiki-search.sh calls in process-query.json
-- **hot-cache-opt** | Hot cache optimization: `scripts/memory/hot-cache-update.sh` check-only mode compares timestamps before loading hot.md; added schema_ref to hot-cache-spec.md
-
-## Recent Changes (dev mode)
-- **git-conventions** | Fixed explicit pre-commit workflow: read rules → detect mode → stage → verify → format → memory sync; session_bootstrap.json step 3
-- **session-bootstrap** | Added explicit session start sequence via rules/session_bootstrap.json
-- **benchmark-rebuild** | Created scripts/benchmark-rebuild.sh for perf comparison single-pass vs triple-walk
-
-## Recent Changes (wiki)
-- **php-ingest** | Created wiki/entities/php.md — comprehensive PHP overview; crosslinks added to symfony, symfony-dependency-injection, hexagonal-architecture
-- **agent-memory-management** | Ingest: 2 new pages on LLM agent memory techniques + comparison matrix for loomana applicability
+## Recent Changes
+  No recent log entries
 
 ## System State
 ### Active Threads
 - Wiki maintenance and expansion (auto-fixes running on lint errors)
 - Knowledge base growth via query responses and source ingestion
-- Phase 16.1: recall.sh PRF engine integrated into process-query.json flow
 
-- **Recent activity**: hot-cache-fix | Replaced agent instructions with enforce commands in process-query.json + process-ingest.json — auto-refresh.sh now triggered on query compaction (step_2.3) and ingest post_checks (step_9)
-
-- **Recent activity**: hot-cache-consolidation | Auto-refresh moved into git-auto-commit.sh pre-hook — runs before git add so same commit captures both wiki pages AND updated hot.md; removed redundant hooks from process-ingest.json and process-query.json
+- **Recent activity**: compact_json_rules | JSON instruction compactification — rules/*.json and AGENTS.md §9 integration
+- **Recent activity**: fix_json_comments | Removed invalid // inline comments from context-scopes.json — replaced with schema_ref field; validated all 12 rules/*.json files pass json.tool
+- **Recent activity**: agENTS_reduction | AGENTS.md reduced from 676 to 447 lines (-230 lines, ~14KB saved): extracted Auto-rebuild/Lint rules → auto_rebuild_metadata.json + non_blocking_lint.json (enriched), Wiki Snapshot JSON-block → snapshot_format.json (new), Language Policy → language_policy.json (new), removed Evidence Grade inline table → already in evidence_grade.json, removed Schema Inheritance Canonical References dead-weight table; total rules/*: 28 files (~1030 lines); commit: 5f40f6e
