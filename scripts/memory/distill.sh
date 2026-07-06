@@ -28,7 +28,7 @@ while [[ $# -gt 0 ]]; do
         --type|-T) DISTILL_TYPE="${2:-skill}"; shift 2;;
         --auto|-a) AUTO_MODE=true; shift;;
         --check-undistilled) ACTION="check-undistilled"; shift;;
-        --check-dup|-C) DUP_NAME="${2:-}"; shift 2;;
+        --check-dup|-C) ACTION="check-dup"; DUP_NAME="${2:-}"; shift 2;;
         *) POSITIONAL_ARGS+=("$1"); shift;;
     esac
 done
@@ -51,18 +51,19 @@ check_procedure_coverage() {
 }
 
 check_duplicate_skill() {
-    local skill_name="$1"
+    local slug="$1"
     [[ ! -d "$SKILLS_DIR" ]] && return 1
     
+    # Check by frontmatter tags — exact match on tag pattern [skill, skill-{slug}]
     local matches
-    matches=$(grep -rl "## ${skill_name}" "$SKILLS_DIR/" 2>/dev/null || true)
+    matches=$(grep -rl "tags:.*skill.*${slug}" "$SKILLS_DIR/" 2>/dev/null || true)
+    
+    if [[ -z "$matches" ]]; then
+        # Fallback: check index.md for wiki-relative path
+        matches=$(grep "wiki/skills/${slug}" "wiki/index.md" 2>/dev/null || true)
+    fi
     
     if [[ -n "$matches" ]]; then echo "$matches"; return 0; fi
-    
-    local index_matches
-    index_matches=$(grep "${skill_name}" "wiki/index.md" 2>/dev/null || true)
-    
-    if [[ -n "$index_matches" ]]; then echo "$index_matches"; return 0; fi
     
     return 1
 }
@@ -81,81 +82,101 @@ do_distill() {
         exit 0
     fi
     
-    # Generate skill/case via Python, passing paths as env vars to avoid bash expansion in heredocs
-    local output_path=""
+    # Generate skill/case via Python — direct write to final path (no temp files)
+    local output_dir=""
     if [[ "$DISTILL_TYPE" == "skill" ]]; then
-        output_path="${SKILLS_DIR}/distill_skill.md"
+        output_dir="${SKILLS_DIR}"
     else
-        output_path="${CASES_DIR}/distill_case.md"
+        output_dir="${CASES_DIR}"
     fi
     
     export _TRAJ_JSON="$TRAJECTORY_PATH/packet.json"
     export _EXTRACTED_MD="$TRAJECTORY_PATH/extracted.md"
-    export _OUTPUT_PATH="$output_path"
-    export _SKILL_NAME="${DISTILL_TYPE}_$(basename "$TRAJECTORY_PATH")"
+    export _OUTPUT_DIR="$output_dir"
     
-    # Python generates the file AND echoes back the clean title for bash to use
+    # Python generates the file AND echoes back the final path for bash to use
     local generated_file
     generated_file=$(python3 <<'PYEOF'
-import json, datetime, os
+import json, datetime, os, re
 
 pkg = json.load(open(os.environ['_TRAJ_JSON']))
-sn = os.environ['_SKILL_NAME']
-outp = os.environ['_OUTPUT_PATH']
-
-try:
-    with open(os.environ['_EXTRACTED_MD']) as f: summary = f.read()
-except: summary = ""
-
+outd = os.environ['_OUTPUT_DIR']
 tid = pkg.get('id', 'unknown')
 ts = pkg.get('timestamp', 'unknown')
 outcome = pkg.get('outcome', '?')
 complexity = pkg.get('complexity', '?')
 prompt_text = pkg.get('prompt', '')[:200] if pkg.get('prompt') else ''
+tool_calls = pkg.get('tool_calls', [])
 
-# Parse trajectory name from ID for the page title
-traj_id_short = tid.split('-')[2] if '-' in tid else 'traj'
-title_parts = [traj_id_short] + [p for p in prompt_text.replace(' ', '-').replace('_', '-')[:30].lower() if p.isalnum()]
-clean_title = ''.join(title_parts[:4])
+try:
+    with open(os.environ['_EXTRACTED_MD']) as f: summary = f.read()
+except: summary = ""
 
-if os.environ['_SKILL_NAME'].startswith('skill'):
-    lines = ["---", f"tags: [skill, {sn}]"]
-    lines.append(f'date: "{datetime.date.today().isoformat()}"')
-    lines.append("type: documentation")
+# Determine type and generate human-readable name from prompt
+if len(tool_calls) > 1:
+    type_label = 'skill'
+else:
+    type_label = 'case'
+
+# Generate slug from prompt (clean words, lowercase, hyphenated)
+slug = ''
+if prompt_text and len(prompt_text.strip()) > 0:
+    clean_name = re.sub(r'[^a-z0-9\s]', '', prompt_text.lower()).strip()
+    words = [w for w in clean_name.split() if len(w) > 2][:5]
+    slug = '-'.join(words)
+else:
+    parts = tid.split('-')
+    slug = f"traj-{parts[1]}" if len(parts) >= 3 else 'unknown'
+
+# Ensure uniqueness with date suffix
+final_path = os.path.join(outd, f"{slug}_{tid[:8]}.md")
+if type_label == 'case':
+    final_path = os.path.join(outd, f"{slug}_{tid[:8]}-case.md")
+
+# Check for duplicate by file existence — append counter if needed
+if os.path.exists(final_path):
+    counter = 1
+    while True:
+        if type_label == 'skill':
+            final_path = os.path.join(outd, f"{slug}_{tid[:8]}-{counter}.md")
+        else:
+            final_path = os.path.join(outd, f"{slug}_{tid[:8]}-case-{counter}.md")
+        if not os.path.exists(final_path): break
+        counter += 1
+
+os.makedirs(os.path.dirname(final_path), exist_ok=True)
+
+# Generate frontmatter + content (direct write to final path)
+lines = ["---"]
+tags_comma = ','.join([f'{type_label}-' + w for w in slug.split('-')])
+lines.append(f'tags: [{type_label}, {tags_comma}]')
+lines.append(f'date: "{datetime.date.today().isoformat()}"')
+lines.append("type: documentation")
+if type_label == 'skill':
     lines.append("category: note")
-    lines.append(f'sources: ["raw/trajectories/{tid}"]')
-    lines.append("related: []")
-    lines.append("---")
-    lines.append("")
-    lines.append(f"# Skill: {clean_title}")
+else:
+    lines.append("category: case")
+lines.append('aliases: []')
+lines.append(f'sources: ["raw/trajectories/{tid}"]')
+lines.append("related: []")
+lines.append("---")
+lines.append("")
+
+if type_label == 'skill':
+    lines.append(f"# Skill: {slug.replace('-', ' ').title()}")
     lines.append("")
     lines.append("## Procedure")
     lines.append("")
-    for call in pkg.get('tool_calls', []):
+    for call in tool_calls:
         nm = call.get('name', call.get('tool_name', '?'))
         st = 'ERROR' if call.get('is_error') else 'OK'
         lines.append(f"- {nm}: {st}")
-    if summary:
-        for line in summary.split('\n'):
-            if line.startswith('- '):
-                lines.append(line)
     lines.extend(["", "## Context", "", f'- Trigger: Original task that led to this pattern',
                   f"- Outcome: {outcome}", f"- Complexity: {complexity}", "",
                   "## Notes", "", f'- Distilled from trajectory "{tid}".',
                   f'- Timestamp: {ts}'])
-    if prompt_text:
-        lines.append(f'- Original task: {prompt_text}')
-
 else:
-    lines = ["---", f"tags: [case, {sn}]"]
-    lines.append(f'date: "{datetime.date.today().isoformat()}"')
-    lines.append("type: documentation")
-    lines.append("category: note")
-    lines.append(f'sources: ["raw/trajectories/{tid}"]')
-    lines.append("related: []")
-    lines.append("---")
-    lines.append("")
-    lines.append(f"# Case: {clean_title}")
+    lines.append(f"# Case: {slug.replace('-', ' ').title()}")
     lines.append("")
     lines.append("## Problem")
     lines.append("")
@@ -164,22 +185,17 @@ else:
     lines.append("")
     lines.append("## Steps Taken")
     lines.append("")
-    for call in pkg.get('tool_calls', []):
+    for call in tool_calls:
         nm = call.get('name', call.get('tool_name', '?'))
         st = 'ERROR' if call.get('is_error') else 'OK'
         lines.append(f"- {nm}: {st}")
     lines.extend(["", "## Outcome", "", f"**Result**: {outcome}",
                   f"**Complexity**: {complexity}", "", "## Lessons Learned", ""])
-    if summary:
-        for line in summary.split('\n'):
-            if line.startswith('- '):
-                lines.append(line)
 
-os.makedirs(os.path.dirname(outp), exist_ok=True)
-with open(outp, 'w') as f:
+with open(final_path, 'w') as f:
     f.write('\n'.join(lines) + '\n')
 
-print(f"{outp}_{clean_title}.md")
+print(final_path)
 PYEOF
 )
     
@@ -192,14 +208,10 @@ PYEOF
         fi
     fi
     
-    # Rename temp file to final name (Python creates distill_skill/case.md, we rename)
-    if [[ -f "${SKILLS_DIR}/distill_skill.md" ]]; then
-        mv "${SKILLS_DIR}/distill_skill.md" "$generated_file" 2>/dev/null || true
-    elif [[ -f "${CASES_DIR}/distill_case.md" ]]; then
-        mv "${CASES_DIR}/distill_case.md" "$generated_file" 2>/dev/null || true
-    fi
-    
-    echo "[✓] ${DISTILL_TYPE^^} created: $(basename "$generated_file" .md) → $generated_file" >&2
+    # Final output
+    local skill_type="SKILL"
+    [[ "$DISTILL_TYPE" != "skill" ]] && skill_type="CASE"
+    echo "[✓] ${skill_type} created: $(basename "$generated_file" .md) → $generated_file" >&2
     echo "$generated_file"
 }
 
@@ -248,7 +260,7 @@ do_check_dup() {
     fi
 }
 
-# ─── Dispatch ────────────────────────────────────────────────────────────────
+# ─── Dispatch ──────────────────────────────────────────────────────
 
 case "$ACTION" in
     distill)           do_distill ;;

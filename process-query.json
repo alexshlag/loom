@@ -55,13 +55,7 @@
       ],
       "if_broken": "STOP -> read working_memory.json -> set new focus"
     },
-    {
-      "step_id": "0.25",
-      "name": "hot_cache_bootstrap",
-      "schema_ref": "scripts/memory/hot-cache-update.sh",
-      "description": "Skip hot cache rebuild if wiki unchanged — check-only mode first, load only on changes.",
-      "command": "./scripts/memory/hot-cache-update.sh --check-only || ./scripts/load-hot-cache.sh"
-    },
+
     {
       "step_id": "0.5",
       "name": "query_intent_decoder",
@@ -311,25 +305,7 @@
       "post_action": {
         "trigger": "compaction_complete",
         "command": "./scripts/restore-hot-cache.sh || true"
-      },
-      "memory_hook": [
-        {
-          "trigger": "on_compaction_done",
-          "actions": [
-            {
-              "action_name": "write_to_working_memory",
-              "fields": [
-                "focus_node",
-                "next_steps_todo (auto-cleanup)"
-              ]
-            },
-            {
-              "action_name": "write_session_context_to_hot",
-              "rule_id": "AGENT_MUST_WRITE_HOT_AFTER_EACH_QUERY"
-            }
-          ]
-        }
-      ]
+      }
     },
     {
       "step_id": "2.5",
@@ -476,45 +452,6 @@
           "threshold_score": 5,
           "action_if_high": "add_related_to_frontmatter"
         }
-      ],
-      "memory_hook": [
-        {
-          "trigger": "on_result_fixation",
-          "actions": [
-            {
-              "action_name": "write_to_working_memory",
-              "fields": [
-                "focus_node",
-                "next_steps_todo (auto-cleanup)",
-                "query_summary"
-              ]
-            },
-            {
-              "action_name": "update_hot_with_wiki_changes",
-              "condition": "IF wiki_page_created_or_updated_during_query"
-            }
-          ]
-        },
-        {
-          "trigger": "on_search_complete",
-          "actions": [
-            {
-              "action_name": "capture_trajectory_if_nontrivial",
-              "command": "./scripts/memory/traj-capture.sh --prompt '<user_query>' --steps '<tool_calls>' --outcome 'success' --complexity 'medium'",
-              "condition": "compounding_flagged OR task_complexity >= medium",
-              "schema_ref": "scripts/memory/traj-capture.sh"
-            }
-          ]
-        },
-        {
-          "trigger": "on_wiki_page_created_or_updated",
-          "actions": [
-            {
-              "action_name": "update_backlinks_and_index",
-              "command": "./scripts/auto-crosslink.sh '${PAGE_PATH}' --include-root 2>/dev/null || true"
-            }
-          ]
-        }
       ]
     }
   ],
@@ -652,7 +589,58 @@
   },
   "context_scope": "transient",
   "memory_hooks": {
-    "description": "Memory operations are async, triggered by hooks — not inline in process steps.",
-    "schema_ref": "scripts/memory/recall-spec.md"
+    "description": "Memory layer hooks — async, non-blocking. Main process emits events; memory subsystem handles storage/recall/distillation.",
+    "hooks": [
+      {
+        "trigger": "on_compaction_done",
+        "actions": [
+          {
+            "action_name": "write_to_working_memory",
+            "command": "echo 'WM_UPDATE' >> wiki/log.md; echo $(date +%Y-%m-%d) > meta/last-wm-sync.txt"
+          },
+          {
+            "action_name": "write_session_context_to_hot",
+            "command": "./scripts/memory/hot-cache-update.sh --check-only || true"
+          }
+        ]
+      },
+      {
+        "trigger": "on_search_complete",
+        "actions": [
+          {
+            "action_name": "capture_trajectory_if_nontrivial",
+            "command": "./scripts/memory/traj-capture.sh --prompt '<user_query>' --steps '<tool_calls>' --outcome 'success' --complexity 'medium'",
+            "condition": "compounding_flagged OR task_complexity >= medium",
+            "schema_ref": "scripts/memory/recall-spec.md"
+          }
+        ]
+      },
+      {
+        "trigger": "on_wiki_page_created_or_updated",
+        "actions": [
+          {
+            "action_name": "update_backlinks_and_index",
+            "command": "./scripts/auto-crosslink.sh '${PAGE_PATH}' --include-root 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
+    "schema_ref": "scripts/memory/recall-spec.md#process_integration"
+  },
+  "hook_triggers_in_steps": {
+    "step_0.5_query_intent_decoder": {
+      "trigger": "start_of_query",
+      "action": "hot_cache_bootstrap",
+      "command": "./scripts/memory/hot-cache-update.sh --check-only || ./scripts/load-hot-cache.sh"
+    },
+    "step_3_result_fixation": {
+      "trigger": "on_result_fixation",
+      "actions": [
+        {
+          "action_name": "write_to_working_memory",
+          "command": "echo 'WM_UPDATE' >> wiki/log.md; echo $(date +%Y-%m-%d) > meta/last-wm-sync.txt"
+        }
+      ]
+    }
   }
 }

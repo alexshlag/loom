@@ -4,6 +4,11 @@ date: 2026-06-24
 sources: [raw/corrected/SRC-2025-06-24-002/nixos-python-wiki.md]
 related: [wiki/syntheses/python-nixos-development-environments.md]
 ---
+- [[wiki/syntheses/python-nixos-development-environments.md]] (score: 8)
+- [[wiki/syntheses/python-nixos-development-environments.md]] (score: 8)
+- [[wiki/syntheses/python-nixos-development-environments.md]] (score: 8)
+- [[wiki/syntheses/python-nixos-development-environments.md]] (score: 8)
+- [[wiki/syntheses/python-nixos-development-environments.md]] (score: 8)
 
 # Python Development Environments on NixOS
 

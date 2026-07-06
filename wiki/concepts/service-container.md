@@ -4,6 +4,16 @@ date: 2026-06-25
 sources: [raw/corrected/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md]
 related: [wiki/entities/symfony.md, wiki/concepts/symfony-dependency-injection.md]
 ---
+- [[wiki/concepts/symfony-dependency-injection.md]] (score: 5)
+- [[wiki/entities/symfony.md]] (score: 5)
+- [[wiki/concepts/symfony-dependency-injection.md]] (score: 5)
+- [[wiki/entities/symfony.md]] (score: 5)
+- [[wiki/concepts/symfony-dependency-injection.md]] (score: 5)
+- [[wiki/entities/symfony.md]] (score: 5)
+- [[wiki/concepts/symfony-dependency-injection.md]] (score: 5)
+- [[wiki/entities/symfony.md]] (score: 5)
+- [[wiki/concepts/symfony-dependency-injection.md]] (score: 5)
+- [[wiki/entities/symfony.md]] (score: 5)
 
 # Service Container & Dependency Injection
 

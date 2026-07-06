@@ -102,6 +102,38 @@
   "post_lint_actions": {
     "description": "Actions triggered after lint.sh completes — bridges lint findings to user decision and ingest flow.",
     "trigger_on_exit_code_0": "new_sources_detected OR orphan_pages_found OR contradications_detected",
+    "auto_fix_phase": {
+      "description": "Automatically fix issues that don't require user intervention. Only non-auto-fixable issues surface to user.",
+      "actions": [
+        {
+          "condition": "orphan_pages_found AND auto_crosslink_available",
+          "action": "run scripts/auto-crosslink.sh --auto-fix-high-confidence > /dev/null 2>&1 || true",
+          "log_only": true
+        },
+        {
+          "condition": "hot_cache_stale",
+          "action": "run scripts/memory/hot-cache-auto-refresh.sh --quiet > /dev/null 2>&1 || true",
+          "log_only": true
+        },
+        {
+          "condition": "broken_links_found AND link_validator_auto_available",
+          "action": "run scripts/unified-pass.sh --auto > /dev/null 2>&1 || true",
+          "log_only": true
+        }
+      ],
+      "rule": "Auto-fix runs BEFORE user-facing output. All auto-fixed issues go to wiki/log.md only, never shown to user.",
+      "post_fix_workflow": [
+        {
+          "condition": "any_auto_fixed",
+          "action": "append_to_log 'Auto-fixed: [issue_type] — see log for details'",
+          "silent": true
+        },
+        {
+          "condition": "non_auto_fixable_issues_exist",
+          "action": "present_to_user 'Issues requiring your decision:' + list_of_non_fixed_issues"
+        }
+      ]
+    },
     "actions": [
       {
         "condition": "new_sources_detected",
@@ -132,7 +164,7 @@
   },
   "context_scope": "transient",
   "memory_hooks": {
-    "description": "Memory layer hooks — triggered after lint operations.",
+    "description": "Memory layer hooks — triggered after lint.sh completes. Async, non-blocking.",
     "hooks": [
       {
         "trigger": "post_lint_check",
@@ -147,7 +179,7 @@
         "trigger": "on_hot_cache_stale_detected",
         "actions": [
           {
-            "action_name": "prompt_user_refresh_hot",
+            "action_name": "hot_cache_rebuild",
             "command": "./scripts/memory/hot-cache-update.sh --rebuild || true"
           }
         ]
@@ -163,5 +195,21 @@
       }
     ],
     "schema_ref": "scripts/memory/recall-spec.md#process_integration"
+  },
+  "hook_triggers_in_checks": {
+    "check_id_11_hot_cache_stale": {
+      "trigger": "on_hot_cache_stale_detected",
+      "action": "hot_cache_rebuild_hook"
+    },
+    "check_id_9_contradiction_deep": {
+      "trigger": "post_lint_check",
+      "actions": [
+        { "name": "distillation_check", "command": "./scripts/memory/distill.sh --check-undistilled 2>/dev/null || true" }
+      ]
+    },
+    "check_id_2_orphan_pages": {
+      "trigger": "on_orphan_pages_found",
+      "action": "backlink_update_hook"
+    }
   }
 }

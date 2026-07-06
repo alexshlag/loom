@@ -5,6 +5,20 @@ sources: [raw/corrected/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowled
 related: [wiki/concepts/service-container.md, wiki/concepts/routing-system.md, wiki/concepts/hexagonal-architecture.md]
 aliases: ["Symfony", "Symfony Framework", "SF framework"]
 ---
+- [[wiki/concepts/testing-strategy.md]] (score: 8)
+- [[wiki/concepts/twig-templating.md]] (score: 6)
+- [[wiki/entities/php.md]] (score: 6)
+- [[wiki/concepts/testing-strategy.md]] (score: 8)
+- [[wiki/concepts/twig-templating.md]] (score: 6)
+- [[wiki/entities/php.md]] (score: 6)
+- [[wiki/concepts/testing-strategy.md]] (score: 8)
+- [[wiki/concepts/twig-templating.md]] (score: 6)
+- [[wiki/entities/php.md]] (score: 6)
+- [[wiki/concepts/testing-strategy.md]] (score: 8)
+- [[wiki/concepts/twig-templating.md]] (score: 6)
+- [[wiki/entities/php.md]] (score: 6)
+- [[wiki/concepts/symfony-dependency-injection.md]] (score: 5, incoming)
+- [[wiki/entities/php.md]] (score: 6, incoming)
 
 
 

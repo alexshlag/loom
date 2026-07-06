@@ -1,24 +1,31 @@
 {
-    "last_updated": "2026-07-06T19:35+03",
+    "last_updated": "2026-07-06T19:58+03",
     "current_mode": "project",
-    "focus_node": "AGENTS.md reduction — Phase 32.1 C10 (extract inline rules to JSON)",
+    "focus_node": "Phase 14.5 test COMPLETE \u2014 all contradiction resolution components verified",
     "open_pages": [],
     "dead_ends": [],
     "query_summary": {
-        "intent": "Сократить AGENTS.md, вынеся дублирующие inline-описания в rules/*",
-        "pages_read": ["AGENTS.md", "rules/auto_rebuild_metadata.json", "rules/non_blocking_lint.json", "rules/evidence_grade.json", "rules/faq_summary.json", "rules/git_conventions.json", "rules/external_sources_policy.json"],
+        "intent": "Created PHP programming language overview page",
+        "pages_read": [
+            "process-query.json",
+            "process-ingest.json",
+            "web_search results for PHP history and versions"
+        ],
         "key_findings": [
-            "✅ AGENTS.md: 676 → 447 строк (-230 lines, ~14KB saved)",
-            "✅ Extracted: Auto-rebuild + Non-blocking Lint → auto_rebuild_metadata.json, non_blocking_lint.json",
-            "✅ Extracted: Wiki Snapshot JSON-блок → snapshot_format.json (new)",
-            "✅ Extracted: Language Policy → language_policy.json (new)",
-            "✅ Removed: Evidence Grade inline table → already in rules/evidence_grade.json",
-            "✅ Removed: Schema Inheritance Canonical References table → dead weight for agent context",
-            "✅ Total rules/*: 28 JSON files, ~1030 lines total"
+            "\u2705 Created wiki/entities/php.md \u2014 comprehensive PHP overview",
+            "\u2705 Post-checks: rebuild-meta.sh + auto-crosslink.sh completed",
+            "\u2705 Crosslinks added to symfony, symfony-dependency-injection, hexagonal-architecture"
         ]
     },
     "next_steps_todo": [
-        {"task": "Review remaining AGENTS.md sections for further reduction opportunities", "priority": "medium"}
+        {
+            "task": "Issue #27 \u2014 broken link handling escalation rules",
+            "priority": "high"
+        },
+        {
+            "task": "Issue #28 \u2014 page templates co-evolution user approval mechanism",
+            "priority": "medium"
+        }
     ],
     "session_context": {},
     "broken_links_resolved": []

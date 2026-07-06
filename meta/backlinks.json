@@ -1,0 +1,856 @@
+{
+  "backlinks": {
+    "concepts-service-container": {
+      "to": "concepts/service-container.md",
+      "sources": [
+        {
+          "from": "log",
+          "context": "wikilink from log.md"
+        },
+        {
+          "from": "concepts-symfony-dependency-injection",
+          "context": "wikilink from concepts/symfony-dependency-injection.md"
+        },
+        {
+          "from": "concepts-symfony-dependency-injection",
+          "context": "wikilink from concepts/symfony-dependency-injection.md"
+        },
+        {
+          "from": "concepts-symfony-dependency-injection",
+          "context": "wikilink from concepts/symfony-dependency-injection.md"
+        },
+        {
+          "from": "concepts-symfony-dependency-injection",
+          "context": "wikilink from concepts/symfony-dependency-injection.md"
+        },
+        {
+          "from": "concepts-symfony-dependency-injection",
+          "context": "wikilink from concepts/symfony-dependency-injection.md"
+        },
+        {
+          "from": "concepts-symfony-dependency-injection",
+          "context": "wikilink from concepts/symfony-dependency-injection.md"
+        },
+        {
+          "from": "entities-symfony",
+          "context": "wikilink from entities/symfony.md"
+        }
+      ]
+    },
+    "concepts-agent-memory-management": {
+      "to": "concepts/agent-memory-management.md",
+      "sources": [
+        {
+          "from": "concepts-natural-memory",
+          "context": "wikilink from concepts/natural-memory.md"
+        },
+        {
+          "from": "concepts-natural-memory",
+          "context": "wikilink from concepts/natural-memory.md"
+        },
+        {
+          "from": "concepts-natural-memory",
+          "context": "wikilink from concepts/natural-memory.md"
+        },
+        {
+          "from": "concepts-natural-memory",
+          "context": "wikilink from concepts/natural-memory.md"
+        },
+        {
+          "from": "concepts-natural-memory",
+          "context": "wikilink from concepts/natural-memory.md"
+        },
+        {
+          "from": "concepts-natural-memory",
+          "context": "wikilink from concepts/natural-memory.md"
+        }
+      ]
+    },
+    "overview": {
+      "to": "overview.md",
+      "sources": [
+        {
+          "from": "concepts-natural-memory",
+          "context": "wikilink from concepts/natural-memory.md"
+        }
+      ]
+    },
+    "snapshot": {
+      "to": "snapshot.md",
+      "sources": [
+        {
+          "from": "concepts-natural-memory",
+          "context": "wikilink from concepts/natural-memory.md"
+        }
+      ]
+    },
+    "concepts-symfony-dependency-injection": {
+      "to": "concepts/symfony-dependency-injection.md",
+      "sources": [
+        {
+          "from": "concepts-service-container",
+          "context": "wikilink from concepts/service-container.md"
+        },
+        {
+          "from": "concepts-service-container",
+          "context": "wikilink from concepts/service-container.md"
+        },
+        {
+          "from": "concepts-service-container",
+          "context": "wikilink from concepts/service-container.md"
+        },
+        {
+          "from": "concepts-service-container",
+          "context": "wikilink from concepts/service-container.md"
+        },
+        {
+          "from": "concepts-service-container",
+          "context": "wikilink from concepts/service-container.md"
+        },
+        {
+          "from": "entities-symfony",
+          "context": "wikilink from entities/symfony.md"
+        }
+      ]
+    },
+    "entities-symfony": {
+      "to": "entities/symfony.md",
+      "sources": [
+        {
+          "from": "concepts-service-container",
+          "context": "wikilink from concepts/service-container.md"
+        },
+        {
+          "from": "concepts-service-container",
+          "context": "wikilink from concepts/service-container.md"
+        },
+        {
+          "from": "concepts-service-container",
+          "context": "wikilink from concepts/service-container.md"
+        },
+        {
+          "from": "concepts-service-container",
+          "context": "wikilink from concepts/service-container.md"
+        },
+        {
+          "from": "concepts-service-container",
+          "context": "wikilink from concepts/service-container.md"
+        },
+        {
+          "from": "concepts-symfony-dependency-injection",
+          "context": "wikilink from concepts/symfony-dependency-injection.md"
+        },
+        {
+          "from": "concepts-symfony-dependency-injection",
+          "context": "wikilink from concepts/symfony-dependency-injection.md"
+        },
+        {
+          "from": "concepts-symfony-dependency-injection",
+          "context": "wikilink from concepts/symfony-dependency-injection.md"
+        },
+        {
+          "from": "concepts-symfony-dependency-injection",
+          "context": "wikilink from concepts/symfony-dependency-injection.md"
+        },
+        {
+          "from": "concepts-symfony-dependency-injection",
+          "context": "wikilink from concepts/symfony-dependency-injection.md"
+        },
+        {
+          "from": "entities-php",
+          "context": "wikilink from entities/php.md"
+        },
+        {
+          "from": "entities-php",
+          "context": "wikilink from entities/php.md"
+        },
+        {
+          "from": "entities-php",
+          "context": "wikilink from entities/php.md"
+        },
+        {
+          "from": "entities-php",
+          "context": "wikilink from entities/php.md"
+        },
+        {
+          "from": "entities-php",
+          "context": "wikilink from entities/php.md"
+        },
+        {
+          "from": "entities-php",
+          "context": "wikilink from entities/php.md"
+        },
+        {
+          "from": "entities-php",
+          "context": "wikilink from entities/php.md"
+        }
+      ]
+    },
+    "syntheses-python-nixos-development-environments": {
+      "to": "syntheses/python-nixos-development-environments.md",
+      "sources": [
+        {
+          "from": "concepts-python-nixos-development",
+          "context": "wikilink from concepts/python-nixos-development.md"
+        },
+        {
+          "from": "concepts-python-nixos-development",
+          "context": "wikilink from concepts/python-nixos-development.md"
+        },
+        {
+          "from": "concepts-python-nixos-development",
+          "context": "wikilink from concepts/python-nixos-development.md"
+        },
+        {
+          "from": "concepts-python-nixos-development",
+          "context": "wikilink from concepts/python-nixos-development.md"
+        },
+        {
+          "from": "concepts-python-nixos-development",
+          "context": "wikilink from concepts/python-nixos-development.md"
+        }
+      ]
+    },
+    "concepts-sonata-admin-bundle": {
+      "to": "concepts/sonata-admin-bundle.md",
+      "sources": [
+        {
+          "from": "concepts-easyadmin-bundle",
+          "context": "wikilink from concepts/easyadmin-bundle.md"
+        },
+        {
+          "from": "concepts-easyadmin-bundle",
+          "context": "wikilink from concepts/easyadmin-bundle.md"
+        },
+        {
+          "from": "concepts-easyadmin-bundle",
+          "context": "wikilink from concepts/easyadmin-bundle.md"
+        },
+        {
+          "from": "concepts-easyadmin-bundle",
+          "context": "wikilink from concepts/easyadmin-bundle.md"
+        },
+        {
+          "from": "concepts-easyadmin-bundle",
+          "context": "wikilink from concepts/easyadmin-bundle.md"
+        },
+        {
+          "from": "entities-ibexa-dxp",
+          "context": "wikilink from entities/ibexa-dxp.md"
+        },
+        {
+          "from": "entities-ibexa-dxp",
+          "context": "wikilink from entities/ibexa-dxp.md"
+        },
+        {
+          "from": "entities-ibexa-dxp",
+          "context": "wikilink from entities/ibexa-dxp.md"
+        },
+        {
+          "from": "entities-ibexa-dxp",
+          "context": "wikilink from entities/ibexa-dxp.md"
+        },
+        {
+          "from": "entities-ibexa-dxp",
+          "context": "wikilink from entities/ibexa-dxp.md"
+        },
+        {
+          "from": "entities-sylius",
+          "context": "wikilink from entities/sylius.md"
+        },
+        {
+          "from": "entities-sylius",
+          "context": "wikilink from entities/sylius.md"
+        },
+        {
+          "from": "entities-sylius",
+          "context": "wikilink from entities/sylius.md"
+        },
+        {
+          "from": "entities-sylius",
+          "context": "wikilink from entities/sylius.md"
+        },
+        {
+          "from": "entities-api-platform",
+          "context": "wikilink from entities/api-platform.md"
+        },
+        {
+          "from": "entities-api-platform",
+          "context": "wikilink from entities/api-platform.md"
+        },
+        {
+          "from": "entities-api-platform",
+          "context": "wikilink from entities/api-platform.md"
+        },
+        {
+          "from": "entities-api-platform",
+          "context": "wikilink from entities/api-platform.md"
+        },
+        {
+          "from": "entities-api-platform",
+          "context": "wikilink from entities/api-platform.md"
+        }
+      ]
+    },
+    "concepts-assetmapper": {
+      "to": "concepts/assetmapper.md",
+      "sources": [
+        {
+          "from": "concepts-twig-templating",
+          "context": "wikilink from concepts/twig-templating.md"
+        },
+        {
+          "from": "concepts-twig-templating",
+          "context": "wikilink from concepts/twig-templating.md"
+        },
+        {
+          "from": "concepts-twig-templating",
+          "context": "wikilink from concepts/twig-templating.md"
+        },
+        {
+          "from": "concepts-twig-templating",
+          "context": "wikilink from concepts/twig-templating.md"
+        },
+        {
+          "from": "concepts-twig-templating",
+          "context": "wikilink from concepts/twig-templating.md"
+        }
+      ]
+    },
+    "entities-php": {
+      "to": "entities/php.md",
+      "sources": [
+        {
+          "from": "concepts-twig-templating",
+          "context": "wikilink from concepts/twig-templating.md"
+        },
+        {
+          "from": "concepts-testing-strategy",
+          "context": "wikilink from concepts/testing-strategy.md"
+        },
+        {
+          "from": "entities-symfony",
+          "context": "wikilink from entities/symfony.md"
+        },
+        {
+          "from": "entities-symfony",
+          "context": "wikilink from entities/symfony.md"
+        },
+        {
+          "from": "entities-symfony",
+          "context": "wikilink from entities/symfony.md"
+        },
+        {
+          "from": "entities-symfony",
+          "context": "wikilink from entities/symfony.md"
+        },
+        {
+          "from": "entities-symfony",
+          "context": "wikilink from entities/symfony.md"
+        }
+      ]
+    },
+    "concepts-symfony-ai": {
+      "to": "concepts/symfony-ai.md",
+      "sources": [
+        {
+          "from": "concepts-llm-wiki",
+          "context": "wikilink from concepts/llm-wiki.md"
+        },
+        {
+          "from": "concepts-llm-wiki",
+          "context": "wikilink from concepts/llm-wiki.md"
+        },
+        {
+          "from": "concepts-llm-wiki",
+          "context": "wikilink from concepts/llm-wiki.md"
+        },
+        {
+          "from": "concepts-llm-wiki",
+          "context": "wikilink from concepts/llm-wiki.md"
+        },
+        {
+          "from": "concepts-llm-wiki",
+          "context": "wikilink from concepts/llm-wiki.md"
+        },
+        {
+          "from": "syntheses-rag-vs-llm-wiki-pattern",
+          "context": "wikilink from syntheses/rag-vs-llm-wiki-pattern.md"
+        },
+        {
+          "from": "syntheses-rag-vs-llm-wiki-pattern",
+          "context": "wikilink from syntheses/rag-vs-llm-wiki-pattern.md"
+        },
+        {
+          "from": "syntheses-rag-vs-llm-wiki-pattern",
+          "context": "wikilink from syntheses/rag-vs-llm-wiki-pattern.md"
+        },
+        {
+          "from": "syntheses-rag-vs-llm-wiki-pattern",
+          "context": "wikilink from syntheses/rag-vs-llm-wiki-pattern.md"
+        }
+      ]
+    },
+    "entities-loomana": {
+      "to": "entities/loomana.md",
+      "sources": [
+        {
+          "from": "concepts-llm-wiki",
+          "context": "wikilink from concepts/llm-wiki.md"
+        },
+        {
+          "from": "concepts-llm-wiki",
+          "context": "wikilink from concepts/llm-wiki.md"
+        },
+        {
+          "from": "concepts-llm-wiki",
+          "context": "wikilink from concepts/llm-wiki.md"
+        },
+        {
+          "from": "concepts-llm-wiki",
+          "context": "wikilink from concepts/llm-wiki.md"
+        },
+        {
+          "from": "concepts-llm-wiki",
+          "context": "wikilink from concepts/llm-wiki.md"
+        },
+        {
+          "from": "syntheses-rag-vs-llm-wiki-pattern",
+          "context": "wikilink from syntheses/rag-vs-llm-wiki-pattern.md"
+        },
+        {
+          "from": "syntheses-rag-vs-llm-wiki-pattern",
+          "context": "wikilink from syntheses/rag-vs-llm-wiki-pattern.md"
+        },
+        {
+          "from": "syntheses-rag-vs-llm-wiki-pattern",
+          "context": "wikilink from syntheses/rag-vs-llm-wiki-pattern.md"
+        },
+        {
+          "from": "syntheses-rag-vs-llm-wiki-pattern",
+          "context": "wikilink from syntheses/rag-vs-llm-wiki-pattern.md"
+        },
+        {
+          "from": "comparisons-llm-wiki-implementations",
+          "context": "wikilink from comparisons/llm-wiki-implementations.md"
+        }
+      ]
+    },
+    "syntheses-rag-vs-llm-wiki-pattern": {
+      "to": "syntheses/rag-vs-llm-wiki-pattern.md",
+      "sources": [
+        {
+          "from": "concepts-llm-wiki",
+          "context": "wikilink from concepts/llm-wiki.md"
+        },
+        {
+          "from": "concepts-llm-wiki",
+          "context": "wikilink from concepts/llm-wiki.md"
+        },
+        {
+          "from": "concepts-llm-wiki",
+          "context": "wikilink from concepts/llm-wiki.md"
+        },
+        {
+          "from": "concepts-llm-wiki",
+          "context": "wikilink from concepts/llm-wiki.md"
+        },
+        {
+          "from": "concepts-llm-wiki",
+          "context": "wikilink from concepts/llm-wiki.md"
+        },
+        {
+          "from": "concepts-symfony-ai",
+          "context": "wikilink from concepts/symfony-ai.md"
+        }
+      ]
+    },
+    "concepts-llm-wiki": {
+      "to": "concepts/llm-wiki.md",
+      "sources": [
+        {
+          "from": "concepts-symfony-ai",
+          "context": "wikilink from concepts/symfony-ai.md"
+        },
+        {
+          "from": "syntheses-rag-vs-llm-wiki-pattern",
+          "context": "wikilink from syntheses/rag-vs-llm-wiki-pattern.md"
+        },
+        {
+          "from": "syntheses-rag-vs-llm-wiki-pattern",
+          "context": "wikilink from syntheses/rag-vs-llm-wiki-pattern.md"
+        },
+        {
+          "from": "syntheses-rag-vs-llm-wiki-pattern",
+          "context": "wikilink from syntheses/rag-vs-llm-wiki-pattern.md"
+        },
+        {
+          "from": "syntheses-rag-vs-llm-wiki-pattern",
+          "context": "wikilink from syntheses/rag-vs-llm-wiki-pattern.md"
+        }
+      ]
+    },
+    "concepts-easyadmin-bundle": {
+      "to": "concepts/easyadmin-bundle.md",
+      "sources": [
+        {
+          "from": "concepts-sonata-admin-bundle",
+          "context": "wikilink from concepts/sonata-admin-bundle.md"
+        },
+        {
+          "from": "concepts-sonata-admin-bundle",
+          "context": "wikilink from concepts/sonata-admin-bundle.md"
+        },
+        {
+          "from": "concepts-sonata-admin-bundle",
+          "context": "wikilink from concepts/sonata-admin-bundle.md"
+        },
+        {
+          "from": "concepts-sonata-admin-bundle",
+          "context": "wikilink from concepts/sonata-admin-bundle.md"
+        },
+        {
+          "from": "concepts-sonata-admin-bundle",
+          "context": "wikilink from concepts/sonata-admin-bundle.md"
+        }
+      ]
+    },
+    "entities-api-platform": {
+      "to": "entities/api-platform.md",
+      "sources": [
+        {
+          "from": "concepts-sonata-admin-bundle",
+          "context": "wikilink from concepts/sonata-admin-bundle.md"
+        },
+        {
+          "from": "entities-ibexa-dxp",
+          "context": "wikilink from entities/ibexa-dxp.md"
+        },
+        {
+          "from": "entities-ibexa-dxp",
+          "context": "wikilink from entities/ibexa-dxp.md"
+        },
+        {
+          "from": "entities-ibexa-dxp",
+          "context": "wikilink from entities/ibexa-dxp.md"
+        },
+        {
+          "from": "entities-ibexa-dxp",
+          "context": "wikilink from entities/ibexa-dxp.md"
+        },
+        {
+          "from": "entities-ibexa-dxp",
+          "context": "wikilink from entities/ibexa-dxp.md"
+        },
+        {
+          "from": "entities-sylius",
+          "context": "wikilink from entities/sylius.md"
+        },
+        {
+          "from": "entities-sylius",
+          "context": "wikilink from entities/sylius.md"
+        },
+        {
+          "from": "entities-sylius",
+          "context": "wikilink from entities/sylius.md"
+        },
+        {
+          "from": "entities-sylius",
+          "context": "wikilink from entities/sylius.md"
+        }
+      ]
+    },
+    "concepts-twig-templating": {
+      "to": "concepts/twig-templating.md",
+      "sources": [
+        {
+          "from": "concepts-assetmapper",
+          "context": "wikilink from concepts/assetmapper.md"
+        },
+        {
+          "from": "entities-symfony",
+          "context": "wikilink from entities/symfony.md"
+        },
+        {
+          "from": "entities-symfony",
+          "context": "wikilink from entities/symfony.md"
+        },
+        {
+          "from": "entities-symfony",
+          "context": "wikilink from entities/symfony.md"
+        },
+        {
+          "from": "entities-symfony",
+          "context": "wikilink from entities/symfony.md"
+        },
+        {
+          "from": "entities-php",
+          "context": "wikilink from entities/php.md"
+        },
+        {
+          "from": "entities-php",
+          "context": "wikilink from entities/php.md"
+        },
+        {
+          "from": "entities-php",
+          "context": "wikilink from entities/php.md"
+        },
+        {
+          "from": "entities-php",
+          "context": "wikilink from entities/php.md"
+        },
+        {
+          "from": "entities-php",
+          "context": "wikilink from entities/php.md"
+        },
+        {
+          "from": "entities-php",
+          "context": "wikilink from entities/php.md"
+        },
+        {
+          "from": "entities-php",
+          "context": "wikilink from entities/php.md"
+        }
+      ]
+    },
+    "concepts-natural-memory": {
+      "to": "concepts/natural-memory.md",
+      "sources": [
+        {
+          "from": "concepts-agent-memory-management",
+          "context": "wikilink from concepts/agent-memory-management.md"
+        },
+        {
+          "from": "concepts-agent-memory-management",
+          "context": "wikilink from concepts/agent-memory-management.md"
+        },
+        {
+          "from": "concepts-agent-memory-management",
+          "context": "wikilink from concepts/agent-memory-management.md"
+        },
+        {
+          "from": "concepts-agent-memory-management",
+          "context": "wikilink from concepts/agent-memory-management.md"
+        },
+        {
+          "from": "concepts-agent-memory-management",
+          "context": "wikilink from concepts/agent-memory-management.md"
+        },
+        {
+          "from": "concepts-agent-memory-management",
+          "context": "wikilink from concepts/agent-memory-management.md"
+        },
+        {
+          "from": "concepts-agent-memory-management",
+          "context": "wikilink from concepts/agent-memory-management.md"
+        }
+      ]
+    },
+    "concepts-python-nixos-development": {
+      "to": "concepts/python-nixos-development.md",
+      "sources": [
+        {
+          "from": "syntheses-python-nixos-development-environments",
+          "context": "wikilink from syntheses/python-nixos-development-environments.md"
+        },
+        {
+          "from": "syntheses-python-nixos-development-environments",
+          "context": "wikilink from syntheses/python-nixos-development-environments.md"
+        },
+        {
+          "from": "syntheses-python-nixos-development-environments",
+          "context": "wikilink from syntheses/python-nixos-development-environments.md"
+        },
+        {
+          "from": "syntheses-python-nixos-development-environments",
+          "context": "wikilink from syntheses/python-nixos-development-environments.md"
+        }
+      ]
+    },
+    "entities-andrej-karpathy": {
+      "to": "entities/andrej-karpathy.md",
+      "sources": [
+        {
+          "from": "comparisons-llm-wiki-implementations",
+          "context": "wikilink from comparisons/llm-wiki-implementations.md"
+        }
+      ]
+    },
+    "comparisons-llm-wiki-implementations": {
+      "to": "comparisons/llm-wiki-implementations.md",
+      "sources": [
+        {
+          "from": "entities-loomana",
+          "context": "wikilink from entities/loomana.md"
+        },
+        {
+          "from": "entities-loomana",
+          "context": "wikilink from entities/loomana.md"
+        },
+        {
+          "from": "entities-loomana",
+          "context": "wikilink from entities/loomana.md"
+        },
+        {
+          "from": "entities-loomana",
+          "context": "wikilink from entities/loomana.md"
+        },
+        {
+          "from": "entities-andrej-karpathy",
+          "context": "wikilink from entities/andrej-karpathy.md"
+        },
+        {
+          "from": "entities-andrej-karpathy",
+          "context": "wikilink from entities/andrej-karpathy.md"
+        },
+        {
+          "from": "entities-andrej-karpathy",
+          "context": "wikilink from entities/andrej-karpathy.md"
+        },
+        {
+          "from": "entities-andrej-karpathy",
+          "context": "wikilink from entities/andrej-karpathy.md"
+        },
+        {
+          "from": "entities-andrej-karpathy",
+          "context": "wikilink from entities/andrej-karpathy.md"
+        }
+      ]
+    },
+    "entities-sylius": {
+      "to": "entities/sylius.md",
+      "sources": [
+        {
+          "from": "entities-ibexa-dxp",
+          "context": "wikilink from entities/ibexa-dxp.md"
+        },
+        {
+          "from": "entities-ibexa-dxp",
+          "context": "wikilink from entities/ibexa-dxp.md"
+        },
+        {
+          "from": "entities-ibexa-dxp",
+          "context": "wikilink from entities/ibexa-dxp.md"
+        },
+        {
+          "from": "entities-ibexa-dxp",
+          "context": "wikilink from entities/ibexa-dxp.md"
+        },
+        {
+          "from": "entities-ibexa-dxp",
+          "context": "wikilink from entities/ibexa-dxp.md"
+        },
+        {
+          "from": "entities-api-platform",
+          "context": "wikilink from entities/api-platform.md"
+        },
+        {
+          "from": "entities-api-platform",
+          "context": "wikilink from entities/api-platform.md"
+        },
+        {
+          "from": "entities-api-platform",
+          "context": "wikilink from entities/api-platform.md"
+        },
+        {
+          "from": "entities-api-platform",
+          "context": "wikilink from entities/api-platform.md"
+        },
+        {
+          "from": "entities-api-platform",
+          "context": "wikilink from entities/api-platform.md"
+        }
+      ]
+    },
+    "concepts-testing-strategy": {
+      "to": "concepts/testing-strategy.md",
+      "sources": [
+        {
+          "from": "entities-symfony",
+          "context": "wikilink from entities/symfony.md"
+        },
+        {
+          "from": "entities-symfony",
+          "context": "wikilink from entities/symfony.md"
+        },
+        {
+          "from": "entities-symfony",
+          "context": "wikilink from entities/symfony.md"
+        },
+        {
+          "from": "entities-symfony",
+          "context": "wikilink from entities/symfony.md"
+        },
+        {
+          "from": "entities-php",
+          "context": "wikilink from entities/php.md"
+        },
+        {
+          "from": "entities-php",
+          "context": "wikilink from entities/php.md"
+        },
+        {
+          "from": "entities-php",
+          "context": "wikilink from entities/php.md"
+        },
+        {
+          "from": "entities-php",
+          "context": "wikilink from entities/php.md"
+        },
+        {
+          "from": "entities-php",
+          "context": "wikilink from entities/php.md"
+        },
+        {
+          "from": "entities-php",
+          "context": "wikilink from entities/php.md"
+        },
+        {
+          "from": "entities-php",
+          "context": "wikilink from entities/php.md"
+        }
+      ]
+    },
+    "entities-ibexa-dxp": {
+      "to": "entities/ibexa-dxp.md",
+      "sources": [
+        {
+          "from": "entities-sylius",
+          "context": "wikilink from entities/sylius.md"
+        },
+        {
+          "from": "entities-sylius",
+          "context": "wikilink from entities/sylius.md"
+        },
+        {
+          "from": "entities-sylius",
+          "context": "wikilink from entities/sylius.md"
+        },
+        {
+          "from": "entities-sylius",
+          "context": "wikilink from entities/sylius.md"
+        },
+        {
+          "from": "entities-api-platform",
+          "context": "wikilink from entities/api-platform.md"
+        },
+        {
+          "from": "entities-api-platform",
+          "context": "wikilink from entities/api-platform.md"
+        },
+        {
+          "from": "entities-api-platform",
+          "context": "wikilink from entities/api-platform.md"
+        },
+        {
+          "from": "entities-api-platform",
+          "context": "wikilink from entities/api-platform.md"
+        },
+        {
+          "from": "entities-api-platform",
+          "context": "wikilink from entities/api-platform.md"
+        }
+      ]
+    }
+  }
+}

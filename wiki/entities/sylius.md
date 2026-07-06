@@ -6,6 +6,18 @@ category: entity
 sources: [web_search]
 related: [wiki/entities/symfony.md, wiki/concepts/hexagonal-architecture.md, wiki/entities/api-platform.md, wiki/concepts/sonata-admin-bundle.md, wiki/entities/ibexa-dxp.md]
 ---
+- [[wiki/concepts/sonata-admin-bundle.md]] (score: 6)
+- [[wiki/entities/api-platform.md]] (score: 6)
+- [[wiki/entities/ibexa-dxp.md]] (score: 8)
+- [[wiki/concepts/sonata-admin-bundle.md]] (score: 6)
+- [[wiki/entities/api-platform.md]] (score: 6)
+- [[wiki/entities/ibexa-dxp.md]] (score: 8)
+- [[wiki/concepts/sonata-admin-bundle.md]] (score: 6)
+- [[wiki/entities/api-platform.md]] (score: 6)
+- [[wiki/entities/ibexa-dxp.md]] (score: 8)
+- [[wiki/concepts/sonata-admin-bundle.md]] (score: 6)
+- [[wiki/entities/api-platform.md]] (score: 6)
+- [[wiki/entities/ibexa-dxp.md]] (score: 8)
 
 # Sylius
 

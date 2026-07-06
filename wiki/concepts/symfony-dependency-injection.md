@@ -4,6 +4,17 @@ date: 2026-06-28
 sources: [raw/sources/SRC-2026-06-28-SYMFONY-DI-001/symfony-di.md]
 related: []
 ---
+- [[wiki/concepts/service-container.md]] (score: 5)
+- [[wiki/entities/symfony.md]] (score: 5)
+- [[wiki/concepts/service-container.md]] (score: 5)
+- [[wiki/entities/symfony.md]] (score: 5)
+- [[wiki/concepts/service-container.md]] (score: 5)
+- [[wiki/entities/symfony.md]] (score: 5)
+- [[wiki/concepts/service-container.md]] (score: 5)
+- [[wiki/entities/symfony.md]] (score: 5)
+- [[wiki/concepts/service-container.md]] (score: 5)
+- [[wiki/entities/symfony.md]] (score: 5)
+- [[wiki/concepts/service-container.md]] (score: 5, incoming)
 
 # Dependency Injection в Symfony
 
