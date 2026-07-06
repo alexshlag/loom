@@ -38,6 +38,7 @@ related: []
 
 - **Recent activity**: compact_json_rules | JSON instruction compactification — rules/*.json and AGENTS.md §9 integration
 - **Recent activity**: fix_json_comments | Removed invalid // inline comments from context-scopes.json — replaced with schema_ref field; validated all 12 rules/*.json files pass json.tool
+- **Recent activity**: schema | skill-related-field — added standard 'related' to format spec, existing skill now links via wiki-relative paths
 - **Recent activity**: schema | skill-format-cleanup — removed name/description from frontmatter spec, kept *-skill.md naming for differentiation
 - **Recent activity**: schema | skill-naming-convention — added *-skill.md suffix rule + name/description required fields to format spec, refactored existing skill file
 - **Recent activity**: phase20_1_external-skill-integration | S6-S9 complete | S6-S9 complete: skill_search_sources.json, safety_check.json, query fallback chain in process-query.json, related_docs field in format spec

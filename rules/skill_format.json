@@ -32,6 +32,11 @@
           "live_state"
         ],
         "default": "documentation"
+      },
+      {
+        "name": "related",
+        "pattern": "[<wiki-relative-paths>]",
+        "description": "Standard wiki cross-links. For skills: links to related framework docs, language guides, concepts — auto-suggested during creation."
       }
     ]
   },
@@ -101,7 +106,8 @@
     "NEVER duplicate logic from rules/ — use schema_ref instead (R01)",
     "Algorithm must be self-contained — no forward references to other skills",
     "Each skill file = one pattern/pattern-family only (Single Responsibility)",
-    "Skills SHOULD link to relevant wiki docs (framework/lang/best-practices) — auto-suggested during creation, not enforced"
+    "Skills SHOULD link to relevant wiki docs (framework/lang/best-practices) — auto-suggested during creation, not enforced",
+    "Skills MUST use standard 'related' field — NOT new/custom fields. Use wiki-relative paths to docs/concepts/entities."
   ],
   "naming_convention": {
     "pattern": "<skill_name>-skill.md",

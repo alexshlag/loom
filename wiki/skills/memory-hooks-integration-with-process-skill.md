@@ -5,6 +5,7 @@ type: documentation
 category: note
 aliases: []
 sources: ["raw/trajectories/TRJ-20260706-0653-fcc8626d"]
+related: ["rules/session_context_rules.json", "process-ingest.json"]
 ---
 
 # Skill: Memory Hooks Integration With Process

@@ -64,10 +64,10 @@
           "step_1": "read working_memory.json.skills_loaded"
         },
         {
-          "step_2": "if skills exist AND match query intent: read matching skill page → add to open_pages (max 3 per session_context_rules.json#operational_rules.context_bubble_max_pages)"
+          "step_2": "if skills exist AND match query intent: read matching skill page → add to open_pages (max 3 per session_context_rules.json#operational_rules.context_bubble_max_pages). Use 'related' field for cross-links."
         },
         {
-          "step_3": "if NO matching skills: PROPOSE external search to user — ask permission → fetch from rules/skill_search_sources.json → apply safety checks → if approved: ingest via process-ingest.json flow"
+          "step_3": "if NO matching skills: PROPOSE external search to user — fetch from rules/skill_search_sources.json → apply safety checks → if approved: ingest via process-ingest.json flow. Create skill page with standard 'related' field linking to wiki docs/concepts/entities."
         }
       ],
       "schema_ref": "rules/skill_safety_check.json#approval_chain",
