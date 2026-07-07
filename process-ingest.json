@@ -307,7 +307,7 @@
             "action_name": "acquire_page_lock"
           },
           {
-            "command": "./scripts/rebuild-meta.sh"
+            "command": "./scripts/rebuild-meta.sh --full"
           },
           {
             "command": "./scripts/text-similarity.sh --scan-all --threshold 90",

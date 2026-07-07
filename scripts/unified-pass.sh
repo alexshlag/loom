@@ -126,11 +126,8 @@ if [[ "$SKIP_META" == "false" ]]; then
     rm -f "$WIKI_DIR/.meta_update_timestamp" 2>/dev/null || true
   fi
 
-  if $QUIET; then
-    "$SCRIPT_DIR/rebuild-meta.sh" >/dev/null 2>&1 || true
-  else
-    "$SCRIPT_DIR/rebuild-meta.sh" || true
-  fi
+  $QUIET || echo "[*] Consumer 2: collect_metadata..." >&2
+  "$SCRIPT_DIR/rebuild-meta.sh" >>$([[ $QUIET ]] && echo '/dev/null 2>&1' || echo ' /dev/null') || true
 else
   $QUIET || echo "[-] Consumer 2: skipped" >&2
 fi

@@ -157,11 +157,7 @@ print(f'{broken}\t{auto_rep}\t{ag_req}')
 fi
 TOTAL_ISSUES=$((TOTAL_ISSUES + BROKEN_LINKS))
 
-# D6: Rebuild meta index after auto-fixes
-if [[ $AUTO_REPAIRED -gt 0 ]]; then
-  echo "[*] Rebuilding meta index after ${AUTO_REPAIRED} link fix(es)..." >&2
-  safe_run "./scripts/rebuild-meta.sh --index-only" local_rebuild || true
-fi
+# D6: Rebuild meta index consolidated — single call at end after all fixes
 
 # --- Check 9: Contradiction deep scan (Python-based) ---
 CONTRADICTIONS_DEEP=0
@@ -296,10 +292,11 @@ if [[ "$SKIP_CHECKS" != *",14,"* ]]; then
 fi
 TOTAL_ISSUES=$((TOTAL_ISSUES + STRUCTURAL_VIOLATIONS))
 
-# D7: Rebuild meta index after tag auto-fixes AND frontmatter insertions
-if [[ $FIX_ITER -gt 0 ]] || [[ $MISSING_FM -gt 0 ]]; then
-    echo "[*] Rebuilding meta index..." >&2
-    safe_run "./scripts/rebuild-meta.sh --index-only" local_tag_rebuild || true
+# Final: single rebuild-meta --index-only (consolidated from D6+D7)
+HAS_FIXES=$((AUTO_REPAIRED + FIX_ITER + MISSING_FM))
+if [[ $HAS_FIXES -gt 0 ]]; then
+  echo "[*] Rebuilding meta index after ${AUTO_REPAIRED} link fix(es), ${FIX_ITER} tag fixes, ${MISSING_FM} frontmatter insertions..." >&2
+  safe_run "./scripts/rebuild-meta.sh --index-only" local_final_rebuild || true
 fi
 
 # --- Summary output (machine-readable JSON to stdout) ---
