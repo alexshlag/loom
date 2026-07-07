@@ -243,6 +243,26 @@
       ]
     },
     {
+      "step_id": "step_7_crosslink",
+      "name": "crosslink_identification_during_ingest",
+      "description": "Identify related wiki pages currently in context and create crosslinks immediately. This runs BEFORE page write so links are created during the same agent turn, not deferred to post-checks.",
+      "actions": [
+        {
+          "action_name": "identify_context_related_pages",
+          "description": "From current conversation context — list wiki pages that share tags/sources/concepts with new/updated page"
+        },
+        {
+          "command": "./scripts/auto-crosslink.sh --file-list /tmp/crosslink-candidates-${TIMESTAMP}.json '${NEW_PAGE_PATH}' --include-root --min-score 4 --max-results 5 2>/dev/null || true",
+          "note": "High-confidence crosslinks (score≥4) added during ingest turn, not deferred"
+        },
+        {
+          "action_name": "add_crosslinks_to_new_page_content",
+          "description": "Append identified crosslinks to page content BEFORE writing to disk"
+        }
+      ],
+      "rule": "Crosslinks must be created during ingest turn (same LLM context), not deferred to step_9 post-checks. Reduces orphan pages by preventing disconnected pages."
+    },
+    {
       "step_id": "step_8a_new_page",
       "name": "integration_new_page",
       "description": "Create NEW wiki page. Syntheses require DR-4 novel inference check.",

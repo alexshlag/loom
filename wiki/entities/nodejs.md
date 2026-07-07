@@ -6,6 +6,7 @@ category: entity
 sources: ["https://nodejs.org/en/about", "https://github.com/nodejs/release", "raw/corrected/SRC-002/nodejs-nixos.md"]
 related: []
 ---
+- [[wiki/entities/php.md]] (score: 3)
 
 # Node.js
 

@@ -7,6 +7,12 @@ aliases: ["PHP", "PHP language"]
 sources: [web_search]
 related: [wiki/entities/symfony.md, wiki/concepts/symfony-dependency-injection.md, wiki/concepts/hexagonal-architecture.md]
 ---
+- [[wiki/entities/rust-clippy.md]] (incoming, score: 3)
+- [[wiki/entities/nvidia.md]] (incoming, score: 2)
+- [[wiki/entities/nodejs.md]] (incoming, score: 3)
+- [[wiki/concepts/testing-strategy.md]] (score: 6)
+- [[wiki/concepts/twig-templating.md]] (score: 6)
+- [[wiki/entities/symfony.md]] (score: 6)
 
 # PHP
 

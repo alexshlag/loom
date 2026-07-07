@@ -6,6 +6,10 @@ category: concept
 sources: []
 related: ["wiki/concepts/memory-architecture.md", "wiki/overview.md", "wiki/snapshot.md"]
 ---
+- [[wiki/concepts/temporal-decay-in-wiki.md]] (incoming, score: 5)
+- [[wiki/comparisons/agent-memory-techniques.md]] (incoming, score: 4)
+- [[wiki/concepts/agent-memory-management.md]] (incoming, score: 5)
+- [[wiki/concepts/agent-memory-management.md]] (score: 5, incoming)
 
 # Natural Memory Translation — Перевод машинных фактов в живую память
 

@@ -5,6 +5,23 @@ sources: [raw/corrected/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowled
 related: [wiki/concepts/service-container.md, wiki/concepts/routing-system.md, wiki/concepts/hexagonal-architecture.md]
 aliases: ["Symfony", "Symfony Framework", "SF framework"]
 ---
+- [[wiki/concepts/symfony-flex.md]] (incoming, score: 5)
+- [[wiki/concepts/symfony-deployment.md]] (incoming, score: 5)
+- [[wiki/concepts/cache-system.md]] (incoming, score: 4)
+- [[wiki/concepts/assetmapper.md]] (incoming, score: 4)
+- [[wiki/concepts/workflow-state-machine.md]] (incoming, score: 3)
+- [[wiki/concepts/service-container.md]] (incoming, score: 4)
+- [[wiki/concepts/security-system.md]] (incoming, score: 4)
+- [[wiki/concepts/routing-system.md]] (incoming, score: 4)
+- [[wiki/concepts/twig-templating.md]] (incoming, score: 5)
+- [[wiki/concepts/messenger-component.md]] (incoming, score: 4)
+- [[wiki/concepts/easyadmin-bundle.md]] (incoming, score: 5)
+- [[wiki/concepts/doctrine-orm.md]] (incoming, score: 5)
+- [[wiki/concepts/testing-strategy.md]] (score: 8)
+- [[wiki/concepts/twig-templating.md]] (score: 6)
+- [[wiki/entities/php.md]] (score: 6, incoming)
+- [[wiki/concepts/symfony-dependency-injection.md]] (score: 8, incoming)
+- [[wiki/concepts/service-container.md]] (score: 5, incoming)
 
 # Symfony
 

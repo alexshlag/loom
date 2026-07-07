@@ -4,6 +4,8 @@ date: 2026-06-25
 sources: [raw/corrected/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md]
 related: [wiki/entities/symfony.md]
 ---
+- [[wiki/entities/symfony.md]] (score: 8, incoming)
+- [[wiki/entities/php.md]] (score: 6, incoming)
 
 # Testing Strategy & Best Practices
 

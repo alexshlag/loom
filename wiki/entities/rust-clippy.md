@@ -6,6 +6,7 @@ category: entity
 sources: ["raw/corrected/SRC-test-entity-001/rust-clippy.md"]
 related: []
 ---
+- [[wiki/entities/php.md]] (score: 3)
 
 # Clippy
 

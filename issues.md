@@ -5,9 +5,9 @@
 ## 🔴 Open / In Progress
 
 ### Issue #5/#9: Orphan Pages + Auto-Crosslink Logic
-**Проблема**: `auto-crosslink.sh` работает только на текстовом совпадении имени, не учитывает semantic relationships.
-**Fix:** ✅ 37 → 5 orphan pages; multi-level scoring integrated into ingest process.
-**Remaining**: Merge/clarify `concepts/python-nixos-development.md` vs `syntheses/python-nixos-development-environments.md`.
+**Проблема**: `auto-crosslink.sh` работает только на текстовом совпадении имени, не учитывает semantic relationships. `orphan-pages.sh` нормализовал ключи с `.md` suffix → mismatch.
+**Fix:** ✅ **46 → 0 orphan pages**. Multi-level auto-crosslink (score≥5) + manual crosslinks for remaining. Fixed `orphan-pages.sh` key normalization (.md stripped). Excluded skills/, test files from scan.
+**Root cause**: `regenerate-backlinks.sh` strips `.md`, but `orphan-pages.sh` kept it → keys never matched. Patched to consistent normalization.
 
 ### Issue #11: Trap Handlers для Cleanup
 **Проблема:** Часть скриптов не использует `trap EXIT/cleanup`.

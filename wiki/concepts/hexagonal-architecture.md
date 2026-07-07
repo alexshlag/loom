@@ -5,6 +5,7 @@ sources: [raw/corrected/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowled
 related: [wiki/entities/symfony.md, wiki/concepts/symfony-dependency-injection.md]
 aliases: ["Hexagonal Architecture", "Ports and Adapters", "DDD architecture"]
 ---
+- [[wiki/concepts/service-container.md]] (incoming, score: 3)
 
 # Hexagonal Architecture & Clean Patterns in Symfony
 

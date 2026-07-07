@@ -11,6 +11,8 @@ sources: [
 aliases: ["DI Symfony", "Symfony Container"]
 related: [wiki/entities/symfony.md, wiki/concepts/service-container.md, wiki/concepts/symfony-flex.md]
 ---
+- [[wiki/entities/symfony.md]] (score: 8)
+- [[wiki/concepts/service-container.md]] (score: 5, incoming)
 
 # Dependency Injection в Symfony
 

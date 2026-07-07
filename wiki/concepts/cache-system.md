@@ -4,6 +4,8 @@ date: 2026-06-25
 sources: [raw/corrected/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md]
 related: [wiki/entities/symfony.md]
 ---
+- [[wiki/concepts/service-container.md]] (score: 3)
+- [[wiki/entities/symfony.md]] (score: 4)
 
 # Cache System
 

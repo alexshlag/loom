@@ -6,6 +6,7 @@ category: concept
 sources: ["https://symfony.com/doc/current/setup.html", "https://symfony.com/doc/current/deployment.html"]
 related: ["wiki/entities/symfony.md", "wiki/concepts/service-container.md", "wiki/concepts/doctrine-orm.md", "wiki/concepts/twig-templating.md"]
 ---
+- [[wiki/entities/symfony.md]] (score: 5)
 
 # Symfony Deployment & Production Setup
 

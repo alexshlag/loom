@@ -4,6 +4,9 @@ date: 2026-06-25
 sources: [raw/corrected/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md]
 related: [wiki/entities/symfony.md]
 ---
+- [[wiki/entities/symfony.md]] (score: 4)
+- [[wiki/concepts/twig-templating.md]] (score: 6, incoming)
+- [[wiki/comparisons/symfony-ux-packages.md]] (score: 5, incoming)
 
 # AssetMapper
 

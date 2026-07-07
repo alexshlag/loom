@@ -5,6 +5,9 @@ sources: [raw/llm-wiki.md]
 related: []
 aliases: ["LLM Wiki Pattern", "Karpathy wiki", "compounding knowledge base"]
 ---
+- [[wiki/concepts/symfony-ai.md]] (score: 5)
+- [[wiki/entities/loomana.md]] (score: 5)
+- [[wiki/syntheses/rag-vs-llm-wiki-pattern.md]] (score: 5)
 
 # LLM Wiki Pattern — Incremental Knowledge Base Building
 

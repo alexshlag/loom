@@ -5,6 +5,8 @@ sources: [raw/corrected/SRC-2025-06-24-001/pi-dev-docs-latest.md]
 related: []
 aliases: ["Pi Coding Agent", "pi-llm-wiki", "terminal agent"]
 ---
+- [[wiki/concepts/harness-aware-setup.md]] (incoming, score: 5)
+- [[wiki/concepts/agent-memory-management.md]] (incoming, score: 3)
 
 # Pi Coding Agent
 

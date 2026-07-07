@@ -4,6 +4,7 @@ date: 2026-06-24
 sources: [https://github.com/lee-to/ai-factory, https://www.npmjs.com/package/ai-factory]
 related: [wiki/entities/pi-coding-agent.md]
 ---
+- [[wiki/concepts/ai-factory-vs-pi.md]] (incoming, score: 5)
 
 # AI Factory
 

@@ -4,6 +4,8 @@ date: 2026-06-24
 sources: [wiki/entities/ai-factory.md, wiki/entities/pi-coding-agent.md]
 related: []
 ---
+- [[wiki/docs/ai-factory.md]] (score: 3)
+- [[wiki/entities/ai-factory.md]] (score: 5)
 
 # AI Factory vs Pi Coding Agent — Category Distinction
 

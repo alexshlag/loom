@@ -28,6 +28,10 @@ SYSTEM_FILES = {
     'GIT-WORKFLOW.md', 'Home_Manager.md'
 }
 
+# Exclude: skills/ dir (agent tools, not wiki content), test files
+EXCLUDED_DIRS = {'skills'}
+EXCLUDED_FILES = {'test-excess-empty.md'}
+
 # Trajectory/process artifact files — not wiki pages, exclude from orphan check
 TRAJECTORY_PATTERNS = {'_TRJ-', 'TRJ-'}
 
@@ -43,6 +47,11 @@ for root, dirs, files in os.walk(wiki_dir):
         
         # Skip system files
         if basename in SYSTEM_FILES:
+            continue
+        
+        # Skip excluded directories and test files
+        rel_path = os.path.relpath(os.path.join(root, f), wiki_dir)
+        if any(d in root.replace(wiki_dir, '').lstrip('/') for d in EXCLUDED_DIRS) or basename in EXCLUDED_FILES:
             continue
         
         # Skip trajectory/process artifact files
@@ -77,8 +86,9 @@ for key in keys:
 # Find orphans — pages without incoming links (no key in backlinks.json)
 orphans = []
 for page in all_pages:
-    # Build key from path: wiki/entities/pi-coding-agent.md → entities-pi-coding-agent-md
-    normalized_key = page.replace('/', '-').replace('.', '-')  
+    # Build key from path: concepts/agent-memory-management.md → concepts-agent-memory-management
+    # Strip .md extension first (like regenerate-backlinks.sh), then normalize slashes
+    normalized_key = page.replace('.md', '').replace('/', '-')
     
     if normalized_key not in normalized_keys:
         orphans.append(page)

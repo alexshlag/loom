@@ -4,6 +4,8 @@ date: 2026-06-25
 sources: [raw/llm-wiki.md, issues.md]
 related: [wiki/syntheses/rag-vs-llm-wiki-pattern.md, wiki/concepts/llm-wiki.md]
 ---
+- [[wiki/concepts/agent-memory-management.md]] (score: 4)
+- [[wiki/concepts/natural-memory.md]] (score: 5)
 
 # Temporal Decay in Compounding Knowledge Base
 

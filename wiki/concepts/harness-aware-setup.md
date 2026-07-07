@@ -8,6 +8,8 @@ sources:
 related:
   - "wiki/concepts/natural-memory.md"
 ---
+- [[wiki/concepts/agent-memory-management.md]] (score: 3)
+- [[wiki/entities/pi-coding-agent.md]] (score: 5)
 
 # Harness-Aware Wiki Setup Flow
 

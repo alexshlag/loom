@@ -7,6 +7,9 @@ aliases: [agent memory patterns, context management comparison]
 sources: ["web_search"]
 related: ["wiki/concepts/agent-memory-management.md"]
 ---
+- [[wiki/concepts/agent-memory-management.md]] (incoming, score: 4)
+- [[wiki/concepts/natural-memory.md]] (score: 4)
+- [[wiki/concepts/agent-memory-management.md]] (score: 4)
 
 # Сравнение техник управления памятью агента
 

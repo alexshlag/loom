@@ -6,6 +6,7 @@ category: comparison
 sources: [raw/github/AgriciDaniel/claude-obsidian, /home/andrew/projects/local_wiki/loom/wiki/entities/loomana.md]
 related: [wiki/concepts/natural-memory.md, wiki/entities/pi-coding-agent.md, wiki/concepts/wiki-schema.md, wiki/comparisons/llm-wiki-implementations.md]
 ---
+- [[wiki/entities/loomana.md]] (score: 5)
 
 # LOOM vs claude-obsidian — Сравнение двух реализаций LLM Wiki Companion
 

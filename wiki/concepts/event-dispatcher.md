@@ -4,6 +4,8 @@ date: 2026-06-25
 sources: [raw/corrected/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md]
 related: [wiki/entities/symfony.md]
 ---
+- [[wiki/concepts/workflow-state-machine.md]] (incoming, score: 3)
+- [[wiki/concepts/messenger-component.md]] (incoming, score: 4)
 
 # Event Dispatcher
 
