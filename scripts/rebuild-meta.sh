@@ -11,13 +11,9 @@ TIMESTAMP_FILE="$WIKI_DIR/.meta_update_timestamp"
 # Load centralized cleanup utilities from lib.sh
 source "$SCRIPT_DIR/lib.sh" 2>/dev/null || true
 
-# Centralized cleanup via lib.sh — replace individual trap handlers
-# Centralized cleanup via lib.sh — replace individual trap handlers
 cleanup_add "${META_DIR}/registry.json.tmp"
 cleanup_add "${META_DIR}/backlinks.json.tmp"
 cleanup_add "${WIKI_DIR}/index.md.tmp"
-cleanup_add "$WALK_JSON_FILE"
-cleanup_add "$CHANGED_FILE"
 
 mkdir -p "$META_DIR"
 
@@ -67,6 +63,10 @@ CHANGED_FILE=$(mktemp --suffix=.txt)
 cleanup_add "$WALK_JSON_FILE"
 cleanup_add "$CHANGED_FILE"
 
+# Register for centralized cleanup (lib.sh)
+cleanup_add "$WALK_JSON_FILE"
+cleanup_add "$CHANGED_FILE"
+
 python3 "$SCRIPT_DIR/wiki-walk.py" --json >"$WALK_JSON_FILE" 2>/dev/null || {
     echo "[!] Wiki walk failed" >&2
     exit 1
@@ -84,9 +84,9 @@ export WIKI_DIR="${WIKI_DIR}"
 export SCRIPT_DIR="${SCRIPT_DIR}"
 export FULL_REBUILD=${FULL_REBUILD}
 
-# ─── 1. registry.json (from unified JSON, skip if --index-only) ──────────────
+# ─── 1+2. Registry + Backlinks (single Python call, T4 optimization) ──
 if [[ "$INDEX_ONLY" == "false" ]]; then
-echo "Building registry..."
+echo "Building registry + backlinks..."
 python3 << 'PYEOF'
 import json, os
 
@@ -95,17 +95,19 @@ changed_file_path = os.environ.get('CHANGED_FILE_PATH', '')
 full_rebuild = os.environ.get('FULL_REBUILD') == 'true'
 meta_dir = os.environ['META_DIR']
 
-pages_data = json.load(open(walk_file))
-pages = pages_data['pages']
+# Single read — both registry and backlinks share the same source
+data = json.load(open(walk_file))
+pages = data['pages']
+backlinks = data.get('backlinks', {})
 
-# Incremental: merge with existing registry
+# ── Registry (incremental merge or full rebuild) ───────────────
 if not full_rebuild and changed_file_path:
     existing_pages = {}
     try:
         meta_path = os.path.join(meta_dir, 'registry.json')
         with open(meta_path) as f:
-            data = json.load(f)
-            for p in data.get('pages', []):
+            data2 = json.load(f)
+            for p in data2.get('pages', []):
                 existing_pages[p['path']] = p
     except Exception:
         pass
@@ -132,22 +134,8 @@ else:
 with open(os.path.join(meta_dir, 'registry.json.tmp'), 'w') as f:
     json.dump({'pages': pages_to_write}, f, indent=2, ensure_ascii=False)
 print(f'Registry written: {len(pages_to_write)} pages')
-PYEOF
 
-mv "${META_DIR}/registry.json.tmp" "${META_DIR}/registry.json"
-fi
-
-# ─── 2. backlinks.json (from unified JSON, skip if --index-only) ──────────────
-if [[ "$INDEX_ONLY" == "false" ]]; then
-echo "Building backlinks..."
-python3 << 'PYEOF'
-import json, os
-
-walk_data = json.load(open(os.environ['WALK_JSON']))
-backlinks = walk_data.get('backlinks', {})
-meta_dir = os.environ['META_DIR']
-
-# Deduplicate and write
+# ── Backlinks (deduplicate from same data source) ───────────────
 final_backlinks = {}
 for target, sources in backlinks.items():
     seen = set()
@@ -166,6 +154,7 @@ with open(os.path.join(meta_dir, 'backlinks.json.tmp'), 'w') as f:
 print(f'Backlinks updated: {len(final_backlinks)} targets with links')
 PYEOF
 
+mv "${META_DIR}/registry.json.tmp" "${META_DIR}/registry.json"
 mv "${META_DIR}/backlinks.json.tmp" "${META_DIR}/backlinks.json"
 fi
 
