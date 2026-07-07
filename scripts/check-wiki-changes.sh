@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+set -euo pipefail
+# Graceful harness hook: early exits with 1 if prerequisites missing (no vault, no git)
+#
 # check-wiki-changes.sh — Harness-independent session hygiene at end of wiki work
 # Emulates claude-obsidian's Stop hook: detects wiki changes and guides hot.md update
 # Returns 0 if changes detected (guide agent to update), 1 otherwise

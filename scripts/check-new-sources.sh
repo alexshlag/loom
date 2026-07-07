@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 # check-new-sources.sh — Checks raw/sources for new packages not yet in tracking/raw_registry.json
 # Usage: ./scripts/check-new-sources.sh [--quick] [raw_dir] [registry_file]
 # Exit code: 0 = no new sources, 1 = new sources found (printed to stdout), 2 = cached_skip (--quick only)

@@ -3,7 +3,7 @@
 # Usage: ./scripts/tag-audit.sh [--fix] [--quiet] [wiki_dir]
 # Returns JSON on stdout + human-readable report to stderr
 
-set -uo pipefail
+set -euo pipefail
 
 WIKI_DIR="${1:-$(dirname "$0")/../wiki}"
 FIX_MODE=false

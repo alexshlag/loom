@@ -2,7 +2,7 @@
 # structural-fix.sh — Fix FIRST-BLOCK-V1 violations (missing body text between H1 and ##)
 # Usage: ./structural-fix.sh [--fix] [wiki_dir]
 
-set -uo pipefail
+set -euo pipefail
 
 WIKI_DIR="${2:-$1}"
 if [ -z "$WIKI_DIR" ]; then

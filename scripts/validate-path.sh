@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 # validate-path.sh — Guardrails: blocks direct edits to protected zones
 # Called before any edit/write on wiki files.
 # Usage: ./scripts/validate-path.sh <path/to/file.md>

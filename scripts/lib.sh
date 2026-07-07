@@ -71,7 +71,7 @@ cleanup_temp_files() {
 
 # Global cleanup trap — set once in each script that sources lib.sh
 # Usage: source scripts/lib.sh; cleanup_add tmpfile; _set_cleanup_trap
-cleanup_set_trap() {
+_set_cleanup_trap() {
     # Only add if not already added (idempotent)
     local existing_trap
     existing_trap=$(trap -p EXIT 2>/dev/null || true)

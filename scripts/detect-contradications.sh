@@ -4,8 +4,8 @@
 # 
 # Usage: ./scripts/detect-contradications.sh [--quiet]
 # Output: JSON on stdout, human-readable summary on stderr
-
-# Note: not using set -e — exit code propagated from python3
+set -euo pipefail
+# errexit enabled — python3 exit code propagates naturally (no set +e needed)
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/.."
@@ -20,7 +20,6 @@ while [[ $# -gt 0 ]]; do
 done
 
 export WIKI_DIR QUIET
-set +e
 cd "$(dirname "$0")/.."
 python3 scripts/_detect_contradictions.py
 exit $?

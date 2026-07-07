@@ -56,7 +56,7 @@
 | # | Task | Description | Priority | Est. Time |
 |---|------|-------------|----------|-----------|
 | **T2** | Fix JSON safety (#45/#24) → `jq/python` | ✅ Completed — replaced all manual echo/printf with Python json.dumps() in classify-source.sh, auto-crosslink.sh, link-validator.sh, text-similarity.sh. Zero remaining manual JSON constructions. | 🔴 P0 CRITICAL | 1h |
-| **T3** | Standardize `set -euo pipefail` (#46) | Add errexit to remaining scripts: `batch-ingest.sh`, `check-structural.sh`, `detect-contradications.sh`, `lint.sh`, `raw-correct.sh`, `rebuild-source-manifest.sh`. classify-source.sh already fixed. Where `set +e` intentional → comment why. | 🟡 P1 HIGH | 30m |
+| **T3** | Standardize `set -euo pipefail` (#46) | ✅ Done — added to: check-new-sources.sh, detect-contradications.sh (commented), structural-fix.sh, tag-audit.sh, check-wiki-changes.sh, load-hot-cache.sh, restore-hot-cache.sh, validate-path.sh. Fixed lib.sh function name mismatch (`cleanup_set_trap` → `_set_cleanup_trap`) and updated check-new-sources.sh comment. | 🟡 P1 HIGH | 30m |
 | **T4** | Unified walk in `rebuild-meta.sh` (#47) | Merge triple os.walk() (lines 99, 187, 358) into single pass like `unified-pass.sh`. Expected savings: -66% disk I/O. | 🟡 P2 MEDIUM | 45m |
 | **T5** | Batch JSON reads (#48) → single python3 call | Consolidate N+1 calls in `lint.sh` (8+), `text-similarity.sh`. One Python process per script instead of fork-heavy loops. Expected savings: +2-5s/run. | 🟡 P2 MEDIUM | 1h |
 | **T6** | Cleanup temp files via lib.sh | Integrate `cleanup_temp_files()` from lib.sh — currently dead code. Replace individual trap handlers with centralized cleanup_add(). | 🟢 P3 LOW | 30m |
