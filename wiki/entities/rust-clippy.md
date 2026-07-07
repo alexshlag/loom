@@ -9,9 +9,7 @@ related: []
 
 # Clippy
 
-
 Page covering Clippy — entity information, architecture details, and usage patterns.
-
 
 ## Definition
 

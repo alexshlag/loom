@@ -7,15 +7,9 @@ aliases: [Loomana, loom, LLM Wiki Pattern, Karpathy wiki, compounding knowledge 
 sources: [wiki/concepts/llm-wiki.md, wiki/syntheses/rag-vs-llm-wiki-pattern.md, wiki/comparisons/llm-wiki-implementations.md, wiki/entities/pi-coding-agent.md]
 related: [concepts/llm-wiki.md, syntheses/rag-vs-llm-wiki-pattern.md, comparisons/llm-wiki-implementations.md, entities/andrej-karpathy.md, entities/pi-coding-agent.md]
 ---
-- [[wiki/comparisons/llm-wiki-implementations.md]] (score: 5)
-- [[wiki/comparisons/llm-wiki-implementations.md]] (score: 5)
-- [[wiki/comparisons/llm-wiki-implementations.md]] (score: 5)
-- [[wiki/comparisons/llm-wiki-implementations.md]] (score: 5)
 # Loomana — Wiki System Documentation
 
-
 Page covering Loomana — Wiki System Documentation — entity information, architecture details, and usage patterns.
-
 
 ## Что такое Loomana?
 

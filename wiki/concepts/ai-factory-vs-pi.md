@@ -7,9 +7,7 @@ related: []
 
 # AI Factory vs Pi Coding Agent — Category Distinction
 
-
 This page explores AI Factory vs Pi Coding Agent — Category Distinction as a key concept in our knowledge base.
-
 
 ## Определение
 

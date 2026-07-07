@@ -7,9 +7,7 @@ related: [wiki/entities/symfony.md]
 
 # Security System (AuthN & AuthZ)
 
-
 This page explores Security System (AuthN & AuthZ) as a key concept in our knowledge base.
-
 
 ## Определение
 
@@ -37,7 +35,7 @@ Custom voters implement authorization logic:
 ```php
 class CommentVoter extends Voter {
     protected function supports(object $subject, mixed $attribute): bool { ... }
-    
+
     protected function voteOnAuthorize(
         string $attribute, 
         mixed $subject, 

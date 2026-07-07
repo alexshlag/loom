@@ -7,9 +7,7 @@ related: [wiki/entities/symfony.md]
 
 # Cache System
 
-
 This page explores Cache System as a key concept in our knowledge base.
-
 
 ## Definition
 

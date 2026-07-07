@@ -9,9 +9,7 @@ related: ["wiki/entities/symfony.md", "wiki/concepts/service-container.md", "wik
 
 # Symfony Deployment & Production Setup
 
-
 This page explores Symfony Deployment & Production Setup as a key concept in our knowledge base.
-
 
 ## Definition
 

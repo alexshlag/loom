@@ -9,7 +9,6 @@ related: []
 
 # Test Page With Excess Newlines
 
-
 Some content here.
 
 ## Section

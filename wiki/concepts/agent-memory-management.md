@@ -6,16 +6,13 @@ category: concept
 sources: ["web_search", "research/ingest-algorithms-comparison.md"]
 related: ["wiki/concepts/natural-memory.md", "rules/session_context_rules.json"]
 ---
-- [[wiki/concepts/natural-memory.md]] (score: 5)
 
 # Agent Memory Management — Techniques and Recommendations
 
 This page explores memory management for LLM agents as a key concept in our knowledge base.
 
-
 ## Definition
 Systematic approaches to managing what an agent remembers, how it recalls information across sessions, and how it captures experiences into reusable patterns — all without external dependencies (no vector DBs, no cloud services).
-
 
 ## Principles
 
@@ -26,7 +23,6 @@ Modern research shows that plain files (Markdown/JSON) can outperform complex me
 2. **Hybrid Recall** (lexical + semantic) achieves 90%+ accuracy on knowledge benchmarks vs ~78% for dense-only. The lexical component handles exact identifiers; semantic catches paraphrased concepts.
 3. **Trajectory Capture → Distillation** pipeline is the emerging standard: record raw tool-call sequences, distill them into reusable skill/case pages.
 4. **Two-tier memory** (working + permanent) mirrors cognitive science — transient context for immediate tasks, structured knowledge base for long-term recall.
-
 
 ## Techniques Overview
 
@@ -98,7 +94,6 @@ Query: "Authentication" → Top result mentions JWT, OAuth, sessions
 
 **Quality criteria:** A good distillation captures the *procedure*, not just the outcome. It should be generalizable across tasks.
 
-
 ## Analysis
 
 ### Comparison of Approaches
@@ -116,7 +111,6 @@ Query: "Authentication" → Top result mentions JWT, OAuth, sessions
 1. **File-based systems outperform expectations**: Plain Markdown + Git provides durable memory without external services. The key is structure (index.md, registry.json) rather than technology.
 2. **Hybrid recall is the gold standard**: Systems combining lexical + semantic retrieval achieve 90%+ accuracy vs ~78% for dense-only. Our current `recall.sh` approach uses PRF (Phase 1a) with TF-IDF-like scoring — already adds semantic expansion without external models.
 3. **Trajectory capture → distillation is emerging as best practice**: The pi-llm-wiki implementation (recal.ts, trajectory.ts) shows how to record agent behavior and turn it into reusable skills automatically. This aligns perfectly with our compounding workflow.
-
 
 ## Conclusions
 
@@ -136,7 +130,6 @@ Query: "Authentication" → Top result mentions JWT, OAuth, sessions
 - If embedding model available, add semantic recall alongside lexical
 - Precompute page vectors at write time (offline)
 - Query vector only at recall time (cached per session)
-
 
 ## Evolution Rules
 - This page is a living document — update as we implement new features

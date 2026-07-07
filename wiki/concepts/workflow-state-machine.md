@@ -7,9 +7,7 @@ related: [wiki/entities/symfony.md]
 
 # Workflow & State Machine
 
-
 This page explores Workflow & State Machine as a key concept in our knowledge base.
-
 
 ## Definition
 

@@ -4,18 +4,10 @@ date: 2026-07-05
 sources: [raw/corrected/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md, raw/corrected/SRC-2026-07-05-TwigOfficial/twig-homepage.md]
 related: [wiki/entities/symfony.md]
 ---
-- [[wiki/concepts/assetmapper.md]] (score: 6)
-- [[wiki/concepts/assetmapper.md]] (score: 6)
-- [[wiki/concepts/assetmapper.md]] (score: 6)
-- [[wiki/concepts/assetmapper.md]] (score: 6)
-- [[wiki/concepts/assetmapper.md]] (score: 6)
-- [[wiki/entities/php.md]] (score: 6, incoming)
 
 # Twig Templating
 
-
 This page explores Twig Templating as a key concept in our knowledge base.
-
 
 ## Определение
 
@@ -60,7 +52,6 @@ Twig используется множеством Open-Source проектов:
 ### Системные требования
 
 Twig 3.x требует **PHP 8.1+** для работы.
-
 
 ## Core Principles
 

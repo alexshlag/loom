@@ -7,9 +7,7 @@ related: [wiki/concepts/llm-wiki.md]
 
 # Nvidia
 
-
 Page covering Nvidia — entity information, architecture details, and usage patterns.
-
 
 ## Определение:
 Американская технологическая корпорация, лидер в области разработки графических процессоров (GPU), аппаратных ускорителей для искусственного интеллекта (AI) и программного обеспечения для параллельных вычислений.

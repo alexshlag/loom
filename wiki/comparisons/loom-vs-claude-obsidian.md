@@ -9,9 +9,7 @@ related: [wiki/concepts/natural-memory.md, wiki/entities/pi-coding-agent.md, wik
 
 # LOOM vs claude-obsidian — Сравнение двух реализаций LLM Wiki Companion
 
-
 Comparative analysis covering LOOM vs claude-obsidian — Сравнение двух реализаций LLM Wiki Companion across different contexts and implementations.
-
 
 ## Определение
 

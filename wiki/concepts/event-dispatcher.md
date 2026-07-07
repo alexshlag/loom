@@ -7,9 +7,7 @@ related: [wiki/entities/symfony.md]
 
 # Event Dispatcher
 
-
 This page explores Event Dispatcher as a key concept in our knowledge base.
-
 
 ## Определение
 

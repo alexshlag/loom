@@ -7,9 +7,7 @@ related: [wiki/entities/symfony.md]
 
 # Symfony Flex & Recipes
 
-
 This page explores Symfony Flex & Recipes as a key concept in our knowledge base.
-
 
 ## Определение
 

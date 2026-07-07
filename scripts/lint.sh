@@ -296,27 +296,52 @@ TOTAL_ISSUES=$((TOTAL_ISSUES + STRUCTURAL_VIOLATIONS))
 # --- Check 15: Excessive empty lines (3+ consecutive newlines) with auto-fix ---
 EXCESSIVE_EMPTY_LINES=0; EXCESSIVE_EMPTY_FILES_JSON='[]'
 if [[ "$SKIP_CHECKS" != *",15,"* ]]; then
-    # Find files with 3+ consecutive empty lines and normalize them to 2
-    while IFS= read -r f; do
-        python3 -c "import re,sys; fh=open(sys.argv[1],'r').read(); print('FOUND' if re.search(chr(92)+'n{3}',fh) else '')" "$f" > /tmp/_lint_check15.tmp 2>/dev/null || true
-        grep -q FOUND /tmp/_lint_check15.tmp && echo "$f" >> /tmp/lint_excessive_empty.txt || true
-    done < <(find "$WIKI_DIR" -name "*.md" -type f 2>/dev/null || true)
+    # Unified single-pass detection + auto-fix (from about_md_cleaner.md)
+    # Pattern: normalize whitespace-only lines → squash \n{3,} → write only if changed
+    EXCESSIVE_DATA=$(WIKI_DIR="$WIKI_DIR" python3 << 'PYEOF'
+import os, re, json
+from pathlib import Path
 
-    if [ -s /tmp/lint_excessive_empty.txt ]; then
-        EXCESSIVE_EMPTY_LINES=$(wc -l < /tmp/lint_excessive_empty.txt)
+wiki_dir = os.environ.get("WIKI_DIR", "/home/andrew/projects/local_wiki/loom/wiki")
 
-        # Auto-fix: normalize 3+ consecutive newlines to exactly 2
-        while IFS= read -r f; do
-            python3 -c "import re,sys; c=open(sys.argv[1],'r').read(); w=open(sys.argv[1],'w'); n=re.sub(chr(92)+'n{3}',chr(92)+'n'+chr(92)+'n',c); w.write(n); w.close()" "$f" 2>/dev/null || true
-        done < /tmp/lint_excessive_empty.txt
+fixed_count = 0
+fixed_paths = []
 
-        # Collect paths for JSON output
-        EXCESSIVE_EMPTY_FILES_JSON=$(cat /tmp/lint_excessive_empty.txt | python3 -c 'import json,sys; print(json.dumps([l.strip() for l in sys.stdin if l.strip()]))' 2>/dev/null) || EXCESSIVE_EMPTY_FILES_JSON='[]'
+def clean_markdown_spaces(file_path):
+    path = Path(file_path)
+    content = path.read_text(encoding='utf-8')
+    
+    # 1. Normalize whitespace-only lines to empty
+    normalized = re.sub(r'\n[ \t]+\n', '\n\n', content)
+    
+    # 2. Squash 3+ newlines into exactly one blank line (2 newlines total)
+    cleaned = re.sub(r'\n{3,}', '\n\n', normalized)
+    
+    # Only write if changed — preserves mtime for unchanged files
+    if content == cleaned:
+        return False
+    
+    path.write_text(cleaned, encoding='utf-8')
+    return True
+
+for root, dirs, files in os.walk(wiki_dir):
+    for f in files:
+        if not f.endswith('.md'): continue
+        path = os.path.join(root, f)
+        if clean_markdown_spaces(path):
+            fixed_paths.append(str(path))
+            fixed_count += 1
+
+print(json.dumps({'count': fixed_count, 'files': fixed_paths}))
+PYEOF
+) || EXCESSIVE_DATA='{"count":0,"files":[]}'
+
+    # Parse results
+    if [ "$EXCESSIVE_DATA" != '' ]; then
+        EXCESSIVE_EMPTY_LINES=$(echo "$EXCESSIVE_DATA" | python3 -c 'import json,sys; d=json.loads(sys.stdin.read()); print(d.get("count",0))' 2>/dev/null || echo 0)
+        EXCESSIVE_EMPTY_FILES_JSON=$(echo "$EXCESSIVE_DATA" | python3 -c 'import json,sys; d=json.loads(sys.stdin.read()); print(json.dumps(d.get("files",[])))' 2>/dev/null || echo '[]')
     fi
-
-    rm -f /tmp/lint_excessive_empty.txt 2>/dev/null || true
 fi
-TOTAL_ISSUES=$((TOTAL_ISSUES + EXCESSIVE_EMPTY_LINES))
 
 # Final: single rebuild-meta --index-only (consolidated from D6+D7)
 HAS_FIXES=$((AUTO_REPAIRED + FIX_ITER + MISSING_FM))

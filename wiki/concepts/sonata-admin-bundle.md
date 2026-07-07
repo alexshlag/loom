@@ -6,18 +6,10 @@ category: concept
 sources: [web_search, wiki/concepts/easyadmin-bundle.md]
 related: [wiki/entities/symfony.md, wiki/concepts/service-container.md, wiki/entities/sylius.md, wiki/entities/ibexa-dxp.md, wiki/concepts/easyadmin-bundle.md]
 ---
-- [[wiki/concepts/easyadmin-bundle.md]] (score: 6)
-- [[wiki/concepts/easyadmin-bundle.md]] (score: 6)
-- [[wiki/concepts/easyadmin-bundle.md]] (score: 6)
-- [[wiki/concepts/easyadmin-bundle.md]] (score: 6)
-- [[wiki/entities/api-platform.md]] (score: 6, incoming)
-- [[wiki/concepts/easyadmin-bundle.md]] (score: 6)
 
 # Sonata Admin Bundle
 
-
 This page explores Sonata Admin Bundle as a key concept in our knowledge base.
-
 
 ## Definition
 

@@ -4,14 +4,10 @@ date: 2026-06-25
 sources: [raw/corrected/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md]
 related: [wiki/entities/symfony.md]
 ---
-- [[wiki/syntheses/rag-vs-llm-wiki-pattern.md]] (score: 5, incoming)
-- [[wiki/concepts/llm-wiki.md]] (score: 5, incoming)
 
 # Symfony AI Component
 
-
 This page explores Symfony AI Component as a key concept in our knowledge base.
-
 
 ## Definition
 

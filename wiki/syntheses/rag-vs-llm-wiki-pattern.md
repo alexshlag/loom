@@ -4,24 +4,10 @@ date: 2026-06-24
 sources: [raw/llm-wiki.md]
 related: [wiki/concepts/llm-wiki.md]
 ---
-- [[wiki/concepts/llm-wiki.md]] (score: 5)
-- [[wiki/concepts/symfony-ai.md]] (score: 5)
-- [[wiki/entities/loomana.md]] (score: 5)
-- [[wiki/concepts/llm-wiki.md]] (score: 5)
-- [[wiki/concepts/symfony-ai.md]] (score: 5)
-- [[wiki/entities/loomana.md]] (score: 5)
-- [[wiki/concepts/llm-wiki.md]] (score: 5)
-- [[wiki/concepts/symfony-ai.md]] (score: 5)
-- [[wiki/entities/loomana.md]] (score: 5)
-- [[wiki/concepts/llm-wiki.md]] (score: 5)
-- [[wiki/concepts/symfony-ai.md]] (score: 5)
-- [[wiki/entities/loomana.md]] (score: 5)
 
 # Сравнение: RAG vs LLM Wiki Pattern (Compounding Knowledge Base)
 
-
 Synthesis of multiple sources on the topic: Сравнение: RAG vs LLM Wiki Pattern (Compounding Knowledge Base).
-
 
 ## Контекст
 Стандартный RAG и большинство систем работы с файлами (NotebookLM, ChatGPT file uploads) работают одинаково: пользователь загружает документы → LLM извлекает relevant chunks на каждый запрос → генерирует ответ. Это работает, но **LLM rediscovering knowledge from scratch on every question**.
@@ -54,7 +40,6 @@ Synthesis of multiple sources on the topic: Сравнение: RAG vs LLM Wiki 
 * [LLM Wiki Pattern Concept](concepts/llm-wiki.md) — compounding knowledge base approach
 * [Entity: Andrej Karpathy](entities/andrej-karpathy.md) — автор LLM Wiki Pattern
 * [Concept: Temporal Decay](concepts/temporal-decay-in-wiki.md) — проблема устаревания знаний, требует maintenance
-
 
 ## Инсайты и выводы
 * **LLM Wiki Pattern > RAG** для долгосрочного накопления знаний: компounding knowledge base растёт с каждым запросом, тогда как RAG остаётся stateless.

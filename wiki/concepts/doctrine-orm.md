@@ -7,9 +7,7 @@ related: [wiki/entities/symfony.md]
 
 # Doctrine ORM Integration
 
-
 This page explores Doctrine ORM Integration as a key concept in our knowledge base.
-
 
 ## Определение
 
@@ -23,7 +21,7 @@ This page explores Doctrine ORM Integration as a key concept in our knowledge ba
 class Product {
     #[Id, Column] private ?int $id = null;
     #[Column(length: 255)] private string $name = '';
-    
+
     public function getId(): ?int { return $this->id; }
 }
 ```

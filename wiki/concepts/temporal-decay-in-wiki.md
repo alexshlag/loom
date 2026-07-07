@@ -7,9 +7,7 @@ related: [wiki/syntheses/rag-vs-llm-wiki-pattern.md, wiki/concepts/llm-wiki.md]
 
 # Temporal Decay in Compounding Knowledge Base
 
-
 This page explores Temporal Decay in Compounding Knowledge Base as a key concept in our knowledge base.
-
 
 ## Определение
 **Temporal decay (времянное устаревание)** — проблема в compounding knowledge base, когда страницы wiki содержат устаревшие факты или противоречия с более новыми источниками. В отличие от RAG (stateless, каждый ответ = fresh from documents), wiki эволюционирует со временем и требует maintenance.

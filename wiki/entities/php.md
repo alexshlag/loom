@@ -7,33 +7,10 @@ aliases: ["PHP", "PHP language"]
 sources: [web_search]
 related: [wiki/entities/symfony.md, wiki/concepts/symfony-dependency-injection.md, wiki/concepts/hexagonal-architecture.md]
 ---
-- [[wiki/concepts/testing-strategy.md]] (score: 6)
-- [[wiki/concepts/twig-templating.md]] (score: 6)
-- [[wiki/entities/symfony.md]] (score: 6)
-- [[wiki/concepts/testing-strategy.md]] (score: 6)
-- [[wiki/concepts/twig-templating.md]] (score: 6)
-- [[wiki/entities/symfony.md]] (score: 6)
-- [[wiki/concepts/testing-strategy.md]] (score: 6)
-- [[wiki/concepts/twig-templating.md]] (score: 6)
-- [[wiki/entities/symfony.md]] (score: 6)
-- [[wiki/concepts/testing-strategy.md]] (score: 6)
-- [[wiki/concepts/twig-templating.md]] (score: 6)
-- [[wiki/entities/symfony.md]] (score: 6)
-- [[wiki/concepts/testing-strategy.md]] (score: 6)
-- [[wiki/concepts/twig-templating.md]] (score: 6)
-- [[wiki/entities/symfony.md]] (score: 6)
-- [[wiki/concepts/testing-strategy.md]] (score: 6)
-- [[wiki/concepts/twig-templating.md]] (score: 6)
-- [[wiki/entities/symfony.md]] (score: 6)
-- [[wiki/concepts/testing-strategy.md]] (score: 6)
-- [[wiki/concepts/twig-templating.md]] (score: 6)
-- [[wiki/entities/symfony.md]] (score: 6)
 
 # PHP
 
-
 This page explores PHP — programming language created for web development.
-
 
 ## Определение
 

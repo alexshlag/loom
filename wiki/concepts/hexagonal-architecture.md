@@ -6,13 +6,9 @@ related: [wiki/entities/symfony.md, wiki/concepts/symfony-dependency-injection.m
 aliases: ["Hexagonal Architecture", "Ports and Adapters", "DDD architecture"]
 ---
 
-
-
 # Hexagonal Architecture & Clean Patterns in Symfony
 
-
 This page explores Hexagonal Architecture & Clean Patterns in Symfony as a key concept in our knowledge base.
-
 
 ## Определение
 

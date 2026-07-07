@@ -14,7 +14,6 @@ related: [wiki/entities/symfony.md, wiki/concepts/service-container.md, wiki/con
 
 # Dependency Injection в Symfony
 
-
 Dependency Injection (DI) — паттерн проектирования, позволяющий внедрять зависимости объекта извне. В Symfony DI является **центральным архитектурным механизмом** и реализуется через контейнер сервисов (Service Container), который управляет созданием, конфигурацией и жизненным циклом всех объектов приложения.
 
 ---
@@ -68,10 +67,10 @@ services:
         autowire: true
         autoconfigure: true
         public: false  # best practice: все сервисы приватные
-    
+
     # конкретный сервис — автоматически зарегистрирован
     App\Service\OrderService: ~
-    
+
     # явное определение с параметрами
     App\Service\PaymentProcessor:
         arguments:
@@ -96,7 +95,7 @@ class MyCompilerPass implements CompilerPassInterface {
     public function process(ContainerBuilder $container): void {
         // Находим все сервисы с тегом 'my_tag'
         $taggedServices = $container->findTaggedServiceIds('my_tag');
-        
+
         foreach ($taggedServices as $id => $tags) {
             // Модифицируем или добавляем зависимости
             // Инлайн публичные сервисы, удаляем неиспользуемые
@@ -120,7 +119,7 @@ class MyCompilerPass implements CompilerPassInterface {
 # ✅ Правильно
 defaults:
     public: false  # все сервисы приватные по умолчанию
-    
+
 # ❌ Избегайте
 $container->get('some_service')  # прямой доступ к контейнеру
 ```

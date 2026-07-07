@@ -4,13 +4,10 @@ date: 2026-06-25
 sources: [raw/corrected/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md]
 related: [wiki/entities/symfony.md]
 ---
-- [[wiki/concepts/twig-templating.md]] (score: 6, incoming)
 
 # AssetMapper
 
-
 This page explores AssetMapper as a key concept in our knowledge base.
-
 
 ## Definition
 

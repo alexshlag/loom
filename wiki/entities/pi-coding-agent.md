@@ -6,8 +6,6 @@ related: []
 aliases: ["Pi Coding Agent", "pi-llm-wiki", "terminal agent"]
 ---
 
-
-
 # Pi Coding Agent
 
 Минимальный терминальный код-агент (harness), расширяемый через TypeScript-расширения, skills, prompt templates и темы. Подключается к subscription или API-key провайдерам для работы с LLM.

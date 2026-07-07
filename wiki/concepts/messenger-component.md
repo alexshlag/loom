@@ -7,9 +7,7 @@ related: [wiki/entities/symfony.md]
 
 # Messenger Component
 
-
 This page explores Messenger Component as a key concept in our knowledge base.
-
 
 ## Definition
 

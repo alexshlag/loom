@@ -11,9 +11,7 @@ related:
 
 # Harness-Aware Wiki Setup Flow
 
-
 This page explores Harness-Aware Wiki Setup Flow as a key concept in our knowledge base.
-
 
 ## Definition
 

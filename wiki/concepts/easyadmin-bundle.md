@@ -6,17 +6,10 @@ category: concept
 sources: [web_search]
 related: [wiki/entities/symfony.md, wiki/concepts/sonata-admin-bundle.md]
 ---
-- [[wiki/concepts/sonata-admin-bundle.md]] (score: 6)
-- [[wiki/concepts/sonata-admin-bundle.md]] (score: 6)
-- [[wiki/concepts/sonata-admin-bundle.md]] (score: 6)
-- [[wiki/concepts/sonata-admin-bundle.md]] (score: 6)
-- [[wiki/concepts/sonata-admin-bundle.md]] (score: 6)
 
 # EasyAdmin Bundle
 
-
 This page explores EasyAdmin Bundle as a key concept in our knowledge base.
-
 
 ## Definition
 

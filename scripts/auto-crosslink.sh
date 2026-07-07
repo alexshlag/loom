@@ -107,14 +107,34 @@ for c in candidates:
                 insert_idx = i + 1
                 break
             elif line.startswith('## '):
-                insert_idx = i
+                # Look for first non-header content AFTER this heading to find where bullets start
+                section_start = i + 1
+                while section_start < len(lines) and (lines[section_start].strip() == '' or lines[section_start].startswith('* ') or lines[section_start].startswith('- [') or '- [[wiki/' in lines[section_start]):
+                    if lines[section_start].startswith('- [[wiki/'): continue
+                    break
+                insert_idx = section_start
+                # If no content found after heading, use the heading itself as anchor point but DON'T split it
+                if insert_idx == i + 1:
+                    insert_idx = i + 1
+                elif insert_idx == len(lines):
+                    insert_idx = i + 1
+                else:
+                    break
+        
+        # Check if already linked (avoid duplicates)
+        crosslink_marker = f"[[wiki/{path}]]"
+        already_linked = False
+        for line in lines:
+            if crosslink_marker in line:
+                already_linked = True
                 break
         
-        crosslink_lines = [f"- [[wiki/{path}]] (score: {score})"]
-        lines = lines[:insert_idx] + crosslink_lines + lines[insert_idx:]
-        content = '\n'.join(lines)
-        with open(page_full_path, 'w') as f:
-            f.write(content)
+        if not already_linked:
+            crosslink_lines = [f"- [[wiki/{path}]] (score: {score})"]
+            lines = lines[:insert_idx] + crosslink_lines + lines[insert_idx:]
+            content = '\n'.join(lines)
+            with open(page_full_path, 'w') as f:
+                f.write(content)
         
         print(f"Auto-linked {page_path} -> wiki/{path}")
         fixed_count += 1
@@ -133,9 +153,33 @@ for c in candidates:
                 cand_insert_idx = i
                 break
         
-        # Check if already linked
-        already_linked = f"[[wiki/{page_path}]]" in cand_content or f"wiki/{page_path}" in cand_content
+        # Check if already linked (line-based, avoid false positives from other content)
+        already_linked = False
+        backlink_marker = f"[[wiki/{page_path}]]"
+        for cl in cand_lines:
+            if backlink_marker in cl:
+                already_linked = True
+                break
+        
         if not already_linked:
+            # Find a proper insertion point: after heading, before content bullets
+            cand_insert_idx = len(cand_lines)
+            for i, line in enumerate(cand_lines):
+                if line.strip() == '---' and i > 0:
+                    cand_insert_idx = i + 1
+                    break
+                elif line.startswith('## '):
+                    # Look for first content line after heading
+                    section_start = i + 1
+                    while section_start < len(cand_lines) and (cand_lines[section_start].strip() == '' or cand_lines[section_start].startswith('* ') or '- [[wiki/' in cand_lines[section_start]):
+                        if cand_lines[section_start].startswith('- [[wiki/'): continue
+                        break
+                    cand_insert_idx = section_start
+                    if section_start >= len(cand_lines):
+                        cand_insert_idx = i + 1
+                    else:
+                        break
+            
             backlink_lines = [f"- [[wiki/{page_path}]] (score: {score}, incoming)"]
             cand_lines = cand_lines[:cand_insert_idx] + backlink_lines + cand_lines[cand_insert_idx:]
             with open(full_path, 'w') as f:

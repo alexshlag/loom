@@ -14,7 +14,6 @@ related: [wiki/entities/symfony.md, wiki/concepts/symfony-deployment.md]
 
 # Symfony UX — Packages и экосистема
 
-
 Symfony UX — коллекция PHP и JavaScript пакетов для добавания rich UI в Symfony приложения. Это **не фреймворк**, а набор bundles, которые интегрируются с существующей инфраструктурой (AssetMapper, Twig) и минимизируют необходимость в тяжёлых JS билд-системах.
 
 ---

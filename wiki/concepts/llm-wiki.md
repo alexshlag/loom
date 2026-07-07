@@ -5,23 +5,6 @@ sources: [raw/llm-wiki.md]
 related: []
 aliases: ["LLM Wiki Pattern", "Karpathy wiki", "compounding knowledge base"]
 ---
-- [[wiki/concepts/symfony-ai.md]] (score: 5)
-- [[wiki/entities/loomana.md]] (score: 5)
-- [[wiki/syntheses/rag-vs-llm-wiki-pattern.md]] (score: 5)
-- [[wiki/concepts/symfony-ai.md]] (score: 5)
-- [[wiki/entities/loomana.md]] (score: 5)
-- [[wiki/syntheses/rag-vs-llm-wiki-pattern.md]] (score: 5)
-- [[wiki/concepts/symfony-ai.md]] (score: 5)
-- [[wiki/entities/loomana.md]] (score: 5)
-- [[wiki/syntheses/rag-vs-llm-wiki-pattern.md]] (score: 5)
-- [[wiki/concepts/symfony-ai.md]] (score: 5)
-- [[wiki/entities/loomana.md]] (score: 5)
-- [[wiki/syntheses/rag-vs-llm-wiki-pattern.md]] (score: 5)
-- [[wiki/concepts/symfony-ai.md]] (score: 5)
-- [[wiki/entities/loomana.md]] (score: 5)
-- [[wiki/syntheses/rag-vs-llm-wiki-pattern.md]] (score: 5)
-
-
 
 # LLM Wiki Pattern — Incremental Knowledge Base Building
 
@@ -116,7 +99,6 @@ The tedious part of maintaining a knowledge base is not the reading or the think
 
 ## Источники
 * `raw/llm-wiki.md` — оригинальный gist Karpathy на GitHub Gist
-
 
 ## Примеры
 * **LLM Wiki Pattern** — incremental knowledge base через LLM вместо RAG: каждый ответ агрегируется в wiki, страницы обновляются по мере роста базы.

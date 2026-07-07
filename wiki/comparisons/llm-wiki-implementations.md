@@ -4,14 +4,10 @@ date: 2026-06-25
 sources: []
 related: [wiki/concepts/llm-wiki.md, wiki/syntheses/rag-vs-llm-wiki-pattern.md, wiki/comparisons/loom-vs-claude-obsidian.md]
 ---
-- [[wiki/entities/loomana.md]] (score: 5, incoming)
-- [[wiki/entities/andrej-karpathy.md]] (score: 6, incoming)
 
 # Сравнение: Loomana (Markdown-driven wiki) vs pi-llm-wiki/ (TypeScript platform)
 
-
 Comparative analysis covering Сравнение: Loomana (Markdown-driven wiki) vs pi-llm-wiki/ (TypeScript platform) across different contexts and implementations.
-
 
 ## Введение
 
