@@ -22,6 +22,7 @@ related: []
 - `[2026-07-07]` Phase 17 T6 complete: consolidated rebuild-meta.sh across unified-pass + lint (single call per flow)
 - `[2026-07-07]` debug | lint-check15: fixed Check 15 — duplicate done, python3 heredoc arg bug, grep -c exit code
 - `[2026-07-07]` fix | lint-grep-c: added || true to prevent set -euo pipefail crash on grep -c returning exit 1
+- `[2026-07-07]` fix | orphan-pages: resolved 46→0 orphans. Fixed backlinks.json key normalization (stripped .md suffix in orphan detection). Added manual crosslinks for Symfony, memory, AI-factory clusters. Added step_7_crosslink to ingest process — crosslinks created during agent turn, not deferred to post-checks.
 
 ## System State
 ### Active Threads
