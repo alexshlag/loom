@@ -20,10 +20,10 @@
     ],
     "key_findings": [
       "✅ T3 DONE: set -euo pipefail standardized across all scripts; fixed lib.sh function name mismatch + check-new-sources.sh comment",
-      "✅ T4: rebuild-meta.sh already uses wiki-walk.py single-pass (triple walk eliminated)",
-      "🔄 Phase 20 S1-S9 validated: skill format spec, bootstrap scan, auto-generation trigger, query awareness, export script — all integrated and working"
+      "✅ T4 DONE: unified registry+backlinks into single Python call (one JSON read, one fork)",
+      "🔄 Phase 20 S1-S9 validated: skill format spec, bootstrap scan, auto-generation trigger, query awareness, export script — all integrated and working",
       "🔄 Phase 19 N1: naming_conventions.json updated with framework_exceptions + auto_auditing spec",
-      "🔄 Phase 19 N2: filename-audit.sh created — detects 9 Symfony-specific violations without project prefix"
+      "🔄 Phase 19 N2: filename-audit.sh created — detects 9 Symfony-specific violations without project prefix",
       "✅ T5: lint.sh consolidated — 3+4 individual python3 calls replaced with single batch extracts (local_up_json + tag-audit)",
       "📝 T5 partial: text-similarity.sh inline blocks are per-invocation, not in loops; acceptable overhead"
     ]
@@ -36,6 +36,7 @@
     "2026-07-07 rules | execution-cycle-fix: corrected COMMIT/SYNC order — memory sync first, then git add/commit",
     "2026-07-07 phase20_2 | skill-pattern-match: created scripts/memory/skill-pattern-match.sh with tag overlap + tool sequence analysis, tested successfully (found 'skill' tag in 2 files)",
     "2026-07-07 debug | pattern-match-fix: fixed bracket regex extraction — switched from (?<=\\()[^]]+ to sed-based bracket parsing",
-    "2026-07-07 phase17 | script-hardening: standardized set -euo pipefail across all scripts; fixed lib.sh function name + check-new-sources.sh comment"
+    "2026-07-07 phase17 | script-hardening: standardized set -euo pipefail across all scripts; fixed lib.sh function name + check-new-sources.sh comment",
+    "2026-07-07 phase17 | script-hardening: merged registry+backlinks in rebuild-meta.sh (T4)"
   ]
 }
