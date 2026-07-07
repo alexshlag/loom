@@ -16,6 +16,7 @@ related: []
 
 ## Recent Changes
 - `[2026-07-07]` Phase 17 T3 complete: standardized `set -euo pipefail` across all scripts, fixed lib.sh function name mismatch
+- `[2026-07-07]` Phase 17 T4 complete: unified registry+backlinks in rebuild-meta.sh (single Python call)
 
 ## System State
 ### Active Threads
