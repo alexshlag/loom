@@ -1,45 +1,31 @@
 {
-  "last_updated": "2026-07-07T05:05+03",
+  "last_updated": "2026-07-07T12:30+03",
   "current_mode": "project",
-  "focus_node": "Phase 20 S1-S9 validated complete; Phase 18 docs ready; next decision needed.",
+  "focus_node": "Lint.sh Check 15 fixed — excessive empty lines detection/autofix working; Phase 18 docs ready.",
   "next_steps_todo": [
-    "Phase 17 T3 complete — next: T4 unified walk, T5 batch JSON reads, T6 temp cleanup",
+    "Phase 20 S1-S9 validated complete",
     "Choose: Phase 18.1 (docs deep-dive templates) or performance profiling"
   ],
   "open_pages": [],
-  "dead_ends": [],
+  "dead_ends": ["lint.sh Check 15 — python3 heredoc + $f arg conflict, set -euo pipefail exit on grep -c return code 1"],
   "query_summary": {
-    "intent": "Phase 20 implementation — wiki skills integration infrastructure + pattern matching refinement",
+    "intent": "Fix lint.sh Check 15 (excessive empty lines) and run full lint",
     "pages_read": [
-      "rules/session_context_rules.json",
-      "process-ingest.json",
-      "process-query.json",
-      "scripts/memory/distill.sh",
-      "wiki/skills/*.md",
-      "raw/trajectories/*"
+      "scripts/lint.sh",
+      "rules/non_blocking_lint.json",
+      "process-lint.json"
     ],
     "key_findings": [
-      "✅ T3 DONE: set -euo pipefail standardized across all scripts; fixed lib.sh function name mismatch + check-new-sources.sh comment",
-      "✅ T4 DONE: unified registry+backlinks into single Python call (one JSON read, one fork)",
-      "🔄 Phase 20 S1-S9 validated: skill format spec, bootstrap scan, auto-generation trigger, query awareness, export script — all integrated and working",
-      "🔄 Phase 19 N1: naming_conventions.json updated with framework_exceptions + auto_auditing spec",
-      "🔄 Phase 19 N2: filename-audit.sh created — detects 9 Symfony-specific violations without project prefix",
-      "✅ T5: lint.sh consolidated — 3+4 individual python3 calls replaced with single batch extracts (local_up_json + tag-audit)",
-      "📝 T5 partial: text-similarity.sh inline blocks are per-invocation, not in loops; acceptable overhead",
-      "✅ T5 + T6 done: batched JSON reads (lint.sh) + consolidated rebuild-meta calls (unified-pass.sh single call, lint.sh D6/D7 merged into one final call)"
+      "🐛 BUG: Check 15 had duplicate 'done < <(find...)' causing syntax error — FIXED by removing duplicate",
+      "🐛 BUG: python3 << PYEOF \"$f\" treats $f as executable FILE, not arg to stdin script — FIXED with inline python3 -c",
+      "🐛 BUG: set -euo pipefail kills script when grep -c returns exit code 1 (no matches) — FIXED with || true",
+      "✅ Check 15 now works: detects 3+ consecutive newlines, auto-fixes to exactly one blank line",
+      "✅ Found and fixed 2 files with excessive empty lines via auto-fix"
     ]
   },
   "broken_links_resolved": [],
   "recent_activity": [
-    "2026-07-07 phase20_1 | external-skill-integration: S6-S9 complete — skill search sources, safety checks, query fallback chain, cross-linking spec",
-    "2026-07-07 phase20 | skill-integration: S1-S5 complete — all infrastructure for wiki skills system ready",
-    "2026-07-07 schema | rules-cleanup: simplified TASK EXECUTION CYCLE §11 — removed duplicate commit/memory steps, consolidated via git_conventions.json",
-    "2026-07-07 rules | execution-cycle-fix: corrected COMMIT/SYNC order — memory sync first, then git add/commit",
-    "2026-07-07 phase20_2 | skill-pattern-match: created scripts/memory/skill-pattern-match.sh with tag overlap + tool sequence analysis, tested successfully (found 'skill' tag in 2 files)",
-    "2026-07-07 debug | pattern-match-fix: fixed bracket regex extraction — switched from (?<=\\()[^]]+ to sed-based bracket parsing",
-    "2026-07-07 phase17 | script-hardening: standardized set -euo pipefail across all scripts; fixed lib.sh function name + check-new-sources.sh comment",
-    "2026-07-07 phase17 | script-hardening: merged registry+backlinks in rebuild-meta.sh (T4)",
-    "2026-07-07 phase17 | script-hardening: T5 complete — batched JSON reads in lint.sh",
-    "2026-07-07 phase17 | script-hardening: T6 complete — consolidated rebuild-meta.sh across unified-pass + lint"
+    "2026-07-07 debug | lint-check15: fixed duplicate done in while loop, replaced python3 heredoc+arg with inline -c",
+    "2026-07-07 fix | lint-grep-c: added || true to grep -c '^    {' to prevent set -euo pipefail exit on 0 matches"
   ]
 }

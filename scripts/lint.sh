@@ -35,7 +35,8 @@ SKIP_CHECKS=",${SKIP_CHECKS// /},"
 cleanup_add "/tmp/lint_missing_fm.txt"
 cleanup_add "/tmp/lint_structural.json"
 cleanup_add "/tmp/lint_overlap_result.json"
-cleanup_set_trap
+cleanup_add "/tmp/lint_excessive_empty.txt"
+_set_cleanup_trap
 
 echo "========================================" >&2
 echo "[*] LINT AUDIT — $(date +%Y-%m-%d) | wiki: ${WIKI_DIR#/}" >&2
@@ -284,13 +285,38 @@ STRUCTURAL_VIOLATIONS=0; STRUCTURAL_VIOLATOR_JSON='[]'
 if [[ "$SKIP_CHECKS" != *",14,"* ]]; then
     structural_output=$(bash "${SCRIPT_DIR}/check-structural.sh" "$WIKI_DIR" 2>/dev/null || true)
     if [ -n "$structural_output" ] && [ "$structural_output" != '[]' ]; then
-        STRUCTURAL_VIOLATIONS=$(echo "$structural_output" | grep -c '^    {')
+        STRUCTURAL_VIOLATIONS=$(echo "$structural_output" | grep -c '^    {' || true)
         # Escape JSON for safe heredoc insertion by reading from temp file
         echo "$structural_output" > /tmp/lint_structural.json
         STRUCTURAL_VIOLATOR_JSON=$(cat /tmp/lint_structural.json)
     fi
 fi
 TOTAL_ISSUES=$((TOTAL_ISSUES + STRUCTURAL_VIOLATIONS))
+
+# --- Check 15: Excessive empty lines (3+ consecutive newlines) with auto-fix ---
+EXCESSIVE_EMPTY_LINES=0; EXCESSIVE_EMPTY_FILES_JSON='[]'
+if [[ "$SKIP_CHECKS" != *",15,"* ]]; then
+    # Find files with 3+ consecutive empty lines and normalize them to 2
+    while IFS= read -r f; do
+        python3 -c "import re,sys; fh=open(sys.argv[1],'r').read(); print('FOUND' if re.search(chr(92)+'n{3}',fh) else '')" "$f" > /tmp/_lint_check15.tmp 2>/dev/null || true
+        grep -q FOUND /tmp/_lint_check15.tmp && echo "$f" >> /tmp/lint_excessive_empty.txt || true
+    done < <(find "$WIKI_DIR" -name "*.md" -type f 2>/dev/null || true)
+
+    if [ -s /tmp/lint_excessive_empty.txt ]; then
+        EXCESSIVE_EMPTY_LINES=$(wc -l < /tmp/lint_excessive_empty.txt)
+
+        # Auto-fix: normalize 3+ consecutive newlines to exactly 2
+        while IFS= read -r f; do
+            python3 -c "import re,sys; c=open(sys.argv[1],'r').read(); w=open(sys.argv[1],'w'); n=re.sub(chr(92)+'n{3}',chr(92)+'n'+chr(92)+'n',c); w.write(n); w.close()" "$f" 2>/dev/null || true
+        done < /tmp/lint_excessive_empty.txt
+
+        # Collect paths for JSON output
+        EXCESSIVE_EMPTY_FILES_JSON=$(cat /tmp/lint_excessive_empty.txt | python3 -c 'import json,sys; print(json.dumps([l.strip() for l in sys.stdin if l.strip()]))' 2>/dev/null) || EXCESSIVE_EMPTY_FILES_JSON='[]'
+    fi
+
+    rm -f /tmp/lint_excessive_empty.txt 2>/dev/null || true
+fi
+TOTAL_ISSUES=$((TOTAL_ISSUES + EXCESSIVE_EMPTY_LINES))
 
 # Final: single rebuild-meta --index-only (consolidated from D6+D7)
 HAS_FIXES=$((AUTO_REPAIRED + FIX_ITER + MISSING_FM))
@@ -304,7 +330,7 @@ cat <<EOF | grep -v "^="
 {
   "timestamp": "$(date +%Y-%m-%dT%H:%M:%S)",
   "wiki_dir": "${WIKI_DIR#/}",
-  "checks_run": 14,
+  "checks_run": 15,
   "issues_found": {
     "contradictions": ${CONTRADICTIONS},
     "orphan_pages": ${ORPHAN_COUNT},
@@ -326,7 +352,9 @@ cat <<EOF | grep -v "^="
     "tag_xr_gaps": ${TAG_XR_GAPS},
     "missing_frontmatter": ${MISSING_FM},
     "structural_violations": ${STRUCTURAL_VIOLATIONS},
-    "structural_violator_paths": ${STRUCTURAL_VIOLATOR_JSON}
+    "structural_violator_paths": ${STRUCTURAL_VIOLATOR_JSON},
+    "excessive_empty_lines": ${EXCESSIVE_EMPTY_LINES},
+    "excessive_empty_files": ${EXCESSIVE_EMPTY_FILES_JSON:-"[]"}
   },
   "total_issues": ${TOTAL_ISSUES},
   "status": "$([ $TOTAL_ISSUES -eq 0 ] && echo 'CLEAN' || echo 'ISSUES_FOUND')"
@@ -337,7 +365,7 @@ EOF
 if [ "$QUIET" = true ]; then
   : # no-op: silent mode — suppress human-readable output
 else
-  echo "[✓] Checks run: 14" >&2
+  echo "[✓] Checks run: 15" >&2
   echo "[!] Total issues found: ${TOTAL_ISSUES}" >&2
 fi
 
