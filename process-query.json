@@ -441,6 +441,11 @@
       ],
       "actions": [
         {
+          "action_name": "crosslink_identification_pre_write",
+          "description": "Identify related wiki pages from current conversation context and run auto-crosslink BEFORE writing to disk. Mirrors ingest's step_7_crosslink.",
+          "command": "./scripts/auto-crosslink.sh --file-list /tmp/crosslink-candidates-${TIMESTAMP}.json '${PAGE_PATH}' --include-root --min-score 4 --max-results 5 2>/dev/null || true"
+        },
+        {
           "action_type": "propose_save_to_user",
           "description": "Only proposal — actual write happens in process-ingest.json steps",
           "destination": "wiki/${PAGE_PATH}.md"
