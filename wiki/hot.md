@@ -18,6 +18,7 @@ related: []
 - `[2026-07-07]` Phase 17 T3 complete: standardized `set -euo pipefail` across all scripts, fixed lib.sh function name mismatch
 - `[2026-07-07]` Phase 17 T4 complete: unified registry+backlinks in rebuild-meta.sh (single Python call)
 - `[2026-07-07]` Phase 17 T5 complete: batched JSON reads in lint.sh (8+ → 6 calls, grep replacement for structural violations)
+-[ `2026-07-07`] fix | lint: Check 15 replaced with unified single-pass md_cleaner (from about_md_cleaner.md) — squash \n{3,} + normalize whitespace-only lines
 - `[2026-07-07]` Phase 17 T6 complete: consolidated rebuild-meta.sh across unified-pass + lint (single call per flow)
 - `[2026-07-07]` debug | lint-check15: fixed Check 15 — duplicate done, python3 heredoc arg bug, grep -c exit code
 - `[2026-07-07]` fix | lint-grep-c: added || true to prevent set -euo pipefail crash on grep -c returning exit 1
