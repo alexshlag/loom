@@ -168,11 +168,9 @@ CONTRADICTIONS_DEEP=0
 if [[ "$SKIP_CHECKS" != *",9,"* ]]; then
   local_deep=""
   safe_run "./scripts/detect-contradications.sh --quiet" local_deep "0 1" || true
-  # Parse JSON with fallback for malformed output
-  local_dc=$(python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get("potential_contradictions",0))' <<< "$local_deep" 2>/dev/null) || local_dc=0
-  if [ -n "$local_dc" ] && [[ "$local_dc" =~ ^[0-9]+$ ]]; then
-    CONTRADICTIONS_DEEP=$local_dc
-  fi
+  # Parse contradiction count from JSON output with fallback
+  CONTCOUNT=$(echo "$local_deep" | python3 -c 'import json,sys; d=json.loads(sys.stdin.read()); print(d.get("potential_contradictions",0))' 2>/dev/null) || CONTCOUNT=0
+  [[ "$CONTCOUNT" =~ ^[0-9]+$ ]] && CONTRADICTIONS_DEEP=$CONTCOUNT
 fi
 TOTAL_ISSUES=$((TOTAL_ISSUES + CONTRADICTIONS_DEEP))
 
@@ -181,14 +179,9 @@ TEXT_SIMILARITY_MATCHES=0
 if [[ "$SKIP_CHECKS" != *",10,"* ]]; then
   # text-similarity writes logs to stdout — redirect stderr for clean JSON output
   local_sim=$(bash ./scripts/text-similarity.sh --scan-all --threshold 90 2>/dev/null) || true
-  if echo "$local_sim" | python3 -c 'import json,sys; d=json.load(sys.stdin); sys.exit(0 if len(d.get("matches",[]))==0 else 1)' 2>/dev/null; then
-    TEXT_SIMILARITY_MATCHES=0
-  else
-    local_sm=$(echo "$local_sim" | python3 -c 'import json,sys; d=json.load(sys.stdin); print(len(d.get("matches",[])))') || local_sm=0
-    if [ -n "$local_sm" ] && [[ "$local_sm" =~ ^[0-9]+$ ]]; then
-      TEXT_SIMILARITY_MATCHES=$local_sm
-    fi
-  fi
+  # Batch: single python3 call replaces 2 individual ones (count + validity)
+  TEXT_SIMILARITY_MATCHES=$(echo "$local_sim" | python3 -c 'import json,sys; d=json.loads(sys.stdin.read()); print(len(d.get("matches",[])))' 2>/dev/null) || TEXT_SIMILARITY_MATCHES=0
+  [[ "$TEXT_SIMILARITY_MATCHES" =~ ^[0-9]+$ ]] || TEXT_SIMILARITY_MATCHES=0
 fi
 TOTAL_ISSUES=$((TOTAL_ISSUES + TEXT_SIMILARITY_MATCHES))
 
@@ -295,7 +288,7 @@ STRUCTURAL_VIOLATIONS=0; STRUCTURAL_VIOLATOR_JSON='[]'
 if [[ "$SKIP_CHECKS" != *",14,"* ]]; then
     structural_output=$(bash "${SCRIPT_DIR}/check-structural.sh" "$WIKI_DIR" 2>/dev/null || true)
     if [ -n "$structural_output" ] && [ "$structural_output" != '[]' ]; then
-        STRUCTURAL_VIOLATIONS=$(echo "$structural_output" | python3 -c "import sys,json;print(len(json.load(sys.stdin)))")
+        STRUCTURAL_VIOLATIONS=$(echo "$structural_output" | grep -c '^    {')
         # Escape JSON for safe heredoc insertion by reading from temp file
         echo "$structural_output" > /tmp/lint_structural.json
         STRUCTURAL_VIOLATOR_JSON=$(cat /tmp/lint_structural.json)

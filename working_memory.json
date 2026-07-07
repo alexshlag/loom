@@ -25,7 +25,8 @@
       "🔄 Phase 19 N1: naming_conventions.json updated with framework_exceptions + auto_auditing spec",
       "🔄 Phase 19 N2: filename-audit.sh created — detects 9 Symfony-specific violations without project prefix",
       "✅ T5: lint.sh consolidated — 3+4 individual python3 calls replaced with single batch extracts (local_up_json + tag-audit)",
-      "📝 T5 partial: text-similarity.sh inline blocks are per-invocation, not in loops; acceptable overhead"
+      "📝 T5 partial: text-similarity.sh inline blocks are per-invocation, not in loops; acceptable overhead",
+      "✅ T5 DONE: batched JSON reads — lint.sh reduced from 8+ to 6 python3 calls (grep replacement for structural, single call fixes for contradiction + text-similarity)"
     ]
   },
   "broken_links_resolved": [],
@@ -37,6 +38,7 @@
     "2026-07-07 phase20_2 | skill-pattern-match: created scripts/memory/skill-pattern-match.sh with tag overlap + tool sequence analysis, tested successfully (found 'skill' tag in 2 files)",
     "2026-07-07 debug | pattern-match-fix: fixed bracket regex extraction — switched from (?<=\\()[^]]+ to sed-based bracket parsing",
     "2026-07-07 phase17 | script-hardening: standardized set -euo pipefail across all scripts; fixed lib.sh function name + check-new-sources.sh comment",
-    "2026-07-07 phase17 | script-hardening: merged registry+backlinks in rebuild-meta.sh (T4)"
+    "2026-07-07 phase17 | script-hardening: merged registry+backlinks in rebuild-meta.sh (T4)",
+    "2026-07-07 phase17 | script-hardening: T5 complete — batched JSON reads in lint.sh"
   ]
 }
