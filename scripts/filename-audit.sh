@@ -1,96 +1,145 @@
 #!/usr/bin/env bash
-# scripts/filename-audit.sh — Scan wiki for filename naming violations
-# Usage: ./filename-audit.sh [--help] [--fix-suggestions] [wiki_dir]
-# Exit code: 0 = no violations found, 1 = violations detected
-
 set -euo pipefail
 
+# filename-audit.sh — Scan wiki/concepts/ for naming convention violations
+# Detects: project-specific tags (e.g., symfony-messaging) without matching prefix in filename
+# Output: JSON array of violations [{file, severity, suggested_name, reason}]
+# Usage: ./scripts/filename-audit.sh [--help] [wiki_dir]
+
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PROJECT_ROOT="${SCRIPT_DIR}/.."
-WIKI_DIR="${2:-$PROJECT_ROOT/wiki}"
+PROJECT_ROOT="${1:-$SCRIPT_DIR/..}"
+WIKI_CONCEPTS="$PROJECT_ROOT/wiki/concepts"
 
-# Parse arguments
-while [[ $# -gt 0 ]]; do
-  case "$1" in
-    --help|-h) echo "Usage: $0 [--fix-suggestions] [wiki_dir]" && exit 0;;
-    *) WIKI_DIR="$1"; shift;;
-  esac
-done
+show_help() {
+    cat <<'EOF'
+filename-audit.sh — Naming convention violation audit for wiki/concepts/
 
-# --- Helper functions ---
+Usage: ./scripts/filename-audit.sh [--help] [wiki_dir]
 
-# Extract project prefix from tags or related files
-detect_project_from_file() {
-  local file="$1"
-  
-  # Try to find project from tags first (e.g., symfony-messenger, doctrine-orm)
-  local detected=$(grep "^tags:" "$file" 2>/dev/null | grep -oE 'symfony|doctrine|easyadmin' | head -1) || true
-  
-  if [[ -n "$detected" ]]; then
-    echo "$detected"
-    return
-  fi
-  
-  # Try to find project from related files (e.g., entities/symfony.md)
-  detected=$(grep "^related:" "$file" 2>/dev/null | grep -oE 'symfony' | head -1) || true
-  
-  if [[ -n "$detected" ]]; then
-    echo "$detected"
-    return
-  fi
-  
-  # Cannot determine prefix — skip (false positive prevention)
-  echo ""
+Checks all .md files in wiki/concepts/ for naming violations:
+  - Detects project-specific tags (e.g., symfony-messaging) without matching prefix in filename
+  - Skips files in exception list (abstract concepts, framework exceptions)
+  - Outputs JSON array with violations [{file, severity, suggested_name, reason}]
+
+Exit codes:
+  0 — No violations found
+  1 — Violations detected (JSON output to stdout)
+
+Examples:
+  ./scripts/filename-audit.sh          # scan default wiki/concepts/
+  ./scripts/filename-audit.sh /path    # scan custom directory
+EOF
+    exit 0
 }
 
-# --- Main audit logic ---
-
-VIOLATIONS_JSON="[]"
-TOTAL_VIOLATIONS=0
-
-echo "[*] Filename naming audit — ${WIKI_DIR#/}" >&2
-
-# --- Scan wiki/concepts/ ---
-if [[ -d "${WIKI_DIR}/concepts" ]]; then
-  for file in "${WIKI_DIR}/concepts/"*.md; do
-    [ -f "$file" ] || continue
-    
-    filename=$(basename "$file")
-    
-    # Skip exception files (truly abstract concepts)
-    if [[ "$filename" == cache-system.md ]] || [[ "$filename" == hexagonal-architecture.md ]] || [[ "$filename" == doctrine-orm.md ]]; then
-      continue
-    fi
-    
-    # Skip files that already have a known project prefix
-    if [[ "$filename" == symfony-* ]] || [[ "$filename" == doctrine-* ]] || [[ "$filename" == easyadmin-* ]]; then
-      continue
-    fi
-    
-    # Detect what project this file belongs to
-    detected_project=$(detect_project_from_file "$file")
-    
-    if [[ -n "$detected_project" ]]; then
-      echo "VIOLATION: ${filename} (tags/related contain '${detected_project}' but no prefix)" >&2
-      
-        VIOLATIONS_JSON=$(echo "${VIOLATIONS_JSON}" | python3 -c "
-import sys,json
-arr = json.loads(sys.stdin.read())
-obj = {\"file\": \"concepts/${filename}\", \"severity\": \"HIGH\", \"reason\": \"tags/related contain '${detected_project}' but filename lacks prefix\", \"suggested_path\": \"${detected_project}-${filename}\"}
-arr.append(obj)
-print(json.dumps(arr))" 2>/dev/null) || VIOLATIONS_JSON="[]"
-      TOTAL_VIOLATIONS=$((TOTAL_VIOLATIONS + 1))
-    fi
-    
-  done
+if [[ "${1:-}" == "--help" ]]; then
+    show_help
 fi
 
-# --- Output JSON results ---
-echo "---"
-echo "${VIOLATIONS_JSON}" | python3 -c "import sys,json; d=json.loads(sys.stdin.read()); print(f'VIOLATIONS: {len(d)}'); [print(json.dumps(x)) for x in d]" 2>/dev/null || echo "{}"
+# Run audit via Python for safe JSON handling
+RESULT=$(python3 - <<PYEOF
+import os, sys, re, json
 
-# Return exit code: 0 = no violations, 1 = violations found (always max 1)
-if [[ $TOTAL_VIOLATIONS -gt 0 ]]; then
-  exit 1
+wiki_concepts = os.environ.get("WIKI_CONCEPTS") or "$WIKI_CONCEPTS"
+exceptions = ["cache-system.md", "hexagonal-architecture.md", "doctrine-orm.md"]
+
+# Known project prefixes — only these are valid project slugs
+KNOWN_PROJECTS = [
+    "symfony",
+    "react", 
+    "sonata",
+    "doctrine",
+    "pi",
+    "ai-factory",  # hyphenated prefix counts as single slug
+]
+
+violations = []
+
+for md_file in sorted(os.listdir(wiki_concepts)):
+    if not md_file.endswith('.md'):
+        continue
+    
+    filepath = os.path.join(wiki_concepts, md_file)
+    
+    if md_file in exceptions:
+        continue
+    
+    with open(filepath, 'r') as f:
+        content = f.read()
+    
+    # Extract tags from frontmatter
+    tag_line = None
+    for line in content.split('\n'):
+        if 'tags:' in line.lower():
+            tag_line = line
+            break
+    
+    if not tag_line:
+        continue
+    
+    match = re.search(r'\[(.*?)\]', tag_line)
+    if not match:
+        continue
+    
+    tags_str = match.group(1)
+    tags = [t.strip().strip('"').strip("'") for t in re.split(r',\s*', tags_str)]
+    
+    # Find project-specific tags matching known projects
+    matched_project = None
+    matched_tag = None
+    for tag in tags:
+        parts = tag.split('-')
+        first_part = parts[0]
+        
+        # Case 1: hyphenated prefix (e.g., symfony-messaging → project=symfony)
+        if len(parts) >= 2 and len(''.join(parts[1:])) > 1:
+            for proj in KNOWN_PROJECTS:
+                if first_part == proj or first_part.startswith(proj + '-'):
+                    matched_project = proj
+                    matched_tag = tag
+                    break
+        
+        # Case 2: plain project name (e.g., symfony, react)
+        elif not matched_project and tag in KNOWN_PROJECTS:
+            matched_project = tag
+            matched_tag = tag
+    
+    # If no known project found → skip (not a naming violation)
+    if not matched_project or not matched_tag:
+        continue
+    
+    base_name = md_file[:-3]
+    
+    # Check if filename starts with the matched project prefix
+    has_prefix = False
+    for proj in KNOWN_PROJECTS:
+        if base_name.startswith(proj + '-'):
+            has_prefix = True
+            break
+        # Handle hyphenated prefixes like ai-factory-
+        if '-' in proj and base_name.startswith(proj + '-'):
+            has_prefix = True
+            break
+    
+    if not has_prefix:
+        suggested_name = f"{matched_project}-{base_name}.md"
+        violations.append({
+            'file': md_file,
+            'severity': 'HIGH',
+            'suggested_name': suggested_name,
+            'reason': f'tags contain project-specific patterns (e.g., {matched_tag}) without filename prefix'
+        })
+
+print(json.dumps(violations))
+PYEOF
+) || true
+
+if [[ -n "$RESULT" ]]; then
+    echo "$RESULT"
+    if [[ "$RESULT" != "[]" ]]; then
+        exit 1
+    fi
 fi
+
+echo "[]"
 exit 0

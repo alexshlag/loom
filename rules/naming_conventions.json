@@ -41,19 +41,26 @@
       "exceptions": {
         "abstract_concepts": [
           { "file": "cache-system.md", "reason": "Universal caching patterns (PSR-6, cache-invalidation), framework-agnostic" },
-          { "file": "hexagonal-architecture.md", "reason": "Clean architecture pattern (ports-and-adapters), universal across frameworks" },
-          { "file": "doctrine-orm.md", "reason": "Doctrine ORM works with any PHP framework, not Symfony-specific" }
+          { "file": "hexagonal-architecture.md", "reason": "Clean architecture pattern (ports-and-adapters), universal across frameworks" }
+        ],
+        "framework_exceptions": [
+          { "file": "doctrine-orm.md", "project": "doctrine", "reason": "Doctrine ORM works with any PHP framework, not Symfony-specific" }
         ],
         "detection_logic": [
           {
-            "rule": "If tags contain project-name (e.g., symfony-cache) AND filename lacks project prefix → VIOLATION",
-            "exception_check": "Is file in exceptions/abstract_concepts? If yes → ALLOW. If no → ENFORCE_PREFIX"
+            "rule": "If tags contain project-name (e.g., symfony-messaging) AND filename lacks project prefix → VIOLATION",
+            "exception_check": "Is file in exceptions/abstract_concepts or framework_exceptions? If yes → ALLOW. If no → ENFORCE_PREFIX"
           },
           {
             "rule": "If related contains entities/<project>.md AND filename lacks project prefix → VIOLATION",
             "exception_check": "Same exception list check above"
           }
-        ]
+        ],
+        "auto_auditing": {
+          "description": "scripts/filename-audit.sh scans wiki/concepts/ for violations using detection_logic rules",
+          "output_format": "JSON array: [{\"file\": \"<path>\", \"severity\": \"HIGH\", \"suggested_name\": \"<project>-<name>.md\", \"reason\": \"tags contain <project> tag\"}]",
+          "exit_codes": { "0": "No violations found", "1": "Violations detected (JSON output)" }
+        }
       }
     },
     "docs_directory": {

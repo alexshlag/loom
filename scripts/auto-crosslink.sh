@@ -7,6 +7,8 @@
 # Usage:
 #   ./scripts/auto-crosslink.sh [page_path] [--include-root] [--max-results N] [--min-score N] [--file-list FILE] [--auto-fix-high-confidence]
 
+source "$(dirname "$0")/lib.sh" || true
+_set_cleanup_trap  # enable cleanup_temp_files for all temp files below
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -39,6 +41,7 @@ done
 if [[ "$AUTO_FIX_HCC" == "true" ]]; then
     # Scan all wiki pages for orphans and auto-fix them
     ORPHAN_LIST=$(mktemp)
+    cleanup_add "$ORPHAN_LIST"
     ./scripts/orphan-pages.sh "${WIKI_DIR}" "${META_DIR}/backlinks.json" > "$ORPHAN_LIST" 2>/dev/null || true
     
     # Extract orphan paths from output (lines ending with "(no backlinks)")
@@ -49,7 +52,6 @@ if [[ "$AUTO_FIX_HCC" == "true" ]]; then
             ALL_ORPHANS+=("$page")
         fi
     done < <(grep "(no backlinks)" "$ORPHAN_LIST" || true)
-    rm -f "$ORPHAN_LIST"
     
     # If no orphans, exit clean
     if [[ ${#ALL_ORPHANS[@]} -eq 0 ]]; then
@@ -183,9 +185,9 @@ get_sources() {
 # Level 1: H1 title & keyword matching (score +3, +2)
 echo "[*] Running auto-crosslink with multi-level analysis..." >&2
 
-# Collect results in temp file
+# Collect results via cleanup_add
 RESULTS_FILE=$(mktemp)
-trap "rm -f $RESULTS_FILE" EXIT
+cleanup_add "$RESULTS_FILE"
 
 find_and_score() {
     local filepath="$1"

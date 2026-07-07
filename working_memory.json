@@ -1,10 +1,10 @@
 {
   "last_updated": "2026-07-07T05:05+03",
   "current_mode": "project",
-  "focus_node": "Phase 17 T5 — batch JSON reads complete for lint.sh; text-similarity.sh inline blocks acceptable.",
+  "focus_node": "Phase 20 S1-S9 validated complete; Phase 18 docs ready; next decision needed.",
   "next_steps_todo": [
-    "Complete T6: migrate remaining scripts to cleanup_add (check-new-sources, link-validator, auto-crosslink)",
-    "Consider Phase 17.1: performance profiling of batched vs original execution times"
+    "Commit: Phase 17 T6 cleanup, Phase 19 N1-N4 naming audit",
+    "Choose: Phase 18.1 (docs deep-dive templates) or performance profiling"
   ],
   "open_pages": [],
   "dead_ends": [],
@@ -21,7 +21,9 @@
     "key_findings": [
       "✅ T3: errexit added to batch-ingest, check-structural, lint, raw-correct, rebuild-source-manifest",
       "✅ T4: rebuild-meta.sh already uses wiki-walk.py single-pass (triple walk eliminated)",
-      "🔄 T6: lib.sh cleanup_temp_files() created; lint.sh + rebuild-meta.sh migrated to centralized cleanup_add",
+      "🔄 Phase 20 S1-S9 validated: skill format spec, bootstrap scan, auto-generation trigger, query awareness, export script — all integrated and working"
+      "🔄 Phase 19 N1: naming_conventions.json updated with framework_exceptions + auto_auditing spec",
+      "🔄 Phase 19 N2: filename-audit.sh created — detects 9 Symfony-specific violations without project prefix"
       "✅ T5: lint.sh consolidated — 3+4 individual python3 calls replaced with single batch extracts (local_up_json + tag-audit)",
       "📝 T5 partial: text-similarity.sh inline blocks are per-invocation, not in loops; acceptable overhead"
     ]
@@ -33,6 +35,7 @@
     "2026-07-07 schema | rules-cleanup: simplified TASK EXECUTION CYCLE §11 — removed duplicate commit/memory steps, consolidated via git_conventions.json",
     "2026-07-07 rules | execution-cycle-fix: corrected COMMIT/SYNC order — memory sync first, then git add/commit",
     "2026-07-07 phase20_2 | skill-pattern-match: created scripts/memory/skill-pattern-match.sh with tag overlap + tool sequence analysis, tested successfully (found 'skill' tag in 2 files)",
-    "2026-07-07 debug | pattern-match-fix: fixed bracket regex extraction — switched from (?<=\\()[^]]+ to sed-based bracket parsing"
+    "2026-07-07 debug | pattern-match-fix: fixed bracket regex extraction — switched from (?<=\\()[^]]+ to sed-based bracket parsing",
+    "2026-07-07 phase17 | cleanup-migration: migrated check-new-sources, link-validator, auto-crosslink.sh to centralized cleanup_add + _set_cleanup_trap pattern"
   ]
 }

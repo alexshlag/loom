@@ -57,7 +57,8 @@ done
 TMP_RESULTS=$(mktemp)
 echo -n "" > "$TMP_RESULTS"
 TMP_FIXED=$(mktemp)
-trap 'rm -f "$TMP_RESULTS" "$TMP_FIXED"' EXIT
+cleanup_add "$TMP_RESULTS" "$TMP_FIXED"
+_set_cleanup_trap
 
 # --- Fuzzy matching utility ---
 normalize() {
@@ -387,6 +388,7 @@ if [[ $BROKEN_COUNT -gt 0 ]]; then
       echo "[!] Agent review required: $remaining links need manual attention" >&2
       # Extract agent_review_required entries to a separate file
       TMP_REVIEW=$(mktemp)
+      cleanup_add "$TMP_REVIEW"
       grep '"auto_fixed":false' "$TMP_RESULTS" | while IFS= read -r entry; do
         local_file=$(echo "$entry" | sed 's/.*"file":"\([^"]*\)".*/\1/')
         local_link=$(echo "$entry" | sed 's/.*"link":"\([^"]*\)".*/\1/')

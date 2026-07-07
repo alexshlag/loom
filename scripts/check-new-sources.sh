@@ -9,6 +9,7 @@
 #   --max N — search depth limit (default: 10). Warning when exceeded.
 
 source "$(dirname "$0")/lib.sh" || true
+_set_cleanup_trap  # enable cleanup_temp_files for atomic_write_content internal cleanup_add calls
 MAX_SOURCES=10
 
 QUICK=false
@@ -27,9 +28,7 @@ RAW_DIR="${1:-raw/sources/}"
 REGISTRY_FILE="${2:-tracking/raw_registry.json}"
 CACHE_FILE="tracking/last_check.json"
 
-# Trap cleanup for .tmp files on crash/abort
-# atomic_write_content creates .tmp.$$ (with PID suffix), clean both patterns
-trap 'rm -f "${REGISTRY_FILE}.tmp" "${REGISTRY_FILE}.tmp."* "${CACHE_FILE}.tmp" "${CACHE_FILE}.tmp."* 2>/dev/null' EXIT
+# Temp files cleaned via cleanup_temp_files (EXIT trap set by _set_cleanup_trap)
 
 # Create registry if it doesn't exist
 mkdir -p "$(dirname "$REGISTRY_FILE")"

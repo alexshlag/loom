@@ -7,18 +7,15 @@ related: []
 ---
 # Wiki Hot Cache — Last Updated: 2026-07-07
 
-## Active Project (WORK_MODE: project)
+## Active Project (WORK_MODE: discussion)
 - **Project**: Loomana wiki architecture optimization + knowledge management
-- **Status**: 🟡 ACTIVE — Phase 17 Script Hardening in progress (T3 ✅, T4 ✅, T6 🔄) (naming convention fix + duplicate detection)
+- **Status**: 🟢 ACTIVE SESSION — Wiki maintenance and expansion
 
 ## Active Session Context
   WM read failed — using defaults
 
 ## Recent Changes
-  - **[2026-07-07] phase17 | T5 complete — batch-extract-json.sh created; lint.sh consolidated from 3+4 individual python3 calls to single batch extracts**
-  - **[2026-07-07] phase17 | T3 completed — added errexit to batch-ingest, check-structural, lint, raw-correct, rebuild-source-manifest**
-  - **[2026-07-07] phase17 | T4 confirmed — rebuild-meta.sh already uses wiki-walk.py single-pass (no triple walk)**
-  - **[2026-07-07] phase17 | T6 🔄 — lib.sh cleanup_temp_files() added, lint.sh + rebuild-meta.sh migrated to centralized cleanup_add pattern
+  No recent log entries
 
 ## System State
 ### Active Threads
