@@ -15,7 +15,7 @@ related: []
   WM read failed — using defaults
 
 ## Recent Changes
-  No recent log entries
+- `[2026-07-07]` Phase 17 T3 complete: standardized `set -euo pipefail` across all scripts, fixed lib.sh function name mismatch
 
 ## System State
 ### Active Threads
