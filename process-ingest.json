@@ -221,10 +221,16 @@
     {
       "step_id": "step_7_template",
       "name": "template_read_and_section_selection",
-      "description": "Agent reads template.json for page structure. Template is recommended, not mandatory.",
+      "description": "Agent reads template.json for page structure. For docs pages, selects deep-dive template based on source type (API/CLI/migration/guide) from docs-template.json#template_selection mapping.",
       "actions": [
         {
           "action_name": "read_template"
+        },
+        {
+          "condition": "category == docs",
+          "action_name": "select_deep_dive_template_by_source_type",
+          "description": "docs-template.json#template_selection.mapping — map source type to specific markdown template (api-reference, cli-commands, migration-guide, deep-dive-guide)",
+          "schema_ref": "wiki/templates/docs-template.json#template_selection"
         },
         {
           "action_name": "select_applicable_sections"

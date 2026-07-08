@@ -1,34 +1,53 @@
 {
   "category": "docs",
-  "version": "1.0",
-  "updated": "2026-07-06",
-  "description": "Шаблон для документации: Getting Started, API Reference, CLI Commands, Configuration, Migration Guides.",
+  "version": "1.1",
+  "updated": "2026-07-08",
+  "description": "Documentation template system — selects appropriate deep-dive template based on source type (API, CLI, migration, general guide).",
+
+  "template_selection": {
+    "rule": "Agent inspects source content to determine docs_type, then loads corresponding markdown template from wiki/templates/",
+    "mapping": [
+      {"source_type": "api_documentation", "target_template": "docs-api-reference.md", "suffix": "-api", "description": "API endpoints, request/response examples, error codes, SDK usage"},
+      {"source_type": "cli_reference", "target_template": "docs-cli-commands.md", "suffix": "-commands", "description": "Command reference with flags/options/arguments/examples/exit_codes"},
+      {"source_type": "migration_upgrade", "target_template": "docs-migration-guide.md", "suffix": "-migration", "description": "Version upgrade guide with breaking changes, step-by-step migration, rollback plan"},
+      {"source_type": "tutorial_or_concept_guide", "target_template": "docs-deep-dive-guide.md", "suffix": null, "description": "General deep-dive topic: architecture patterns, best practices, tutorials, trade-offs"}
+    ]
+  },
+
   "sections": [
     "Overview — brief intro paragraph defining scope and purpose",
     "Prerequisites / Setup — runtime versions, tools needed, environment config",
-    "Getting Started — step-by-step first run instructions",
+    "Getting Started — step-by-step first run instructions (for guides)",
     "API Reference — endpoints/commands grouped by resource with request/response examples",
     "Configuration — env vars, config files, feature flags",
     "Deployment — build steps, CI/CD, monitoring (if applicable)",
     "Migration Guides — version upgrades, breaking changes (when relevant)",
+    "Alternatives & Trade-offs — comparison table for different approaches",
+    "Common Pitfalls — known issues with symptoms and solutions",
     "See Also — crosslinks к wiki/entities/ и wiki/concepts/"
   ],
+
   "rules": {
     "intro_paragraph_required": true,
     "body_text_between_h1_and_first_subheading": false,
     "nav_header_mandatory": true,
-    "see_also_section_required": true
+    "see_also_section_required": true,
+    "code_examples_required": true,
+    "minimum_sections": 4
   },
+
   "navigation_pattern": {
-    "header": "[← Previous Topic](prev.md) · [Back to Index](../docs-index.md) · [Next Topic →](next.md)",
+    "header": "[← Previous Topic](../docs/<prev-topic>.md) · [Back to Index](../docs-index.md) · [Next Topic →](<next-topic>.md)",
     "footer_section": "## See Also — с crosslink к wiki/entities/ и wiki/concepts/",
     "index_link_required": true,
     "first_page_note": "Первая страница docs-index.md имеет только 'Back to Index' link",
     "last_page_note": "Последняя страница имеет только '← Previous Topic' link"
   },
+
   "routing_guidelines": [
-    { "source_type": "framework_overview_cluster", "target_path": "wiki/docs/<framework>.md", "suffix_pattern": null },
-    { "source_type": "api_reference_cluster", "target_path": "wiki/docs/<framework>-api.md", "suffix_pattern": "-api" },
-    { "source_type": "cli_tool_cluster", "target_path": "wiki/docs/<tool>-commands.md", "suffix_pattern": "-commands" }
+    { "source_type": "framework_overview_cluster", "target_path": "wiki/docs/<framework>.md", "suffix_pattern": null, "template": "docs-deep-dive-guide.md" },
+    { "source_type": "api_reference_cluster", "target_path": "wiki/docs/<framework>-api.md", "suffix_pattern": "-api", "template": "docs-api-reference.md" },
+    { "source_type": "cli_tool_cluster", "target_path": "wiki/docs/<tool>-commands.md", "suffix_pattern": "-commands", "template": "docs-cli-commands.md" },
+    { "source_type": "migration_guide_cluster", "target_path": "wiki/docs/<framework>-<version>-migration.md", "suffix_pattern": "-migration", "template": "docs-migration-guide.md" }
   ]
 }
