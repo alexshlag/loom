@@ -29,14 +29,14 @@ def parse_frontmatter(content):
     name_str, desc_str = '', ''
     related_docs_list = []
 
-    for line in content.split('\\n')[:15]:
+    for line in content.split('\n')[:15]:
         if line.startswith('tags:'):
-            raw_tags = re.findall(r'\\[(.*?)\\]', line)
+            raw_tags = re.findall(r'\[(.*?)\]', line)
             tags = [t.strip() for t in ','.join(raw_tags).split(',') if t.strip()]
         elif line.startswith('date:'):
             date_str = line.split(': ', 1)[1].strip() if ': ' in line else ''
         elif line.startswith('sources:'):
-            raw_sources = re.findall(r'\\[(.*?)\\]', line)
+            raw_sources = re.findall(r'\[(.*?)\]', line)
             sources_list = [s.strip().strip('"').strip("'") for s in ','.join(raw_sources).split(',') if s.strip()]
         elif line.startswith('aliases:'):
             raw_aliases = re.findall(r"""["']([^"']+)[\"']""", '[{}]'.format(','.join(raw_tags)) if raw_tags else '')
@@ -46,7 +46,7 @@ def parse_frontmatter(content):
         elif line.startswith('description:'):
             desc_str = line.split(': ', 1)[1].strip()
         elif line.startswith('related_docs:'):
-            raw_rd = re.findall(r'\\[(.*?)\\]', line)
+            raw_rd = re.findall(r'\[(.*?)\]', line)
             related_docs_list = [s.strip() for s in ','.join(raw_rd).split(',') if s.strip()]
 
     return {
@@ -102,8 +102,19 @@ def extract_summary(content, max_len=180):
 
 
 def extract_links(content):
-    """Extract [[text](path)] links and related field from frontmatter."""
-    links = re.findall(r'\[([^\]]+)\]\(([^#)]+)(?:#[^)]+)?\)', content)
+    """Extract [[text](path)] and [[wikilink]] links and related field from frontmatter."""
+    # Markdown-style: [text](url)
+    md_links = re.findall(r'\[([^\]]+)\]\(([^#)]+)(?:#[^)]+)?\)', content)
+
+    # Obsidian wikilinks: [[path]]
+    wiki_links = []
+    for m in re.finditer(r'\[\[(.+?)\]\]', content):
+        raw_path = m.group(1).strip()
+        # Clean common suffixes like (incoming, score: 5)
+        clean_path = re.sub(r'\s*\([^)]*\)', '', raw_path).strip()
+        wiki_links.append((clean_path, clean_path))
+
+    links = md_links + wiki_links
 
     # Extract related: [] field
     related = []
@@ -128,6 +139,7 @@ def categorize_path(rel_path):
         'projects': 'projects',
         'bibliography': 'bibliography',
         'resources': 'resources',
+        'docs': 'docs',
     }
 
     # Check directory segments
@@ -203,7 +215,12 @@ def walk_wiki():
 
             # Add backlinks for each outgoing link target
             for _, path in links:
-                cleaned = path.lstrip('./').lstrip('/') if not path.startswith('../') else path
+                if path.startswith('../'):
+                    cleaned = path
+                elif path.startswith('wiki/'):
+                    cleaned = path[len('wiki/'):]
+                else:
+                    cleaned = path.lstrip('./').lstrip('/')
                 target_id = cleaned.replace('/', '-').replace('.', '').rstrip('/')
                 if target_id:
                     all_backlinks.setdefault(target_id, []).append({
@@ -282,10 +299,11 @@ def output_index():
             lines.append('')
         else:
             for page in sorted(pages_list, key=lambda x: x['title']):
+                # Use tags as searchable summary instead of body_text description
                 tag_str = ' '.join(f'[{t}]' for t in page.get('tags', [])[:3]) if page.get('tags') else ''
                 alias_str = ' '.join(f'[{a}]' for a in page.get('aliases', [])[:2]) if page.get('aliases') else ''
                 extra = f' — {tag_str}' + (f' ({alias_str})' if alias_str else '') if tag_str else ''
-                lines.append('* [' + page['title'] + '](' + page['path'] + ') — ' + page['summary'] + extra)
+                lines.append('* [' + page['title'] + '](' + page['path'] + ')' + extra)
         lines.append('')
 
     print('\n'.join(lines))

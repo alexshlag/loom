@@ -1,5 +1,5 @@
 ---
-tags: [looma, architecture, layers, schema-ref]
+tags: [Loomana, loom, architecture, layers, schema-ref]
 date: 2026-07-08
 type: documentation
 category: docs

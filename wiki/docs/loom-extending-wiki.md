@@ -1,5 +1,5 @@
 ---
-tags: [looma, extension, customization, schema-evolution]
+tags: [Loomana, loom, extension, customization, schema-evolution]
 date: 2026-07-08
 type: documentation
 category: docs

@@ -198,10 +198,11 @@ for cat_key in CATEGORY_ORDER:
         lines_out.append('')
     else:
         for page in sorted(pages_list, key=lambda x: x['title']):
-            tag_str = ' '.join(f'[{t}]' for t in page.get('tags', [])[:3]) if page.get('tags') else ''
-            alias_str = ' '.join(f'[{a}]' for a in page.get('aliases', [])[:2]) if page.get('aliases') else ''
-            extra = f' — {tag_str}' + (f' ({alias_str})' if alias_str else '') if tag_str else ''
-            lines_out.append('* [' + page['title'] + '](' + page['path'] + ') — ' + page['summary'] + extra)
+                # Use tags as searchable summary instead of body_text description
+                tag_str = ' '.join(f'[{t}]' for t in page.get('tags', [])) if page.get('tags') else ''
+                alias_str = ' '.join(f'[{a}]' for a in page.get('aliases', [])[:2]) if page.get('aliases') else ''
+                extra = f' — {tag_str}' + (f' ({alias_str})' if alias_str else '') if tag_str else ''
+                lines_out.append('* [' + page['title'] + '](' + page['path'] + ')' + extra)
     lines_out.append('')
 
 lines_out.extend([

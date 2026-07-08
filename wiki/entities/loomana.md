@@ -1,5 +1,5 @@
 ---
-tags: [llm-wiki, personal-knowledge-base, compounding, rag-alternative, karpathy-wiki]
+tags: [llm-wiki, personal-knowledge-base, compounding, rag-alternative, karpathy-wiki, Loomana, loom, wiki-system]
 date: 2026-07-04
 type: documentation
 category: entity
@@ -13,8 +13,23 @@ related: [concepts/llm-wiki.md, syntheses/rag-vs-llm-wiki-pattern.md, comparison
 - [[wiki/concepts/llm-wiki.md]] (score: 5, incoming)
 # Loomana — Wiki System Documentation
 
-Page covering Loomana — Wiki System Documentation — entity information, architecture details, and usage patter
-[[wiki/docs/loom-architecture.md]] [[wiki/docs/loom-memory-hooks.md]] [[wiki/docs/loom-wiki-structure.md]]ns.
+Page covering Loomana — Wiki System Documentation — entity information, architecture details, and usage patterns.
+
+See also:
+- [[wiki/docs/loom-architecture.md]]
+- [[wiki/docs/loom-memory-hooks.md]]
+- [[wiki/docs/loom-wiki-structure.md]]
+- [[wiki/docs/loom-getting-started.md]]
+- [[wiki/docs/loom-rules-reference.md]]
+- [[wiki/docs/loom-scripts-guide.md]]
+- [[wiki/docs/loom-troubleshooting.md]]
+- [[wiki/docs/loom-security-guide.md]]
+- [[wiki/docs/loom-session-lifecycle.md]]
+- [[wiki/docs/loom-snapshot-lifecycle.md]]
+- [[wiki/docs/loom-batch-ingest.md]]
+- [[wiki/docs/loom-advanced-query.md]]
+- [[wiki/docs/loom-api-conventions.md]]
+- [[wiki/docs/loom-extending-wiki.md]]
 
 ## Что такое Loomana?
 

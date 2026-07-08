@@ -1,5 +1,5 @@
 ---
-tags: [snapshot, project-tracking, lifecycle-management, cross-session-continuity]
+tags: [Loomana, loom, snapshot, project-tracking, lifecycle-management, cross-session-continuity]
 date: 2026-07-08
 type: documentation
 category: concept
@@ -45,7 +45,7 @@ never_read: [
 
 ```yaml
 ---
-tags: [snapshot, active-projects]
+tags: [Loomana, loom, snapshot, project-tracking, lifecycle-management, cross-session-continuity]
 date: YYYY-MM-DD                   # Current system date, not project-specific
 type: documentation                # Always documentation — it's a meta page
 category: note                     # Meta category — not entity/concept/synthesis

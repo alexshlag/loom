@@ -1,5 +1,5 @@
 ---
-tags: [ obsidian-cli, vault-transport, cli-tool, spec-driven]
+tags: [AI Factory, obsidian-cli, vault-transport, cli-tool]
 date: 2026-06-24
 sources: [https://github.com/lee-to/ai-factory, https://www.npmjs.com/package/ai-factory]
 related: [wiki/entities/pi-coding-agent.md]

@@ -86,9 +86,10 @@ for key in keys:
 # Find orphans — pages without incoming links (no key in backlinks.json)
 orphans = []
 for page in all_pages:
-    # Build key from path: concepts/agent-memory-management.md → concepts-agent-memory-management
-    # Strip .md extension first (like regenerate-backlinks.sh), then normalize slashes
-    normalized_key = page.replace('.md', '').replace('/', '-')
+    # Build key from path: concepts/agent-memory-management.md → concepts-agent-memory-managementmd
+    # Match backlink target format (slashes→dashes, dots removed, 'md' kept)
+    base = page.replace('.md', '').replace('/', '-')
+    normalized_key = f'{base}md'
     
     if normalized_key not in normalized_keys:
         orphans.append(page)

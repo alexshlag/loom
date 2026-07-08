@@ -1,5 +1,5 @@
 ---
-tags: [conventions, frontmatter-schema, commit-format, evidence-grading, tag-patterns]
+tags: [Loomana, loom, conventions, frontmatter-schema, commit-format, evidence-grading, tag-patterns]
 date: 2026-07-08
 type: documentation
 category: concept
@@ -18,7 +18,7 @@ Every wiki page has YAML frontmatter at the top. This is the canonical schema:
 
 ```yaml
 ---
-tags: [tag1, tag2, tag3]              # 3-7 domain-specific keywords (see Tag Patterns below)
+tags: [Loomana, loom, conventions, frontmatter-schema, commit-format, evidence-grading, tag-patterns]              # 3-7 domain-specific keywords (see Tag Patterns below)
 date: YYYY-MM-DD                       # Current system date — NEVER source-derived!
 type: documentation                    # documentation | code_reality | live_state
 category: entities                     # Must match categories.json definition

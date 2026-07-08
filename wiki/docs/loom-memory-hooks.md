@@ -1,5 +1,5 @@
 ---
-tags: [memory-hierarchy, trajectory-pipeline, auto-distillation, hook-system]
+tags: [Loomana, loom, memory-hierarchy, trajectory-pipeline, auto-distillation, hook-system]
 date: 2026-07-08
 type: documentation
 category: concept

@@ -1,5 +1,5 @@
 ---
-tags: [machine-learning, deep-learning, computer-vision, nlp, llm-wiki-pattern]
+tags: [Andrej Karpathy, machine-learning, deep-learning, computer-vision]
 date: 2026-06-24
 sources: [raw/llm-wiki.md]
 related: []

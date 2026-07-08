@@ -1,5 +1,5 @@
 ---
-tags: [batch-ingest, cluster-detection, multi-source-processing, greedy-clustering]
+tags: [Loomana, loom, batch-ingest, cluster-detection, multi-source-processing, greedy-clustering]
 date: 2026-07-08
 type: documentation
 category: concept

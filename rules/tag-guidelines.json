@@ -47,5 +47,33 @@
     ]
   },
 
+
+
+  "primary_name_prefix_mandatory": {
+    "rule": "When creating documents (docs/, concepts/) belonging to an entity, ALWAYS use the entity's PRIMARY NAME as file prefix. NEVER use aliases.",
+    "rationale": "Aliases are discoverability synonyms in frontmatter `aliases: []`. They may not match user search patterns and can cause cross-link failures.",
+    "example": {"entity": "Loomana", "correct_prefix": "wiki/docs/Loomana-architecture.md", "wrong_prefix": "wiki/docs/loom-architecture.md (alias used instead of primary name)"},
+    "agent_instruction": "Before creating any related doc: check entity page's tags — first tag = PRIMARY NAME. Use that as prefix, not aliases."
+  },
+
+  "tag_ordering_for_entity_docs": {
+    "rule": "Every document belonging to an entity MUST have the entity's primary name as its FIRST tag and alias (if used) as SECOND tag.",
+    "rationale": "Tag order determines search priority. First tag = highest weight in index lookup. Entity name first ensures the page is found when searching for that entity, regardless of file naming conventions.",
+    "example": {
+      "correct_tags": "[Loomana, loom, architecture]",
+      "wrong_tags": "[architecture, Loomana, loom] or [architecture, loom]"
+    },
+    "fallback_on_violation": {
+      "scenario": "If a doc file was created using entity's alias as prefix (e.g., `loom-*.md` instead of `Loomana-*.md`) — this violates the primary_name_prefix_mandatory rule. The entity docs MUST compensate by ensuring: tag[0] = entity primary name, tag[1] = alias used in prefix.",
+      "rationale": "This ensures cross-searchability even when naming convention was violated. Users searching for 'Loomana' will find the page via first tag, even if file is named with alias prefix.",
+      "example": {
+        "file": "wiki/docs/loom-architecture.md",
+        "violation": "uses 'loom' (alias) as prefix instead of 'Loomana' (primary name)",
+        "compensation_tags": "[Loomana, loom, architecture] — tag 0 = primary name, tag 1 = alias used in filename"
+      }
+    },
+    "agent_instruction": "When creating entity docs: first tag = entity's PRIMARY NAME (from entity page tags). Second tag = any alias relevant to this doc. Never put aliases before the primary name."
+  },
+
   "schema_ref_to_agent_rules": "AGENTS.md#universal-frontmatter-all-types"
 }

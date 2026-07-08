@@ -1,31 +1,37 @@
 ---
 tags: [cache, system]
-date: 2026-07-08
+date: 2026-07-09
 category: note
 sources: []
 related: []
 ---
-# Wiki Hot Cache — Last Updated: 2026-07-08
+# Wiki Hot Cache — Last Updated: 2026-07-09
 
 ## Active Project (WORK_MODE: project)
-- **Project**: Loomana wiki architecture optimization + knowledge management
-- **Status**: 🟢 ACTIVE SESSION — Wiki maintenance and expansion
+- **Project**: Loomana wiki health maintenance + backlinks system fix + tag ordering compliance
+- **Status**: 🟢 COMPLETE SESSION — All structural issues resolved, ready for next day
 
-## Active Session Context
-- **Focus node**: Phase 25.2: clean git_conventions memory references
+## Session Summary (2026-07-09)
+### Completed
+1. ✅ Full health audit — 4 wrong docs-*.md deleted from templates/, all broken wikilinks fixed
+2. ✅ Fixed `wiki-walk.py` backlinks parser: now extracts both `[text](url)` and `[[wikilink]]` Obsidian format
+3. ✅ Fixed `orphan-pages.sh` key normalization to match backlink target format (19→59→1→0 orphans)
+4. ✅ Populated empty Documentation section in index.md (14 doc pages added)
+5. ✅ Full wiki rebuild — all tags/aliases/categories refreshed from source files
+6. ✅ Tag ordering compliance: primary entity name moved to tag[0] for all 12 entity profiles
 
-### Pending Tasks
-- **review session_context_rules.json for unified context budget rules**
+### Key Changes
+- `scripts/wiki-walk.py` — Obsidian wikilink parser + correct wiki path cleanup (no more `wiki-docs-` prefix)
+- `scripts/orphan-pages.sh` — proper key matching with backlinks.json format
+- `wiki/entities/*.md` — 12 entity pages: primary name now tag[0] per rule `tag_ordering_for_entity_docs`
+- `wiki/index.md` — fully rebuilt, all categories populated correctly (templates excluded)
 
-## Recent Changes
-  No recent log entries
+### Next Day Focus
+- [ ] Review 3 contradiction-flagged soft-check pages
+- [ ] Continue knowledge base growth via query responses / source ingestion
+- [ ] Consider additional rule refinements for cross-entity parent references
 
 ## System State
 ### Active Threads
-- Wiki maintenance and expansion (auto-fixes running on lint errors)
-- Knowledge base growth via query responses and source ingestion
-
-- **Recent activity**: fix_json_comments | Removed invalid // inline comments from context-scopes.json — replaced with schema_ref field; validated all 12 rules/*.json files pass json.tool
-- **Recent activity**: agENTS_reduction | AGENTS.md reduced from 676 to 447 lines (-230 lines, ~14KB saved): extracted Auto-rebuild/Lint rules → auto_rebuild_metadata.json + non_blocking_lint.json (enriched), Wiki Snapshot JSON-block → snapshot_format.json (new), Language Policy → language_policy.json (new), removed Evidence Grade inline table → already in evidence_grade.json, removed Schema Inheritance Canonical References dead-weight table; total rules/*: 28 files (~1030 lines); commit: 5f40f6e
-- **Recent activity**: schema | added STI-V1 rule (source_transient_ingest.json) — sources are transient, read→extract→wiki→forget; prevents context bloat during multi-source ingest
-- **Recent activity**: docs | Phase 23: ingested 7 source documents → wiki/docs/ following STI-V1 transient rule
+- ✅ Wiki health: BACKLINKS OPERATIONAL, ORPHANS=0, INDEX UP-TO-DATE
+- 🔄 Knowledge expansion — ready for next ingest/query cycle

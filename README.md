@@ -100,18 +100,6 @@ Ask anything. The agent will:
 
 ## Current State
 
-| Category | Pages | Examples |
-|----------|-------|----------|
-| Entities | 13 | Loomana, Pi Coding Agent, Symfony, Nvidia, Andrej Karpathy |
-| Concepts | 25 | LLM Wiki Pattern, Service Container, Routing, Hexagonal Arch, Testing Strategy |
-| Syntheses | 2 | RAG vs LLM Wiki Pattern, Python Dev Environments |
-| Comparisons | 4 | Agent Memory Techniques, Symfony UX Packages, Loom vs Claude/Obsidian |
-
-**Total: ~55 wiki pages across three domains:**
-1. **LLM Wiki Pattern / Pi Coding Agent** — architecture patterns for AI agents
-2. **Python on NixOS** — development environments and tooling
-3. **Symfony ecosystem** — framework components, bundles, deployment
-
 All three workflows (ingest/query/lint) are operational. Guardrails validate paths. Error handling protocol is active.
 
 ---
@@ -140,7 +128,7 @@ All three workflows (ingest/query/lint) are operational. Guardrails validate pat
 - **All commits follow convention**: `<type> | <scope>: <description>`
 - **Memory sync required** after dev commits (WM + hot.md update)
 
-See `AGENTS.md` and `RULES.md#9-instruction-compactification` for full conventions.
+See `AGENTS.md` and `RULES.md` for full conventions.
 
 ### Human Maintenance
 
@@ -165,7 +153,6 @@ The project is a working prototype demonstrating LLM-powered wiki automation. Al
 - ✅ Evidence grading from sources
 - ✅ Git workflow automation + pre-commit guardrails
 - 🔄 FTS search instead of full index reads (>100 pages scaling)
-- 🔄 Cron-based lint automation
 
 ---
 

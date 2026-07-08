@@ -1,5 +1,5 @@
 ---
-tags: [query-strategy, compounding-decision, search-hierarchy, novel-insight]
+tags: [Loomana, loom, query-strategy, compounding-decision, search-hierarchy, novel-insight]
 date: 2026-07-08
 type: documentation
 category: concept

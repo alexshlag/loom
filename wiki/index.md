@@ -1,113 +1,98 @@
 # Wiki Index
 
+
 ## Entities
-
-* [AI Factory](entities/ai-factory.md) — Stack-agnostic CLI tool and skill system for AI-powered development. One command sets up a full context-aware environment with relevant skills, MCP servers, and spec-driven workflows.
-
-* [Andrej Karpathy](entities/andrej-karpathy.md) — AI Researcher, автор LLM Wiki pattern (LLM-powered personal knowledge base).
-
-* [API Platform](entities/api-platform.md) — Page covering API Platform — entity information, architecture details, and usage patterns.
-
-* [Ibexa DXP](entities/ibexa-dxp.md) — Page covering Ibexa DXP — entity information, architecture details, and usage patterns.
-
-* [Loomana — Wiki System Documentation](entities/loomana.md) — Page covering Loomana — Wiki System Documentation — entity information, architecture details, and usage patterns.
-
-* [Node.js](entities/nodejs.md) — Node.js — это runtime для выполнения JavaScript-кода вне браузера. Создан Райном Дэйли (Ryan Dahl) в 2009 году, позволяет строить масштабируемые сетевые приложения с использованием асинхронной event-driven модели.
-
-* [Nvidia](entities/nvidia.md) — Page covering Nvidia — entity information, architecture details, and usage patterns.
-
-* [PHP](entities/php.md) — This page explores PHP — programming language created for web development.
-
-* [Pi Coding Agent](entities/pi-coding-agent.md) — Минимальный терминальный код-агент (harness), расширяемый через TypeScript-расширения, skills, prompt templates и темы. Подключается к subscription или API-key провайдерам для работы с LLM.
-
-* [Clippy](entities/rust-clippy.md) — Page covering Clippy — entity information, architecture details, and usage patterns.
-
-* [Sylius](entities/sylius.md) — Page covering Sylius — entity information, architecture details, and usage patterns.
-
-* [Symfony](entities/symfony.md) — Page covering Symfony — entity information, architecture details, and usage patterns.
+* [AI Factory](entities/ai-factory.md) — [AI Factory] [obsidian-cli] [vault-transport] [cli-tool]
+* [API Platform](entities/api-platform.md) — [API Platform] [api] [rest] [graphql]
+* [Andrej Karpathy](entities/andrej-karpathy.md) — [Andrej Karpathy] [machine-learning] [deep-learning] [computer-vision]
+* [Clippy](entities/rust-clippy.md) — [rust] [linter] [linting-tool]
+* [Ibexa DXP](entities/ibexa-dxp.md) — [Ibexa DXP] [dxp] [commerce-cms] [ecommerce-platform]
+* [Loomana — Wiki System Documentation](entities/loomana.md) — [llm-wiki] [personal-knowledge-base] [compounding] [rag-alternative] [karpathy-wiki] [Loomana] [loom] [wiki-system]
+* [Node.js](entities/nodejs.md) — [node-runtime] [javascript-runtime] [backend-npm] [nixos-package]
+* [Nvidia](entities/nvidia.md) — [gpu-manufacturer] [semiconductor] [ai-hardware]
+* [PHP](entities/php.md) — [php] [programming-language] [web-development] [server-side] [rasmus-lerdorf]
+* [Pi Coding Agent](entities/pi-coding-agent.md) — [coding-agent] [terminal-ui] [typescript-extension] [llm-agency] [nodejs-sdk]
+* [Sylius](entities/sylius.md) — [ecommerce] [symfony] [headless]
+* [Symfony](entities/symfony.md) — [framework] [php] [dependency-injection] [service-container] [autowiring] [di-pattern]
+* [Test Page With Excess Newlines](entities/test-excess-empty.md) — [test]
 
 ## Concepts
-
-* [Agent Memory Management — Techniques and Recommendations](concepts/agent-memory-management.md) — This page explores memory management for LLM agents as a key concept in our knowledge base.
-
-* [AI Factory vs Pi Coding Agent — Category Distinction](concepts/ai-factory-vs-pi.md) — This page explores AI Factory vs Pi Coding Agent — Category Distinction as a key concept in our knowledge base.
-
-* [AssetMapper](concepts/assetmapper.md) — This page explores AssetMapper as a key concept in our knowledge base.
-
-* [Cache System](concepts/cache-system.md) — This page explores Cache System as a key concept in our knowledge base.
-
-* [Doctrine ORM Integration](concepts/doctrine-orm.md) — This page explores Doctrine ORM Integration as a key concept in our knowledge base.
-
-* [EasyAdmin Bundle](concepts/easyadmin-bundle.md) — This page explores EasyAdmin Bundle as a key concept in our knowledge base.
-
-* [Event Dispatcher](concepts/event-dispatcher.md) — This page explores Event Dispatcher as a key concept in our knowledge base.
-
-* [Harness-Aware Wiki Setup Flow](concepts/harness-aware-setup.md) — This page explores Harness-Aware Wiki Setup Flow as a key concept in our knowledge base.
-
-* [Hexagonal Architecture & Clean Patterns in Symfony](concepts/hexagonal-architecture.md) — This page explores Hexagonal Architecture & Clean Patterns in Symfony as a key concept in our knowledge base.
-
-* [LLM Wiki Pattern — Incremental Knowledge Base Building](concepts/llm-wiki.md) — > **Origin:** Andrej Karpathy. [Reference gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f). > **Related concept:** Vannevar Bush's Memex (1945) — personal curated knowledge store with associative trails.
-
-* [Messenger Component](concepts/messenger-component.md) — This page explores Messenger Component as a key concept in our knowledge base.
-
-* [Natural Memory Translation — Перевод машинных фактов в живую память](concepts/natural-memory.md) — This page explores Natural Memory Translation — Перевод машинных фактов в живую память as a key concept in our knowledge base.
-
-* [Python Development Environments on NixOS](concepts/python-nixos-development.md) — This page explores Python Development Environments on NixOS as a key concept in our knowledge base.
-
-* [Routing System & Controllers](concepts/routing-system.md) — This page explores Routing System & Controllers as a key concept in our knowledge base.
-
-* [Security System (AuthN & AuthZ)](concepts/security-system.md) — This page explores Security System (AuthN & AuthZ) as a key concept in our knowledge base.
-
-* [Service Container & Dependency Injection](concepts/service-container.md) — This page explores Service Container & Dependency Injection as a key concept in our knowledge base.
-
-* [Sonata Admin Bundle](concepts/sonata-admin-bundle.md) — This page explores Sonata Admin Bundle as a key concept in our knowledge base.
-
-* [Symfony AI Component](concepts/symfony-ai.md) — This page explores Symfony AI Component as a key concept in our knowledge base.
-
-* [Dependency Injection в Symfony](concepts/symfony-dependency-injection.md) — Dependency Injection (DI) — паттерн проектирования, позволяющий внедрять зависимости объекта извне. В Symfony DI является **центральным архитектурным механизмом** и реализуется через контейнер сервисов (Service Container), который управляет созданием, конфигурацией и жизненным циклом всех объектов приложения.
-
-* [Symfony Deployment & Production Setup](concepts/symfony-deployment.md) — This page explores Symfony Deployment & Production Setup as a key concept in our knowledge base.
-
-* [Symfony Flex & Recipes](concepts/symfony-flex.md) — This page explores Symfony Flex & Recipes as a key concept in our knowledge base.
-
-* [Temporal Decay in Compounding Knowledge Base](concepts/temporal-decay-in-wiki.md) — This page explores Temporal Decay in Compounding Knowledge Base as a key concept in our knowledge base.
-
-* [Testing Strategy & Best Practices](concepts/testing-strategy.md) — This page explores Testing Strategy & Best Practices as a key concept in our knowledge base.
-
-* [Twig Templating](concepts/twig-templating.md) — This page explores Twig Templating as a key concept in our knowledge base.
-
-* [Workflow & State Machine](concepts/workflow-state-machine.md) — This page explores Workflow & State Machine as a key concept in our knowledge base.
-
-## Docs
-* [advanced-query](wiki/docs/loom-advanced-query.md) — ## Topic Continuity Bias When the agent receives a new query, it doesn't start from zero. It checks `working_memory.json.focus_node` to determine if we're continuing an existing topic or starting fresh. ### How It Works ``` Step 1: Check WM.focus_node → does this relate to recent operations?     ↓ (topic continuity detected) Step 2: Bias search toward pages related to current focus_node     - Read wiki/index.md filtered by categories relevant to focus     - Prioritize pages with high crosslink count from backlinks.json     ↓ (no topic continuity — new topic) Step 3: Full index scan → broad keyword matching → expand context bubble ``` ### When Continuity Bias Applies | Condition | Effect on Search | Example | |-----------|-----------------|---------| | WM.focus_node = "Symfony components" + query mentions "messenger" | Search biased toward Symfony-concept pages first | Symfony messenger → auto-links to event-dispatcher, cache-system | | No focus_node or completely unrelated topic | Full wiki index scan with category filtering | User asks about "NixOS" when previous work was on Symfony → broad search | ### Why It Matters Topic continuity bias prevents **context fragmentation** — the agent doesn't jump between unrelated topics randomly. By prioritizing pages related to current focus, answers become more coherent and crosslink opportunities are discovered organically. ---
-* [api-conventions](wiki/docs/loom-api-conventions.md) — ## Frontmatter Schema Every wiki page has YAML frontmatter at the top. This is the canonical schema: ```yaml --- tags: [tag1, tag2, tag3]              # 3-7 domain-specific keywords (see Tag Patterns below) date: YYYY-MM-DD                       # Current system date — NEVER source-derived! type: documentation                    # documentation | code_reality | live_state category: entities                     # Must match categories.json definition aliases: [synonym1, synonym2]          # Discoverability synonyms sources:                               # Data origins (raw/ paths, wiki relative, or web_search)   - raw/sources/SRC-YYYY-MM-DD-NNN/    # Raw source directory path   - wiki/entities/symfony-messenger.md  # Related wiki page (relative)   - web_search                         # Web search result marker related:                               # Wiki-relative paths to connected pages — empty = no connections   - wiki/concepts/cache-system.md --- ``` ### Field Specifications | Field | Type | Required | Auto-computed? | Notes | |-------|------|----------|----------------|-------| | `tags` | string[] | ✅ Yes | ❌ No | 3-7 keywords. See Tag Patterns section below for valid patterns and prohibited generics. | | `date` | YYYY-MM-DD | ✅ Yes | ❌ No | **Current system date.** Never use source filename, commit date, or web crawl timestamp. | | `type` | enum | ✅ Yes | ❌ No | Reality layer: `documentation` (conceptual/historical), `code_reality` (actual implementation), `live_state` (current observable state). Used in contradiction resolution. | | `category` | enum | ✅ Yes | ❌ No | Must match one of the categories from `rules/categories.json`. Determines directory and auto-crosslink routing. | | `aliases` | string[] | ⚠️ Recommended | ❌ No | Discoverability synonyms — what users actually type in queries. See Tag Guidelines for full rules. | | `sources` | string[] | ✅ Yes | ❌ No | Data origins: raw/ paths, wiki-relative paths (`wiki/entities/foo.md`), or `"web_search"` marker. At least one required per page. | | `related` | string[] | ⚠️ Recommended | ❌ No | Wiki-relative paths to connected pages. Empty = no connections (rare). Agent auto-suggests via crosslink scoring. | ### Auto-computed Fields (Not in Frontmatter) - **evidence_grade** — Assigned during ingest based on source authority:   - `documented` — authoritative sources (official docs, project wiki, core maintainer blog)   - `corroborated` — confirmed by 2+ independent sources   - `assertion_only` — unconfirmed or from weak sources (generic blog, forum post) > Evidence grade is stored in page metadata, not visible in frontmatter body text. Used internally for contradiction resolution priority cascade: documented > corroborated > assertion_only. ---
-* [architecture](wiki/docs/loom-architecture.md) — ## Overview Loomana's architecture is built on four distinct layers. Every layer reads the one below it and writes through defined workflows only: ``` ┌─────────────────────────────────────┐ │          USER INTERFACE              │ ← You provide sources, ask questions │  ─────────────────────────────────── │ │         PROCESS WORKFLOWS           │ ← ingest / query / lint (process-*.json) │  ─────────────────────────────────── │ │        RULES & SCHEMA LAYER         │ ← rules/*.json + AGENTS.md (schema_ref) │  ─────────────────────────────────── │ │       DATA & STORAGE LAYER          │ ← wiki/**, raw/**, meta/**, scripts/ └─────────────────────────────────────┘ ``` **Design philosophy:** Every layer reads the one below it. Nothing writes up to layers above — only through defined workflows. This prevents chaos and keeps the system predictable. ---
-* [batch-ingest](wiki/docs/loom-batch-ingest.md) — ## When to Use Batch Ingest Batch ingest is designed for **related sources** — documents that share entities, concepts, or keywords. It's most effective when: - You download 3+ articles on the same framework (e.g., Symfony documentation pages) - You're ingesting a collection of research papers from the same domain - Multiple URLs or files are provided in a single prompt and cover overlapping topics ### Thresholds & Triggers | Trigger Type | Condition | Example | |-------------|-----------|---------| | **Automatic** | Agent detects ≥3 related sources in a single ingest batch | User pastes 4 Symfony articles at once → auto-cluster detected | | **Manual** | User explicitly requests batch processing via `batch-ingest.sh --scan` | You run the script yourself on a directory of files | > **Rule:** Batch clustering is optional. Single-source ingestion works normally even if ≥3 related sources exist — batching just improves efficiency and crosslink quality. ---
-* [extending-wiki](wiki/docs/loom-extending-wiki.md) — ## Overview Loomana is designed to grow with you. As your knowledge base expands, you'll naturally need new page types, custom scripts, or additional rules — and Loomana makes it easy to extend without breaking existing workflows. This guide covers how to add: - New wiki categories - Custom scripts - New rules & conventions - Schema changes via `[schema-patch]` ---
-* [getting-started](wiki/docs/loom-getting-started.md) — ## Overview Loomana is an **LLM-powered personal knowledge base** that grows automatically as you feed it sources (URLs, files, text) or ask questions. Unlike standard RAG systems that rediscover context on every query, Loomana **compounds knowledge incrementally** — each source enriches the wiki permanently. > _Based on Andrej Karpathy's [LLM Wiki concept](https://gist.github.com/karpathy/ed8f28479605148297b7a8be01eb580)._ **Key idea:** You don't write wiki pages manually. Give the agent sources or ask questions — it creates structured knowledge with proper metadata, cross-links, and citations automatically. ---
-* [memory-hooks](wiki/docs/loom-memory-hooks.md) — ## Overview Memory hooks are the asynchronous background system powering Loomana's self-improvement. They decouple memory management from content processing, allowing the main workflow to continue without waiting for memory operations. Architecture follows a three-layer model: 1. **Process Layer** — query/ingest/lint (main workflow) 2. **Memory Hooks** — async triggers per process step (`memory_hooks` in `process-*.json`) 3. **Memory Subsystem** — scripts handling capture, distill, backlinks, hot cache ### Key Principles - **Non-blocking**: Hook failures use `|| true`, never stop the main process - **No inline memory logic**: Steps reference hooks via schema_ref, not inline commands - **Schema references**: Each hook points to canonical source via schema_ref pattern
-* [rules-reference](wiki/docs/loom-rules-reference.md) — ## Overview Rules live in `rules/*.json` as structured JSON schemas. They define conventions (naming, link format), algorithms (crosslink scoring, contradiction resolution), policies (source authority grading), and protocols (error handling). > **Agent reads rules on demand** via schema_ref in process files. Never loads all rules at once — only when a process step references them. Example: `"rule": "rules/link_conventions.json#EXT-LINK-V1"` → agent fetches only that rule when writing a page. ---
-* [scripts-guide](wiki/docs/loom-scripts-guide.md) — ## Overview Loomana ships with **~30 scripts** in `scripts/` that handle automation: metadata rebuilds, lint checks, source validation, auto-crosslinking, and memory management. Every script follows strict conventions (`set -euo pipefail`, `--help` mandatory, exit codes 0=success / >0=error). ---
-* [security-guide](wiki/docs/loom-security-guide.md) — ## Data Privacy Overview | Data Type | Where It Lives | Is It Committed? | Can AI Harness Read It? | |-----------|---------------|------------------|------------------------| | Raw sources (URLs, documents, text) | `raw/sources/` | ❌ Never — excluded by `.gitignore` | Only your active harness during a session | | Wiki pages (structured knowledge) | `wiki/**/*.md` | ✅ Yes (if repo is public) | Anyone with access to committed wiki content | | Metadata & indexes | `meta/**` | ❌ Never — auto-generated, excluded by `.gitignore` | Your harness only | | Session memory | `working_memory.json`, `wiki/hot.md` | ❌ Not tracked in git | Only during active session | | Git history | Committed wiki + docs | ✅ Yes (if repo is public) | Anyone who clones your repository | **Key principle:** Private data lives in `raw/`. Public knowledge lives in `wiki/`. The `.gitignore` file prevents accidental commits of private data. ---
-* [session-lifecycle](wiki/docs/loom-session-lifecycle.md) — ## Overview: The Three-Phase Model Every Loomana session follows three phases: ``` PHASE 1: BOOTSTRAP    → Load existing memory + hot cache PHASE 2: EXECUTION   → Process (query/ingest/lint) with live memory updates PHASE 3: SHUTDOWN     → Persist state, update hot.md, close context bubble ``` Each phase interacts with three **memory layers** (`session_context_rules.json`): | Layer | File | Purpose | Lifetime | Write Trigger | |-------|------|---------|----------|---------------| | Working Memory (WM) | `working_memory.json` | Current-session ops bridge: focus_node, open_pages, dead_ends | One session (persisted across sessions via hot.md snapshot) | Every turn — read → modify → write complete file | | Hot Context | `wiki/hot.md` | Long-term snapshot for next session bootstrap | Survives compaction; read on next session start | Immediately after action; aggregated from WM + log.md tail | | Chronological Log | `wiki/log.md` | Append-only chronicle of all actions | Permanent | After every significant operation (append only, never overwrite) | > **Rule:** Never append to JSON files — always read full file → modify in memory → write complete document. Logs are the only exception: append-only with `cat >>`. ---
-* [snapshot-lifecycle](wiki/docs/loom-snapshot-lifecycle.md) — ## Overview: What Is Wiki Snapshot? `wiki/snapshot.md` is a **living project register** — a single markdown file summarizing all active projects currently tracked by the wiki system. It sits at `wiki/snapshot.md` and is read/written during project-mode sessions. ### Why It Exists Working memory (`working_memory.json`) stores turn-to-turn context (focus_node, open_pages), but it's too granular for multi-project overviews. The snapshot provides: - **High-level status** of all active projects in one place - **Cross-session continuity** — next bootstrap can read snapshot to understand what was happening - **Reduced context bloat** — agent reads only relevant entries from snapshot, not full project details in WM ### When It's Read vs Ignored ```yaml # rules/snapshot_format.json load_conditions: read_when: "WORK_MODE is project AND snapshot contains entry for this project" never_read: [     "oneoff questions",              # Query mode reads wiki/index.md + recall.sh instead     "deep-dive study (query/discussion modes)"  # Snapshot is about projects, not topics ] ``` **Rule:** Agent never loads `wiki/snapshot.md` unless the user explicitly switches to project mode or session context indicates ongoing multi-project work. ---
-* [troubleshooting](wiki/docs/loom-troubleshooting.md) — ## Empty Wiki on Fresh Install **Symptom:** You just cloned the repository and `wiki/` is empty (or nearly so). You expect content but see nothing. This is **expected**. Loomana ships with no pre-built wiki — it's a blank canvas that grows as you feed sources or ask questions. ### Solution Start adding sources (URLs, files, or pasted text). Even one source will create the first wiki page. The agent handles everything — parsing, frontmatter generation, directory placement. See [`wiki/docs/loom-getting-started.md`](loom-getting-started.md) for the full onboarding flow. ---
-* [wiki-structure](wiki/docs/loom-wiki-structure.md) — ## Overview: Directory Layout Wiki lives in `wiki/` organized by **category**, not flat: ``` wiki/ ├── entities/       ← Concrete objects (people, companies, technologies) │   └── <project>-<entity>.md         (e.g., symfony-messenger.md) ├── concepts/       ← Abstract ideas, methodologies │   ├── abstract-only.md              (framework-agnostic) │   └── <project>-<concept>.md        (project-specific) ├── syntheses/      ✓ Deep analysis combining ≥3 sources/pages │   └── topic-analysis.md ├── comparisons/    ✓ Comparative analyses of related entities/concepts │   └── <entity-a>-vs-<entity-b>.md ├── docs/           ← Documentation, guides, references │   ├── <project-slug>-overview.md    (framework overviews) │   └── <tool>-commands.md            (CLI reference guides) ├── assets/images/      ← Original image copies (.png, .jpg, .jpeg, .gif) ├── assets/descriptions/ ← OCR + entities extracted from images (.md files) ├── templates/       ← JSON template files for new pages ├── skills/          ← Agent skill definitions (auto-generated from trajectories) ├── index.md         → Structured index with summaries per category ├── overview.md      → One-page snapshot of all wiki facts ├── log.md           → Chronological action journal └── hot.md           → Session context: focus node, open pages, next steps ``` > **Never manually edit `index.md`, `overview.md`, `log.md`** — auto-generated by `rebuild-meta.sh`. ---
+* [AI Factory vs Pi Coding Agent — Category Distinction](concepts/ai-factory-vs-pi.md) — [agent-workflow-schema] [harness-comparison] [claude-obsidian-alternative]
+* [Agent Memory Management — Techniques and Recommendations](concepts/agent-memory-management.md) — [memory] [agent-behavior] [recall-system] [trajectory-capture]
+* [AssetMapper](concepts/assetmapper.md) — [symfony-assetmapper] [frontend-pipeline] [static-assets]
+* [Cache System](concepts/cache-system.md) — [psr6-caching] [cache-invalidation] [symfony-cache]
+* [Context Budget — Управление контекстным окном LLM при Ingest](concepts/context-budget.md) — [context-management] [ingest-optimization] [agent-behavior] [attention-budget]
+* [Dependency Injection в Symfony](concepts/symfony-dependency-injection.md) — [symfony] [dependency-injection] [service-container] [autowiring] [compiler-passes] [service-tags]
+* [Doctrine ORM Integration](concepts/doctrine-orm.md) — [doctrine] [orm] [entities] [repositories]
+* [EasyAdmin Bundle](concepts/easyadmin-bundle.md) — [easyadmin-admin-ui] [symfony-bundle] [crud-generation]
+* [Event Dispatcher](concepts/event-dispatcher.md) — [event-dispatcher] [symfony-messenger] [psr-event] [observable-pattern] [event-bus]
+* [Harness-Aware Wiki Setup Flow](concepts/harness-aware-setup.md) — [harness] [wiki-setup] [design-idea] [pending]
+* [Hexagonal Architecture & Clean Patterns in Symfony](concepts/hexagonal-architecture.md) — [hexagonal-pattern] [ports-and-adapters] [clean-architecture] [ddd-patterns]
+* [LLM Wiki Pattern — Incremental Knowledge Base Building](concepts/llm-wiki.md) — [rag] [knowledge-base] [llm] [compounding-knowledge]
+* [Messenger Component](concepts/messenger-component.md) — [async-message-queue] [symfony-messaging] [psr-75]
+* [Natural Memory Translation — Перевод машинных фактов в живую память](concepts/natural-memory.md) — [memory] [agent-behavior] [wiki-pattern]
+* [Python Development Environments on NixOS](concepts/python-nixos-development.md) — [nixos] [python] [development-environment]
+* [Routing System & Controllers](concepts/routing-system.md) — [routing] [controllers] [attributes]
+* [Security System (AuthN & AuthZ)](concepts/security-system.md) — [access-control-voters] [symfony-security] [authz-patterns]
+* [Service Container & Dependency Injection](concepts/service-container.md) — [dependency-injection] [service-container] [autowiring] [di-pattern] [symfony]
+* [Sonata Admin Bundle](concepts/sonata-admin-bundle.md) — [sonata-admin-ui] [content-management-bundle] [symfony-bundle]
+* [Symfony AI Component](concepts/symfony-ai.md) — [llm-integration] [symfony-ai] [rag-patterns] [embedding-vector]
+* [Symfony Deployment & Production Setup](concepts/symfony-deployment.md) — [deployment] [production] [setup] [php]
+* [Symfony Flex & Recipes](concepts/symfony-flex.md) — [composer] [flex] [recipes]
+* [Temporal Decay in Compounding Knowledge Base](concepts/temporal-decay-in-wiki.md) — [temporal-decay] [maintenance] [wiki-growth]
+* [Testing Strategy & Best Practices](concepts/testing-strategy.md) — [test-framework-comparison] [symfony-testing] [phpunit-bests]
+* [Twig Templating](concepts/twig-templating.md) — [twig] [php-templates] [template-inheritance] [cacheable-blocks] [symfony]
+* [Workflow & State Machine](concepts/workflow-state-machine.md) — [state-machinery-pattern] [symfony-workflow] [fsm-implementation]
 
 ## Comparisons
-
-* [Сравнение техник управления памятью агента](comparisons/agent-memory-techniques.md) — Сравнительный анализ основных архитектурных подходов к управлению памятью LLM-агентов с точки зрения применимости в нашем проекте (loomana) — нулевая зависимость от внешних библиотек, file-based хранение.
-
-* [Сравнение: Loomana (Markdown-driven wiki) vs pi-llm-wiki/ (TypeScript platform)](comparisons/llm-wiki-implementations.md) — Comparative analysis covering Сравнение: Loomana (Markdown-driven wiki) vs pi-llm-wiki/ (TypeScript platform) across different contexts and implementations.
-
-* [LOOM vs claude-obsidian — Сравнение двух реализаций LLM Wiki Companion](comparisons/loom-vs-claude-obsidian.md) — Comparative analysis covering LOOM vs claude-obsidian — Сравнение двух реализаций LLM Wiki Companion across different contexts and implementations.
-
-* [Symfony UX — Packages и экосистема](comparisons/symfony-ux-packages.md) — Symfony UX — коллекция PHP и JavaScript пакетов для добавания rich UI в Symfony приложения. Это **не фреймворк**, а набор bundles, которые интегрируются с существующей инфраструктурой (AssetMapper, Twig) и минимизируют необходимость в тяжёлых JS билд-системах.
+* [LOOM vs claude-obsidian — Сравнение двух реализаций LLM Wiki Companion](comparisons/loom-vs-claude-obsidian.md) — [vault-architecture] [knowledge-workflow] [loomana-comparison] [claude-obsidian]
+* [Symfony UX — Packages и экосистема](comparisons/symfony-ux-packages.md) — [symfony] [ux] [stimulus] [turbo] [hotwire] [assetmapper] [frontend]
+* [Сравнение техник управления памятью агента](comparisons/agent-memory-techniques.md) — [memory] [agent-architecture] [comparison] [zero-dependency]
+* [Сравнение: Loomana (Markdown-driven wiki) vs pi-llm-wiki/ (TypeScript platform)](comparisons/llm-wiki-implementations.md) — [llm-wiki-patterns] [wiki-implementations] [compounding-knowledge]
 
 ## Syntheses
+* [Основные способы создания сред разработки Python на NixOS](syntheses/python-nixos-development-environments.md) — [nixos] [python] [development-environment]
+* [Сравнение: RAG vs LLM Wiki Pattern (Compounding Knowledge Base)](syntheses/rag-vs-llm-wiki-pattern.md) — [rag] [llm] [knowledge-base]
 
-* [Основные способы создания сред разработки Python на NixOS](syntheses/python-nixos-development-environments.md) — Synthesis of multiple sources on the topic: Основные способы создания сред разработки Python на NixOS.
+## Overviews
 
-* [Сравнение: RAG vs LLM Wiki Pattern (Compounding Knowledge Base)](syntheses/rag-vs-llm-wiki-pattern.md) — Synthesis of multiple sources on the topic: Сравнение: RAG vs LLM Wiki Pattern (Compounding Knowledge Base).
+
+## Notes
+
+
+## Meetings
+
+
+## Projects
+
+
+## Bibliography
+
+
+## Resources
+
+
+## Documentation
+* [AI Factory Documentation — CLI Tool & Skill System for Coding Agents](docs/ai-factory.md) — [cli] [agent-tools] [development-workflow] [skill-system]
+* [API Conventions Guide](docs/loom-api-conventions.md) — [Loomana] [loom] [conventions] [frontmatter-schema] [commit-format] [evidence-grading] [tag-patterns]
+* [Advanced Query Techniques in Loomana](docs/loom-advanced-query.md) — [Loomana] [loom] [query-strategy] [compounding-decision] [search-hierarchy] [novel-insight]
+* [Batch Ingest Workflow in Loomana](docs/loom-batch-ingest.md) — [Loomana] [loom] [batch-ingest] [cluster-detection] [multi-source-processing] [greedy-clustering]
+* [Extending the Wiki System — Adding Categories, Scripts & Rules](docs/loom-extending-wiki.md) — [Loomana] [loom] [extension] [customization] [schema-evolution]
+* [Getting Started with Loomana](docs/loom-getting-started.md) — [Loomana] [loom] [getting-started] [onboarding] [wiki-creation]
+* [Loomana Architecture — Four Layers of Abstraction](docs/loom-architecture.md) — [Loomana] [loom] [architecture] [layers] [schema-ref]
+* [Memory Hooks & Trajectory Pipeline](docs/loom-memory-hooks.md) — [Loomana] [loom] [memory-hierarchy] [trajectory-pipeline] [auto-distillation] [hook-system]
+* [Rules Reference Guide — All Technical Specs in One Place](docs/loom-rules-reference.md) — [Loomana] [loom] [rules] [conventions] [lookup-table]
+* [Scripts Guide — Loomana Automation Toolkit](docs/loom-scripts-guide.md) — [Loomana] [loom] [scripts] [automation] [guardrails]
+* [Security & Privacy Guide](docs/loom-security-guide.md) — [Loomana] [loom] [security] [privacy] [data-protection] [gitignore] [credential-handling]
+* [Session Lifecycle Guide](docs/loom-session-lifecycle.md) — [Loomana] [loom] [session-lifecycle] [memory-architecture] [bootstrap-shutdown] [context-management]
+* [Snapshot Lifecycle & Active Projects Tracking in Loomana](docs/loom-snapshot-lifecycle.md) — [Loomana] [loom] [snapshot] [project-tracking] [lifecycle-management] [cross-session-continuity]
+* [Troubleshooting Guide — Common Issues & Fixes](docs/loom-troubleshooting.md) — [Loomana] [loom] [troubleshooting] [maintenance] [agent-instructions]
+* [Wiki Structure Guide — Page Organization & Conventions](docs/loom-wiki-structure.md) — [Loomana] [loom] [wiki-structure] [frontmatter] [naming-conventions]
 
 ---
+*Created: auto-generated | Last updated: 2026-07-09 00:50*
+
+## Timeline
+| Дата | Событие |
+|------|---------|
+| [Timeline](timeline.md) — полная хронологическая лента всех изменений.

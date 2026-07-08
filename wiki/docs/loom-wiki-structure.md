@@ -1,5 +1,5 @@
 ---
-tags: [looma, wiki-structure, frontmatter, naming-conventions]
+tags: [Loomana, loom, wiki-structure, frontmatter, naming-conventions]
 date: 2026-07-08
 type: documentation
 category: docs
@@ -66,7 +66,7 @@ Every wiki page has YAML frontmatter at the top:
 
 ```yaml
 ---
-tags: [tag1, tag2, tag3]              # 3-7 domain-specific keywords — see rules/tag-guidelines.json
+tags: [Loomana, loom, wiki-structure, frontmatter, naming-conventions]              # 3-7 domain-specific keywords — see rules/tag-guidelines.json
 date: YYYY-MM-DD                       # Current system date (never source-derived!)
 type: documentation                    # documentation | code_reality | live_state
 category: entities                     # Must match one of the categories above
@@ -171,7 +171,7 @@ The agent uses [`scripts/filename-audit.sh`](../../scripts/filename-audit.sh) to
 
 ```markdown
 ---
-tags: [image, <context>]
+tags: [Loomana, loom, wiki-structure, frontmatter, naming-conventions]
 date: YYYY-MM-DD
 category: note
 sources: [raw/assets/images/filename.png]

@@ -1,5 +1,5 @@
 ---
-tags: [looma, getting-started, onboarding, wiki-creation]
+tags: [Loomana, loom, getting-started, onboarding, wiki-creation]
 date: 2026-07-08
 type: documentation
 category: docs

@@ -1,5 +1,5 @@
 ---
-tags: [looma, scripts, automation, guardrails]
+tags: [Loomana, loom, scripts, automation, guardrails]
 date: 2026-07-08
 type: documentation
 category: docs

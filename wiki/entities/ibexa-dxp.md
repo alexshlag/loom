@@ -1,5 +1,5 @@
 ---
-tags: [dxp, commerce-cms, ecommerce-platform, symfony]
+tags: [Ibexa DXP, dxp, commerce-cms, symfony]
 date: 2026-07-01
 type: documentation
 category: entity

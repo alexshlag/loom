@@ -1,5 +1,5 @@
 ---
-tags: [looma, rules, conventions, lookup-table]
+tags: [Loomana, loom, rules, conventions, lookup-table]
 date: 2026-07-08
 type: documentation
 category: docs

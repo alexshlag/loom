@@ -1,45 +1,34 @@
 {
   "rule_id": "FIRST-BLOCK-V1",
-  "name": "H1 + body_text mandatory before first ##",
-  "description": "Every new wiki page must include a 1–2 sentence description between H1 header and first subheading (##). This ensures that rebuild-meta.sh / extract_summary() always finds clean text for summary.",
+  "name": "H1 required before first ##",
+  "description": "Every wiki page must have an H1 header. Tags in frontmatter provide searchable metadata — no mandatory body_text/description between H1 and first subheading.",
   "pattern": [
-    "# Entity/Concept Name",
-    "",
-    "Entity description — one or two sentences that define it in plain language."
+    "# Entity/Concept Name"
   ],
   "validation_rules": [
     {
-      "rule": "no_body_text_between_h1_and_first_subheading → HALT_AND_FIX: agent must add a summary paragraph before any ## sections"
-    },
-    {
-      "rule": "body_text_must_not_be_markdown_only — lines like '**text**' or '*italic*' do not count as body text"
+      "rule": "h1_mandatory → agent must add a header before any ## sections"
     }
   ],
-  "agent_instruction": "When creating a new page: after frontmatter and H1 immediately write 1–2 sentence description. Then → ## Definition, followed by sections per template.",
+  "agent_instruction": "When creating a new page: start with frontmatter, then H1. Tags in frontmatter provide searchable metadata — no mandatory description paragraph needed.",
   "schema_ref_to_agent_rules": "AGENTS.md#template-files"
 },
 {
   "rule_id": "DOC-PAGE-V1",
-  "name": "Docs page: intro paragraph + nav header mandatory",
-  "description": "Alternative pattern for docs category pages. Uses intro paragraph instead of body_text between H1 and ##; requires navigation header (prev/next/index links) and See Also section.",
+  "name": "Docs page: nav header recommended + See Also section",
+  "description": "Alternative pattern for docs category pages. Tags in frontmatter provide searchable metadata — no mandatory intro paragraph between H1 and ##.",
   "pattern": [
-    "# Documentation Title",
-    "",
-    "Brief intro paragraph defining scope, audience, and purpose — 2-3 sentences in plain language."
+    "# Documentation Title"
   ],
   "validation_rules": [
     {
-      "rule": "intro_paragraph_required → HALT_AND_FIX: agent must add a 2-3 sentence overview before any ## sections"
+      "rule": "nav_header_recommended → every doc page SHOULD have prev/next/index links at top (except docs-index.md)"
     },
     {
-      "rule": "nav_header_mandatory → every doc page must have prev/next/index links at top (except docs-index.md)",
-      "format": "[← Previous Topic](prev.md) · [Back to Index](../docs-index.md) · [Next Topic →](next.md)"
-    },
-    {
-      "rule": "see_also_section_required → every doc page must end with ## See Also section linking к wiki/entities/ и wiki/concepts/"
+      "rule": "see_also_section_recommended → every doc page SHOULD end with ## See Also section linking к wiki/entities/ и wiki/concepts/"
     }
   ],
-  "agent_instruction": "When creating docs category pages: after frontmatter and H1 write intro paragraph (not body_text). Add navigation header at top. End with ## See Also linking к related entity/concept pages.",
+  "agent_instruction": "When creating docs category pages: after frontmatter and H1, add tags for searchability. Navigation header and See Also are recommended but not mandatory.",
   "category_override": "docs",
   "schema_ref_to_agent_rules": "AGENTS.md#template-files"
 }

@@ -1,5 +1,5 @@
 ---
-tags: [looma, troubleshooting, maintenance, agent-instructions]
+tags: [Loomana, loom, troubleshooting, maintenance, agent-instructions]
 date: 2026-07-08
 type: documentation
 category: docs

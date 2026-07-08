@@ -1,5 +1,5 @@
 ---
-tags: [session-lifecycle, memory-architecture, bootstrap-shutdown, context-management]
+tags: [Loomana, loom, session-lifecycle, memory-architecture, bootstrap-shutdown, context-management]
 date: 2026-07-08
 type: documentation
 category: concept

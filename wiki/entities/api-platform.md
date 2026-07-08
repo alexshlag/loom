@@ -1,5 +1,5 @@
 ---
-tags: [ api, rest, graphql, symfony]
+tags: [API Platform, api, rest, graphql]
 date: 2026-07-01
 type: documentation
 category: entity

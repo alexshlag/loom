@@ -13,8 +13,12 @@ related: ["wiki/concepts/memory-architecture.md", "wiki/overview.md", "wiki/snap
 
 # Natural Memory Translation — Перевод машинных фактов в живую память
 
-This page explores Natural Memory Translation — Перевод машинных фактов в живую память as a key concept in our knowledge ba
-[[wiki/docs/loom-memory-hooks.md]] [[wiki/docs/loom-session-lifecycle.md]]se.
+This page explores Natural Memory Translation — a key concept related to context budget management, memory hooks, and session lifecycle.
+
+See also:
+- [[wiki/concepts/context-budget.md]]
+- [[wiki/docs/loom-memory-hooks.md]]
+- [[wiki/docs/loom-session-lifecycle.md]]
 
 ## Definition
 Перевод машино-читаемых данных (даты, комиты, timestamps) в естественную форму, которую человек воспринимает как «мы помним» вместо «система записала». Факты остаются точными, но формулировка становится человеческой.

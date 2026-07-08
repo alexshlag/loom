@@ -1,123 +1,52 @@
 {
   "rule_id": "NAMES-CORE-V1",
-  "name": "Wiki page naming conventions — project prefixing",
+  "name": "Wiki page naming conventions — entity primary name prefixing",
   "version": "1.0",
-  "date": "2026-07-07",
-  "description": "Prevent filename collision when multiple projects/frameworks share wiki. All pages must be prefixed with project name (except truly abstract concepts).",
+  "date": "2026-07-08",
+  "description": "Prevent filename collision when multiple projects/frameworks share wiki. All pages must be prefixed with entity's PRIMARY NAME (never alias). Aliases are NEVER used as file prefixes.",
   "schema_ref_to_agent_rules": "AGENTS.md#architecture-layers",
   "rules": {
     "entities_directory": {
       "path": "wiki/entities/",
-      "pattern": "<project-slug>-<entity-type>.md",
+      "pattern": "<primary-name>-<entity-type>.md",
       "examples": [
-        { "file": "ai-factory.md", "type": "cli-tool" },
+        { "file": "Loomana.md", "type": "wiki-system" },
         { "file": "symfony-messenger.md", "type": "component-library" },
         { "file": "nodejs.md", "type": "runtime" }
       ],
-      "rule": "Always prefix with project/framework name. Never use bare concept names (e.g., messenger-component.md is WRONG, symfony-messenger.md is CORRECT)."
-    },
-    "concepts_directory": {
-      "path": "wiki/concepts/",
-      "patterns": [
-        {
-          "pattern": "abstract-only",
-          "description": "Truly abstract concepts that apply across all projects — no prefix needed.",
-          "examples": [
-            { "file": "cache-system.md", "type": "architecture-pattern" },
-            { "file": "hexagonal-architecture.md", "type": "design-pattern" }
-          ],
-          "rule": "Only use bare names when concept is genuinely framework-agnostic. If it's a specific implementation (e.g., Messenger Component), prefix with project name: symfony-messenger-component.md"
-        },
-        {
-          "pattern": "project-specific",
-          "description": "Concepts tied to a specific project/framework — always prefix.",
-          "examples": [
-            { "file": "symfony-messaging-pattern.md", "type": "framework-concept" },
-            { "file": "react-hooks-pattern.md", "type": "framework-concept" }
-          ],
-          "rule": "Always prefix with project name. Use hyphenated lowercase kebab-case."
-        }
-      ],
-      "exceptions": {
-        "abstract_concepts": [
-          { "file": "cache-system.md", "reason": "Universal caching patterns (PSR-6, cache-invalidation), framework-agnostic" },
-          { "file": "hexagonal-architecture.md", "reason": "Clean architecture pattern (ports-and-adapters), universal across frameworks" }
-        ],
-        "framework_exceptions": [
-          { "file": "doctrine-orm.md", "project": "doctrine", "reason": "Doctrine ORM works with any PHP framework, not Symfony-specific" }
-        ],
-        "detection_logic": [
-          {
-            "rule": "If tags contain project-name (e.g., symfony-messaging) AND filename lacks project prefix → VIOLATION",
-            "exception_check": "Is file in exceptions/abstract_concepts or framework_exceptions? If yes → ALLOW. If no → ENFORCE_PREFIX"
-          },
-          {
-            "rule": "If related contains entities/<project>.md AND filename lacks project prefix → VIOLATION",
-            "exception_check": "Same exception list check above"
-          }
-        ],
-        "auto_auditing": {
-          "description": "scripts/filename-audit.sh scans wiki/concepts/ for violations using detection_logic rules",
-          "output_format": "JSON array: [{\"file\": \"<path>\", \"severity\": \"HIGH\", \"suggested_name\": \"<project>-<name>.md\", \"reason\": \"tags contain <project> tag\"}]",
-          "exit_codes": { "0": "No violations found", "1": "Violations detected (JSON output)" }
-        }
-      }
+      "rule": "Always prefix with entity's PRIMARY NAME. Never use bare concept names (e.g., messenger-component.md is WRONG, symfony-messenger.md is CORRECT)."
     },
     "docs_directory": {
       "path": "wiki/docs/",
-      "pattern": "<prefix>-<original_doc_name>.md",
-      "formula": "<project_slug_lower>-<source_filename_without_extension>.md",
-      "examples": [
-        { "input": "docs/architecture.md", "output": "loom-architecture.md", "type": "entity-docs" },
-        { "input": "docs/memory-hooks.md", "output": "loom-memory-hooks.md", "type": "concept-docs" },
-        { "input": "docs/api-conventions.md", "output": "symfony-api-conventions.md", "type": "framework-docs" }
-      ],
-      "rule": "Always prefix with project slug (lowercase). Output name MUST match original doc filename exactly, only prepending <prefix>-.",
+      "pattern": "<primary-name>-<original_doc_name>.md",
+      "formula": "<entity-primary-name-lowercase>-<source_filename_without_extension>.md",
+      "rule": "Always prefix with entity's PRIMARY NAME (not alias). Output name MUST match original doc filename exactly, only prepending <primary-name>.",
       "prohibited_pattern": {
         "description": "Agent MUST NOT add words beyond the prefix and original name. Adding 'system-', 'guide-', or any other modifier is a violation.",
-        "wrong_example": { "input": "docs/architecture.md", "wrong_output": "loom-system-architecture.md", "reason": "Added 'system-' — violates formula" },
-        "correct_example": { "input": "docs/architecture.md", "correct_output": "loom-architecture.md", "reason": "Exact match: prefix + original name" }
-      },
-      "existence_check_rule": {
-        "description": "BEFORE creating ANY new page in wiki/docs/, agent MUST scan for existing pages matching the entity/project prefix. If found → UPDATE existing (step_8b), DO NOT create duplicate.",
-        "rule_ref": "wiki/docs-existence-check.json#DOC-EXISTENCE-V1",
-        "contract": [
-          {
-            "action": "scan_wiki_docs_for_prefix_match",
-            "description": "ls wiki/docs/<prefix>-*.md OR find wiki/docs/ -name '<prefix>*'"
-          },
-          {
-            "condition": "existing_found",
-            "action": "ROUTE_TO_UPDATE_EXISTING_PAGE — read, compare, update or skip"
-          },
-          {
-            "condition": "not_found",
-            "action": "PROCEED_TO_CREATE_NEW_PAGE"
-          }
-        ]
+        "wrong_example": { "input": "docs/architecture.md", "wrong_output": "Loomana-system-architecture.md", "reason": "Added 'system-' — violates formula" },
+        "correct_example": { "input": "docs/architecture.md", "correct_output": "Loomana-architecture.md", "reason": "Exact match: primary-name + original name" }
       }
+    },
+    "concept_prefixing_rule": {
+      "rule": "When creating docs/concepts related to an entity, ALWAYS use the entity's PRIMARY NAME as prefix. NEVER use aliases.",
+      "rationale": "Aliases are discoverability synonyms stored in frontmatter `aliases: []`. They should NOT be used for file naming because they may not match how users search (e.g., 'loom' vs 'Loomana').",
+      "examples_bad": [
+        { "prefix_used": "loom", "correct_prefix": "Loomana", "reason": "'loom' is an alias of Loomana, NOT the primary name" }
+      ],
+      "examples_good": [
+        { "entity": "Loomana", "docs_pattern": "Loomana-architecture.md" },
+        { "entity": "Symfony", "docs_pattern": "symfony-dependency-injection.md" }
+      ]
     },
     "comparisons_directory": {
       "path": "wiki/comparisons/",
-      "pattern": "<project-a>-vs-<project-b>.md",
-      "examples": [
-        { "file": "ai-factory-vs-pi.md", "type": "cross-comparison" },
-        { "file": "symfony-vs-laravel-messaging.md", "type": "framework-comparison" }
-      ],
-      "rule": "Compare two entities: both names must be present in the filename."
+      "pattern": "<entity-a>-vs-<entity-b>.md",
+      "rule": "Compare two entities: both PRIMARY NAMES must be present in the filename."
     }
   },
   "aliases_system": {
-    "primary_name_rule": "Choose most common/official name as primary filename. Use less common variants in aliases frontmatter field.",
-    "example": { "file": "symfony-messenger.md", "aliases": ["messenger-component", "messaging-bus"] },
+    "primary_name_rule": "Choose most common/official name as primary. Store less common variants in aliases frontmatter field.",
+    "example": { "file": "Loomana.md", "aliases": ["loom", "LLM Wiki Pattern"] },
     "rule": "Aliases stored in YAML frontmatter `aliases: []` array — never create separate files for alternative names."
-  },
-  "injection_prevention": {
-    "allowed_chars": "lowercase-letters, digits, hyphens, underscores (kebab-case preferred)",
-    "prohibited_patterns": [
-      { "pattern": "..", "reason": "path traversal" },
-      { "pattern": "spaces or special chars", "reason": "filesystem safety" }
-    ],
-    "rule": "sanitize file names with validate-path.sh before writing."
   }
 }

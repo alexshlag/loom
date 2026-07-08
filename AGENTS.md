@@ -19,70 +19,53 @@ Niche technical specs → `rules/*.json` (read on demand via schema_ref)
 
 ## Context Management — All Rules Transient
 
-**Problem**: ~86KB accumulated context → memory bloat.
-
-**Solution**: All rules Transient — read fresh from source, forget after use.
+> **Rule**: All rules Transient — read fresh from source, forget after use.
 
 ### How It Works
 
 - **AGENTS.md** — read once at session start (general context)
 - **Process files** — read before each process execution
 - **rules/*.json** — read on demand via schema_ref when a step requires it
-- **Memory layer** (working_memory.json, hot.md, log.md) — read/write per context rules
+- **Memory layer** (working_memory.json, wiki/hot.md, wiki/log.md) — read/write per context rules
 
 ### Session Bootstrap (REQUIRED)
 
-At session start, read [session_bootstrap.json](rules/session_bootstrap.json) and execute ALL steps in order. Do not skip.
-
-> File defines explicit load sequence: `working_memory.json`, `wiki/hot.md`.
+At session start, read [rules/session_bootstrap.json](rules/session_bootstrap.json) and execute ALL steps in order. Do not skip.
 
 ### Context Lifecycle (Continued)
 
 2. **Process start**: Read the specific process-*.json file
-3. **During process**: Follow schema_ref → rules/*.json as needed
-4. **Process complete**: Forget transient rules, write to working_memory + hot.md
+3. **During process**: Follow schema_ref → rules/*.json as rules
+4. **Process complete**: Forget all transient rules
 
 > **Scope definitions**: `rules/context-scopes.json`
 > **Memory architecture**: `rules/session_context_rules.json`
 
 ---
 
-## Roadmap & Project Plan (Development Mode)
+## Development Mode
 
-- **[PLAN.md](PLAN.md)** — project roadmap, phase statuses, pending tasks. **Read before starting work**.
+**Read before starting work**:
+- **[RULES.md](RULES.md)** — development rules.
+- **[PLAN.md](PLAN.md)** — project roadmap, phase statuses, pending tasks.
 - **[FEATURES_PLAN.md](FEATURES_PLAN.md)** — architectural improvements implementation plan.
 - **[issues.md](issues.md)** — bug registry. **Read during ingest/query/lint** to avoid known issues.
 
 ### Code Conventions
 
-During script writing/debugging: [RULES.md](RULES.md).
+Read before script writing/editing/debugging: [RULES.md](RULES.md).
 
-#### JSON Instruction Compactification (R01-R07)
+#### JSON Instruction Compactification
 
-Before editing `process-*.json` and `rules/*.json`: read §9 of [RULES.md#instruction-compactification](RULES.md#9-instruction-compactification) + apply compact-json-instructions/SKILL.md (R07: preserve examples as conditional logic).
+Before writing/editing/debugging `process-*.json` and `rules/*.json`: read §9 of [RULES.md#instruction-compactification](RULES.md#9-instruction-compactification) + apply compact-json-instructions/SKILL.md (R07: preserve examples as conditional logic).
 
 ---
 
 ## Git Conventions
 
-Commit format, staging modes, pre-commit workflow, prohibited commands, memory sync → `rules/git_conventions.json`. Agent **MUST read** this file before EVERY commit operation.
+> Rule: Memory sync BEFORE git → `rules/session_context_rules.json#write_triggers`. Never commit without memory sync!
 
-### Pre-Commit Workflow (REQUIRED)
-
-1. **Read rule**: `rules/git_conventions.json` — detect mode from changes
-2. **Mode detection**: 
-   - Only `wiki/*.md` → **wiki mode**
-   - Any `.sh/.json/py/md` in root, rules/, scripts/ → **dev mode**
-3. **Memory sync (REQUIRED)**:
-   - dev mode → update WM + hot.md
-   - wiki mode → update WM focus_node + next_steps_todo
-4. **Stage**: `git add <mode-command>` (never `git add *`, never `git commit -a`)
-5. **Verify**: `git status --short` — ensure no untracked/unstaged remain
-6. **Commit format**: `<type> | <scope>: <description>` (see rules/git_conventions.json#commit_format)
-
-> Rule: Memory sync BEFORE git → session_context_rules.json#write_triggers. Never commit without memory sync.
-
-## Process Roles
+`rules/git_conventions.json`. Agent **MUST read** this file before EVERY commit operation.
 
 ---
 
@@ -93,7 +76,7 @@ Three process files — each defines a complete workflow:
 - **Query**: `process-query.json`
 - **Lint**: `process-lint.json`
 
-> Agent reads the process file before starting its workflow. Steps reference rules/*.json via schema_ref — no inline duplication.
+> Agent reads the process file before starting its workflow. Steps reference rules/*.json via schema_ref.
 
 **Batch Ingest Trigger**: `scripts/batch-ingest.sh --scan` clusters ≥3 related sources → `rules/batch_ingest_trigger.json`
 

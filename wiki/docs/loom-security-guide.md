@@ -1,5 +1,5 @@
 ---
-tags: [security, privacy, data-protection, gitignore, credential-handling]
+tags: [Loomana, loom, security, privacy, data-protection, gitignore, credential-handling]
 date: 2026-07-08
 type: documentation
 category: concept
