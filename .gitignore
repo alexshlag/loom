@@ -4,7 +4,7 @@ meta/**
 # Raw sources — immutable, never tracked in git
 raw/**
 
-# ML embeddings cache — regenerated automatically (87MB+)
+# External cache — not part of this project
 .fastembed_cache/
 
 # Tracking state files (only explicit ones are tracked)

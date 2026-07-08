@@ -127,7 +127,6 @@ All three workflows (ingest/query/lint) are operational. Guardrails validate pat
 | `AGENTS.md`, `PLAN.md`, `RULES.md` | Schema & documentation | ✅ Yes |
 | `raw/**` | Raw sources (immutable) | ❌ No — never tracked, only via capture flow |
 | `meta/**` | Auto-generated metadata | ❌ No — rebuilt by `scripts/rebuild-meta.sh` |
-| `.fastembed_cache/` | ML model cache (~87MB) | ❌ No — regenerated automatically |
 
 ---
 
