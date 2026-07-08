@@ -10,6 +10,11 @@ raw/**
 # Tracking state files (only explicit ones are tracked)
 tracking/raw_registry.json
 
+# Personal / working documents — not for public
+temp/
+FEATURES_PLAN.md
+research.md
+
 # Obsidian / Pi agent local configs (machine-specific, machine-local)
 .obsidian/
 .pi/
