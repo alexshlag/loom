@@ -93,7 +93,7 @@
       "rule_id": "HOT-WIKI-CHANGES-V1",
       "priority": "immediate",
       "target_section": "hot.md \u2192 System State \u2192 Recent Changes",
-      "command": "./scripts/hot-cache-update.sh || true"
+      "command": "./scripts/hot-cache-update.sh || ./scripts/load-hot-cache.sh"
     },
     {
       "event": "process_complete",
