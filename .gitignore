@@ -4,12 +4,16 @@ meta/**
 # Raw sources — immutable, never tracked in git
 raw/**
 
+# ML embeddings cache — regenerated automatically (87MB+)
+.fastembed_cache/
+
 # Tracking state files (only explicit ones are tracked)
 tracking/raw_registry.json
 
-# Obsidian local workspace settings (machine-specific)
+# Obsidian / Pi agent local configs (machine-specific, machine-local)
 .obsidian/
 .pi/
+.vault-meta/
 
 # OS/editor artifacts
 .DS_Store
@@ -18,9 +22,14 @@ tracking/raw_registry.json
 *.pyc
 __pycache__/
 
+# Auto-generated / temporary files
+wiki/.meta_update_timestamp
+AGENTS.md.backup
+
 # Logs — not tracked
 logs/*.log
 
 # Similarity cache — large file, regenerated automatically
 tracking/similarity_cache.json
-.vault-meta/
+
+

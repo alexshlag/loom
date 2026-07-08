@@ -4,6 +4,9 @@ date: 2026-06-24
 sources: [raw/llm-wiki.md]
 related: [wiki/concepts/llm-wiki.md]
 ---
+- [[wiki/concepts/symfony-ai.md]] (score: 5)
+- [[wiki/entities/loomana.md]] (score: 5)
+- [[wiki/concepts/llm-wiki.md]] (score: 5, incoming)
 
 # Сравнение: RAG vs LLM Wiki Pattern (Compounding Knowledge Base)
 

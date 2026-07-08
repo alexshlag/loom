@@ -166,7 +166,7 @@ if [[ "$SKIP_CHECKS" != *",9,"* ]]; then
   local_deep=""
   safe_run "./scripts/detect-contradications.sh --quiet" local_deep "0 1" || true
   # Parse contradiction count from JSON output with fallback
-  CONTCOUNT=$(echo "$local_deep" | python3 -c 'import json,sys; d=json.loads(sys.stdin.read()); print(d.get("potential_contradictions",0))' 2>/dev/null) || CONTCOUNT=0
+  CONTCOUNT=$(echo "$local_deep" | python3 -c 'import json, sys; d=json.loads(sys.stdin.read()); print(d.get("potential_contradictions",0))' 2>/dev/null) || CONTCOUNT=0
   [[ "$CONTCOUNT" =~ ^[0-9]+$ ]] && CONTRADICTIONS_DEEP=$CONTCOUNT
 fi
 TOTAL_ISSUES=$((TOTAL_ISSUES + CONTRADICTIONS_DEEP))
@@ -177,7 +177,7 @@ if [[ "$SKIP_CHECKS" != *",10,"* ]]; then
   # text-similarity writes logs to stdout — redirect stderr for clean JSON output
   local_sim=$(bash ./scripts/text-similarity.sh --scan-all --threshold 90 2>/dev/null) || true
   # Batch: single python3 call replaces 2 individual ones (count + validity)
-  TEXT_SIMILARITY_MATCHES=$(echo "$local_sim" | python3 -c 'import json,sys; d=json.loads(sys.stdin.read()); print(len(d.get("matches",[])))' 2>/dev/null) || TEXT_SIMILARITY_MATCHES=0
+  TEXT_SIMILARITY_MATCHES=$(echo "$local_sim" | python3 -c 'import json, sys; d=json.loads(sys.stdin.read()); print(len(d.get("matches",[])))' 2>/dev/null) || TEXT_SIMILARITY_MATCHES=0
   [[ "$TEXT_SIMILARITY_MATCHES" =~ ^[0-9]+$ ]] || TEXT_SIMILARITY_MATCHES=0
 fi
 TOTAL_ISSUES=$((TOTAL_ISSUES + TEXT_SIMILARITY_MATCHES))
@@ -299,10 +299,10 @@ if [[ "$SKIP_CHECKS" != *",15,"* ]]; then
     # Unified single-pass detection + auto-fix (from about_md_cleaner.md)
     # Pattern: normalize whitespace-only lines → squash \n{3,} → write only if changed
     EXCESSIVE_DATA=$(WIKI_DIR="$WIKI_DIR" python3 << 'PYEOF'
-import os, re, json
+import json, os, re
 from pathlib import Path
 
-wiki_dir = os.environ.get("WIKI_DIR", "/home/andrew/projects/local_wiki/loom/wiki")
+wiki_dir = os.environ.get("WIKI_DIR", "wiki")
 
 fixed_count = 0
 fixed_paths = []
@@ -338,8 +338,8 @@ PYEOF
 
     # Parse results
     if [ "$EXCESSIVE_DATA" != '' ]; then
-        EXCESSIVE_EMPTY_LINES=$(echo "$EXCESSIVE_DATA" | python3 -c 'import json,sys; d=json.loads(sys.stdin.read()); print(d.get("count",0))' 2>/dev/null || echo 0)
-        EXCESSIVE_EMPTY_FILES_JSON=$(echo "$EXCESSIVE_DATA" | python3 -c 'import json,sys; d=json.loads(sys.stdin.read()); print(json.dumps(d.get("files",[])))' 2>/dev/null || echo '[]')
+        EXCESSIVE_EMPTY_LINES=$(echo "$EXCESSIVE_DATA" | python3 -c 'import json, sys; d=json.loads(sys.stdin.read()); print(d.get("count",0))' 2>/dev/null || echo 0)
+        EXCESSIVE_EMPTY_FILES_JSON=$(echo "$EXCESSIVE_DATA" | python3 -c 'import json, sys; d=json.loads(sys.stdin.read()); print(json.dumps(d.get("files",[])))' 2>/dev/null || echo '[]')
     fi
 fi
 

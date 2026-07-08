@@ -10,6 +10,8 @@ related:
   - entities/ai-factory
   - concepts/workflow-state-machine
 ---
+- [[wiki/concepts/ai-factory-vs-pi.md]] (score: 4)
+- [[wiki/entities/ai-factory.md]] (score: 5)
 
 # AI Factory Documentation — CLI Tool & Skill System for Coding Agents
 

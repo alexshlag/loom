@@ -1,199 +1,184 @@
-# Loomana: Where sources become llm-wiki
+# Loomana — LLM-Powered Personal Knowledge Base
 
-## Что это такое
+A wiki that grows with every source and question. Full name: `Loomana`; short name: `loom`.
 
-Это **LLM-powered personal knowledge base** — база знаний, которая растёт с каждым источником и вопросом. Полное имя проекта: `Loomana`; короткое название: `loom`.
-
-*Идея: [Andrej Karpathy](https://karpathy.ai/). Референс: [LLM Wiki gist](https://gist.github.com/karpathy/ed8f284379605148297b7a8be01eb580).*
+> _Idea: [Andrej Karpathy](https://karpathy.ai/). Reference: [LLM Wiki gist](https://gist.github.com/karpathy/ed8f284379605148297b7a8be01eb580)._
 
 ---
 
-## Архитектура: три слоя
+## What Is This?
 
-```
-raw/**          ← Immutable sources (не трогаем)
-  └── sources/  ← Загруженные статьи, документы
-  └── github/   ← Forked repos с исходниками
+**Loomana is an LLM-powered personal knowledge base.** You feed it sources (URLs, files, text) and ask questions. The wiki grows automatically — pages are created, cross-linked, and maintained by the agent.
 
-wiki/**         ← Markdown pages (LLM пишет)
-  ├── entities/     ← Конкретные объекты: люди, компании, технологии
-  ├── concepts/     ← Абстрактные идеи, принципы
-  ├── syntheses/    ← Глубокий анализ, объединяющий источники
-  ├── comparisons/  ← Сравнительный анализ
-  ├── overview.md   → Текущая картина знаний
-  └── log.md      → Хронологический журнал действий
+### Key Principles
 
-scripts/        ← Guardrails (валидация путей, rebuild meta)
-AGENTS.md       → Schema: конвенции, форматы страниц, workflows
-```
-
-### Почему так?
-
-* **Raw** — immutable. LLM не пишет туда напрямую, только через capture flow.
-* **Wiki** — LLM владеет полностью. Создаёт страницы, обновляет их, поддерживает cross-references.
-* **AGENTS.md** — живая схема, co-evolves между человеком и LLM.
+- **Sources are immutable** — raw materials never get edited directly
+- **Wiki is owned by the LLM** — it creates pages, updates them, maintains links
+- **Everything is governed by schemas** — `AGENTS.md` defines conventions that co-evolve with you
+- **Minimal user effort** — give a source or ask a question; agent handles the rest
 
 ---
 
-## Три рабочих процесса
+## Quick Start
 
-### Ingest — добавление источника
-
-1. Пользователь предоставляет источник (URL, файл, текст)
-2. Агент создаёт пакет в `raw/sources/SRC-YYYY-MM-DD-NNN/`
-3. Читает, обсуждает ключевые тезисы с пользователем
-4. Пишет summary → wiki, обновляет index.md и entity/concept страницы
-5. Записывает entry в log.md
-
-### Query — ответ на вопрос
-
-1. Агент читает `index.md` по релевантным категориям
-2. Семантический поиск (wiki_recall) или grep-fallback
-3. Читает найденные страницы, синтезирует ответ с фактами и ссылками
-4. Если ответ содержит novel insight → предлагает сохранить как новую страницу wiki
-
-### Lint — поддержание здоровья базы
-
-1. Периодическая проверка: противоречия, orphan-страницы, broken links
-2. Agent получает готовый сухой остаток — не читает всё подряд
-3. Resolution flow (fixing contradictions) — зона ingest/query
-
----
-
-## Как начать
-
-### Шаг 1: Развернуть wiki из INIT.md
-
-Весь проект — это один файл `INIT.md`, который содержит:
-* Все инструкции (AGENTS.md, process-ingest.md, process-query.md, process-lint.md)
-* Скрипты guardrails в base64-формате (`validate-path.sh`, `.git/hooks/pre-commit`)
-* Чек-листы и bash-команды для создания структуры каталогов
-
-Для установки просто попросите ии-агента выполнить инструкции `INIT.md`
-
-Проверьте, что создан файл `.git/hooks/pre-commit` следующего содержания:
+### 1. Clone & Open
 
 ```bash
-#!/bin/bash
-# .git/hooks/pre-commit — Guardrails финальный контроль
-# Блокирует commit, если staged-файлы попадают в protected zones (raw/**, meta/**)
-
-PROTECTED_PATTERNS=("raw/" "meta/")
-STAGED_FILES=$(git diff --cached --name-only)
-
-for PATTERN in "${PROTECTED_PATTERNS[@]}"; do
-  if echo "$STAGED_FILES" | grep -q "^$PATTERN"; then
-    echo "⛔ BLOCKED: staged files detected in protected zone '$PATTERN'" >&2
-    echo "Protected zones: raw/**, meta/** — these must never be edited directly." >&2
-    exit 1
-  fi
-done
-
-# All clear
-exit 0
+git clone https://github.com/alexshlag/loom.git
+cd loom
 ```
 
-Он дополнительно будет защищать ваши raw-файлы от повреждения ии-агентами
+Open in your preferred editor, then launch an AI coding agent (Pi, Claude Code, or similar). The project is designed to work **inside a harness** — just tell the agent "set up this wiki".
 
-После инициализации wiki готова для использования.
+### 2. Work With the Agent
 
-### Шаг 2: Добавить материал в wiki
+The agent reads `AGENTS.md` at session start and follows structured workflows:
+- Give it URLs/files/text → agent ingests them into wiki
+- Ask questions → agent searches, synthesizes answers with citations
+- Periodic health checks → agent finds contradictions, orphans, broken links
 
-**Три способа, как пользователь даёт агенту информацию:**
-
-1. **Ссылка на интернет-ресурс** — `https://example.com/article`, `https://docs.example.com/...`
-2. **Локальный файл** — `.pdf`, `.md`, `.txt` — в любом виде
-3. **Текст напрямую** — копипаст, транскрипт встречи, заметки
-
-Агент сам:
-* Загружает и парсит источник
-* Сохраняет в `raw/sources/` через capture flow
-* Классифицирует: entity / concept / notes
-* Пишет summary → wiki, обновляет index.md
-* Связывает с существующими страницами
-
-Всё по инструкциям из `process-ingest.json`. Пользователю не нужно ничего делать руками.
-
-### Шаг 3: Задавать вопросы и искать информацию
-
-**Пользователь задаёт вопрос — агент ищет в wiki.**
-
-Агент сам:
-* Ищет по index.md → semantic search → grep-fallback
-* Читает найденные страницы
-* Синтезирует ответ с фактами, ссылками, цитатами
-* Обнаруживает противоречия → разрешает по приоритету (authoritative > temporal > user_review)
-* Если ответ содержит novel insight — предлагает сохранить как новую страницу wiki
-
-Всё по инструкциям из `process-query.json`.
-
-### Шаг 4: Периодическая проверка здоровья
-
-Агент сам запускает **lint-проверки** при:
-* Замеченной стагнации (не было новых страниц несколько дней)
-* Накоплении противоречий
-* Появлении orphan-страниц
-
-Находит проблемы → предлагает решения → user review.
-
-Всё по инструкциям из `process-lint.json`.
+No manual configuration needed. Everything runs from the repo's schemas and scripts.
 
 ---
 
-## Wiki максимально самостоятельна
+## Architecture
 
-Пользователь **даёт материал** (ссылка, файл, текст) или **задаёт вопрос**. Агент делает всё остальное: классифицирует, пишет страницы, поддерживает связи, обновляет index.md, ловит противоречия. База знаний растёт сама.
+```
+raw/**          ← Immutable sources (never edited directly)
+  └── sources/  ← Articles, documents, URLs captured via capture flow
+  └── assets/   ← Images with OCR descriptions
 
----
+wiki/**         ← LLM-generated wiki pages
+  ├── entities/     ← People, companies, technologies (~13 pages)
+  ├── concepts/     ← Abstract ideas, principles, methodologies (~25 pages)
+  ├── syntheses/    ✓ Deep analysis combining multiple sources (2 pages)
+  ├── comparisons/  ✓ Comparative analyses (4 pages)
+  └── overview.md   → Current state of knowledge
 
-## Автоматическое обслуживание wiki
+rules/**        ← Technical specs for agent (read on demand via schema_ref)
+scripts/**      ← Guardrails, validation, metadata rebuild tools
+process-*.json  ← Workflow definitions: ingest | query | lint
+AGENTS.md       ← Living schema co-evolved between human and LLM
+```
 
-* **Хранение, git-commit** — агент делает всё автоматически. По запросу пользователя — branch для экспериментов с структурой.
-* **Guardrails (validate-path.sh)** — защита `raw/**` и `meta/**`. Agent сам вызывает перед любой write.
-* **Schema co-evolution** — AGENTS.md обновляется совместно с пользователем по мере роста wiki.
+### Three Workflows
 
-* **Git commit** после каждого значимого действия (ingest, query с новой страницей, lint-fix)
-* **Сообщения:** `[действие] [краткое описание]` — `ingress | added entity pi-coding-agent`, `query | synthesis on RAG vs databases`, `lint | fixed orphan pages`
-* **Branch для экспериментов** со структурой → согласовать с пользователем → merge.
-
----
-
-## Текущее состояние wiki
-
-| Категория | Страниц | Примеры |
-|-----------|---------|---------|
-| Сущности | 2+ | Symfony, Nvidia |
-| Концепты | ~18 | LLM Wiki Pattern, Service Container, Routing, Events, Security, Doctrine, Flex, Hexagonal, Twig, Testing, AssetMapper, Symfony AI, Messenger, Workflow, Cache, Python NixOS Dev |
-| Синтезы | 2+ | RAG vs LLM Wiki Pattern, Python Dev Environments |
-| Schema | AGENTS.md (v6), process-ingest.json, process-query.json, process-lint.json |
-
-**Итог:** ~36 страниц по трём темам: LLM Wiki Pattern / Pi Coding Agent, Python на NixOS, Symfony. Работает ingest, query, lint, Error Handling Protocol. Guardrails валидируют пути.
-
----
-
-## Дальнейшие шаги (Roadmap)
-
-### ✅ Реализовано
-
-| Компонент | Статус |
-|-----------|--------|
-| `working_memory.json` | ✅ Inline в AGENTS.md, Context Bridge формат |
-| CONTEXT_BUBBLE + Delta-Scoping | ✅ Memory Architecture Contract раздел |
-| Grep-контракт | ✅ Разрешённые/запрещённые паттерны bash чтения |
-| Git JSON policy (v5) | ✅ dual commit formats, protected zones, MANDATORY status check |
-| Error Handling Protocol | ✅ 4-step detect-analyze-resolve-continue loop (Schema v6) |
-
-### 🔜 Очередь
-
-* [ ] Добавить bash-скрипт поиска (FTS5 или ripgrep) вместо чтения index.md целиком
-* [ ] Автоматизировать lint через cron/bash — агент получает готовый отчёт
-* [ ] Перейти на MCP-сервер при росте wiki (>100 страниц)
-* [ ] Оптимизация Schema: AGENTS.md растёт, нужна модулизация |
+| Process | Purpose | Trigger |
+|---------|---------|---------|
+| **Ingest** | Add sources → classify → write wiki pages | User provides URL/file/text |
+| **Query** | Search wiki → synthesize answer with citations | User asks a question |
+| **Lint** | Find contradictions, orphans, broken links → propose fixes | Periodic / on-demand |
 
 ---
 
-## Связи
+## Getting Started With Your Data
 
-* [AGENTS.md](AGENTS.md) — полная schema и конвенции
-* [wiki/overview.md](wiki/overview.md) — текущая картина знаний
-* [wiki/log.md](wiki/log.md) — журнал всех действий
+### Adding Sources
+
+Three ways to feed information:
+
+1. **Web URLs** — `https://example.com/article`
+2. **Local files** — `.pdf`, `.md`, `.txt` in any format
+3. **Direct text** — copy-paste, meeting transcripts, notes
+
+The agent automatically:
+- Captures source → validates path → checks for duplicates
+- Classifies as entity / concept / synthesis
+- Writes summary → wiki pages with proper frontmatter
+- Cross-links existing pages and updates index
+
+### Asking Questions
+
+Ask anything. The agent will:
+- Search `index.md` + semantic/grep fallback
+- Read relevant pages
+- Synthesize answer with facts, citations, links
+- Resolve contradictions using priority rules (authoritative > temporal > user_review)
+- Propose saving novel insights as new wiki pages
+
+---
+
+## Current State
+
+| Category | Pages | Examples |
+|----------|-------|----------|
+| Entities | 13 | Loomana, Pi Coding Agent, Symfony, Nvidia, Andrej Karpathy |
+| Concepts | 25 | LLM Wiki Pattern, Service Container, Routing, Hexagonal Arch, Testing Strategy |
+| Syntheses | 2 | RAG vs LLM Wiki Pattern, Python Dev Environments |
+| Comparisons | 4 | Agent Memory Techniques, Symfony UX Packages, Loom vs Claude/Obsidian |
+
+**Total: ~55 wiki pages across three domains:**
+1. **LLM Wiki Pattern / Pi Coding Agent** — architecture patterns for AI agents
+2. **Python on NixOS** — development environments and tooling
+3. **Symfony ecosystem** — framework components, bundles, deployment
+
+All three workflows (ingest/query/lint) are operational. Guardrails validate paths. Error handling protocol is active.
+
+---
+
+## Repository Structure
+
+| Path | Purpose | In Git? |
+|------|---------|---------|
+| `wiki/**` | Wiki pages (entity/concept/synthesis/comparison/note templates) | ✅ Yes |
+| `rules/*.json` | Technical specs for agent workflows | ✅ Yes |
+| `scripts/*` | Guardrails, validation, metadata rebuild tools | ✅ Yes |
+| `process-*.json` | Workflow definitions | ✅ Yes |
+| `AGENTS.md`, `PLAN.md`, `RULES.md` | Schema & documentation | ✅ Yes |
+| `raw/**` | Raw sources (immutable) | ❌ No — never tracked, only via capture flow |
+| `meta/**` | Auto-generated metadata | ❌ No — rebuilt by `scripts/rebuild-meta.sh` |
+| `.fastembed_cache/` | ML model cache (~87MB) | ❌ No — regenerated automatically |
+
+---
+
+## Development & Maintenance
+
+### Agent Rules (for AI agents working on this project)
+
+- **Read before every operation**: process files + rules via `schema_ref`
+- **Never edit raw/** directly** — use capture → integrate flow
+- **Never duplicate AGENTS.md rules in scripts** — use schema_ref to canonical source
+- **All commits follow convention**: `<type> | <scope>: <description>`
+- **Memory sync required** after dev commits (WM + hot.md update)
+
+See `AGENTS.md` and `RULES.md#9-instruction-compactification` for full conventions.
+
+### Human Maintenance
+
+Nothing special needed. The agent handles:
+- Git commits with proper messages
+- Wiki page creation, updates, cross-linking
+- Contradiction resolution, orphan cleanup
+- Metadata rebuilds from raw sources
+
+---
+
+## Status
+
+🚧 **In development.** Not yet released.
+
+The project is a working prototype demonstrating LLM-powered wiki automation. All core workflows (ingest/query/lint) are operational with guardrails and error handling protocols in place.
+
+**Roadmap highlights:**
+- ✅ Context management with transient rules (schema_ref pattern)
+- ✅ Working memory bridge (`working_memory.json`)
+- ✅ Delta-tracking for source deduplication
+- ✅ Evidence grading from sources
+- ✅ Git workflow automation + pre-commit guardrails
+- 🔄 FTS search instead of full index reads (>100 pages scaling)
+- 🔄 Cron-based lint automation
+
+---
+
+## Links
+
+- [AGENTS.md](AGENTS.md) — Complete schema, conventions, agent instructions
+- [PLAN.md](PLAN.md) — Project roadmap & phase statuses
+- [wiki/overview.md](wiki/overview.md) — Current knowledge state
+- [wiki/log.md](wiki/log.md) — Chronological action log
+
+---
+
+## Credits
+
+Based on Andrej Karpathy's LLM Wiki concept. Built with Pi coding harness and designed for personal knowledge management at scale.
