@@ -1,7 +1,7 @@
 {
-  "last_updated": "2026-07-08T20:57",
+  "last_updated": "2026-07-08T21:20",
   "current_mode": "project",
-  "focus_node": "Phase 25 done: unified memory scripts",
+  "focus_node": "Phase 25.2: clean git_conventions memory references",
   "next_steps_todo": [
     "review session_context_rules.json for unified context budget rules"
   ],
@@ -39,6 +39,7 @@
     "2026-07-08 18:25 | completed | refactor work_modes.json compactification convention",
     "2026-07-08 20:06 | completed | Phase 24 completed: unified memory sync contract",
     "2026-07-08 20:06 | completed | Phase 24 completed: unified memory sync contract",
-    "2026-07-08 20:57 | completed | Phase 25 done: unified memory scripts"
+    "2026-07-08 20:57 | completed | Phase 25 done: unified memory scripts",
+    "2026-07-08 21:20 | completed | Phase 25.2: clean git_conventions memory references"
   ]
 }

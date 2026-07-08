@@ -1,16 +1,15 @@
 {
   "rule_name": "session_context_management",
   "rule_id": "SCM-V4",
-  "description": "Memory architecture: Three-Layer Model + context budget rules (V3 → V4 with context cleanup contract)",
-
+  "description": "Memory architecture: Three-Layer Model + context budget rules (V3 \u2192 V4 with context cleanup contract)",
   "layers": {
     "working_memory.json": {
-      "role": "current-session ops memory — fast turn-to-turn context bridge",
+      "role": "current-session ops memory \u2014 fast turn-to-turn context bridge",
       "lifespan": "one session (persisted across sessions for bootstrap)",
       "rw": "write every turn",
       "unique_fields": {
-        "last_updated": "staleness check / fallback trigger (>30 days → log.md grep)",
-        "current_mode": "project | query | discussion — current work mode",
+        "last_updated": "staleness check / fallback trigger (>30 days \u2192 log.md grep)",
+        "current_mode": "project | query | discussion \u2014 current work mode",
         "focus_node": "operational focus of current session (what we're doing RIGHT NOW)",
         "open_pages": "wiki pages open in context (max 3 per operational_rules)",
         "dead_ends": "paths that failed / questions without answers",
@@ -20,17 +19,16 @@
           "source": "process-query.json action_step -> write_to_working_memory"
         }
       },
-      "no_session_context_field": "DEPRECATED — WM does not have session_context; hot.md has Active Session Context section instead"
+      "no_session_context_field": "DEPRECATED \u2014 WM does not have session_context; hot.md has Active Session Context section instead"
     },
-
     "hot.md": {
-      "role": "long-term snapshot — survives compaction, read on next session bootstrap",
+      "role": "long-term snapshot \u2014 survives compaction, read on next session bootstrap",
       "path": "wiki/hot.md",
       "rw": "agent writes snapshots / auto-refresh.sh generates",
       "source_of_truth_for": "next_session_bootstrap (session_start reads hot.md)",
       "unique_fields": {
         "active_project": "project name + status + focus_node (snapshot for next session)",
-        "pending_tasks": "issue tracking — unique to hot.md, NOT in WM",
+        "pending_tasks": "issue tracking \u2014 unique to hot.md, NOT in WM",
         "recent_changes": "detailed chronology from log.md, aggregated with scripts/paths"
       },
       "aggregated_from": [
@@ -47,9 +45,8 @@
           "source": "wiki/log.md (tail -15)"
         }
       ],
-      "no_duplicate_fields": "NEVER duplicate WM content — hot.md aggregates + expands, not copies"
+      "no_duplicate_fields": "NEVER duplicate WM content \u2014 hot.md aggregates + expands, not copies"
     },
-
     "log.md": {
       "role": "append-only chronicle of all actions and wiki changes",
       "path": "wiki/log.md",
@@ -57,22 +54,19 @@
       "rw": "agent appends only"
     }
   },
-
   "field_dedup_rules": {
     "focus_node": "WM = current operational focus; hot.md = snapshot for next session (same value, different intent)",
     "query_summary_vs_recent_changes": "WM.query_summary = single query context; hot.md.recent_changes = aggregated chronology from log",
-    "no_cross_field_duplication": "If a field exists in WM, it is NOT duplicated as-is in hot.md — hot.md expands/aggregates"
+    "no_cross_field_duplication": "If a field exists in WM, it is NOT duplicated as-is in hot.md \u2014 hot.md expands/aggregates"
   },
-
   "flow": {
     "session_start": [
-      "read working_memory.json → ./scripts/load-hot-cache.sh → grep -m 20 '' wiki/log.md | tail -20"
+      "read working_memory.json \u2192 ./scripts/load-hot-cache.sh \u2192 grep -m 20 '' wiki/log.md | tail -20"
     ],
     "session_end": [
-      "write_to_working_memory (next_steps_todo, open_pages) → write to wiki/hot.md (Active Session Context or Active Project)"
+      "write_to_working_memory (next_steps_todo, open_pages) \u2192 write to wiki/hot.md (Active Session Context or Active Project)"
     ]
   },
-
   "log_read_fallback": {
     "when": "working_memory.json empty or stale (>30 days without updates)",
     "how": [
@@ -81,68 +75,64 @@
     ],
     "constraint": "NEVER read entire log (~250+ lines expensive in tokens)"
   },
-
   "write_triggers": [
     {
       "event": "user_message",
       "rule_id": "HOT-SAVE-QUERY-V1",
-      "target_section": "hot.md → Active Session Context (topic, query_intent)",
+      "target_section": "hot.md \u2192 Active Session Context (topic, query_intent)",
       "wm_sync": "update WM.query_summary.key_findings"
     },
     {
       "event": "action_completed",
       "rule_id": "HOT-SAVE-ACTION-V1",
-      "target_section": "hot.md → Recent Changes + System State",
+      "target_section": "hot.md \u2192 Recent Changes + System State",
       "wm_sync": "update WM.query_summary.pages_read + key_findings"
     },
     {
       "event": "wiki_modified",
       "rule_id": "HOT-WIKI-CHANGES-V1",
       "priority": "immediate",
-      "target_section": "hot.md → System State → Recent Changes"
+      "target_section": "hot.md \u2192 System State \u2192 Recent Changes",
+      "command": "./scripts/hot-cache-update.sh || true"
     },
     {
       "event": "process_complete",
       "rule_id": "HOT-SAVE-ACTION-V1",
       "ref_to_rule_id": "HOT-SAVE-ACTION-V1",
       "priority": "post_action",
-      "target_section": "hot.md → Recent Changes + System State",
+      "target_section": "hot.md \u2192 Recent Changes + System State",
       "wm_sync": "update WM.focus_node + next_steps_todo",
-      "description": "After process step completes (ingest/query/lint) — write to WM then refresh hot cache. Use sync-working-memory.sh for atomic WM update, followed by hot-cache-auto-refresh.sh."
+      "description": "After process step completes (ingest/query/lint) \u2014 follow HOT-SAVE-ACTION-V1 contract for WM update then hot cache refresh"
     },
     {
       "event": "compaction_complete",
       "rule_id": "HOT-RESTORE-V1",
       "ref_to_rule_id": "HOT-RESTORE-V1",
       "priority": "immediate",
-      "target_section": "hot.md → load into context",
+      "target_section": "hot.md \u2192 load into context",
       "command": "./scripts/load-hot-cache.sh || true"
     }
   ],
-
   "concurrent_trigger_rule": "When multiple triggers fire simultaneously, write ALL relevant sections in one pass (not sequentially)",
-
   "context_budget_rules": {
     "rule_id": "CB-V1",
     "description": "Hard limits on what raw content stays in agent context. Prevents token bloat from holding processed documents.",
-    "principle": "Processed source content must be explicitly released after extract — it competes with wiki page writing for limited context window.",
-
+    "principle": "Processed source content must be explicitly released after extract \u2014 it competes with wiki page writing for limited context window.",
     "rules": [
       {
         "rule_id": "CB-SOURCE-FORGET",
         "name": "Source forget-after-extract",
-        "description": "After reading a source document and extracting to wiki page — the original text must NOT remain in context for subsequent steps.",
+        "description": "After reading a source document and extracting to wiki page \u2014 the original text must NOT remain in context for subsequent steps.",
         "pattern_prohibited": {
-          "read_source_A → read_source_B → process both together": "Holding N sources simultaneously = O(N) token waste"
+          "read_source_A \u2192 read_source_B \u2192 process both together": "Holding N sources simultaneously = O(N) token waste"
         },
         "correct_pattern": [
           "read source A",
           "extract to wiki page (write to disk)",
-          "move to source B — do NOT re-read source A content again",
+          "move to source B \u2014 do NOT re-read source A content again",
           "repeat for each source independently"
         ]
       },
-
       {
         "rule_id": "CB-PROCESS-LAZY",
         "name": "Lazy loading for process files",
@@ -154,40 +144,43 @@
         "correct_pattern": [
           "Read AGENTS.md or process file once at session start for high-level understanding",
           "At execution time: read ONLY the specific step/section needed via schema_ref",
-          "Never hold entire process file content — it's a reference, not data"
+          "Never hold entire process file content \u2014 it's a reference, not data"
         ]
       },
-
       {
         "rule_id": "CB-WIKI-PAGES",
         "name": "Wiki pages context bubble",
-        "description": "Max 3 wiki pages in active context simultaneously. When opening new page for reading — close one of the current 3.",
+        "description": "Max 3 wiki pages in active context simultaneously. When opening new page for reading \u2014 close one of the current 3.",
         "max_open_pages": 3,
         "rule_id_ref": "session_context_rules.json#operational_rules.context_bubble_max_pages"
       }
     ]
   },
-
   "constraints": {
     "IMMEDIATE_WRITE": "Write wiki/hot.md immediately after action, NOT at session end",
     "SLICE_NOT_FULL_LOG": "wiki/hot.md = summary slice only, never full log copy",
     "RESTORE_ON_COMPACT": "After context compaction: call load-hot-cache.sh || true",
     "SYSTEM_STATE_ALWAYS": "System State section updated on every wiki create/update",
-    "NO_APPEND_TO_JSON": "Never append to JSON files — read full file → modify → write complete document",
+    "NO_APPEND_TO_JSON": "Never append to JSON files \u2014 read full file \u2192 modify \u2192 write complete document",
     "LOG_APPEND_ONLY": "wiki/log.md is append-only. NEVER cat > or write(). Always use cat >> (append)."
   },
-
   "operational_rules": {
     "context_bubble_max_pages": 3,
     "grep_contract": {
-      "allowed": ["grep -m N pattern wiki/", "head -20 file.md", "sed -n 'X,Yp'"],
-      "prohibited": ["cat large_file.md", "grep pattern wiki/ (no -m flag)"]
+      "allowed": [
+        "grep -m N pattern wiki/",
+        "head -20 file.md",
+        "sed -n 'X,Yp'"
+      ],
+      "prohibited": [
+        "cat large_file.md",
+        "grep pattern wiki/ (no -m flag)"
+      ]
     },
     "natural_memory_translation": {
       "rule": "Use 'we' instead of 'system/agent'; translate timestamps to human-time ('the day before yesterday')",
       "reference": "wiki/concepts/natural-memory.md"
     }
   },
-
   "schema_ref_to_agent_rules": "AGENTS.md#5-context-bridge-working_memoryjson"
 }

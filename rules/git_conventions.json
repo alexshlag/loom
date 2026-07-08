@@ -25,7 +25,7 @@
     ]
   },
   "mode_detection": {
-    "auto": "only wiki/*.md → wiki; any .sh/.json in root/rules/scripts/ → dev_mode",
+    "auto": "only wiki/*.md \u2192 wiki; any .sh/.json in root/rules/scripts/ \u2192 dev_mode",
     "override": "user says 'wiki mode' or 'dev_mode'"
   },
   "pre_commit_workflow": [
@@ -51,25 +51,5 @@
   "post_commit_check": {
     "action": "if git status shows unstaged files \u2192 stage + amend or separate commit"
   },
-  "memory_sync_on_dev_commit": [
-    {
-      "action": "working_memory.json: focus_node + filter completed next_steps_todo",
-      "command": "./scripts/memory/sync-working-memory.sh --focus-node \"$FOCUS_NODE\" --next-steps \"$NEXT_STEPS\" --quiet > /dev/null 2>&1 || true",
-      "note": "Atomic update via read\u2192modify\u2192write. Never append."
-    },
-    {
-      "action": "wiki/hot.md Active Project: update phase status",
-      "command": "./scripts/memory/hot-cache-auto-refresh.sh --quiet > /dev/null 2>&1 || true",
-      "note": "Must run AFTER WM update (reads updated focus_node + recent_activity). Follows session_context_rules.json#write_triggers.process_complete contract."
-    }
-  ],
-  "memory_sync_after_wiki_change": [
-    {
-      "action": "working_memory.json: focus_node + next_steps_todo (auto-cleanup) + query_summary"
-    },
-    {
-      "action": "wiki/hot.md Recent Changes: summary of wiki edits"
-    }
-  ],
   "schema_ref_to_agent_rules": "AGENTS.md#git-conventions"
 }
