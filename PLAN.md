@@ -445,3 +445,70 @@ related: [<other wiki pages or skills>]
 2. **Schema_ref for format** — all process files reference `rules/skill_format.json`, no duplication
 3. **Auto-cleanup** — before writing to working_memory: filter completed/outdated skills (per session_context_rules.json)
 4. **No auto-import** — .pi/skills/ remains SDK-managed; wiki/skills/ → .pi export requires explicit command
+
+---
+
+## 🆕 Phase 22: User-Facing Documentation (Release Docs) 🔴 P0
+**Цель:** Написать полный набор пользовательской документации для релиза — любые пользователи могут понять и использовать Loomana без знания внутренних правил.
+
+### Документация в `docs/`
+
+| Файл | Содержание | Статус |
+|------|------------|--------|
+| **getting-started.md** | Пошаговая инструкция: клонировать → harness → первый вопрос | ✅ Done (Phase 21) |
+| **architecture.md** | Архитектура: слои, потоки данных, schema_ref, memory bridge | ✅ Done (Phase 21) |
+| **wiki-structure.md** | Структура wiki: категории, frontmatter, шаблоны, naming conventions | ✅ Done (Phase 21) |
+| **scripts-guide.md** | Справочник всех скриптов: аргументы и примеры | ✅ Done (Phase 21) |
+| **rules-reference.md** | Справочник правил categories.json, link_conventions, git_conventions | ✅ Done (Phase 21) |
+| **api-conventions.md** | Конвенции: frontmatter schema, commit format, evidence grading | ✅ Done (Phase 21) |
+| **troubleshooting.md** | Типичные проблемы и решения | ✅ Done |
+| **security-guide.md** | Privacy, gitignore, public repo safety | ✅ Done |
+| **extending-wiki.md** | Добавление категорий, скриптов, правил, schema-patch | ✅ Done |
+
+### Design Principles
+
+1. **Release-ready** — никаких конкретных wiki-страниц; все примеры гипотетические
+2. **Modular** — каждый файл читается отдельно
+3. **No duplication of AGENTS.md** — ссылки на canonical source в AGENTS.md, детали в docs/
+4. **Actionable** — конкретные шаги, не только теория
+
+### Next Phase: Deep-Dive Wiki Docs (wiki/docs/)
+
+После завершения user-facing docs — наполнить wiki/docs/ фреймворк-специфичной документацией:
+- Symfony deep-dive overview
+- Twig template engine reference
+- NixOS development guide
+
+> **Dependent on:** User requests for specific framework coverage.
+
+
+---
+
+## 🆕 Phase 23: Advanced Documentation Gaps 🔴 P1
+**Цель:** Закрыть пробелы в документации по Loomana — session lifecycle, advanced query, batch ingest.
+
+### Gap Analysis (from docs audit)
+
+| Тема | Статус | Что написано | Чего не хватает |
+|------|---------|--------------|-----------------|
+| Session lifecycle | ⚠️ Partially covered | architecture.md: memory layers overview | Нет flow: boot → continue → end; corrupted WM/hot.md recovery; memory sync rules per mode |
+| Contradiction resolution in practice | ⚠️ Partially covered | api-conventions.md + troubleshooting | Есть theory cascade (Code Reality > Live State > Documentation), но нет реальных сценариев принятия решений пользователем |
+| Advanced query techniques | ⚠️ Partially covered | architecture.md: search hierarchy | Нет topic continuity bias, compounding_decision_logic (когда save vs just deliver), semantic search в деталях |
+| Batch ingest workflow | ⚠️ Partially covered | scripts-guide.md + troubleshooting | Нет flow: cluster detection → user initiation via `batch-ingest.sh --scan` |
+| Error handling deep dive | ⚠️ Partially covered | architecture.md: 4-step loop | Нет local-fix vs schema-patch vs source-conflict vs dead-end examples |
+
+### Tasks
+
+| # | File | Description | Dependencies | Status |
+|---|------|-------------|--------------|--------|
+| **G1** | `docs/session-lifecycle.md` — full session flow | Bootstrap → memory sync (wiki/dev modes) → end; corrupted WM/hot.md recovery; clear & rewrite rules | None | ⬜ Pending |
+| **G2** | `docs/advanced-query.md` — query deep dive | Topic continuity bias, compounding decision logic, search hierarchy in detail, novel insight save criteria | None | ⬜ Pending |
+| **G3** | `docs/batch-ingest.md` — batch workflow | Cluster detection algorithm, auto-trigger conditions, manual batch initiation, user approval flow | None | ⬜ Pending |
+
+### Design Principles
+
+1. **Release-ready** — никаких конкретных wiki-страниц; все примеры гипотетические
+2. **Actionable** — конкретные сценарии и решения, не только theory
+3. **No duplication of AGENTS.md** — ссылки на process files через schema_ref
+
+> **Note:** Phase 21 docs (G1-G6) are complete and committed. Phase 22 (troubleshooting, security-guide, extending-wiki) also complete. These advanced gaps are the final pieces for a comprehensive Loomana documentation set.

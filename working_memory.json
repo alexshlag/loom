@@ -1,41 +1,31 @@
 {
-  "last_updated": "2026-07-08T09:50+03",
+  "last_updated": "2026-07-08T11:25+03",
   "current_mode": "project",
-  "focus_node": "Phase 21 completed: all docs G1-G6 written — getting-started, architecture, wiki-structure, scripts-guide, rules-reference, api-conventions",
+  "focus_node": "Phase 22 complete: all user-facing docs written (troubleshooting, security-guide, extending-wiki)",
   "next_steps_todo": [
-    "Phase 20 S1-S9 validated complete",
-    "Choose: Phase 18.1 (docs deep-dive templates) or performance profiling"
+    "Deep-dive wiki docs (wiki/docs/): Symfony, Twig, NixOS — pending user request",
+    "Consider adding: faq.md or glossary.md for new users"
   ],
   "open_pages": [],
   "dead_ends": [],
   "query_summary": {
-    "intent": "Write Phase 21 documentation: wiki-structure, scripts-guide, rules-reference, api-conventions",
+    "intent": "Write remaining Phase 21 docs: troubleshooting, security-guide, extending-wiki",
     "pages_read": [
       "docs/getting-started.md",
       "docs/architecture.md",
-      "rules/categories.json",
-      "wiki/templates/*.json",
-      "rules/naming_conventions.json",
-      "scripts/lib.sh",
-      "rules/tag-guidelines.json",
-      "rules/link_conventions.json",
-      "rules/git_conventions.json",
-      "rules/contradiction_resolution.json",
-      "rules/evidence_grade.json",
-      "rules/error_handling.json"
+      ".gitignore",
+      "AGENTS.md"
     ],
     "key_findings": [
-      "✅ G3 wiki-structure.md written (13KB) — categories, frontmatter schema, templates, naming conventions, assets pipeline",
-      "✅ G4 scripts-guide.md written (18KB) — all 35 scripts with args, examples, exit codes",
-      "✅ G5 rules-reference.md written (19KB) — all 34 rules described + scenario lookup table",
-      "✅ G6 api-conventions.md written (15KB) — frontmatter schema, commit format, evidence grading, tag patterns"
+      "Phase 21: all docs G1-G6 completed and committed",
+      "Phase 22: troubleshooting.md, security-guide.md, extending-wiki.md created — release-ready (no specific wiki pages assumed)",
+      "raw/corrected/SRC-2026-07-05-TwigOfficial/twig-homepage.md waiting for ingest"
     ]
   },
   "broken_links_resolved": [],
   "recent_activity": [
-    "2026-07-08 docs | Phase 21: wrote wiki-structure.md (G3)",
-    "2026-07-08 docs | Phase 21: wrote scripts-guide.md (G4)",
-    "2026-07-08 docs | Phase 21: wrote rules-reference.md (G5)",
-    "2026-07-08 docs | Phase 21: wrote api-conventions.md (G6)"
+    "2026-07-08 commit | feat | docs: deep-dive templates API CLI migration guide + template selection in ingest",
+    "2026-07-08 docs | Phase 18.1: completed deep-dive templates (API reference, CLI commands, migration guide, general guide)",
+    "2026-07-08 docs | Phase 22: created troubleshooting.md, security-guide.md, extending-wiki.md"
   ]
 }
