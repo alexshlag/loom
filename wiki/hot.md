@@ -12,10 +12,10 @@ related: []
 - **Status**: 🟢 ACTIVE SESSION — Wiki maintenance and expansion
 
 ## Active Session Context
-- **Focus node**: Phase 23 complete: all docs/ source documents ingested, STI-V1 rule verified — session cleanup (issues.md + PLAN.md) done
+- **Focus node**: refactor work_modes.json compactification convention
 
 ### Pending Tasks
-- **schema-patch proposal for discovery step in RULES.md §9 R01 or §11 step 3.5; rename wiki/concepts pages pending user approval**
+- **review session_context_rules.json for unified context budget rules**
 
 ## Recent Changes
   No recent log entries

@@ -1,9 +1,9 @@
 {
-  "last_updated": "2026-07-08T15:36",
+  "last_updated": "2026-07-08T18:25",
   "current_mode": "project",
-  "focus_node": "Phase 23 complete: all docs/ source documents ingested, STI-V1 rule verified — session cleanup (issues.md + PLAN.md) done",
+  "focus_node": "refactor work_modes.json compactification convention",
   "next_steps_todo": [
-    "schema-patch proposal for discovery step in RULES.md §9 R01 or §11 step 3.5; rename wiki/concepts pages pending user approval"
+    "review session_context_rules.json for unified context budget rules"
   ],
   "open_pages": [],
   "dead_ends": [],
@@ -35,6 +35,7 @@
     "2026-07-08 15:07 | completed | Phase 23 complete: all docs/ source documents ingested into wiki/docs/, STI-V1 rule verified",
     "2026-07-08 15:09 | completed | Memory sync procedure verified",
     "2026-07-08 15:10 | completed | Phase 23 complete: all docs/ source documents ingested into wiki/docs/, STI-V1 rule verified (read→extract→wiki→forget)",
-    "2026-07-08 15:36 | completed | Phase 23 complete: all docs/ source documents ingested, STI-V1 rule verified — session cleanup (issues.md + PLAN.md) done"
+    "2026-07-08 15:36 | completed | Phase 23 complete: all docs/ source documents ingested, STI-V1 rule verified — session cleanup (issues.md + PLAN.md) done",
+    "2026-07-08 18:25 | completed | refactor work_modes.json compactification convention"
   ]
 }

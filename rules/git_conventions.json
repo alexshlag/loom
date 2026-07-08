@@ -20,13 +20,13 @@
     "wiki": [
       "git add wiki/"
     ],
-    "dev": [
+    "dev_mode": [
       "git add -A"
     ]
   },
   "mode_detection": {
-    "auto": "only wiki/*.md \u2192 wiki; any .sh/.json in root/rules/scripts/ \u2192 dev",
-    "override": "user says 'wiki mode' or 'dev mode'"
+    "auto": "only wiki/*.md → wiki; any .sh/.json in root/rules/scripts/ → dev_mode",
+    "override": "user says 'wiki mode' or 'dev_mode'"
   },
   "pre_commit_workflow": [
     {
