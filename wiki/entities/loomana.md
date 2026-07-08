@@ -175,7 +175,7 @@ Root файлы:
 |--------|------------|
 | `git-auto-commit.sh` | Автоматический commit после Write/Edit на wiki/ (stage только wiki/, уважает wiki-lock) |
 | `load-hot-cache.sh` | Загрузка hot.md в начале сессии — факт-контекст для пользователя |
-| `restore-hot-cache.sh` | Восстановление контекста после compaction — читает актуальный hot.md из disk |
+| `load-hot-cache.sh` | Восстановление контекста после compaction — читает актуальный hot.md из disk |
 | `check-wiki-changes.sh` | End-of-session check — обновляет hot.md если были изменения |
 
 **Точки вызова:**

@@ -258,7 +258,7 @@
   - broken_links_resolved — audit trail, не удалять. next_steps_todo и open_pages — чистить.
 
 ## [2026-06-30] schema | Harness-Independent Session & Git Operations complete
-  - Интегрированы все 4 скрипта: git-auto-commit.sh, load-hot-cache.sh, restore-hot-cache.sh, check-wiki-changes.sh
+  - Интегрированы все 4 скрипта: git-auto-commit.sh, load-hot-cache.sh, load-hot-cache.sh, check-wiki-changes.sh
   - Обновлены process-файлы: ingest step 3a/3b (git-auto-commit), query bootstrap (load-hot-cache), query step 2.3 post_action (restore-hot-cache), query step 3 post_operations (git-auto-commit)
   - Секция Harness-Independent удалена из AGENTS.md — правила живут в process-файлах
 

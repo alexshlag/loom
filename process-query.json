@@ -324,7 +324,7 @@
       ],
       "post_action": {
         "trigger": "compaction_complete",
-        "command": "./scripts/restore-hot-cache.sh || true"
+        "schema_ref": "session_context_rules.json#write_triggers.compaction"
       }
     },
     {
@@ -651,7 +651,7 @@
     "step_0.5_query_intent_decoder": {
       "trigger": "start_of_query",
       "action": "hot_cache_bootstrap",
-      "command": "./scripts/memory/hot-cache-update.sh --check-only || ./scripts/load-hot-cache.sh"
+      "schema_ref": "session_context_rules.json#write_triggers.wiki_modified"
     },
     "step_3_result_fixation": {
       "trigger": "on_result_fixation",

@@ -135,7 +135,7 @@ Harness-independent auto-commit. Detects wiki vs dev mode from changes, stages a
 | Script | Purpose |
 |--------|---------|
 | `load-hot-cache.sh [wiki]` | Loads wiki/hot.md into context (exits 1 if missing — graceful) |
-| `restore-hot-cache.sh [path]` | Restores session from backup hot.md file |
+| `load-hot-cache.sh [path]` | Restores session from backup hot.md file |
 | `check-wiki-changes.sh [wiki]` | Early-exit guard for harness hooks |
 
 ---

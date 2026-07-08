@@ -94,7 +94,7 @@ process-{lint}         → wiki-lint/SKILL.md
 
 **LOOM:**
 - `working_memory.json` — Context Bridge между сессиями (focus_node, query_summary, next_steps_todo)
-- Harness-independent session ops: 4 key scripts (git-auto-commit.sh, load-hot-cache.sh, restore-hot-cache.sh, check-wiki-changes.sh)
+- Harness-independent session ops: 4 key scripts (git-auto-commit.sh, load-hot-cache.sh, load-hot-cache.sh, check-wiki-changes.sh)
 - Natural Memory Translation: «позавчера» вместо «2026-06-28», human-time from machine facts
 
 **claude-obsidian:**

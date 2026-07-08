@@ -329,7 +329,7 @@ Solution: decouple via hooks — processes emit events, memory layer handles the
       "actions": [
         {
           "action_name": "update_hot_cache_if_changed",
-          "command": "./scripts/memory/hot-cache-update.sh --check-only"
+          "command": "./scripts/memory/hot-cache-update.sh "
         }
       ]
     }
@@ -379,7 +379,7 @@ Problem: unnecessary I/O if wiki hasn't changed since last session.
 
 **Solution:** Check-only mode that skips rebuild if no changes detected.
 ```bash
-# scripts/memory/hot-cache-update.sh --check-only
+# scripts/memory/hot-cache-update.sh 
 # Returns exit code 0 = "no changes", 1 = "changes detected"
 # Only full rebuild triggered when exit code != 0
 ```
@@ -387,7 +387,7 @@ Problem: unnecessary I/O if wiki hasn't changed since last session.
 **Integration:** Replace `./scripts/load-hot-cache.sh || true` in process-query.json with:
 ```json
 {
-  "command": "./scripts/memory/hot-cache-update.sh --check-only || true",
+  "command": "./scripts/memory/hot-cache-update.sh  || true",
   "condition": "exit_code_1 → proceed to full rebuild"
 }
 ```

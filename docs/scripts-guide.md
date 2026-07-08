@@ -241,17 +241,9 @@ Semi-auto generation of diff for contradiction sections. Shows what changes woul
 
 Graceful harness hook — exits 1 if wiki/hot.md missing (no vault = no-op), otherwise loads hot cache into environment. Used by query workflow to restore session context.
 
-- **Args (optional):** `[wiki_dir]`
+- **Args (optional):** `[wiki_dir]` — default: `wiki/`
 - **Exit code:** 0 = loaded, 1 = no hot.md found
-- **Used by:** process-query.json step_0.25
-
-### `restore-hot-cache.sh [hot_md_path]`
-
-Restores session context from backup hot.md file. Used after crash recovery or manual reset.
-
-- **Args (optional):** `[hot_md_path]` — default: wiki/hot.md
-- **Exit code:** 0 = restored, 1 = path invalid
-- **Example:** `./scripts/restore-hot-cache.sh /tmp/hot-backup.md` → loads session context from backup
+- **Used by:** process-query.json step_0.25, process-ingest.json post_action
 
 ### `check-wiki-changes.sh [wiki_dir]`
 

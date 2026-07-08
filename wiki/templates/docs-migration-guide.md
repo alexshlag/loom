@@ -70,7 +70,7 @@ Before starting the migration, verify the following:
 <command_to_resolve>
 
 # Verify upgrade succeeded
-<verification_command> --check-only
+<verification_command> 
 ```
 
 ### Step 3: Apply configuration changes

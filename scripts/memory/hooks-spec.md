@@ -47,7 +47,7 @@
 ` Auto-distill undistilled trajectories (find & create skill/case pages)``| Trigger | Action | Schema Ref |
 ` Auto-distill undistilled trajectories (find & create skill/case pages)``|---------|--------|------------|
 ` Auto-distill undistilled trajectories (find & create skill/case pages)``| `on_source_ingested` | Register in source manifest/rebuild tracking | `scripts/rebuild-source-manifest.sh` |
-` Auto-distill undistilled trajectories (find & create skill/case pages)``| `on_page_update_completed` | Check hot cache freshness, trigger rebuild if stale | `scripts/memory/hot-cache-update.sh --check-only` |
+` Auto-distill undistilled trajectories (find & create skill/case pages)``| `on_page_update_completed` | Check hot cache freshness, trigger rebuild if stale | `scripts/memory/hot-cache-update.sh ` |
 ` Auto-distill undistilled trajectories (find & create skill/case pages)``| `on_new_page_created` | Auto-crosslink new page with existing wiki | `scripts/auto-crosslink.sh` |
 ` Auto-distill undistilled trajectories (find & create skill/case pages)``| `on_ingest_complete` | Capture trajectory for nontrivial ingest operations | `scripts/memory/traj-capture.sh` |
 ` Auto-distill undistilled trajectories (find & create skill/case pages)``| `on_distillation_ready` | Check pending distillations queue | `scripts/memory/distill.sh --check-undistilled` |

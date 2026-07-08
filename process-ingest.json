@@ -503,8 +503,7 @@
         "trigger": "on_page_update_completed",
         "actions": [
           {
-            "action_name": "update_hot_cache_if_changed",
-            "command": "./scripts/memory/hot-cache-update.sh --check-only || true"
+            "schema_ref": "session_context_rules.json#write_triggers.wiki_modified"
           }
         ]
       },
@@ -584,7 +583,7 @@
       "triggers": [
         {
           "name": "hot_cache_check",
-          "command": "./scripts/memory/hot-cache-update.sh --check-only || true"
+          "schema_ref": "session_context_rules.json#write_triggers.wiki_modified"
         },
         {
           "name": "auto_crosslink",

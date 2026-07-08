@@ -66,7 +66,7 @@
 
   "flow": {
     "session_start": [
-      "read working_memory.json → ./scripts/restore-hot-cache.sh → grep -m 20 '' wiki/log.md | tail -20"
+      "read working_memory.json → ./scripts/load-hot-cache.sh → grep -m 20 '' wiki/log.md | tail -20"
     ],
     "session_end": [
       "write_to_working_memory (next_steps_todo, open_pages) → write to wiki/hot.md (Active Session Context or Active Project)"
@@ -109,6 +109,14 @@
       "target_section": "hot.md → Recent Changes + System State",
       "wm_sync": "update WM.focus_node + next_steps_todo",
       "description": "After process step completes (ingest/query/lint) — write to WM then refresh hot cache. Use sync-working-memory.sh for atomic WM update, followed by hot-cache-auto-refresh.sh."
+    },
+    {
+      "event": "compaction_complete",
+      "rule_id": "HOT-RESTORE-V1",
+      "ref_to_rule_id": "HOT-RESTORE-V1",
+      "priority": "immediate",
+      "target_section": "hot.md → load into context",
+      "command": "./scripts/load-hot-cache.sh || true"
     }
   ],
 
@@ -163,7 +171,7 @@
   "constraints": {
     "IMMEDIATE_WRITE": "Write wiki/hot.md immediately after action, NOT at session end",
     "SLICE_NOT_FULL_LOG": "wiki/hot.md = summary slice only, never full log copy",
-    "RESTORE_ON_COMPACT": "After context compaction: call restore-hot-cache.sh || true",
+    "RESTORE_ON_COMPACT": "After context compaction: call load-hot-cache.sh || true",
     "SYSTEM_STATE_ALWAYS": "System State section updated on every wiki create/update",
     "NO_APPEND_TO_JSON": "Never append to JSON files — read full file → modify → write complete document",
     "LOG_APPEND_ONLY": "wiki/log.md is append-only. NEVER cat > or write(). Always use cat >> (append)."

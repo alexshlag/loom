@@ -191,7 +191,7 @@ Result: wiki/skills/{slug}-skill.md created, appended to wiki/index.md
 | Trigger | Action | When It Fires |
 |---------|--------|---------------|
 | `on_source_ingested` | Register in source manifest/rebuild tracking | After validate-path + delta-tracking passes |
-| `on_page_update_completed` | Check hot cache freshness | After page update; triggers hot-cache-update.sh --check-only |
+| `on_page_update_completed` | Check hot cache freshness | After page update; triggers hot-cache-update.sh  |
 | `on_new_page_created` | Auto-crosslink new page with existing wiki | After step_8a/b completes |
 | `on_ingest_complete` | Capture trajectory for nontrivial ingest | After all steps complete if complexity ≥ medium |
 | `on_distillation_ready` | Check pending distillations queue | Periodic check via distill.sh --check-undistilled |
@@ -265,10 +265,10 @@ No manual intervention required. Trajectories are captured, analyzed, and distil
 The hot cache (`wiki/hot.md`) is refreshed periodically to ensure next-session bootstrap has fresh data:
 ```bash
 # Check if hot cache needs refresh (non-blocking)
-./scripts/memory/hot-cache-update.sh --check-only || ./scripts/load-hot-cache.sh
+./scripts/memory/hot-cache-update.sh  || ./scripts/load-hot-cache.sh
 
 # After context compaction — restore from backup
-./scripts/restore-hot-cache.sh || true
+./scripts/load-hot-cache.sh || true
 ```
 
 ### PRF-Enhanced Recall (`recall.sh`)

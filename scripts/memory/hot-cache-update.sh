@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# hot-cache-update.sh — Check-only mode for hot cache optimization
-# Phase 16.1 Task #4: Skip rebuild if wiki unchanged since last session
-# 
-# Usage: ./hot-cache-update.sh [--check-only] [--rebuild]
+# hot-cache-update.sh — Check if wiki files changed since last session
+# Phase 16.1 Task #4: Skip rebuild if wiki unchanged
+#
+# Usage: ./hot-cache-update.sh [--rebuild]
 # Returns: exit code 0 = "no changes" (skip), exit code 1 = "changes detected" (rebuild needed)
 
 set -euo pipefail
@@ -13,7 +13,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 cd "$PROJECT_ROOT"
 WIKI_DIR="wiki"
 HOT_FILE="$WIKI_DIR/hot.md"
-CHECK_ONLY=true
+
 FORCE_REBUILD=false
 
 # ─── Parse arguments ──────────────────────────────────────────────────────────
@@ -21,7 +21,7 @@ POSITIONAL_ARGS=()
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --rebuild) FORCE_REBUILD=true; shift;;
-        --check-only) shift;;  # default mode, explicit flag accepted
+    
         *) POSITIONAL_ARGS+=("$1"); shift;;
     esac
 done

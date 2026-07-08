@@ -156,7 +156,7 @@ Markdown with structured sections per result.
 ### Integration in process-query.json
 ```json
 {
-  "command": "./scripts/memory/hot-cache-update.sh --check-only || true",
+  "command": "./scripts/memory/hot-cache-update.sh  || true",
   "description": "Skip hot cache rebuild if wiki unchanged"
 }
 ```

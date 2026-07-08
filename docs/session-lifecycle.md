@@ -134,7 +134,7 @@ Step 3: Append to wiki/log.md (append-only)
     - Never overwrite, never truncate — append only with cat >>
 
 Step 4: Context bubble cleanup
-    - If context compaction occurred → call restore-hot-cache.sh || true
+    - If context compaction occurred → call load-hot-cache.sh || true
     - Close pages not relevant to next session's likely focus
 ```
 

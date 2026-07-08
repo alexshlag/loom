@@ -73,6 +73,21 @@
 
 ---
 
+### Phase 25: Memory Scripts Consolidation & Schema Ref Migration ✅ Done (H1-H4 complete)
+
+**Problem resolved:** load-hot-cache.sh and restore-hot-cache.sh were identical. --check-only flag was unused. Inline calls scattered across process files.
+
+| # | Task | Description | Priority | Status |
+|---|------|-------------|----------|--------|
+| **H1** ✅ | Remove restore-hot-cache.sh | Merged into load-hot-cache.sh (both identical) |
+| **H2** ✅ | Clean hot-cache-update.sh --check-only flag | Default mode is check-only; removed unused flag and all calls with it |
+| **H3** ✅ | Replace inline calls in process-*.json → schema_ref | session_context_rules.json#write_triggers instead of direct commands |
+| **H4** ✅ | Update docs/ and wiki/docs/ references | Point to consolidated script names and schema_ref pattern |
+
+> **Result:** 2 scripts for hot cache (load, update-check), unified contract via schema_ref.
+
+---
+
 ### Phase 24: Memory Sync Contract Unification ✅ Done (M1-M4 complete)
 
 **Problem resolved:** WM/hot.md sync logic was duplicated across RULES.md §8/§11, process-*.json memory_hooks, git_conventions.json#memory_sync_on_dev_commit, and rules/memory-sync-at-task-end.md.

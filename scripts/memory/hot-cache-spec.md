@@ -25,7 +25,7 @@ Check-only mode: compare timestamps of wiki .md files vs `hot.md` mtime. Skip re
 ### Integration
 
 **Before:** `./scripts/load-hot-cache.sh || true` — always runs  
-**After:** `./scripts/memory/hot-cache-update.sh --check-only || ./scripts/load-hot-cache.sh` — check first, load only if needed
+**After:** `./scripts/memory/hot-cache-update.sh  || ./scripts/load-hot-cache.sh` — check first, load only if needed
 
 ### Output Format (stderr)
 

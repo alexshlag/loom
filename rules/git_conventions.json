@@ -46,11 +46,6 @@
         "git add *",
         "git commit -a"
       ]
-    },
-    {
-      "action": "auto_refresh_hot_cache",
-      "command": "./scripts/memory/hot-cache-auto-refresh.sh --quiet 2>/dev/null || true",
-      "note": "Runs before git add \u2014 ensures wiki/hot.md is fresh so same commit captures both page changes and updated context"
     }
   ],
   "post_commit_check": {
@@ -65,11 +60,7 @@
     {
       "action": "wiki/hot.md Active Project: update phase status",
       "command": "./scripts/memory/hot-cache-auto-refresh.sh --quiet > /dev/null 2>&1 || true",
-      "note": "Must run AFTER WM update (reads updated focus_node + recent_activity)"
-    },
-    {
-      "rule_file": "rules/memory-sync-at-task-end.md",
-      "note": "Full procedure for post-task memory sync \u2014 read before commit"
+      "note": "Must run AFTER WM update (reads updated focus_node + recent_activity). Follows session_context_rules.json#write_triggers.process_complete contract."
     }
   ],
   "memory_sync_after_wiki_change": [

@@ -138,9 +138,9 @@ Before Phase 20.2, hooks only **checked** for undistilled trajectories but never
 
 Refreshes `wiki/hot.md` for next-session bootstrap:
 ```bash
-./scripts/memory/hot-cache-update.sh --check-only || ./scripts/load-hot-cache.sh
+./scripts/memory/hot-cache-update.sh  || ./scripts/load-hot-cache.sh
 # After context compaction — restore from backup
-./scripts/restore-hot-cache.sh || true
+./scripts/load-hot-cache.sh || true
 ```
 
 ### PRF-Enhanced Recall (`recall.sh`)
