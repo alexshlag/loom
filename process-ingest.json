@@ -536,8 +536,8 @@
             "command": "echo 'INGEST_COMPLETE' >> wiki/log.md; echo $(date +%Y-%m-%d) > meta/last-ingest-sync.txt"
           },
           {
-            "command": "./scripts/memory/hot-cache-auto-refresh.sh --quiet || true",
-            "rule_id": "HOT-WIKI-CHANGES-V1"
+            "schema_ref": "session_context_rules.json#write_triggers.process_complete",
+            "description": "After process completes → follow session_context_rules.json write trigger for WM + hot cache sync."
           }
         ]
       },

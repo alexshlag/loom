@@ -100,6 +100,15 @@
       "rule_id": "HOT-WIKI-CHANGES-V1",
       "priority": "immediate",
       "target_section": "hot.md → System State → Recent Changes"
+    },
+    {
+      "event": "process_complete",
+      "rule_id": "HOT-SAVE-ACTION-V1",
+      "ref_to_rule_id": "HOT-SAVE-ACTION-V1",
+      "priority": "post_action",
+      "target_section": "hot.md → Recent Changes + System State",
+      "wm_sync": "update WM.focus_node + next_steps_todo",
+      "description": "After process step completes (ingest/query/lint) — write to WM then refresh hot cache. Use sync-working-memory.sh for atomic WM update, followed by hot-cache-auto-refresh.sh."
     }
   ],
 

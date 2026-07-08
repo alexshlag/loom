@@ -12,7 +12,7 @@ related: []
 - **Status**: 🟢 ACTIVE SESSION — Wiki maintenance and expansion
 
 ## Active Session Context
-- **Focus node**: refactor work_modes.json compactification convention
+- **Focus node**: Phase 24 completed: unified memory sync contract
 
 ### Pending Tasks
 - **review session_context_rules.json for unified context budget rules**

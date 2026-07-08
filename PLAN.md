@@ -73,6 +73,21 @@
 
 ---
 
+### Phase 24: Memory Sync Contract Unification ✅ Done (M1-M4 complete)
+
+**Problem resolved:** WM/hot.md sync logic was duplicated across RULES.md §8/§11, process-*.json memory_hooks, git_conventions.json#memory_sync_on_dev_commit, and rules/memory-sync-at-task-end.md.
+
+| # | Task | Description | Priority | Status |
+|---|------|-------------|----------|--------|
+| **M1** ✅ | Add PROCESS_COMPLETE trigger to session_context_rules.json#write_triggers | Extend existing HOT-SAVE-ACTION-V1 contract; add process_complete → ref rule_id pattern |
+| **M2** ✅ | Remove rules/memory-sync-at-task-end.md | Duplicates session_context_rules.json#write_triggers — user docs are in docs/ |
+| **M3** ✅ | Clean up RULES.md §8/§11 | Replace inline sync commands with schema_ref to session_context_rules.json#write_triggers |
+| **M4** ✅ | Clean up process-*.json memory_hooks | Remove inline hot-cache/auto-refresh calls; replace with schema_ref |
+
+> **Result:** One source of truth (`session_context_rules.json#write_triggers`), zero duplication, schema_ref everywhere.
+
+---
+
 ## 🔄 Active / Pending Phases
 
 ### Phase 17 (Continued): Remaining Script Hardening

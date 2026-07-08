@@ -319,7 +319,7 @@
           "step_2": "auto_crosslink_from_query_results -> add to working_memory.json"
         },
         {
-          "step_3": "./scripts/memory/hot-cache-auto-refresh.sh --quiet"
+          "step_3": { "schema_ref": "session_context_rules.json#write_triggers.process_complete" }
         }
       ],
       "post_action": {

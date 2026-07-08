@@ -65,8 +65,7 @@ After completing a task:
    - `issues.md` → fully close resolved bugs, leave only open + current ones
    - `PLAN.md`, `FEATURES_PLAN.md` → update phase statuses, mark current task
 3. **Sync context (REQUIRED):**
-   - Update `working_memory.json`: focus_node + next_steps_todo via `scripts/memory/sync-working-memory.sh`
-   - Refresh `wiki/hot.md`: run `scripts/memory/hot-cache-auto-refresh.sh --quiet` after WM update
+   - Follow schema_ref → `session_context_rules.json#write_triggers` for procedure.
 4. **Git commit:**
    ```bash
    git add -A && git commit -m "<type> | <scope>: <description>"
@@ -74,10 +73,8 @@ After completing a task:
 
 **Commit format:** `<type> | <scope>: <description>` (type: feat|fix|refactor|schema|lint|ingest|query)
 
-> **Memory sync procedure**: `rules/memory-sync-at-task-end.md` — defines when/how to update WM + hot cache after task. Read before commit.
 > **Git conventions**: `rules/git_conventions.json#memory_sync_on_dev_commit` — integration with git workflow.
 
-> **Full procedure**: `rules/memory-sync-at-task-end.md` — defines when/how to sync WM + hot cache after every task. Read before commit.
 > **Reference**: `rules/git_conventions.json#memory_sync_on_dev_commit` — integration with git workflow.
 
 ## 9. INSTRUCTION COMPACTIFICATION — Conciseness without losing logic
@@ -156,10 +153,8 @@ When implementing changes that affect how the user or agent interacts with Looma
 5. VERIFICATION → test functionality, check no regressions, run existing checks (lint/shellcheck)
 6. DOCUMENT UPDATE → refresh issues.md (close resolved), update PLAN.md (mark done), update AGENTS.md if needed, update docs/ for any feature/script/rule change
 7. **SYNC THEN COMMIT**:
-   a. Update `working_memory.json`: focus_node + next_steps_todo via `scripts/memory/sync-working-memory.sh`
-   b. Refresh `wiki/hot.md`: run `scripts/memory/hot-cache-auto-refresh.sh --quiet` after WM update
-   c. Run git_conventions.json#pre_commit_workflow (commit everything together)
-   > **Full procedure**: `rules/memory-sync-at-task-end.md` — read before commit
+   a. Follow schema_ref → `session_context_rules.json#write_triggers` for WM + hot cache sync.
+   b. Run git_conventions.json#pre_commit_workflow (commit everything together).
 ```
 
 **Critical rules:**

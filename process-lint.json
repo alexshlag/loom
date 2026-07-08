@@ -139,7 +139,7 @@
         },
         {
           "condition": "hot_cache_stale",
-          "action": "run scripts/memory/hot-cache-auto-refresh.sh --quiet > /dev/null 2>&1 || true",
+          "schema_ref": "session_context_rules.json#write_triggers.process_complete",
           "log_only": true
         },
         {
