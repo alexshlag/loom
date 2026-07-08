@@ -109,8 +109,7 @@
       "rule_id": "HOT-RESTORE-V1",
       "ref_to_rule_id": "HOT-RESTORE-V1",
       "priority": "immediate",
-      "target_section": "hot.md \u2192 load into context",
-      "command": "./scripts/load-hot-cache.sh || true"
+      "target_section": "hot.md \u2192 load into context"
     }
   ],
   "concurrent_trigger_rule": "When multiple triggers fire simultaneously, write ALL relevant sections in one pass (not sequentially)",
@@ -159,7 +158,7 @@
   "constraints": {
     "IMMEDIATE_WRITE": "Write wiki/hot.md immediately after action, NOT at session end",
     "SLICE_NOT_FULL_LOG": "wiki/hot.md = summary slice only, never full log copy",
-    "RESTORE_ON_COMPACT": "After context compaction: call load-hot-cache.sh || true",
+    "RESTORE_ON_COMPACT": "After context compaction: follow HOT-RESTORE-V1 \u2192 session_context_rules.json#write_triggers.compaction_complete",
     "SYSTEM_STATE_ALWAYS": "System State section updated on every wiki create/update",
     "NO_APPEND_TO_JSON": "Never append to JSON files \u2014 read full file \u2192 modify \u2192 write complete document",
     "LOG_APPEND_ONLY": "wiki/log.md is append-only. NEVER cat > or write(). Always use cat >> (append)."
