@@ -12,7 +12,8 @@ related: []
 - **Status**: 🟢 ACTIVE SESSION — Wiki maintenance and expansion
 
 ## Active Session Context
-  WM read failed — using defaults
+- **Current focus**: Memory optimization for ingest — STI-V1 rule (sources transient, never hold multiple sources simultaneously)
+- **Active work**: Implementing source memory lifecycle contract to prevent context window bloat
 
 ## Recent Changes
   No recent log entries

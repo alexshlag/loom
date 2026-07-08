@@ -658,3 +658,4 @@ Sources used:
 
 ## [2026-07-06] agENTS_reduction | AGENTS.md reduced from 676 to 447 lines (-230 lines, ~14KB saved): extracted Auto-rebuild/Lint rules → auto_rebuild_metadata.json + non_blocking_lint.json (enriched), Wiki Snapshot JSON-block → snapshot_format.json (new), Language Policy → language_policy.json (new), removed Evidence Grade inline table → already in evidence_grade.json, removed Schema Inheritance Canonical References dead-weight table; total rules/*: 28 files (~1030 lines); commit: 5f40f6e
 [2026-07-06T19:03+03] ingest | Created wiki/entities/php.md — PHP programming language overview page
+## [2026-07-08] schema | added STI-V1 rule (source_transient_ingest.json) — sources are transient, read→extract→wiki→forget; prevents context bloat during multi-source ingest

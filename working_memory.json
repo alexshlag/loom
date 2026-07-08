@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-07-08T11:25+03",
+  "last_updated": "2026-07-08T11:31+03",
   "current_mode": "project",
   "focus_node": "Phase 22 complete: all user-facing docs written (troubleshooting, security-guide, extending-wiki)",
   "next_steps_todo": [
@@ -24,6 +24,7 @@
   },
   "broken_links_resolved": [],
   "recent_activity": [
+    "2026-07-08 schema | added STI-V1 rule — sources transient during ingest, read→extract→wiki→forget",
     "2026-07-08 commit | feat | docs: deep-dive templates API CLI migration guide + template selection in ingest",
     "2026-07-08 docs | Phase 18.1: completed deep-dive templates (API reference, CLI commands, migration guide, general guide)",
     "2026-07-08 docs | Phase 22: created troubleshooting.md, security-guide.md, extending-wiki.md"
