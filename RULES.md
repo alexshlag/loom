@@ -73,9 +73,8 @@ After completing a task:
 
 **Commit format:** `<type> | <scope>: <description>` (type: feat|fix|refactor|schema|lint|ingest|query)
 
-> **Git conventions**: `rules/git_conventions.json#memory_sync_on_dev_commit` — integration with git workflow.
-
-> **Reference**: `rules/git_conventions.json#memory_sync_on_dev_commit` — integration with git workflow.
+> **Memory sync**: `session_context_rules.json#write_triggers.process_complete` — WM update + hot cache refresh. Runs BEFORE git.
+> **Git conventions**: `rules/git_conventions.json#pre_commit_workflow` — staging, commit format, verification.
 
 ## 9. INSTRUCTION COMPACTIFICATION — Conciseness without losing logic
 
@@ -161,4 +160,4 @@ When implementing changes that affect how the user or agent interacts with Looma
 - Never implement without plan (unless trivial one-liner)
 - Never update documentation after implementation — must be step 6, before commit
 - Never skip verification — test on real data before committing
-- Commit & memory sync via git_conventions.json (never duplicate logic)
+- Commit & memory sync via session_context_rules.json (never duplicate logic)

@@ -73,14 +73,14 @@ Commit format, staging modes, pre-commit workflow, prohibited commands, memory s
 2. **Mode detection**: 
    - Only `wiki/*.md` → **wiki mode**
    - Any `.sh/.json/py/md` in root, rules/, scripts/ → **dev mode**
-3. **Stage**: `git add <mode-command>` (never `git add *`, never `git commit -a`)
-4. **Verify**: `git status --short` — ensure no untracked/unstaged remain
-5. **Commit format**: `<type> | <scope>: <description>` (see rules/git_conventions.json#commit_format)
-6. **Memory sync**:
+3. **Memory sync (REQUIRED)**:
    - dev mode → update WM + hot.md
    - wiki mode → update WM focus_node + next_steps_todo
+4. **Stage**: `git add <mode-command>` (never `git add *`, never `git commit -a`)
+5. **Verify**: `git status --short` — ensure no untracked/unstaged remain
+6. **Commit format**: `<type> | <scope>: <description>` (see rules/git_conventions.json#commit_format)
 
-> Rule: Never commit without reading git_conventions.json first. Memory sync on dev commit is REQUIRED.
+> Rule: Memory sync BEFORE git → session_context_rules.json#write_triggers. Never commit without memory sync.
 
 ## Process Roles
 

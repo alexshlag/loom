@@ -12,7 +12,7 @@ related: []
 - **Status**: 🟢 ACTIVE SESSION — Wiki maintenance and expansion
 
 ## Active Session Context
-- **Focus node**: Phase 25 done: unified memory scripts
+- **Focus node**: Phase 25.2: clean git_conventions memory references
 
 ### Pending Tasks
 - **review session_context_rules.json for unified context budget rules**
