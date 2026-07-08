@@ -181,6 +181,7 @@ Consolidated index of all niche/specific rules. Read on demand when a process st
 | `rules/non_blocking_lint.json` | Lint checks, quiet mode, cron safety | Before lint |
 | `rules/contradiction_resolution.json` | Cascade priority for conflicting sources | On contradiction detected |
 | `rules/delta_tracking.json` | Hash-based source deduplication | Before ingest |
+| `rules/source_transient_ingest.json` | Source documents are transient: read → extract → write wiki → forget. Never hold multiple sources simultaneously | Before processing any source |
 | `rules/error_handling.json` | Detect → analyze → resolve → continue | On process failure |
 | `rules/evidence_grade.json` | Source authority auto-assignment | During page creation |
 | `rules/execution_contract.json` | Proposal → Action (no permission stops) | Session start |

@@ -1,6 +1,14 @@
 {
   "module": "process_ingest",
   "description": "Ingest new data into wiki - only path: capture - integrate",
+
+  "memory_contract": {
+    "rule_ref": "rules/source_transient_ingest.json",
+    "rule_id": "STI-V1",
+    "when_to_read": "before_processing_any_source", 
+    "instruction": "Read source documents one at a time. After extracting entities/facts/concepts into wiki — discard raw content from context. Never hold multiple source texts simultaneously."
+  },
+
   "pre_conditions": [
     {
       "condition": "user_provided_source",

@@ -1,0 +1,84 @@
+{
+  "rule_id": "STI-V1",
+  "rule_name": "source_transient_memory_contract",
+  "description": "Source documents are transient: read once, extract, write to wiki — then forget. Full source content never persists in agent memory beyond the ingest turn where it was processed.",
+
+  "core_principle": {
+    "statement": "Source document contents (raw/ files, web_search results, PDF text) exist only in the immediate processing context of a single ingest step. They are NOT carried forward to subsequent steps or preserved across turns.",
+    "rationale": "Every token holding raw source content competes with wiki page writing and crosslinking — wasting limited context window on data already captured into wiki pages."
+  },
+
+  "memory_lifecycle": {
+    "phase_read": {
+      "action": "read_file ${SOURCE_PATH} or fetch web_search/PDF result",
+      "scope": "this step only",
+      "purpose": "extract entities, concepts, contradictions, evidence_grade"
+    },
+    "phase_extract": {
+      "action": "write extracted knowledge to wiki page (new or existing)",
+      "constraint": "only structured facts go into wiki — not raw source text verbatim"
+    },
+    "phase_forget": {
+      "trigger": "after phase_extract completes",
+      "action": "discard full source content from active context",
+      "keep_only": [
+        "source_file_path (for sources: [] frontmatter field)",
+        "document_title_or_short_name"
+      ]
+    }
+  },
+
+  "batch_ingest_contract": {
+    "problem": "When ≥3 related sources are ingested together, each source's full content stays in context until ingest completes — exponential memory usage.",
+    "rule": [
+      "Process ONE source at a time through the read → extract → forget cycle",
+      "Before reading next source: explicitly discard previous source's raw content",
+      "Only accumulated wiki pages + metadata persist between sources"
+    ],
+    "prohibited_pattern": {
+      "description": "Reading all N sources into context, then processing them together",
+      "why_wrong": "N×document_size tokens in context simultaneously — fastest way to overflow"
+    }
+  },
+
+  "exception_cases": [
+    {
+      "case": "source_content_needed_for_specific_step_in_same_turn",
+      "description": "e.g., step_3 analysis needs source text for contradiction check — allowed, but must be scoped to that step only"
+    },
+    {
+      "case": "verbatim_quote_required_in_page",
+      "description": "Direct quotes from source → extracted and written into wiki page during phase_extract. After writing, quote is no longer in raw form in context."
+    }
+  ],
+
+  "implementation_guidelines_for_agent": {
+    "mental_model": [
+      "Treat each source document like a PDF reader: open, highlight key points, close, forget.",
+      "The wiki page IS the memory — not your conversation context.",
+      "If you need to re-read something from a source, grep the wiki (it's indexed), don't re-read the raw source."
+    ],
+    "practical_actions": [
+      {
+        "action": "read source → extract entities/concepts/facts",
+        "immediate_next_step": "write them into wiki page frontmatter/content"
+      },
+      {
+        "action": "complete wiki write for this source",
+        "next_action": "move to next source or proceed to crosslink step — do NOT re-read the source"
+      }
+    ]
+  },
+
+  "integration_with_existing_architecture": {
+    "working_memory": "sources are tracked in WM.sources_ingested list (paths only, no content)",
+    "log_md": "append source path and wiki page created — not full summary of source",
+    "raw_registry_json": "stores hash + title + metadata — never stores raw content"
+  },
+
+  "related_rules": {
+    "memory_architecture": "rules/session_context_rules.json",
+    "context_scopes": "rules/context-scopes.json",
+    "compactification_R03": "RULES.md#R03"
+  }
+}
