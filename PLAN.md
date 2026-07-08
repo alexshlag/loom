@@ -10,7 +10,7 @@
 
 | # | Task | Output | Status |
 |---|------|--------|--------|
-| 1 | Research: best practices for tagging in Obsidian/LLM context | Findings doc | ⬜ Pending |
+| 1 | Research: best practices for tagging in Obsidian/LLM context | Findings doc | ✅ Done |
 | 2 | Audit remediation: generic tags → domain-specific | ✅ 36/38 pages (94.7%) fixed | 🟢 Done |
 | 3 | Rules: `rules/tag-guidelines.json` with policy, patterns, aliases_system | ✅ Created | 🟢 Done |
 | 4 | Cross-reference enforcement | process-ingest.json step_4_tag_validation | 🟢 Done |
@@ -186,9 +186,9 @@ Agent auto-detects type by source analysis (API docs → `-api` suffix, CLI docs
 
 | # | Component | Description | Dependencies | Status |
 |---|-----------|-------------|--------------|--------|
-| **N1** | Add exception list to `rules/naming_conventions.json` | Explicitly mark truly abstract concepts: cache-system.md, hexagonal-architecture.md, doctrine-orm.md. Add detection logic for framework-specific vs abstract. | None | ⬜ Pending |
-| **N2** | Create `scripts/filename-audit.sh` | Scan wiki/ for naming violations: (a) concepts without project prefix when tags/sources indicate framework-specific; (b) entities/docs with bare concept names; (c) detect duplicates by base_name. Output JSON array of violations. | None | ⬜ Pending |
-| **N3** | Add `filename_collision_audit` to process-lint.json check_id=6 | Integration into mechanical_linting: add check to existing array, reference schema_ref, define output format (severity: LOW/MEDIUM/HIGH). | N2 | ⬜ Pending |
+| **N1** | Add exception list to `rules/naming_conventions.json` | Explicitly mark truly abstract concepts: cache-system.md, hexagonal-architecture.md, doctrine-orm.md. Add detection logic for framework-specific vs abstract. | None | ✅ Done |
+| **N2** | Create `scripts/filename-audit.sh` | Scan wiki/ for naming violations: (a) concepts without project prefix when tags/sources indicate framework-specific; (b) entities/docs with bare concept names; (c) detect duplicates by base_name. Output JSON array of violations. | None | ✅ Done |
+| **N3** | Add `filename_collision_audit` to process-lint.json check_id=6 | Integration into mechanical_linting: add check to existing array, reference schema_ref, define output format (severity: LOW/MEDIUM/HIGH). | N2 | ✅ Done |
 | **N4** | Update `scripts/lint.sh` integration | Call filename-audit.sh from check 6, parse JSON output, update TOTAL_ISSUES counter. Add auto-fix detection for simple renames. | N3 | ✅ Done |
 | **N5** | Fix process-query.json execute_save_path | Remove unnecessary schema_ref on naming_conventions — query doesn't write files directly, delegates to ingest. Clean up references. | None | ✅ Done |
 
@@ -238,12 +238,12 @@ Agent auto-detects type by source analysis (API docs → `-api` suffix, CLI docs
 
 | # | Component | Description | Dependencies | Status |
 |---|-----------|-------------|--------------|--------|
-| **G1** | `docs/getting-started.md` — базовый набросок | Clone → harness setup → first query flow. Step-by-step with commands and agent prompts. | None | 🟢 In Progress |
-| **G2** | `docs/architecture.md` — система слоёв | Raw (immutable) / Wiki (LLM-owned) / Rules (schema_ref) / Scripts (guardrails). Data flow diagrams. | None | ⬜ Pending |
-| **G3** | `docs/wiki-structure.md` — структура wiki | Categories, frontmatter schema, templates, naming conventions, assets pipeline. | G2 | ⬜ Pending |
-| **G4** | `docs/scripts-guide.md` — справочник скриптов | Все скрипты с описанием, аргументов и примеров вызова. | None | ⬜ Pending |
-| **G5** | `docs/rules-reference.md` — справочник правил | Categories.json, link_conventions, git_conventions, naming — краткое содержание каждого правила. | G2 | ⬜ Pending |
-| **G6** | `docs/api-conventions.md` — конвенции | Frontmatter fields, commit format, evidence grades, tag patterns. | G3, G5 | ⬜ Pending |
+| **G1** | `docs/getting-started.md` — базовый набросок | Clone → harness setup → first query flow. Step-by-step with commands and agent prompts. | None | ✅ Done |
+| **G2** | `docs/architecture.md` — система слоёв | Raw (immutable) / Wiki (LLM-owned) / Rules (schema_ref) / Scripts (guardrails). Data flow diagrams. | None | ✅ Done |
+| **G3** | `docs/wiki-structure.md` — структура wiki | Categories, frontmatter schema, templates, naming conventions, assets pipeline. | G2 | ✅ Done |
+| **G4** | `docs/scripts-guide.md` — справочник скриптов | Все скрипты с описанием, аргументов и примеров вызова. | None | ✅ Done |
+| **G5** | `docs/rules-reference.md` — справочник правил | Categories.json, link_conventions, git_conventions, naming — краткое содержание каждого правила. | G2 | ✅ Done |
+| **G6** | `docs/api-conventions.md` — конвенции | Frontmatter fields, commit format, evidence grades, tag patterns. | G3, G5 | ✅ Done |
 
 ### Execution Order
 
@@ -265,7 +265,7 @@ Agent auto-detects type by source analysis (API docs → `-api` suffix, CLI docs
 4. **Agent-readable** — формат, который LLM-агент может читать без потери контекста (schema_ref)
 5. **Growing with project** — если появляются новые скрипты/правила → добавляются в docs
 
-### Status: G1 In Progress (Getting Started draft)
+### Status: G2 Done — G3+G4 in parallel 
 
 
 - **Phase 16** (2026-07-05): Wiki Documentation Language Standardization → AGENTS.md + RULES.md fully translated, process files cleaned
