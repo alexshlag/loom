@@ -220,7 +220,53 @@ Agent auto-detects type by source analysis (API docs → `-api` suffix, CLI docs
 
 ---
 
-## ✅ Completed Sessions (Archived)
+## 🆕 Phase 21: Project Documentation System 🔴 P0
+**Цель:** Написать полные, подробные документы для проекта — любой человек может взять то, что ему нужно.
+
+### Документация в `docs/`
+
+| Файл | Содержание | Для кого |
+|------|------------|----------|
+| **getting-started.md** | Пошаговая инструкция: клонировать → развернуть harness → первый вопрос в wiki | Новички, все пользователи |
+| **architecture.md** | Архитектура системы: слои (raw/wiki/rules/scripts), потоки данных (ingest/query/lint), schema_ref, memory bridge | Разработчики, продвинутые пользователи |
+| **wiki-structure.md** | Структура wiki: категории страниц, frontmatter, шаблоны, naming conventions, assets pipeline | Контент-мейкеры, агент |
+| **scripts-guide.md** | Описание всех скриптов: validate-path.sh, lint.sh, rebuild-meta.sh и т.д., их аргументы и примеры использования | Скрипт-авторы, техлиды |
+| **rules-reference.md** | Справочник правил: categories.json, link_conventions.json, git_conventions.json и другие — что означает что | Agent, разработчики |
+| **api-conventions.md** | Конвенции: frontmatter schema, commit format (`<type> | <scope>: <desc>`), naming rules, evidence grading | Agent, авторы кода |
+
+### Tasks
+
+| # | Component | Description | Dependencies | Status |
+|---|-----------|-------------|--------------|--------|
+| **G1** | `docs/getting-started.md` — базовый набросок | Clone → harness setup → first query flow. Step-by-step with commands and agent prompts. | None | 🟢 In Progress |
+| **G2** | `docs/architecture.md` — система слоёв | Raw (immutable) / Wiki (LLM-owned) / Rules (schema_ref) / Scripts (guardrails). Data flow diagrams. | None | ⬜ Pending |
+| **G3** | `docs/wiki-structure.md` — структура wiki | Categories, frontmatter schema, templates, naming conventions, assets pipeline. | G2 | ⬜ Pending |
+| **G4** | `docs/scripts-guide.md` — справочник скриптов | Все скрипты с описанием, аргументов и примеров вызова. | None | ⬜ Pending |
+| **G5** | `docs/rules-reference.md` — справочник правил | Categories.json, link_conventions, git_conventions, naming — краткое содержание каждого правила. | G2 | ⬜ Pending |
+| **G6** | `docs/api-conventions.md` — конвенции | Frontmatter fields, commit format, evidence grades, tag patterns. | G3, G5 | ⬜ Pending |
+
+### Execution Order
+
+```
+✅ G1 (getting-started) → foundational for users
+    ↓
+✅ G2 (architecture) → conceptual foundation
+    ↓
+✅ G3+G4 (wiki-structure + scripts-guide) ← parallel, depend on G2
+    ↓
+✅ G5+G6 (rules-reference + api-conventions) ← depends on G3, G4
+```
+
+### Design Principles
+
+1. **Modular** — каждый файл независимый, читается отдельно
+2. **Detailed but skimmable** — подробно, но с навигацией и оглавлением
+3. **No duplication of AGENTS.md** — ссылки на canonical source в AGENTS.md, детали в docs/
+4. **Agent-readable** — формат, который LLM-агент может читать без потери контекста (schema_ref)
+5. **Growing with project** — если появляются новые скрипты/правила → добавляются в docs
+
+### Status: G1 In Progress (Getting Started draft)
+
 
 - **Phase 16** (2026-07-05): Wiki Documentation Language Standardization → AGENTS.md + RULES.md fully translated, process files cleaned
 - **Phase 14.5** (2026-07-05): Logic Restoration — Cascade Priority & Contradiction Resolution Flow → `rules/contradiction_resolution.json` created
