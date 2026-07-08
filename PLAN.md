@@ -501,9 +501,23 @@ related: [<other wiki pages or skills>]
 
 | # | File | Description | Dependencies | Status |
 |---|------|-------------|--------------|--------|
-| **G1** | `docs/session-lifecycle.md` — full session flow | Bootstrap → memory sync (wiki/dev modes) → end; corrupted WM/hot.md recovery; clear & rewrite rules | None | ⬜ Pending |
-| **G2** | `docs/advanced-query.md` — query deep dive | Topic continuity bias, compounding decision logic, search hierarchy in detail, novel insight save criteria | None | ⬜ Pending |
-| **G3** | `docs/batch-ingest.md` — batch workflow | Cluster detection algorithm, auto-trigger conditions, manual batch initiation, user approval flow | None | ⬜ Pending |
+| **G1** | `docs/session-lifecycle.md` — full session flow | Bootstrap → memory sync (wiki/dev modes) → end; corrupted WM/hot.md recovery; clear & rewrite rules | None | ✅ Done |
+| **G2** | `docs/advanced-query.md` — query deep dive | Topic continuity bias, compounding decision logic, search hierarchy in detail, novel insight save criteria | None | ✅ Done |
+| **G3** | `docs/batch-ingest.md` — batch workflow | Cluster detection algorithm, auto-trigger conditions, manual batch initiation, user approval flow | None | ✅ Done |
+
+### Remaining Gaps (Noted — Low Priority)
+
+| Тема | Статус | Примечание |
+|------|---------|------------|
+| Contradiction resolution in practice | ⚠️ Partially covered | Cascade theory in `api-conventions.md` + `rules/contradiction_resolution.json`; real-world scenarios could be added to troubleshooting.md later |
+| Error handling deep dive (local-fix vs schema-patch examples) | ✅ Covered by existing rules | `rules/error_handling.json#resolution_actions` already includes 4 concrete situations; architecture.md covers the 4-step loop. No additional doc needed unless user requests. |
+
+### Phase 23 Completion Summary — Additional Docs
+
+| # | File | Description | Status |
+|---|------|-------------|--------|
+| **G4** | `docs/memory-hooks.md` — trajectory capture → distillation pipeline | traj-capture.sh, distill.sh, skill-pattern-match.sh; hook triggers by process file; auto-distillation (Phase 20.2); debugging commands | ✅ Done |
+| **G5** | `docs/snapshot-lifecycle.md` — wiki snapshot lifecycle & active projects tracking | Create → update → archive rules; load conditions; relationship with WM/hot.md/log.md; grep contract for safe reading | ✅ Done |
 
 ### Design Principles
 

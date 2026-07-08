@@ -1,13 +1,13 @@
 ---
 tags: [cache, system]
-date: 2026-07-07
+date: 2026-07-08
 category: note
 sources: []
 related: []
 ---
-# Wiki Hot Cache — Last Updated: 2026-07-07
+# Wiki Hot Cache — Last Updated: 2026-07-08
 
-## Active Project (WORK_MODE: discussion)
+## Active Project (WORK_MODE: project)
 - **Project**: Loomana wiki architecture optimization + knowledge management
 - **Status**: 🟢 ACTIVE SESSION — Wiki maintenance and expansion
 
@@ -15,21 +15,14 @@ related: []
   WM read failed — using defaults
 
 ## Recent Changes
-- `[2026-07-07]` Phase 17 T3 complete: standardized `set -euo pipefail` across all scripts, fixed lib.sh function name mismatch
-- `[2026-07-07]` Phase 17 T4 complete: unified registry+backlinks in rebuild-meta.sh (single Python call)
-- `[2026-07-07]` Phase 17 T5 complete: batched JSON reads in lint.sh (8+ → 6 calls, grep replacement for structural violations)
--[ `2026-07-07`] fix | lint: Check 15 replaced with unified single-pass md_cleaner (from about_md_cleaner.md) — squash \n{3,} + normalize whitespace-only lines
-- `[2026-07-07]` Phase 17 T6 complete: consolidated rebuild-meta.sh across unified-pass + lint (single call per flow)
-- `[2026-07-07]` debug | lint-check15: fixed Check 15 — duplicate done, python3 heredoc arg bug, grep -c exit code
-- `[2026-07-07]` fix | lint-grep-c: added || true to prevent set -euo pipefail crash on grep -c returning exit 1
-- `[2026-07-08]` docs | Phase 18.1: completed deep-dive templates (API reference, CLI commands, migration guide, general guide) + template selection in ingest flow
-- `[2026-07-08]` commit | feat | docs: deep-dive templates API CLI migration guide + template selection in ingest
+  No recent log entries
 
 ## System State
 ### Active Threads
 - Wiki maintenance and expansion (auto-fixes running on lint errors)
 - Knowledge base growth via query responses and source ingestion
 
+- **Recent activity**: ### Files changed:
 - **Recent activity**: compact_json_rules | JSON instruction compactification — rules/*.json and AGENTS.md §9 integration
 - **Recent activity**: fix_json_comments | Removed invalid // inline comments from context-scopes.json — replaced with schema_ref field; validated all 12 rules/*.json files pass json.tool
 - **Recent activity**: agENTS_reduction | AGENTS.md reduced from 676 to 447 lines (-230 lines, ~14KB saved): extracted Auto-rebuild/Lint rules → auto_rebuild_metadata.json + non_blocking_lint.json (enriched), Wiki Snapshot JSON-block → snapshot_format.json (new), Language Policy → language_policy.json (new), removed Evidence Grade inline table → already in evidence_grade.json, removed Schema Inheritance Canonical References dead-weight table; total rules/*: 28 files (~1030 lines); commit: 5f40f6e

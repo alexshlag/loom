@@ -111,6 +111,23 @@ This is NOT meta-information — it is **conditional behavior specification**. A
 
 **Strictly prohibited:** removing examples from `resolution_actions`, `fallback_chain`, `constraints`, `arbitration_layer` without auditing their role in conditional flow.
 
+**📝 R08: DOCUMENTATION MAINTENANCE — Changes reflect in docs, not just code**
+When implementing changes that affect how the user or agent interacts with Loomana (new scripts, new rules, modified workflows, structural schema changes), update ALL relevant documentation BEFORE committing:
+- `docs/` files — any file describing features, processes, architecture
+- `rules-reference.md` — add new rule or update existing description if it affects how the agent reads/applies rules
+- `scripts-guide.md` — document every new script with arguments and usage examples (same format as existing entries)
+- `architecture.md` — if layer relationships change, diagram updates mandatory
+- **Rule:** Never commit code that contradicts documentation. Documentation is the source of truth for how features work.
+
+**Quick check before commit:**
+1. New script added? → Document in `scripts-guide.md` with usage examples
+2. Rule file created/updated? → Update entry in `rules-reference.md`
+3. Process workflow changed? → Update relevant docs (advanced-query, batch-ingest, session-lifecycle)
+4. Architecture changed (new layer/new directory)? → Update architecture.md + wiki-structure.md if affected
+5. Frontmatter schema changed? → Update api-conventions.md
+
+**Prohibited:** committing code that silently contradicts existing documentation — user or agent following docs will encounter broken workflows.
+
 ## 10. Development Success Check - Fulfillment of Wiki Workflow Conditions
 
 1. Agent does not perform tasks in `wiki` outside of wiki instructions;
@@ -128,7 +145,7 @@ This is NOT meta-information — it is **conditional behavior specification**. A
 3. PLAN CREATED → explicit steps in PLAN.md with dependencies, priorities, expected outputs
 4. IMPLEMENTATION → execute plan tasks one by one, validate after each step
 5. VERIFICATION → test functionality, check no regressions, run existing checks (lint/shellcheck)
-6. DOCUMENT UPDATE → refresh issues.md (close resolved), update PLAN.md (mark done), update AGENTS.md if needed
+6. DOCUMENT UPDATE → refresh issues.md (close resolved), update PLAN.md (mark done), update AGENTS.md if needed, update docs/ for any feature/script/rule change
 7. SYNC THEN COMMIT → memory_sync_on_dev_commit first, then git_conventions.json#pre_commit_workflow (commit everything together)
 ```
 
