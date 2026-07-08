@@ -13,7 +13,8 @@ related: [concepts/llm-wiki.md, syntheses/rag-vs-llm-wiki-pattern.md, comparison
 - [[wiki/concepts/llm-wiki.md]] (score: 5, incoming)
 # Loomana — Wiki System Documentation
 
-Page covering Loomana — Wiki System Documentation — entity information, architecture details, and usage patterns.
+Page covering Loomana — Wiki System Documentation — entity information, architecture details, and usage patter
+[[wiki/docs/loom-architecture.md]] [[wiki/docs/loom-memory-hooks.md]] [[wiki/docs/loom-wiki-structure.md]]ns.
 
 ## Что такое Loomana?
 

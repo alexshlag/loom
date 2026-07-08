@@ -1,0 +1,92 @@
+{
+  "rule_id": "CBUDGET-V1",
+  "rule_name": "Context budget management for ingest process",
+  "description": "Principles and mechanisms for managing what stays in agent context during ingest. Based on context engineering best practices (Anthropic, LangChain). Context is a finite budget — every token competes for attention.",
+
+  "principles": {
+    "context_as_budget": "The context window is a finite resource with diminishing marginal returns. Every new token depletes the attention budget by some amount. Do not hold more than necessary at any point.",
+    "tool_result_clearing_principle": "Once tool results (file contents, search outputs) are processed and their extracted knowledge written to disk — the raw content becomes re-fetchable noise. Clear it from context while keeping metadata that points to where it's stored.",
+    "just_conclusion_rule": "If intermediate output (source docs, generated wiki pages) is disposable and only its conclusion matters — discard it after extraction/integration. The wiki IS the memory; conversation context should contain operations, not data dumps.",
+    "context_boundary_markers": "Use explicit boundaries between phases: <read_phase> → <extract_write_phase> → <clear_and_proceed>. Model follows these as signal to forget content in previous phase."
+  },
+
+  "content_lifecycle_rules": {
+    "raw_source_documents": {
+      "lifecycle_phases": [
+        {"phase": "READ", "action": "read_file or fetch source"},
+        {"phase": "EXTRACT_WRITE", "action": "extract entities/concepts/facts → write to wiki page"},
+        {"phase": "FORGET", "trigger": "after EXTRACT_WRITE completes and page is written to disk", "discard": ["full_source_content"], "keep_only": [
+          "source_file_path (for sources field in frontmatter)",
+          "document_title_or_short_name",
+          "evidence_grade of source"
+        ]}
+      ],
+      "contract": "Full raw content must NOT persist beyond the turn where it was processed. If agent needs to re-read, grep wiki page (which has captured the knowledge) — not the original source."
+    },
+
+    "generated_wiki_pages_during_ingest": {
+      "lifecycle_phases": [
+        {"phase": "CREATE", "action": "write new wiki page content"},
+        {"phase": "VALIDATE", "actions": ["verify structure (structural_requirements.json)", "create crosslinks (auto-crosslink.sh)", "run post-checks (step_9)"]},
+        {"phase": "FORGET", "trigger": "after validation + crosslinks verified and written to disk", "discard": ["full_page_content_from_context"], "keep_only": [
+          "page_path (for future references)",
+          "page_title_and_category"
+        ]}
+      ],
+      "rationale": "Wiki pages are disk-persisted. Once created, validated, and linked — they are retrievable via grep/read. Holding their full content in context during subsequent steps is token waste.",
+      "exception": "If another step NEEDS to reference this page's content (e.g., reading existing page for update), read it fresh from disk rather than holding previous content."
+    }
+  },
+
+  "context_bubble_policy": {
+    "max_concurrent_wiki_pages_in_context": 3,
+    "rule": "When opening a wiki page to read — close (forget) one of the current 3. This is the 'context bubble' policy.",
+    "source_ref": "session_context_rules.json#operational_rules.context_bubble_max_pages"
+  },
+
+  "forget_mechanism_for_agent_instructions": {
+    "description": "How to explicitly instruct the agent to forget/release content from context",
+    "pattern": "After completing extraction/writing of a source, add explicit instruction: 'Source document content is now stored in wiki page [path]. Discard full source text from working context. Continue with next step using only metadata.'",
+    "xml_boundary_style": {
+      "description": "Use XML-like markers to delineate phases where forget should happen",
+      "example": "<phase:source_read>...content...</phase>\n<phase:extract_and_write>...wiki content...</phase>\n<forget:previous_phase_content>",
+      "rationale": "Models trained on XML structures parse namespaces and boundaries reliably. These markers serve as explicit signal."
+    },
+    "explicit_forget_phrases": [
+      "Discard full source text — knowledge captured in wiki page at [path]",
+      "Source is now transient — only path metadata remains",
+      "Page content written + validated → discard from context; retrievable via read_file if needed later"
+    ]
+  },
+
+  "implementation_in_process_ingest": {
+    "after_each_source_read": {
+      "instruction": "After step_3_analysis completes (source read and entities extracted), agent must explicitly forget the source content. The knowledge is now in the wiki page being created/updated.",
+      "marker_pattern": "step_3_complete → [FORGET SOURCE CONTENT] → proceed to template selection"
+    },
+
+    "after_wiki_page_write_and_validate": {
+      "instruction": "After step_9 post_checks complete (page written, structure validated, crosslinks created), agent must forget the full page content. Page is retrievable via wiki path.",
+      "marker_pattern": "step_9_complete → [FORGET PAGE CONTENT] → proceed to registration and logging"
+    }
+  },
+
+  "comparison_with_research_best_practices": {
+    "anthropic_context_engineering_alignment": "This rule implements the 'tool-result clearing' primitive: once re-fetchable data is processed, drop it from context while keeping metadata. Also applies 'sub-agent delegation' principle: each source is processed in isolation and its content discarded.",
+    "langchain_context_editing_alignment": "Mirrors LangChain's ContextEditingMiddleware approach — surgically removing stale tool results (file reads) after they've served their purpose, replacing them with placeholders (knowledge captured in wiki).",
+    "five_turn_decisions_mapping": {
+      "continue": "Not applicable — ingest has clear task boundaries",
+      "rewind": "If validation fails → reset to step_8a/8b and retry",
+      "clear": "Between sources: clear previous source content before reading next",
+      "compact": "Not used during ingest (compaction is for long conversations)",
+      "delegate": "Each source processed independently — implicit delegation pattern"
+    }
+  },
+
+  "schema_ref_to_related_rules": {
+    "source_transient_ingest": "rules/source_transient_ingest.json",
+    "session_context_rules": "rules/session_context_rules.json",
+    "context_scopes": "rules/context-scopes.json",
+    "structural_requirements": "rules/structural_requirements.json"
+  }
+}

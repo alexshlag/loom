@@ -1,32 +1,40 @@
 {
-  "last_updated": "2026-07-08T11:31+03",
+  "last_updated": "2026-07-08T15:36",
   "current_mode": "project",
-  "focus_node": "Phase 22 complete: all user-facing docs written (troubleshooting, security-guide, extending-wiki)",
+  "focus_node": "Phase 23 complete: all docs/ source documents ingested, STI-V1 rule verified — session cleanup (issues.md + PLAN.md) done",
   "next_steps_todo": [
-    "Deep-dive wiki docs (wiki/docs/): Symfony, Twig, NixOS — pending user request",
-    "Consider adding: faq.md or glossary.md for new users"
+    "schema-patch proposal for discovery step in RULES.md §9 R01 or §11 step 3.5; rename wiki/concepts pages pending user approval"
   ],
   "open_pages": [],
   "dead_ends": [],
   "query_summary": {
-    "intent": "Write remaining Phase 21 docs: troubleshooting, security-guide, extending-wiki",
+    "intent": "Ingest remaining docs/ source documents into wiki/docs/, verify STI-V1 transient memory rule",
     "pages_read": [
-      "docs/getting-started.md",
-      "docs/architecture.md",
-      ".gitignore",
-      "AGENTS.md"
+      "docs/memory-hooks.md",
+      "docs/session-lifecycle.md",
+      "docs/snapshot-lifecycle.md",
+      "docs/batch-ingest.md",
+      "docs/advanced-query.md",
+      "docs/api-conventions.md",
+      "docs/security-guide.md"
     ],
     "key_findings": [
-      "Phase 21: all docs G1-G6 completed and committed",
-      "Phase 22: troubleshooting.md, security-guide.md, extending-wiki.md created — release-ready (no specific wiki pages assumed)",
-      "raw/corrected/SRC-2026-07-05-TwigOfficial/twig-homepage.md waiting for ingest"
+      "7 docs/ documents ingested into wiki/docs/ following STI-V1 (transient source memory)",
+      "STI-V1 rule working correctly — read one source, extract to wiki, forget raw text",
+      "wiki/docs/ now contains 15 pages total (8 pre-existing + 7 new)"
     ]
   },
   "broken_links_resolved": [],
   "recent_activity": [
+    "2026-07-08 docs | Phase 23: ingested 7 source documents → wiki/docs/ (memory-hooks, session-lifecycle, snapshot-lifecycle, batch-ingest, advanced-query, api-conventions, security-guide)",
     "2026-07-08 schema | added STI-V1 rule — sources transient during ingest, read→extract→wiki→forget",
     "2026-07-08 commit | feat | docs: deep-dive templates API CLI migration guide + template selection in ingest",
     "2026-07-08 docs | Phase 18.1: completed deep-dive templates (API reference, CLI commands, migration guide, general guide)",
-    "2026-07-08 docs | Phase 22: created troubleshooting.md, security-guide.md, extending-wiki.md"
+    "2026-07-08 docs | Phase 22: created troubleshooting.md, security-guide.md, extending-wiki.md",
+    "2026-07-08 14:56 | completed | Task 12345: memory sync procedure implemented",
+    "2026-07-08 15:07 | completed | Phase 23 complete: all docs/ source documents ingested into wiki/docs/, STI-V1 rule verified",
+    "2026-07-08 15:09 | completed | Memory sync procedure verified",
+    "2026-07-08 15:10 | completed | Phase 23 complete: all docs/ source documents ingested into wiki/docs/, STI-V1 rule verified (read→extract→wiki→forget)",
+    "2026-07-08 15:36 | completed | Phase 23 complete: all docs/ source documents ingested, STI-V1 rule verified — session cleanup (issues.md + PLAN.md) done"
   ]
 }

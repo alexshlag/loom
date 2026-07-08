@@ -12,8 +12,10 @@ related: []
 - **Status**: 🟢 ACTIVE SESSION — Wiki maintenance and expansion
 
 ## Active Session Context
-- **Current focus**: Memory optimization for ingest — STI-V1 rule (sources transient, never hold multiple sources simultaneously)
-- **Active work**: Implementing source memory lifecycle contract to prevent context window bloat
+- **Focus node**: Phase 23 complete: all docs/ source documents ingested, STI-V1 rule verified — session cleanup (issues.md + PLAN.md) done
+
+### Pending Tasks
+- **schema-patch proposal for discovery step in RULES.md §9 R01 or §11 step 3.5; rename wiki/concepts pages pending user approval**
 
 ## Recent Changes
   No recent log entries
@@ -23,7 +25,7 @@ related: []
 - Wiki maintenance and expansion (auto-fixes running on lint errors)
 - Knowledge base growth via query responses and source ingestion
 
-- **Recent activity**: ### Files changed:
-- **Recent activity**: compact_json_rules | JSON instruction compactification — rules/*.json and AGENTS.md §9 integration
 - **Recent activity**: fix_json_comments | Removed invalid // inline comments from context-scopes.json — replaced with schema_ref field; validated all 12 rules/*.json files pass json.tool
 - **Recent activity**: agENTS_reduction | AGENTS.md reduced from 676 to 447 lines (-230 lines, ~14KB saved): extracted Auto-rebuild/Lint rules → auto_rebuild_metadata.json + non_blocking_lint.json (enriched), Wiki Snapshot JSON-block → snapshot_format.json (new), Language Policy → language_policy.json (new), removed Evidence Grade inline table → already in evidence_grade.json, removed Schema Inheritance Canonical References dead-weight table; total rules/*: 28 files (~1030 lines); commit: 5f40f6e
+- **Recent activity**: schema | added STI-V1 rule (source_transient_ingest.json) — sources are transient, read→extract→wiki→forget; prevents context bloat during multi-source ingest
+- **Recent activity**: docs | Phase 23: ingested 7 source documents → wiki/docs/ following STI-V1 transient rule

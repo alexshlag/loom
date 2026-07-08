@@ -7,9 +7,11 @@ aliases: []
 sources: ["raw/trajectories/TRJ-20260706-0646-313a1d5e"]
 related: []
 ---
+# Skill: Test Real Query
 
 # Skill: Test Real Query
 
+Page covering Skill: Test Real Query — overview, usage patterns, and related resources.
 ## Procedure
 
 - read: OK

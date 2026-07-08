@@ -659,3 +659,16 @@ Sources used:
 ## [2026-07-06] agENTS_reduction | AGENTS.md reduced from 676 to 447 lines (-230 lines, ~14KB saved): extracted Auto-rebuild/Lint rules → auto_rebuild_metadata.json + non_blocking_lint.json (enriched), Wiki Snapshot JSON-block → snapshot_format.json (new), Language Policy → language_policy.json (new), removed Evidence Grade inline table → already in evidence_grade.json, removed Schema Inheritance Canonical References dead-weight table; total rules/*: 28 files (~1030 lines); commit: 5f40f6e
 [2026-07-06T19:03+03] ingest | Created wiki/entities/php.md — PHP programming language overview page
 ## [2026-07-08] schema | added STI-V1 rule (source_transient_ingest.json) — sources are transient, read→extract→wiki→forget; prevents context bloat during multi-source ingest
+## [2026-07-08] docs | Phase 23: ingested 7 source documents → wiki/docs/ following STI-V1 transient rule
+
+| Source Doc | Wiki Page | Size (KB) |
+|------------|-----------|-----------|
+| memory-hooks.md | loom-memory-hooks.md | 8.3 |
+| session-lifecycle.md | loom-session-lifecycle.md | 11 |
+| snapshot-lifecycle.md | loom-snapshot-lifecycle.md | 10 |
+| batch-ingest.md | loom-batch-ingest.md | 10 |
+| advanced-query.md | loom-advanced-query.md | 12 |
+| api-conventions.md | loom-api-conventions.md | 15 |
+| security-guide.md | loom-security-guide.md | 8.7 |
+
+STI-V1 verified: read→extract→wiki→forget cycle working correctly for each source. No context bloat from holding multiple sources simultaneously. Total wiki/docs/ now contains 15 pages (8 pre-existing + 7 new).

@@ -21,6 +21,24 @@
     },
     {
       "order": 4,
+      "action": "read_file",
+      "path": "rules/context-budget.json",
+      "note": "Context budget management principles for ingest process — context is finite budget, forget after extract/write"
+    },
+    {
+      "order": 5,
+      "action": "read_file",
+      "path": "rules/context-management-instructions.md",
+      "note": "Detailed instructions on how to manage context during ingest: when to forget source docs and generated wiki pages. Read before any ingest operation."
+    },
+    {
+      "order": 6,
+      "action": "read_file",
+      "path": "wiki/docs-existence-check.json",
+      "note": "Existence check for wiki/docs/ — BEFORE creating ANY new docs page, agent MUST scan existing pages matching entity prefix. If found → UPDATE (step_8b), DO NOT create duplicate."
+    },
+    {
+      "order": 7,
       "action": "scan_directory",
       "path": "wiki/skills/",
       "output": "working_memory.skills_loaded = [{name, category}]",

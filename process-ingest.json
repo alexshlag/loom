@@ -4,9 +4,56 @@
 
   "memory_contract": {
     "rule_ref": "rules/source_transient_ingest.json",
-    "rule_id": "STI-V1",
-    "when_to_read": "before_processing_any_source", 
-    "instruction": "Read source documents one at a time. After extracting entities/facts/concepts into wiki — discard raw content from context. Never hold multiple source texts simultaneously."
+    "rule_id": "STI-V2",
+    "when_to_read": "before_processing_any_source",
+    "instruction": "Read source documents one at a time. After extracting entities/facts/concepts into wiki — discard raw content from context. Never hold multiple source texts simultaneously.",
+    "forget_markers": {
+      "after_each_source": {
+        "description": "After step_3_analysis completes (source read, entities extracted), agent must explicitly forget the source content",
+        "instruction": "Source document processed and knowledge captured in wiki page. Discard full source text from working context. Continue with next step using only metadata (path, title, evidence_grade).",
+        "phase_boundary": "<forget:source_content>"
+      },
+      "after_wiki_page_write": {
+        "description": "After step_9 post_checks complete (page validated, crosslinks created), agent must forget the full page content",
+        "instruction": "Wiki page [path] created/updated and validated. Content written to disk with proper structure and crosslinks. Discard full page content from context — it is retrievable via read_file if needed later.",
+        "phase_boundary": "<forget:page_content>"
+      }
+    }
+  },
+
+  "forget_instructions": {
+    "description": "Explicit instructions for discarding content from context during ingest. Based on context engineering best practices (context as finite budget, tool-result clearing).",
+    "rule": {
+      "after_source_read": [
+        {"step": "step_3_analysis", "action": "read source → extract entities/facts/concepts"},
+        {"forget_trigger": "immediately after step_3 actions complete and before proceeding to step_6_discussion or template selection",
+         "instruction": "Source document [{TITLE}] processed. Knowledge captured in wiki page [{WIKI_PAGE_PATH}]. Discard full source text from working context — it is now re-fetchable from disk via read_file if needed later.",
+         "keep_only": ["source_file_path", "document_title_or_short_name", "evidence_grade"]},
+        {"rationale": "Source content competes with wiki page writing for limited context window. Once extracted and written, it is re-fetchable noise."}
+      ],
+      "after_wiki_page_write": [
+        {"step": "step_9_post_checks", "action": "validate structure + create crosslinks + run post-checks"},
+        {"forget_trigger": "immediately after step_9 passes all validations",
+         "instruction": "Wiki page [{WIKI_PAGE_PATH}] created/updated and validated. Content written to disk with proper structure and crosslinks. Discard full page content from working context — it is retrievable via read_file at any time.",
+         "keep_only": ["page_path", "page_title", "page_category"]},
+        {"rationale": "Wiki pages are disk-persisted. Once created, validated, and linked — they are retrievable via grep/read. Holding their full content in context during subsequent steps is token waste."}
+      ]
+    },
+    "batch_ingest_rule": {
+      "description": "When ingesting ≥3 related sources, process ONE at a time through read→extract→forget cycle",
+      "sequence": [
+        "1. Read source A → extract entities/facts → write wiki page for A",
+        "2. FORGET: Discard source A content from context; keep only path + title",
+        "3. Read source B → extract → write wiki page (or append to existing)",
+        "4. FORGET: Discard source B content from context"
+      ],
+      "prohibited": "Reading all N sources into context simultaneously, then processing them together — causes O(N×doc_size) token bloat"
+    },
+    "context_bubble_policy": {
+      "description": "Max 3 wiki pages in active context simultaneously. When opening new page for reading — close (forget) one of the current 3.",
+      "max_open_pages": 3,
+      "rule_ref": "rules/session_context_rules.json#operational_rules.context_bubble_max_pages"
+    }
   },
 
   "pre_conditions": [
@@ -298,6 +345,33 @@
               "action": "ALLOW_BARE_NAME — verify no project-specific pages exist under same base"
             }
           ]
+        },
+        {
+          "action_name": "check_existing_docs_page_for_entity",
+          "description": "CRITICAL: Before creating wiki/docs/<prefix>-<name>.md, scan wiki/docs/ for existing page of this entity/project. If found → route to step_8b_update_page (UPDATE) instead of step_8a_new_page (CREATE). Agent must NOT guess — if file exists in wiki/docs/, it MUST update it.",
+          "rules_ref": "wiki/docs-existence-check.json#DOC-EXISTENCE-V1",
+          "existence_check_logic": [
+            {
+              "condition": "entity_or_project_name matches existing page in wiki/docs/ (prefix matching)",
+              "action": "ROUTE_TO_UPDATE — redirect to step_8b_update_page with EXISTING_PAGE_PATH set"
+            },
+            {
+              "condition": "no_existing_docs_page_found",
+              "action": "PROCEED_TO_NEW_PAGE_CREATE"
+            }
+          ],
+          "routing_example": [
+            {
+              "scenario": "docs/architecture.md ingested → entity is Loomana (loom)",
+              "check": "ls wiki/docs/ | grep '^loom-', find loom-architecture.md",
+              "result": "EXISTING: wiki/docs/loom-architecture.md → UPDATE it, don't create docs/architecture.md as new page"
+            },
+            {
+              "scenario": "docs/memory-hooks.md ingested → entity is Loomana (loom)",
+              "check": "ls wiki/docs/ | grep '^loom-', find loom-memory-hooks.md",
+              "result": "EXISTING: wiki/docs/loom-memory-hooks.md → UPDATE it, don't create docs/memory-hooks.md as new page"
+            }
+          ]
         }
       ],
       "syntheses_rule": {
@@ -307,7 +381,8 @@
       },
       "schema_ref": [
         "rules/structural_requirements.json#FIRST-BLOCK-V1",
-        "rules/naming_conventions.json#NAMES-CORE-V1"
+        "rules/naming_conventions.json#NAMES-CORE-V1",
+        "wiki/docs-existence-check.json#DOC-EXISTENCE-V1"
       ]
     },
     {

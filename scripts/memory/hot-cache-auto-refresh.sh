@@ -44,7 +44,7 @@ try:
     # Extract recent key findings or next_steps
     ns_todo = wm.get('next_steps_todo', [])
     if ns_todo:
-        todo_items = '\n'.join([f'- **{t[\"task\"]}** (priority: {t.get(\"priority\", \"medium\")})' for t in ns_todo[:5]])
+        todo_items = '\n'.join([f'- **{t}**' for t in ns_todo[:5]])
     else:
         todo_items = '  No pending tasks'
     

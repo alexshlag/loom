@@ -1,0 +1,98 @@
+{
+  "rule_id": "DOC-EXISTENCE-V1",
+  "name": "Existence check for wiki/docs/ pages before creation",
+  "version": "1.0",
+  "date": "2026-07-08",
+  "description": "Before creating ANY new page in wiki/docs/, agent MUST scan existing files in wiki/docs/ and match by entity/project name. If an existing docs page is found for this entity → UPDATE it (step_8b), do NOT create a duplicate.",
+
+  "algorithm": {
+    "step_1_extract_entity_name": {
+      "description": "From source document, extract the primary entity/project being documented",
+      "method": [
+        "Read frontmatter sources field — if contains wiki/entities/<name>.md → extract <name>",
+        "If no wiki entities reference → parse source content for project/entity name (e.g., 'Loomana', 'Symfony', 'Pi')",
+        "Apply naming convention prefix: entity_name → lowercase-slug (e.g., Loomana → loom, Symfony → symfony)"
+      ]
+    },
+    "step_2_scan_existing_docs": {
+      "description": "Scan wiki/docs/ for existing pages matching the extracted name",
+      "command_pattern": "ls wiki/docs/<prefix>-*.md | grep '<prefix>' OR find wiki/docs/ -name '<prefix>*' -type f",
+      "matching_logic": [
+        {"pattern": "exact_prefix_match", "example": "entity=loomana → prefix='loom' → match 'wiki/docs/lo-*'", "action": "FOUND_EXISTING"},
+        {"pattern": "partial_prefix_match", "example": "entity=symfony → prefix='symfony' → match 'wiki/docs/symfony-*'", "action": "FOUND_EXISTING"}
+      ]
+    },
+    "step_3_route_decision": {
+      "description": "If existing page found → route to UPDATE. If not found → proceed to CREATE.",
+      "routing_table": [
+        {
+          "condition": "existing_docs_page_found_in_wiki",
+          "action": "ROUTE_TO_STEP_8B_UPDATE_PAGE",
+          "instruction": "Agent sees: wiki/docs/<prefix>-<name>.md EXISTS. DO NOT create new page. MUST read existing, compare content with source, UPDATE if new facts/updates needed.",
+          "comparison_contract": [
+            {"action": "read_existing_page"},
+            {"action": "compare_source_vs_wiki_content"},
+            {"condition": "source_contains_new_facts OR updates", "action": "UPDATE_EXISTING_PAGE_APPEND_NEW_FACTS"},
+            {"condition": "source_already_fully_captured_in_wiki", "action": "SKIP - source already captured, no update needed"}
+          ]
+        },
+        {
+          "condition": "no_existing_docs_page_found",
+          "action": "PROCEED_TO_STEP_8A_CREATE_NEW_PAGE",
+          "instruction": "Agent creates new wiki/docs/<prefix>-<name>.md following naming conventions."
+        }
+      ]
+    }
+  },
+
+  "agent_instructions": {
+    "before_create_docs_page": [
+      "BEFORE writing any file to wiki/docs/, agent MUST execute existence check:",
+      "1. Extract entity/project name from source (e.g., 'Loomana' → 'loom')",
+      "2. Scan wiki/docs/ for existing files matching prefix: ls wiki/docs/<prefix>-*.md OR find wiki/docs/ -name '<prefix>*'",
+      "3. IF found: DO NOT create new page — route to step_8b_update_page, read existing, compare, update",
+      "4. IF not found: proceed with step_8a_new_page creation"
+    ],
+    "prohibited_actions": [
+      "Agent MUST NOT guess/create wiki/docs/<name>.md without checking for existing files first",
+      "Agent MUST NOT create duplicate pages in wiki/docs/ (e.g., loom-architecture.md AND loom-architecture.md for same entity)",
+      "Agent MUST NOT skip existence check — this is a HARD pre-condition before step_8a"
+    ]
+  },
+
+  "comparison_contract": {
+    "when_existing_page_found": [
+      {"step": "read_existing", "instruction": "Read wiki/docs/<prefix>-<name>.md from disk"},
+      {"step": "compare", "instruction": "Compare source document content vs existing wiki page — identify NEW facts, updates, corrections"},
+      {"step": "update_or_skip", "instruction": "If source contains new info → UPDATE wiki page (preserve old_info + append '## Updated [date]'). If source already fully captured → SKIP creation"}
+    ]
+  },
+
+  "examples": {
+    "case_1_existing_found": {
+      "scenario": "Ingest docs/architecture.md for Loomana",
+      "extracted_entity": "Loomana (slug: 'loom')",
+      "scan_result": "wiki/docs/lo*-*.md → find loom-architecture.md",
+      "decision": "EXISTING FOUND → read wiki/docs/loom-architecture.md, compare with docs/architecture.md, UPDATE if new facts needed",
+      "wrong_action": "Create wiki/docs/loom-architecture.md as NEW page — WRONG (duplicate for same entity)"
+    },
+    "case_2_no_existing": {
+      "scenario": "Ingest docs/troubleshooting.md for Loomana (no troubleshooting page exists yet)",
+      "extracted_entity": "Loomana (slug: 'loom')",
+      "scan_result": "wiki/docs/lo*-troubleshooting.md → NOT FOUND",
+      "decision": "NO EXISTING → create wiki/docs/loom-troubleshooting.md as NEW page"
+    },
+    "case_3_already_captured": {
+      "scenario": "Ingest docs/memory-hooks.md (already fully captured in wiki/docs/loom-memory-hooks.md)",
+      "extracted_entity": "Loomana (slug: 'loom')",
+      "scan_result": "wiki/docs/lo*-memory-hooks.md → find loom-memory-hooks.md",
+      "decision": "EXISTING FOUND → read wiki/docs/loom-memory-hooks.md, compare with docs/memory-hooks.md. If source already fully captured → SKIP creation"
+    }
+  },
+
+  "schema_ref_to_related_rules": [
+    {"rule": "rules/naming_conventions.json#NAMES-CORE-V1", "field": "docs_directory"},
+    {"rule": "process-ingest.json#step_8a_new_page", "field": "existence_check_logic"},
+    {"rule": "process-ingest.json#step_8b_update_page", "field": "integration_update_existing_page"}
+  ]
+}

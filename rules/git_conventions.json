@@ -25,7 +25,7 @@
     ]
   },
   "mode_detection": {
-    "auto": "only wiki/*.md → wiki; any .sh/.json in root/rules/scripts/ → dev",
+    "auto": "only wiki/*.md \u2192 wiki; any .sh/.json in root/rules/scripts/ \u2192 dev",
     "override": "user says 'wiki mode' or 'dev mode'"
   },
   "pre_commit_workflow": [
@@ -39,7 +39,7 @@
       "action": "stage with correct command from staging_by_mode"
     },
     {
-      "action": "git status --short — verify no untracked/unstaged remain"
+      "action": "git status --short \u2014 verify no untracked/unstaged remain"
     },
     {
       "prohibited": [
@@ -50,18 +50,26 @@
     {
       "action": "auto_refresh_hot_cache",
       "command": "./scripts/memory/hot-cache-auto-refresh.sh --quiet 2>/dev/null || true",
-      "note": "Runs before git add — ensures wiki/hot.md is fresh so same commit captures both page changes and updated context"
+      "note": "Runs before git add \u2014 ensures wiki/hot.md is fresh so same commit captures both page changes and updated context"
     }
   ],
   "post_commit_check": {
-    "action": "if git status shows unstaged files → stage + amend or separate commit"
+    "action": "if git status shows unstaged files \u2192 stage + amend or separate commit"
   },
   "memory_sync_on_dev_commit": [
     {
-      "action": "working_memory.json: focus_node + filter completed next_steps_todo"
+      "action": "working_memory.json: focus_node + filter completed next_steps_todo",
+      "command": "./scripts/memory/sync-working-memory.sh --focus-node \"$FOCUS_NODE\" --next-steps \"$NEXT_STEPS\" --quiet > /dev/null 2>&1 || true",
+      "note": "Atomic update via read\u2192modify\u2192write. Never append."
     },
     {
-      "action": "wiki/hot.md Active Project: update phase status"
+      "action": "wiki/hot.md Active Project: update phase status",
+      "command": "./scripts/memory/hot-cache-auto-refresh.sh --quiet > /dev/null 2>&1 || true",
+      "note": "Must run AFTER WM update (reads updated focus_node + recent_activity)"
+    },
+    {
+      "rule_file": "rules/memory-sync-at-task-end.md",
+      "note": "Full procedure for post-task memory sync \u2014 read before commit"
     }
   ],
   "memory_sync_after_wiki_change": [

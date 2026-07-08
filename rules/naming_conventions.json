@@ -65,12 +65,37 @@
     },
     "docs_directory": {
       "path": "wiki/docs/",
-      "pattern": "<project-slug>-<doc-type>.md",
+      "pattern": "<prefix>-<original_doc_name>.md",
+      "formula": "<project_slug_lower>-<source_filename_without_extension>.md",
       "examples": [
-        { "file": "ai-factory.md", "type": "cli-tool-docs" },
-        { "file": "symfony-cli-guide.md", "type": "framework-documentation" }
+        { "input": "docs/architecture.md", "output": "loom-architecture.md", "type": "entity-docs" },
+        { "input": "docs/memory-hooks.md", "output": "loom-memory-hooks.md", "type": "concept-docs" },
+        { "input": "docs/api-conventions.md", "output": "symfony-api-conventions.md", "type": "framework-docs" }
       ],
-      "rule": "Always prefix with project name. Never use bare concept names in docs/."
+      "rule": "Always prefix with project slug (lowercase). Output name MUST match original doc filename exactly, only prepending <prefix>-.",
+      "prohibited_pattern": {
+        "description": "Agent MUST NOT add words beyond the prefix and original name. Adding 'system-', 'guide-', or any other modifier is a violation.",
+        "wrong_example": { "input": "docs/architecture.md", "wrong_output": "loom-system-architecture.md", "reason": "Added 'system-' — violates formula" },
+        "correct_example": { "input": "docs/architecture.md", "correct_output": "loom-architecture.md", "reason": "Exact match: prefix + original name" }
+      },
+      "existence_check_rule": {
+        "description": "BEFORE creating ANY new page in wiki/docs/, agent MUST scan for existing pages matching the entity/project prefix. If found → UPDATE existing (step_8b), DO NOT create duplicate.",
+        "rule_ref": "wiki/docs-existence-check.json#DOC-EXISTENCE-V1",
+        "contract": [
+          {
+            "action": "scan_wiki_docs_for_prefix_match",
+            "description": "ls wiki/docs/<prefix>-*.md OR find wiki/docs/ -name '<prefix>*'"
+          },
+          {
+            "condition": "existing_found",
+            "action": "ROUTE_TO_UPDATE_EXISTING_PAGE — read, compare, update or skip"
+          },
+          {
+            "condition": "not_found",
+            "action": "PROCEED_TO_CREATE_NEW_PAGE"
+          }
+        ]
+      }
     },
     "comparisons_directory": {
       "path": "wiki/comparisons/",

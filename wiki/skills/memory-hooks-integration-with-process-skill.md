@@ -7,9 +7,11 @@ aliases: []
 sources: ["raw/trajectories/TRJ-20260706-0653-fcc8626d"]
 related: ["rules/session_context_rules.json", "process-ingest.json"]
 ---
+# Skill: Memory Hooks Integration With Process
 
 # Skill: Memory Hooks Integration With Process
 
+Skills integration workflow bridges LLM-generated content with persistent memory layers. Each skill follows a trajectory pipeline: capture → distill → store → recall.
 ## Procedure
 - read: OK | edit: REQUIRED | write: NEVER
 

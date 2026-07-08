@@ -1,11 +1,13 @@
 {
-  "rule_id": "STI-V1",
-  "rule_name": "source_transient_memory_contract",
-  "description": "Source documents are transient: read once, extract, write to wiki — then forget. Full source content never persists in agent memory beyond the ingest turn where it was processed.",
+  "rule_id": "STI-V2",
+  "version": "2.0",
+  "name": "source_transient_memory_contract",
+  "description": "Source documents are transient: read once, extract, write to wiki — then FORGET. Full source content never persists in agent memory beyond the ingest turn where it was processed.",
 
   "core_principle": {
     "statement": "Source document contents (raw/ files, web_search results, PDF text) exist only in the immediate processing context of a single ingest step. They are NOT carried forward to subsequent steps or preserved across turns.",
-    "rationale": "Every token holding raw source content competes with wiki page writing and crosslinking — wasting limited context window on data already captured into wiki pages."
+    "rationale": "Every token holding raw source content competes with wiki page writing and crosslinking — wasting limited context window on data already captured into wiki pages.",
+    "best_practice_reference": "Based on context engineering principles: 'tool-result clearing' (Anthropic), 'context as finite budget'"
   },
 
   "memory_lifecycle": {
@@ -19,12 +21,19 @@
       "constraint": "only structured facts go into wiki — not raw source text verbatim"
     },
     "phase_forget": {
-      "trigger": "after phase_extract completes",
-      "action": "discard full source content from active context",
+      "trigger": "after phase_extract completes AND wiki page is written to disk",
+      "action": "EXPLICITLY discard full source content from active context",
       "keep_only": [
         "source_file_path (for sources: [] frontmatter field)",
-        "document_title_or_short_name"
-      ]
+        "document_title_or_short_name",
+        "evidence_grade of source"
+      ],
+      "instruction_template": "Source document [{SOURCE_TITLE}] processed. Knowledge captured in wiki page [{WIKI_PAGE_PATH}]. Discard full source text — it is now re-fetchable from disk via read_file if needed later.",
+      "forbidden_pattern": {
+        "description": "Keeping source content after wiki page write",
+        "example": "After writing page, still referencing 'the document says X...' in subsequent steps",
+        "why_wrong": "Source content is re-fetchable from disk; holding it wastes context budget"
+      }
     }
   },
 
@@ -32,23 +41,43 @@
     "problem": "When ≥3 related sources are ingested together, each source's full content stays in context until ingest completes — exponential memory usage.",
     "rule": [
       "Process ONE source at a time through the read → extract → forget cycle",
-      "Before reading next source: explicitly discard previous source's raw content",
+      "Before reading next source: EXPLICITLY discard previous source's raw content from working context",
       "Only accumulated wiki pages + metadata persist between sources"
     ],
     "prohibited_pattern": {
       "description": "Reading all N sources into context, then processing them together",
-      "why_wrong": "N×document_size tokens in context simultaneously — fastest way to overflow"
-    }
+      "why_wrong": "N×document_size tokens in context simultaneously — fastest way to overflow",
+      "alternative": "Read source A → extract → forget A → read source B → extract → forget B → ..."
+    },
+    "explicit_sequence": [
+      "1. Read source A → extract entities/facts → write wiki page for A",
+      "2. FORGET: Discard source A content from context; keep only path + title",
+      "3. Read source B → extract → write wiki page (or append to existing)",
+      "4. FORGET: Discard source B content from context"
+    ]
+  },
+
+  "generated_wiki_pages_lifecycle": {
+    "description": "After new wiki pages are created during ingest, their full content should also be discarded once validated.",
+    "lifecycle": [
+      {"phase": "CREATE", "action": "write new/updated wiki page to disk"},
+      {"phase": "VALIDATE", "actions": ["structural check (structural_requirements.json)", "crosslink creation via auto-crosslink.sh", "post-checks via step_9"]},
+      {"phase": "FORGET", "trigger": "after validation + crosslinks verified",
+       "instruction_template": "Wiki page [{WIKI_PAGE_PATH}] created/updated and validated. Content written to disk with proper structure and crosslinks. Discard full page content from context — it is retrievable via read_file at any time.",
+       "keep_only": ["page_path", "page_category"]}
+    ]
   },
 
   "exception_cases": [
     {
       "case": "source_content_needed_for_specific_step_in_same_turn",
-      "description": "e.g., step_3 analysis needs source text for contradiction check — allowed, but must be scoped to that step only"
+      "description": "e.g., step_3 analysis needs source text for contradiction check — allowed, but must be scoped to that step only. After the step completes, forget.",
+      "forget_trigger": "immediately after the specific sub-step that needed it"
     },
     {
       "case": "verbatim_quote_required_in_page",
-      "description": "Direct quotes from source → extracted and written into wiki page during phase_extract. After writing, quote is no longer in raw form in context."
+      "description": "Direct quotes from source → extracted and written into wiki page during phase_extract. After writing, quote is no longer in raw form in context.",
+      "forget_trigger": "after the quote has been embedded in the wiki page content"
     }
   ],
 
@@ -56,17 +85,25 @@
     "mental_model": [
       "Treat each source document like a PDF reader: open, highlight key points, close, forget.",
       "The wiki page IS the memory — not your conversation context.",
-      "If you need to re-read something from a source, grep the wiki (it's indexed), don't re-read the raw source."
+      "If you need to re-read something from a source, grep the wiki (it's indexed), don't re-read the raw source.",
+      "Context window is a budget: every token holding stale content degrades performance on current task."
     ],
     "practical_actions": [
       {
         "action": "read source → extract entities/concepts/facts",
-        "immediate_next_step": "write them into wiki page frontmatter/content"
+        "immediate_next_step": "write them into wiki page frontmatter/content",
+        "follow_up": "EXPLICITLY forget source content before moving to next step"
       },
       {
         "action": "complete wiki write for this source",
-        "next_action": "move to next source or proceed to crosslink step — do NOT re-read the source"
+        "next_action": "run validation checks (post-checks)",
+        "follow_up": "EXPLICITLY forget page content after validation passes"
       }
+    ],
+    "explicit_forget_phrases_to_use": [
+      "Source [{TITLE}] processed and forgotten. Knowledge captured in wiki [{PATH}].",
+      "Discarding source content — it is now re-fetchable from disk.",
+      "Wiki page validated and written. Content discarded from context."
     ]
   },
 
@@ -79,6 +116,7 @@
   "related_rules": {
     "memory_architecture": "rules/session_context_rules.json",
     "context_scopes": "rules/context-scopes.json",
-    "compactification_R03": "RULES.md#R03"
+    "compactification_R03": "RULES.md#R03",
+    "context_budget_contract": "rules/context_budget.json"
   }
 }
