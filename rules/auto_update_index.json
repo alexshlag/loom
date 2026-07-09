@@ -1,8 +1,0 @@
-{
-  "protocol_name": "Auto-update Index",
-  "description": "Automated wiki/index.md update rules.",
-  "command": "./scripts/rebuild-meta.sh --index-only",
-  "trigger": "Ingest process after create_page/update_existing. Lint after link_validation.",
-  "logic_details": "Script parses wiki/*/__.md, groups by subdirectory, sorts alphabetically.",
-  "schema_ref_to_agent_rules": "AGENTS.md#rules-reference"
-}

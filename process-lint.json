@@ -139,7 +139,7 @@
         },
         {
           "condition": "hot_cache_stale",
-          "schema_ref": "session_context_rules.json#write_triggers.process_complete",
+          "schema_ref": "rules/session_context_rules.json#write_triggers.process_complete",
           "log_only": true
         },
         {

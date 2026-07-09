@@ -8,10 +8,31 @@ related: []
 # Wiki Hot Cache — Last Updated: 2026-07-09
 
 ## Active Project (WORK_MODE: project)
-- **Project**: Loomana wiki health maintenance + backlinks system fix + tag ordering compliance
-- **Status**: 🟢 COMPLETE SESSION — All structural issues resolved, ready for next day
+- **Project**: Loomana context management refactor + git sync unification + routing rules
+- **Status**: 🟢 SESSION 2 COMPLETE — All refactoring applied, pushed to origin
 
-## Session Summary (2026-07-09)
+## Session 2 Summary (2026-07-09)
+### Completed
+1. ✅ Cluster A merge: 4 context budget files → 1 (362→32 lines). Deleted `context-management-instructions.md`, `source_transient_ingest.json`. Removed `context_budget_rules` block from session_context_rules.json.
+2. ✅ Fixed 3 cross-reference integrity issues (EXT-RES1, compaction anchor, missing `rules/` prefix)
+3. ✅ Russian text removed from 4 rule files
+4. ✅ pre-commit flow unified: `git_conventions.json` step 0 = memory_sync. RULES.md §8.1/§11 deduplicated to schema_ref.
+5. ✅ Resource page routing: app templates/configs → `wiki/resources/` (not `wiki/templates/`). RESOURCE-PAGE-V1 added.
+6. ✅ `parent_entity_identification` heuristic: 4 rules for correct tag[0]/file prefix assignment.
+
+### Key Changes
+- `rules/context_budget.json` — 32-line compact replacement for 362 lines across 4 files
+- `rules/git_conventions.json#pre_commit_workflow` — step 0 = memory_sync, steps 1-5 = git ops
+- `rules/tag-guidelines.json#parent_entity_identification` — 4 heuristics for parent entity detection
+- `rules/structural_requirements.json#RESOURCE-PAGE-V1` — resource page structure
+- `process-ingest.json` — template routing + resource step_7 conditional
+
+### Next Day Focus
+- [ ] Test parent_entity_identification in real ingest scenario
+- [ ] Review 3 contradiction-flagged soft-check pages from previous session
+- [ ] Consider Cluster A follow-up: merge context-budget.md wiki page with new rule
+
+## Session 1 Summary (2026-07-09)
 ### Completed
 1. ✅ Full health audit — 4 wrong docs-*.md deleted from templates/, all broken wikilinks fixed
 2. ✅ Fixed `wiki-walk.py` backlinks parser: now extracts both `[text](url)` and `[[wikilink]]` Obsidian format
@@ -26,12 +47,7 @@ related: []
 - `wiki/entities/*.md` — 12 entity pages: primary name now tag[0] per rule `tag_ordering_for_entity_docs`
 - `wiki/index.md` — fully rebuilt, all categories populated correctly (templates excluded)
 
-### Next Day Focus
-- [ ] Review 3 contradiction-flagged soft-check pages
-- [ ] Continue knowledge base growth via query responses / source ingestion
-- [ ] Consider additional rule refinements for cross-entity parent references
-
 ## System State
 ### Active Threads
-- ✅ Wiki health: BACKLINKS OPERATIONAL, ORPHANS=0, INDEX UP-TO-DATE
+- ✅ Context budget compactified, pre-commit flow unified, resource routing added
 - 🔄 Knowledge expansion — ready for next ingest/query cycle

@@ -79,7 +79,7 @@
         "en": "Resources",
         "ru": "Resources"
       },
-      "description": "Tools, plugins, libraries"
+      "description": "Tools, plugins, libraries, application templates, config examples, code scaffolds"
     },
     {
       "key": "docs",
@@ -91,5 +91,5 @@
     }
   ],
   "rule": "Agent reads from this file — never hardcodes order or definitions.",
-  "schema_ref_to_agent_rules": "AGENTS.md#architecture-layers"
+  "schema_ref_to_agent_rules": "rules/categories.json"
 }

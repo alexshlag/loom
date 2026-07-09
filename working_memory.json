@@ -1,46 +1,44 @@
 {
-  "last_updated": "2026-07-08T21:57",
+  "last_updated": "2026-07-09T12:00",
   "current_mode": "project",
-  "focus_node": "Fixed memory sync order: BEFORE git commit",
+  "focus_node": "Context management refactor + git sync unification + parent entity identification",
   "next_steps_todo": [
-    "review session_context_rules.json for unified context budget rules"
+    "review parent_entity_identification in practice during next ingest"
   ],
   "open_pages": [],
   "dead_ends": [],
   "query_summary": {
-    "intent": "Ingest remaining docs/ source documents into wiki/docs/, verify STI-V1 transient memory rule",
+    "intent": "Refactor context management architecture, unify pre-commit flow, add resource/routing rules",
     "pages_read": [
-      "docs/memory-hooks.md",
-      "docs/session-lifecycle.md",
-      "docs/snapshot-lifecycle.md",
-      "docs/batch-ingest.md",
-      "docs/advanced-query.md",
-      "docs/api-conventions.md",
-      "docs/security-guide.md"
+      "rules/context_budget.json",
+      "rules/context-management-instructions.md",
+      "rules/source_transient_ingest.json",
+      "rules/session_context_rules.json",
+      "rules/session_bootstrap.json",
+      "process-ingest.json",
+      "process-query.json",
+      "process-lint.json",
+      "rules/git_conventions.json",
+      "RULES.md",
+      "rules/naming_conventions.json",
+      "rules/tag-guidelines.json",
+      "rules/categories.json",
+      "rules/structural_requirements.json",
+      "wiki/concepts/context-budget.md"
     ],
     "key_findings": [
-      "7 docs/ documents ingested into wiki/docs/ following STI-V1 (transient source memory)",
-      "STI-V1 rule working correctly — read one source, extract to wiki, forget raw text",
-      "wiki/docs/ now contains 15 pages total (8 pre-existing + 7 new)"
+      "362 lines of context management condensed to 32 (Cluster A merge completed)",
+      "Git pre-commit flow unified: git_conventions.json step 0 = memory_sync, RULES.md deduplicated",
+      "Resource pages now routed to wiki/resources/ not wiki/templates/ (RESOURCE-PAGE-V1)",
+      "Parent entity identification heuristic added to prevent wrong tag[0] assignment"
     ]
   },
   "broken_links_resolved": [],
   "recent_activity": [
-    "2026-07-08 docs | Phase 23: ingested 7 source documents → wiki/docs/ (memory-hooks, session-lifecycle, snapshot-lifecycle, batch-ingest, advanced-query, api-conventions, security-guide)",
-    "2026-07-08 schema | added STI-V1 rule — sources transient during ingest, read→extract→wiki→forget",
-    "2026-07-08 commit | feat | docs: deep-dive templates API CLI migration guide + template selection in ingest",
-    "2026-07-08 docs | Phase 18.1: completed deep-dive templates (API reference, CLI commands, migration guide, general guide)",
-    "2026-07-08 docs | Phase 22: created troubleshooting.md, security-guide.md, extending-wiki.md",
-    "2026-07-08 14:56 | completed | Task 12345: memory sync procedure implemented",
-    "2026-07-08 15:07 | completed | Phase 23 complete: all docs/ source documents ingested into wiki/docs/, STI-V1 rule verified",
-    "2026-07-08 15:09 | completed | Memory sync procedure verified",
-    "2026-07-08 15:10 | completed | Phase 23 complete: all docs/ source documents ingested into wiki/docs/, STI-V1 rule verified (read→extract→wiki→forget)",
-    "2026-07-08 15:36 | completed | Phase 23 complete: all docs/ source documents ingested, STI-V1 rule verified — session cleanup (issues.md + PLAN.md) done",
-    "2026-07-08 18:25 | completed | refactor work_modes.json compactification convention",
-    "2026-07-08 20:06 | completed | Phase 24 completed: unified memory sync contract",
-    "2026-07-08 20:06 | completed | Phase 24 completed: unified memory sync contract",
-    "2026-07-08 20:57 | completed | Phase 25 done: unified memory scripts",
-    "2026-07-08 21:20 | completed | Phase 25.2: clean git_conventions memory references",
-    "2026-07-08 21:57 | completed | Fixed memory sync order: BEFORE git commit"
+    "2026-07-09 refactor | Cluster A: merged 4 context budget files → 1 (362→32 lines), deleted context-management-instructions.md, source_transient_ingest.json, removed context_budget_rules block",
+    "2026-07-09 schema | git_conventions.json#pre_commit_workflow step 0 = memory_sync (single entry point), RULES.md §8.1 and §11 deduplicated to schema_ref",
+    "2026-07-09 schema | RESOURCE-PAGE-V1 + routing: app templates → wiki/resources/ (not wiki/templates/), categories.json + process-ingest.json updated",
+    "2026-07-09 schema | parent_entity_identification: 4 heuristics for determining what entity owns tag[0] and file prefix",
+    "2026-07-09 commit | refactor | context budget compaction + git sync unification + resource routing + parent entity rules"
   ]
 }

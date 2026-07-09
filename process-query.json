@@ -319,12 +319,12 @@
           "step_2": "auto_crosslink_from_query_results -> add to working_memory.json"
         },
         {
-          "step_3": { "schema_ref": "session_context_rules.json#write_triggers.process_complete" }
+          "step_3": { "schema_ref": "rules/session_context_rules.json#write_triggers.process_complete" }
         }
       ],
       "post_action": {
         "trigger": "compaction_complete",
-        "schema_ref": "session_context_rules.json#write_triggers.compaction"
+        "schema_ref": "rules/session_context_rules.json#write_triggers.compaction_complete"
       }
     },
     {
@@ -651,7 +651,7 @@
     "step_0.5_query_intent_decoder": {
       "trigger": "start_of_query",
       "action": "hot_cache_bootstrap",
-      "schema_ref": "session_context_rules.json#write_triggers.wiki_modified"
+      "schema_ref": "rules/session_context_rules.json#write_triggers.wiki_modified"
     },
     "step_3_result_fixation": {
       "trigger": "on_result_fixation",

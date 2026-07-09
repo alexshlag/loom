@@ -27,7 +27,5 @@
     "If mismatch → flag as stale, proceed to ingest"
   ],
 
-  "_priority": "Use corrected copy from manifest for contradiction detection. Hash mismatch = re-ingest required.",
-
-  "schema_ref_to_agent_rules": "AGENTS.md#6-agent-rules-conventions-rules"
+  "schema_ref_to_agent_rules": "rules/delta_tracking.json"
 }

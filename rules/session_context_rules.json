@@ -113,48 +113,6 @@
     }
   ],
   "concurrent_trigger_rule": "When multiple triggers fire simultaneously, write ALL relevant sections in one pass (not sequentially)",
-  "context_budget_rules": {
-    "rule_id": "CB-V1",
-    "description": "Hard limits on what raw content stays in agent context. Prevents token bloat from holding processed documents.",
-    "principle": "Processed source content must be explicitly released after extract \u2014 it competes with wiki page writing for limited context window.",
-    "rules": [
-      {
-        "rule_id": "CB-SOURCE-FORGET",
-        "name": "Source forget-after-extract",
-        "description": "After reading a source document and extracting to wiki page \u2014 the original text must NOT remain in context for subsequent steps.",
-        "pattern_prohibited": {
-          "read_source_A \u2192 read_source_B \u2192 process both together": "Holding N sources simultaneously = O(N) token waste"
-        },
-        "correct_pattern": [
-          "read source A",
-          "extract to wiki page (write to disk)",
-          "move to source B \u2014 do NOT re-read source A content again",
-          "repeat for each source independently"
-        ]
-      },
-      {
-        "rule_id": "CB-PROCESS-LAZY",
-        "name": "Lazy loading for process files",
-        "description": "Process files (process-*.json) are schema_refs, not read-whole. Only read the specific step that applies to current context.",
-        "prohibited": [
-          "cat/reading entire process-ingest.json (~18KB) when only need step_8a_new_page",
-          "Reading all memory_hooks in process-query.json when only need compounding_decision"
-        ],
-        "correct_pattern": [
-          "Read AGENTS.md or process file once at session start for high-level understanding",
-          "At execution time: read ONLY the specific step/section needed via schema_ref",
-          "Never hold entire process file content \u2014 it's a reference, not data"
-        ]
-      },
-      {
-        "rule_id": "CB-WIKI-PAGES",
-        "name": "Wiki pages context bubble",
-        "description": "Max 3 wiki pages in active context simultaneously. When opening new page for reading \u2014 close one of the current 3.",
-        "max_open_pages": 3,
-        "rule_id_ref": "session_context_rules.json#operational_rules.context_bubble_max_pages"
-      }
-    ]
-  },
   "constraints": {
     "IMMEDIATE_WRITE": "Write wiki/hot.md immediately after action, NOT at session end",
     "SLICE_NOT_FULL_LOG": "wiki/hot.md = summary slice only, never full log copy",
@@ -181,5 +139,5 @@
       "reference": "wiki/concepts/natural-memory.md"
     }
   },
-  "schema_ref_to_agent_rules": "AGENTS.md#5-context-bridge-working_memoryjson"
+  "schema_ref_to_agent_rules": "rules/session_context_rules.json"
 }

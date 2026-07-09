@@ -1,6 +1,6 @@
-# Schema Ref Examples — Практика исправления битых ссылок
+# Schema Ref Examples — Broken Link Fixing Practice
 
-## Примеры из практики (вынесены из RULES.md для компактизации)
+## Practical examples (extracted from RULES.md for compactness)
 
 ### 1. raw_corrected_zone (исправлено)
 - Было: `schema_ref: AGENTS.md#raw_corrected_zone` → битая ссылка

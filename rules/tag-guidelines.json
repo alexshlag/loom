@@ -33,9 +33,15 @@
   },
 
   "language_consistency": {
-    "rule": "Use EITHER English OR Russian within one document — never mix languages in tags",
-    "recommendation": "English preferred for consistency with AGENTS.md conventions",
-    "exceptions": ["Russian-only content pages may use ru-tags exclusively"]
+    "policy": {
+      "rule": "Use EITHER English OR Russian within one document — never mix languages in tags",
+      "recommendation": "English preferred for consistency with AGENTS.md conventions",
+      "exceptions": ["Russian-only content pages may use ru-tags exclusively"]
+    },
+    "section_headers": "All section titles in templates are English — ## Definition, ## Key Characteristics, etc. Provides consistent structural anchors regardless of content language.",
+    "page_content_language": "Content follows source language. Bilingual sources -> bilingual sections (allowed and normal). No forced translation required at ingest time.",
+    "agent_response_translation": "When synthesizing answer: translate section headers to match user's question language. Content paraphrasing is agent's discretion — can quote directly, summarize, or translate.",
+    "mixed_language_pages": "Allowed and encouraged when reflecting bilingual sources. Agent treats each section independently for translation at response time."
   },
 
   "lint_validation_check": {
@@ -54,6 +60,41 @@
     "rationale": "Aliases are discoverability synonyms in frontmatter `aliases: []`. They may not match user search patterns and can cause cross-link failures.",
     "example": {"entity": "Loomana", "correct_prefix": "wiki/docs/Loomana-architecture.md", "wrong_prefix": "wiki/docs/loom-architecture.md (alias used instead of primary name)"},
     "agent_instruction": "Before creating any related doc: check entity page's tags — first tag = PRIMARY NAME. Use that as prefix, not aliases."
+  },
+
+  "parent_entity_identification": {
+    "rule": "Page's parent entity = what the page is PRIMARILY ABOUT, not the technology it uses or depends on.",
+    "heuristics": [
+      {
+        "condition": "source is entity's own official docs/site",
+        "parent": "the documented entity",
+        "example": "symfony.com/docs/messenger → parent = Symfony"
+      },
+      {
+        "condition": "source discusses using technology X within project Y",
+        "parent": "project Y (the user of the technology)",
+        "example": "\"Using Symfony Messenger in MyApp\" → parent = MyApp, Symfony = related tag[1]",
+        "rationale": "The page documents the project's configuration, not the technology itself"
+      },
+      {
+        "condition": "source is a general guide/tutorial about technology X",
+        "parent": "technology X",
+        "example": "\"Symfony Messenger: Getting Started\" → parent = Symfony"
+      },
+      {
+        "condition": "page title contains both project and technology names",
+        "parent": "the entity named first in the title",
+        "example": "\"MyApp with Symfony Messenger\" → parent = MyApp"
+      }
+    ],
+    "fallback": "If heuristics are ambiguous: ask user which entity should be tag[0] before creating the page.",
+    "effect_on_tag_ordering": "parent entity's primary name → tag[0]. All related entities/technologies → tags[1+].",
+    "effect_on_naming": "parent entity's primary name → file prefix (wiki/docs/<parent>-<topic>.md).",
+    "effect_on_frontmatter": {
+      "related": "parent entity page goes into `related: []`. Related technologies also go into `related: []`.",
+      "aliases": "aliases of the parent entity (not related technologies)."
+    },
+    "agent_instruction": "Before creating any doc page: first identify the parent entity. Ask: 'What is this page ABOUT?' not 'What does this reference?' Documentation about USING a tool within a project → project is parent. Documentation OF a tool itself → tool is parent."
   },
 
   "tag_ordering_for_entity_docs": {
@@ -75,5 +116,5 @@
     "agent_instruction": "When creating entity docs: first tag = entity's PRIMARY NAME (from entity page tags). Second tag = any alias relevant to this doc. Never put aliases before the primary name."
   },
 
-  "schema_ref_to_agent_rules": "AGENTS.md#universal-frontmatter-all-types"
+  "schema_ref_to_agent_rules": "rules/tag-guidelines.json"
 }

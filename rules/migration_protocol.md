@@ -1,22 +1,22 @@
 # Migration Protocol: Context Optimization
 
-## 🎯 Цель
-Минимизировать "шум" в основном контексте агента (`AGENTS.md`), вынося специфические технические правила в отдельные файлы в директории `rules/`. Это позволяет агенту потреблять инструкции только тогда, когда они необходимы для текущей роли или задачи.
+## 🎯 Goal
+Minimize noise in the agent's primary context (`AGENTS.md`) by moving niche technical rules into separate files in `rules/`. This lets the agent consume instructions only when needed for the current role or task.
 
-## 🔄 Алгоритм (Цикличный процесс)
+## 🔄 Algorithm (Cyclic Process)
 
-1.  **Identify (Поиск)**: Найти в `AGENTS.md` блок "нишевой" инструкции (специфичные правила, которые не являются базовой философией проекта).
-2.  **Create (Создание)**: Создать в `rules/` файл `<rule>.json` (или `.md`).
-3.  **Migrate (Перенос)**: Переписать содержимое блока в новый файл. Рекомендуется использовать формат JSON для структурированных данных или Markdown для повествовательных правил.
-4.  **Verify (Проверка)**: Убедиться, что новый файл содержит все необходимые детали из оригинала.
-5.  **Relink (Перелинковка)**: Обновить все ссылки в `AGENTS.md` и `process-*.json`, чтобы они указывали на новый путь в `rules/`.
-6.  **Verify (Проверка ссылок)**: Убедиться, что агент может успешно прочитать новый файл по ссылке.
-7.  **Remove (Удаление)**: Удалить старый блок из `AGENTS.md`.
-8.  **Commit**: Совершить коммит изменений.
-9.  **Next**: Повторить цикл для следующего блока.
+1.  **Identify**: Find a niche instruction block in `AGENTS.md` (specific rules not part of the core project philosophy).
+2.  **Create**: Create a `<rule>.json` (or `.md`) file in `rules/`.
+3.  **Migrate**: Rewrite the block content into the new file. Use JSON for structured data, Markdown for narrative rules.
+4.  **Verify**: Ensure the new file contains all necessary detail from the original.
+5.  **Relink**: Update all references in `AGENTS.md` and `process-*.json` to point to the new `rules/` path.
+6.  **Verify Links**: Confirm the agent can successfully read the new file via the reference.
+7.  **Remove**: Delete the old block from `AGENTS.md`.
+8.  **Commit**: Commit the changes.
+9.  **Next**: Repeat for the next block.
 
-## 🛠 Правила процесса
-- **Не удалять** правила до тех пор, пока все ссылки на них не будут обновлены.
-- **Сохранять** краткое описание правила в `AGENTS.md` (в виде ссылки), чтобы агент знал о существовании правила.
-- **Атомность**: Каждый цикл — один блок. Не пытаться переносить всё за один раз.
-- **Целостность**: После каждого удаления блока из `AGENTS.md` выполнять линт-проверку (`scripts/lint.sh`).
+## 🛠 Process Rules
+- **Do not** delete rules until all references are updated.
+- **Keep** a brief rule description in `AGENTS.md` (as a link) so the agent knows the rule exists.
+- **Atomic**: One block per cycle. Do not migrate everything at once.
+- **Integrity**: After each block removal from `AGENTS.md`, run lint check (`scripts/lint.sh`).

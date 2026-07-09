@@ -1,34 +1,81 @@
-{
-  "rule_id": "FIRST-BLOCK-V1",
-  "name": "H1 required before first ##",
-  "description": "Every wiki page must have an H1 header. Tags in frontmatter provide searchable metadata — no mandatory body_text/description between H1 and first subheading.",
-  "pattern": [
-    "# Entity/Concept Name"
-  ],
-  "validation_rules": [
-    {
-      "rule": "h1_mandatory → agent must add a header before any ## sections"
-    }
-  ],
-  "agent_instruction": "When creating a new page: start with frontmatter, then H1. Tags in frontmatter provide searchable metadata — no mandatory description paragraph needed.",
-  "schema_ref_to_agent_rules": "AGENTS.md#template-files"
-},
-{
-  "rule_id": "DOC-PAGE-V1",
-  "name": "Docs page: nav header recommended + See Also section",
-  "description": "Alternative pattern for docs category pages. Tags in frontmatter provide searchable metadata — no mandatory intro paragraph between H1 and ##.",
-  "pattern": [
-    "# Documentation Title"
-  ],
-  "validation_rules": [
-    {
-      "rule": "nav_header_recommended → every doc page SHOULD have prev/next/index links at top (except docs-index.md)"
+[
+  {
+    "rule_id": "FIRST-BLOCK-V1",
+    "name": "H1 required before first ##",
+    "description": "Every wiki page must have an H1 header. Tags in frontmatter provide searchable metadata — no mandatory body_text/description between H1 and first subheading.",
+    "pattern": [
+      "# Entity/Concept Name"
+    ],
+    "validation_rules": [
+      {
+        "rule": "h1_mandatory -> agent must add a header before any ## sections"
+      }
+    ],
+    "agent_instruction": "When creating a new page: start with frontmatter, then H1. Tags in frontmatter provide searchable metadata — no mandatory description paragraph needed.",
+    "schema_ref_to_agent_rules": "rules/structural_requirements.json#FIRST-BLOCK-V1"
+  },
+  {
+    "rule_id": "DOC-PAGE-V1",
+    "name": "Docs page: nav header recommended + See Also section",
+    "description": "Alternative pattern for docs category pages. Tags in frontmatter provide searchable metadata — no mandatory intro paragraph between H1 and ##.",
+    "pattern": [
+      "# Documentation Title"
+    ],
+    "validation_rules": [
+      {
+        "rule": "nav_header_recommended -> every doc page SHOULD have prev/next/index links at top (except docs-index.md)"
+      },
+      {
+        "rule": "see_also_section_recommended -> every doc page SHOULD end with ## See Also section linking to wiki/entities/ and wiki/concepts/"
+      }
+    ],
+    "agent_instruction": "When creating docs category pages: after frontmatter and H1, add tags for searchability. Navigation header and See Also are recommended but not mandatory.",
+    "category_override": "docs",
+    "schema_ref_to_agent_rules": "rules/structural_requirements.json#DOC-PAGE-V1"
+  },
+  {
+    "rule_id": "RESOURCE-PAGE-V1",
+    "name": "Resource page structure",
+    "description": "Pages with category:resource (application templates, config examples, code scaffolds).",
+    "pattern": [
+      "# Template/Resource Name",
+      "",
+      "## Template Content",
+      "```",
+      "... template code or config ...",
+      "```",
+      "",
+      "## Usage",
+      "Description of how to apply this template",
+      "",
+      "## Source",
+      "Link back to the documentation this was extracted from"
+    ],
+    "validation_rules": [
+      {
+        "rule": "template_code_in_code_block → always wrap template content in triple-backtick blocks"
+      },
+      {
+        "rule": "usage_section → describe where and how the template is applied"
+      },
+      {
+        "rule": "source_link → link to the original documentation page or raw source"
+      }
+    ],
+    "agent_instruction": "When creating a resource page: wrap template content in code blocks, add Usage and Source sections. DO NOT save to wiki/templates/ — that directory is for page structure JSON only.",
+    "category_override": "resource",
+    "schema_ref_to_agent_rules": "rules/structural_requirements.json#RESOURCE-PAGE-V1"
+  },
+  {
+    "rule_id": "DATE-CONVENTION-V1",
+    "name": "Date Convention Rule",
+    "description": "Date usage rules for metadata and logs.",
+    "rules": {
+      "frontmatter_date": "Current system date in YYYY-MM-DD format. Never derived from source filename or git commit dates.",
+      "log_entries": "## [YYYY-MM-DD] action | description",
+      "json_timestamps": "ISO-8601 YYYY-MM-DDTHH:MM:SS+TZ"
     },
-    {
-      "rule": "see_also_section_recommended → every doc page SHOULD end with ## See Also section linking к wiki/entities/ и wiki/concepts/"
-    }
-  ],
-  "agent_instruction": "When creating docs category pages: after frontmatter and H1, add tags for searchability. Navigation header and See Also are recommended but not mandatory.",
-  "category_override": "docs",
-  "schema_ref_to_agent_rules": "AGENTS.md#template-files"
-}
+    "enforcement": "lint.sh check_id=6 (date_consistency_check)",
+    "schema_ref_to_agent_rules": "rules/structural_requirements.json#DATE-CONVENTION-V1"
+  }
+]

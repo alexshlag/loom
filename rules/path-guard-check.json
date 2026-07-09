@@ -39,5 +39,5 @@
     }
   ],
   "schema_ref_for_query_process": "rules/path-guard-check.json",
-  "schema_ref_to_agent_rules": "AGENTS.md#1-raw-sources-raw"
+  "schema_ref_to_agent_rules": "rules/path-guard-check.json"
 }

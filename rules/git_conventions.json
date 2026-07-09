@@ -30,18 +30,30 @@
   },
   "pre_commit_workflow": [
     {
+      "step": 0,
+      "action": "memory_sync",
+      "description": "Follow session_context_rules.json#write_triggers for WM + hot cache sync. Runs BEFORE any git operation.",
+      "schema_ref": "rules/session_context_rules.json#write_triggers.process_complete",
+      "mandatory": true
+    },
+    {
+      "step": 1,
       "action": "git status --short"
     },
     {
+      "step": 2,
       "action": "detect staging mode (auto: see mode_detection)"
     },
     {
+      "step": 3,
       "action": "stage with correct command from staging_by_mode"
     },
     {
+      "step": 4,
       "action": "git status --short \u2014 verify no untracked/unstaged remain"
     },
     {
+      "step": 5,
       "prohibited": [
         "git add *",
         "git commit -a"

@@ -4,7 +4,7 @@
   "version": "1.0",
   "date": "2026-07-08",
   "description": "Prevent filename collision when multiple projects/frameworks share wiki. All pages must be prefixed with entity's PRIMARY NAME (never alias). Aliases are NEVER used as file prefixes.",
-  "schema_ref_to_agent_rules": "AGENTS.md#architecture-layers",
+  "schema_ref_to_agent_rules": "rules/naming_conventions.json",
   "rules": {
     "entities_directory": {
       "path": "wiki/entities/",
@@ -36,7 +36,9 @@
       "examples_good": [
         { "entity": "Loomana", "docs_pattern": "Loomana-architecture.md" },
         { "entity": "Symfony", "docs_pattern": "symfony-dependency-injection.md" }
-      ]
+      ],
+      "parent_entity_determination": "The prefix entity is the page's PARENT ENTITY — what the page is PRIMARILY ABOUT. A technology used by the project IS NOT automatically the parent. See tag-guidelines.json#parent_entity_identification.",
+      "schema_ref": "rules/tag-guidelines.json#parent_entity_identification"
     },
     "comparisons_directory": {
       "path": "wiki/comparisons/",

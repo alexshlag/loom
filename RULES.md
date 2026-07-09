@@ -64,17 +64,10 @@ After completing a task:
 2. **Update dev documents:**
    - `issues.md` → fully close resolved bugs, leave only open + current ones
    - `PLAN.md`, `FEATURES_PLAN.md` → update phase statuses, mark current task
-3. **Sync context (REQUIRED):**
-   - Follow schema_ref → `session_context_rules.json#write_triggers` for procedure.
-4. **Git commit:**
-   ```bash
-   git add -A && git commit -m "<type> | <scope>: <description>"
-   ```
+3. **Git (sync + commit):**
+   - Follow `rules/git_conventions.json#pre_commit_workflow` — sync, stage, commit in one flow.
 
-**Commit format:** `<type> | <scope>: <description>` (type: feat|fix|refactor|schema|lint|ingest|query)
-
-> **Memory sync**: `session_context_rules.json#write_triggers.process_complete` — WM update + hot cache refresh. Runs BEFORE git.
-> **Git conventions**: `rules/git_conventions.json#pre_commit_workflow` — staging, commit format, verification.
+> **Single entry point**: `rules/git_conventions.json#pre_commit_workflow` handles memory sync (step 0) then git operations (steps 1-5). Never call git directly.
 
 ## 9. INSTRUCTION COMPACTIFICATION — Conciseness without losing logic
 
@@ -152,12 +145,11 @@ When implementing changes that affect how the user or agent interacts with Looma
 5. VERIFICATION → test functionality, check no regressions, run existing checks (lint/shellcheck)
 6. DOCUMENT UPDATE → refresh issues.md (close resolved), update PLAN.md (mark done), update AGENTS.md if needed, update docs/ for any feature/script/rule change
 7. **SYNC THEN COMMIT**:
-   a. Follow schema_ref → `session_context_rules.json#write_triggers` for WM + hot cache sync.
-   b. Run git_conventions.json#pre_commit_workflow (commit everything together).
+   Run `rules/git_conventions.json#pre_commit_workflow` — step 0 syncs memory, steps 1-5 stage and commit.
 ```
 
 **Critical rules:**
 - Never implement without plan (unless trivial one-liner)
 - Never update documentation after implementation — must be step 6, before commit
 - Never skip verification — test on real data before committing
-- Commit & memory sync via session_context_rules.json (never duplicate logic)
+- Commit & memory sync via `rules/git_conventions.json#pre_commit_workflow` (single entry point)

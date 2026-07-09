@@ -24,6 +24,5 @@
     {"situation": "Grep gave >100 matches without meaning",  "action": "[!] Log: grep noise → dead-end: switch to wiki/index.md"}
   ],
 
-  "_notes": {"extracted_from": "AGENTS.md#error_handling_protocol"},
-  "schema_ref_to_agent_rules": "AGENTS.md#6-agent-rules-conventions-rules"
+  "schema_ref_to_agent_rules": "rules/error_handling.json"
 }

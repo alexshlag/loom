@@ -30,5 +30,5 @@
     }
   },
   "implications": "Agent manages wiki and corrected/ tracking/. User controls raw/.",
-  "schema_ref_to_agent_rules": "AGENTS.md#architecture-layers"
+  "schema_ref_to_agent_rules": "rules/protected_zones.json"
 }

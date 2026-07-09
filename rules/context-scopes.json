@@ -7,39 +7,39 @@
   "fresh_rules": [
     {
       "id": "MEMORY_CONTRACT",
-      "schema_ref": "AGENTS.md#memory_architecture_contract"
+      "schema_ref": "rules/session_context_rules.json"
     },
     {
       "id": "EXECUTION_CONTRACT",
-      "schema_ref": "AGENTS.md#execution_contract"
+      "schema_ref": "rules/execution_contract.json"
     },
     {
       "id": "ERROR_HANDLING",
-      "schema_ref": "AGENTS.md#error_handling_protocol"
+      "schema_ref": "rules/error_handling.json"
     },
     {
       "id": "GIT_CONVENTIONS",
-      "schema_ref": "AGENTS.md#git_conventions"
+      "schema_ref": "rules/git_conventions.json"
     },
     {
       "id": "PROTECTED_ZONES",
-      "schema_ref": "AGENTS.md#protected_zones"
+      "schema_ref": "rules/protected_zones.json"
     },
     {
       "id": "SILENT_OUTPUT",
-      "schema_ref": "AGENTS.md#silent_output_contract"
+      "schema_ref": "rules/execution_modes.json"
     },
     {
       "id": "EXECUTION_MODES",
-      "schema_ref": "AGENTS.md#execution_modes"
+      "schema_ref": "rules/execution_modes.json"
     },
     {
       "id": "NATURAL_MEMORY",
-      "schema_ref": "AGENTS.md#natural_memory_translation"
+      "schema_ref": "rules/session_context_rules.json#operational_rules.natural_memory_translation"
     },
     {
       "id": "LOG_APPEND_ONLY",
-      "schema_ref": "AGENTS.md#log_append_only"
+      "schema_ref": "rules/session_context_rules.json#constraints.LOG_APPEND_ONLY"
     }
   ],
   "hybrid_rules_read_on_demand": [
@@ -74,5 +74,5 @@
       "source": "process-lint.json"
     }
   ],
-  "schema_ref_to_agent_rules": "AGENTS.md#context-management-all-rules-transient"
+  "schema_ref_to_agent_rules": "rules/context-scopes.json"
 }

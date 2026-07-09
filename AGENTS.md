@@ -103,6 +103,8 @@ Three process files — each defines a complete workflow:
   "structure": {
     "entities/": "specific identifiable objects (people, companies, technologies)",
     "concepts/": "abstract ideas, principles, methodologies",
+    "resources/": "application templates, config examples, code scaffolds — markdown with category: resource",
+    "templates/": "page structure templates ONLY (JSON: comparison, concept, docs, entity, synthesis)",
     ...
     "assets/images/": "copies of original images (.png, .jpg, .jpeg, .gif)",
     "assets/descriptions/": "markdown descriptions of images: OCR + entities + metadata",
@@ -113,6 +115,11 @@ Three process files — each defines a complete workflow:
 
 > Categories: `rules/categories.json`
 > Naming conventions (prevent collision): `rules/naming_conventions.json`
+>
+> **`wiki/templates/` vs `wiki/resources/`**:
+> - `templates/` = JSON page structure templates (not wiki pages, not indexed by rebuild-meta.sh)
+> - `resources/` = application templates/config scaffolds as markdown wiki pages (indexed, searchable, cross-linkable)
+> - Route: during ingest, if source is template/example/config → `wiki/resources/` with `category: resource`. Never save to `wiki/templates/`.
 
 #### Assets & Media Pipeline
 
@@ -164,7 +171,7 @@ Consolidated index of all niche/specific rules. Read on demand when a process st
 | `rules/non_blocking_lint.json` | Lint checks, quiet mode, cron safety | Before lint |
 | `rules/contradiction_resolution.json` | Cascade priority for conflicting sources | On contradiction detected |
 | `rules/delta_tracking.json` | Hash-based source deduplication | Before ingest |
-| `rules/source_transient_ingest.json` | Source documents are transient: read → extract → write wiki → forget. Never hold multiple sources simultaneously | Before processing any source |
+| `rules/context_budget.json` | Token budget: lazy load, one source at a time, context bubble max 3 pages | Before processing any source |
 | `rules/error_handling.json` | Detect → analyze → resolve → continue | On process failure |
 | `rules/evidence_grade.json` | Source authority auto-assignment | During page creation |
 | `rules/execution_contract.json` | Proposal → Action (no permission stops) | Session start |
@@ -174,7 +181,7 @@ Consolidated index of all niche/specific rules. Read on demand when a process st
 | `rules/compounding_workflow.json` | Compound answer → save decision | Query with novel insight |
 | `rules/search_strategy.json` | Search tools, fallback chain, scoring | During query |
 | `rules/session_context_rules.json` | Memory layers, save triggers, grep contract | Every memory operation |
-| `rules/silent_output.json` | Output contract (final results only) | Session start |
+| `rules/execution_modes.json` | Execution modes + output contract | Session start |
 | `rules/snapshot_format.json` | Snapshot lifecycle (create/update/archive) | Project mode active |
 | `rules/structural_requirements.json` | Page structure validation | Page creation/update |
 | `rules/tag-guidelines.json` | Tag patterns, aliases, enforcement | Page creation/update |
@@ -225,7 +232,7 @@ related: [] # related wiki pages (wiki-relative paths)
 - Agent responses: translate headers to match user's question language
 - Mixed-language pages: encouraged for bilingual sources
 
-> Details: `rules/language_policy.json`
+> Details: `rules/tag-guidelines.json#language_consistency`
 
 ### Template Co-evolution Process
 

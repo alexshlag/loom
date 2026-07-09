@@ -5,7 +5,7 @@ type: documentation
 category: concept
 aliases: [context-engineering, forget-after-extract, tool-result-clearing]
 sources: ["web_search", "anthropic-context-engineering", "langchain-context-editing"]
-related: ["wiki/concepts/agent-memory-management.md", "rules/source_transient_ingest.json", "process-ingest.json#forget_instructions"]
+related: ["wiki/concepts/agent-memory-management.md", "rules/context_budget.json"]
 ---
 # Context Budget — Управление контекстным окном LLM при Ingest
 
@@ -84,16 +84,12 @@ CREATE wiki page → VALIDATE structure + crosslinks → WRITE to disk
 
 | Rule | File | Purpose |
 |------|------|---------|
-| STI-V2 | `rules/source_transient_ingest.json` | Source documents transient — forget after extract |
-| CBUDGET-V1 | `rules/context_budget.json` | Context budget management principles |
-| SCM-V4 | `rules/session_context_rules.json#context_budget_rules` | Hard limits, max open pages, lazy loading |
-| Process Ingest | `process-ingest.json#forget_instructions` | Explicit forget triggers per step |
+| CBUDGET-V2 | `rules/context_budget.json` | Token budget: lazy load, one source at a time, context bubble max 3 |
+| SCM-V4 | `rules/session_context_rules.json#operational_rules.context_bubble_max_pages` | Max open pages config |
 
 ## Session Bootstrap Integration
 
-С `rules/session_bootstrap.json`:
-- Order 4: read `rules/context-budget.json` — principles перед началом работы
-- Order 5: read `rules/context-management-instructions.md` — concrete instructions "что забыть после какого шага"
+Bootstrap does NOT pre-load context budget rules. Agent reads `rules/context_budget.json` on demand via schema_ref when processing any source.
 
 ## Why This Matters for Loomana Specifically
 
@@ -113,8 +109,7 @@ CREATE wiki page → VALIDATE structure + crosslinks → WRITE to disk
 ## Related Pages
 - [[wiki/concepts/agent-memory-management.md]] — общая архитектура памяти агента
 - [[wiki/concepts/natural-memory.md]] — естественный перевод фактов
-- [[rules/context-budget.json]] — детальные принципы context management
-- [[process-ingest.json#forget_instructions]] — конкретные триггеры forget
+- [[rules/context_budget.json]] — детальные принципы context management
 
 ---
 

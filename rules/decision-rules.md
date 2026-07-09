@@ -26,7 +26,7 @@
 
 1. **Detect**: Script reports signal (overlap, contradiction, similarity)
 2. **Evaluate**: Agent reads context → applies relevant DR from table above
-3. **Log**: См. `process-query.json#contradiction_resolution_flow.logging_actions`. Записать решение в log.md. Всегда append (`>>`), never overwrite.
+3. **Log**: See `process-query.json#contradiction_resolution_flow.logging_actions`. Write decision to log.md. Always append (`>>`), never overwrite.
 4. **Evolve**: New scenarios → discuss → add new rule to table → commit
 
 ---

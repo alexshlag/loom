@@ -22,9 +22,19 @@
   },
   "rules": {
     "default_execution_mode": "silent",
-    "verbose_trigger": "When user explicitly requests 'verbose', 'debug mode', or 'show steps' → agent sets 'verbose' in WM and works one turn.",
+    "verbose_trigger": "When user explicitly requests 'verbose', 'debug mode', or 'show steps' -> agent sets 'verbose' in WM and works one turn.",
     "auto_reset": "After verbose answer, agent resets to 'silent'.",
-    "explicit_reset": "When user says 'quiet', 'silent', or 'less' → instant reset."
+    "explicit_reset": "When user says 'quiet', 'silent', or 'less' -> instant reset.",
+    "prohibited_output": [
+      "Bash stdout/stderr (grep output, script results, file listings)",
+      "Intermediate search data (web_search snippets before final synthesis)",
+      "Thinking aloud ('thinking about doing X...')"
+    ],
+    "allowed_output": [
+      "Final answer/synthesis (completed response with sources)",
+      "Created files (wiki pages with frontmatter and content)",
+      "Errors + resolved action ('[!] Contradiction resolved: 7.x LTS uses PHP 8.2')"
+    ]
   },
-  "schema_ref_to_agent_rules": "AGENTS.md#rules-reference"
+  "schema_ref_to_agent_rules": "rules/execution_modes.json"
 }
