@@ -690,3 +690,14 @@ STI-V1 verified: read→extract→wiki→forget cycle working correctly for each
 - text-similarity.sh scan_all: ✅ still works (unchanged)
 - Full lint.sh run: ✅ 61 issues found, no regressions
 
+
+## [2026-07-16] session | Wiki rename/move rules audit + cleanup
+### Changes
+- **AGENTS.md**: Added rule requiring agents to use only `scripts/rename-page.sh` for wiki page rename/move
+- **process-lint.json**: Removed broken `auto_fix_phase` (rename-page.sh --fix not supported)
+- **process-lint.json**: Fixed check_id=6 `schema_ref` → `scripts/lint.sh#check_id=6` (was pointing to non-existent rule)
+- **PLAN.md**: Added T6 task — filename collision resolution strategy needed
+### Findings
+- `rename-page.sh` exists and works (rename + global relink) — was undocumented
+- `filename_collision_audit` implementation EXISTS: scripts/filename-audit.sh + lint.sh check 6 + process-ingest check_filename_collision + rules/naming_conventions.json NAMES-CORE-V1
+- Only gap: no policy for *choosing* between colliding names (T6)

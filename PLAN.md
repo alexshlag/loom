@@ -14,6 +14,10 @@
 
 > ✅ **N6 Closed** — 13 wiki/concepts/ pages renamed with symfony-* prefix. Remaining 14 pages are non-project concepts (agent-memory-management, doctrine-orm, etc.) — accepted as exceptions.
 
+| # | Task | Description | Priority | Status |
+|---|------|-------------|----------|--------|
+| **T6** | **Filename collision resolution strategy** — lint detects collisions (filename-audit.sh + process-ingest check_filename_collision), but no policy exists for *choosing* between colliding names. Need to define: (a) tie-breaking rules (e.g., project prefix wins over bare name, most specific wins), (b) when to escalate to user vs auto-resolve, (c) how to document the decision. Agent currently has no guidance beyond "use rename-page.sh". | 🟡 P2 MEDIUM | ⬜ Pending |
+
 ### Phase 52: Discovery Step Integration ✅ Closed
 
 | # | Task | Description | Priority | Status |
@@ -24,4 +28,4 @@
 
 ---
 
-> Last update: 2026-07-15 | Pending tasks: T5 (batch JSON reads). | Closed: N6 (filename collision), D1 (discovery step integration).
+> Last update: 2026-07-15 | Pending tasks: T6 (collision resolution strategy). | Closed: N6 (filename collision), D1 (discovery step integration).

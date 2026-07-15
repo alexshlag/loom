@@ -1,43 +1,40 @@
 {
-  "last_updated": "2026-07-15T10:00",
+  "last_updated": "2026-07-16T22:00",
   "current_mode": "project",
-  "focus_node": "T5 batch JSON reads — lint.sh + text-similarity.sh pairwise optimized"
+  "focus_node": "Session end — renamed-page.sh audit + lint rule cleanup",
   "next_steps_todo": [
-    "Cleanup dead code in text-similarity.sh (extract_text, generate_ngrams, compute_similarity functions)"
+    "T6: Define filename collision resolution strategy (tie-breaking, escalation policy)",
+    "Review rename-page.sh documentation completeness",
+    "Test glossary in next query session — verify confidence boost works"
   ],
   "open_pages": [],
   "dead_ends": [],
   "query_summary": {
-    "intent": "Reconcile issues.md and PLAN.md with actual project state — close resolved, update partial",
+    "intent": "Audit rename-page.sh and wiki rename/move rules",
     "pages_read": [
-      "issues.md",
-      "PLAN.md",
-      "scripts/performance/similarity_index.py",
-      "scripts/rebuild-meta.sh",
+      "AGENTS.md",
+      "process-lint.json",
+      "scripts/rename-page.sh",
+      "rules/broken_link_handling.json",
+      "rules/migration_protocol.md",
+      "rules/structural_requirements.json",
       "scripts/lint.sh",
-      "scripts/text-similarity.sh",
-      "scripts/benchmark-rebuild.sh",
-      "scripts/classify-source.sh",
-      "scripts/auto-crosslink.sh",
-      "scripts/link-validator.sh",
-      "scripts/check-new-sources.sh",
+      "scripts/filename-audit.sh",
       "process-ingest.json",
-      "wiki/concepts/",
-      "scripts/text-similarity.sh"
+      "rules/naming_conventions.json",
+      "PLAN.md"
     ],
     "key_findings": [
-      "T5 lint.sh: merged 2 python3 calls → 1 batch (lines 341-342)",
-      "T5 text-similarity.sh pairwise: 7 subprocess → 1 heredoc process",
-      "Old helper functions now dead code — extract_text, generate_ngrams, compute_similarity",
-      "All checks pass: lint.sh 61 issues, scan_all works, pairwise returns valid JSON"
+      "rename-page.sh exists and works (rename + relink) but was undocumented in AGENTS.md — rule added",
+      "process-lint.json had broken auto_fix_phase referencing rename-page.sh --fix (script doesn't support --fix) — removed",
+      "process-lint.json check_id=6 schema_ref pointed to wrong file — fixed to scripts/lint.sh#check_id=6",
+      "filename_collision_audit implementation EXISTS: scripts/filename-audit.sh + lint.sh check 6 + process-ingest check_filename_collision + rules/naming_conventions.json NAMES-CORE-V1",
+      "T6 added to PLAN.md Phase 19 — collision resolution strategy needed",
+      "No rule existed requiring agents to use only rename-page.sh — added to AGENTS.md"
     ]
   },
   "broken_links_resolved": [],
   "recent_activity": [
-    "2026-07-15 D1 complete | Applied schema-patch: RULES.md R01 strengthened + §11 step 3.5 DISCOVERY inserted; closed #52 in issues.md and PLAN.md",
-    "2026-07-15 audit | Closed #22,#23,#24,#45,#47,#8,#49; updated #11,#46 partial status in issues.md; closed N6 in PLAN.md",
-    "2026-07-14 commit | Context optimization — removed closed issues from issues.md and PLAN.md",
-    "2026-07-09 refactor | Cluster A: merged 4 context budget files → 1 (362→32 lines)",
-    "2026-07-09 schema | git_conventions.json#pre_commit_workflow step 0 = memory_sync"
+    "2026-07-16 session | Audit wiki rename/move rules: added rename-page.sh rule to AGENTS.md, removed broken auto_fix_phase from process-lint.json, fixed schema_ref for check_id=6, added T6 to PLAN.md"
   ]
 }

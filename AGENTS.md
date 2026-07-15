@@ -67,6 +67,8 @@ Before writing/editing/debugging `process-*.json` and `rules/*.json`: read §9 o
 
 `rules/git_conventions.json`. Agent **MUST read** this file before EVERY commit operation.
 
+> **Rule**: Wiki page rename/move — Agent **MUST use only** `scripts/rename-page.sh <old_path> <new_path>` for any wiki page rename or move. This script handles both the file move and updating all internal references. Do NOT manually move files or edit links.
+
 ---
 
 ## Intent Detection & Routing (NEW)

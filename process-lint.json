@@ -52,7 +52,7 @@
         "coverage_gaps",
         "filename_collision_audit"
       ],
-      "schema_ref": "rules/structural_requirements.json"
+      "schema_ref": "scripts/lint.sh#check_id=6"
     },
     {
       "check_id": "7",
