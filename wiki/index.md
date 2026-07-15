@@ -1,6 +1,5 @@
 # Wiki Index
 
-
 ## Entities
 * [AI Factory](entities/ai-factory.md) — [AI Factory] [obsidian-cli] [vault-transport] [cli-tool]
 * [API Platform](entities/api-platform.md) — [API Platform] [api] [rest] [graphql]
@@ -51,26 +50,20 @@
 * [Сравнение: Loomana (Markdown-driven wiki) vs pi-llm-wiki/ (TypeScript platform)](comparisons/llm-wiki-implementations.md) — [llm-wiki-patterns] [wiki-implementations] [compounding-knowledge]
 
 ## Syntheses
-* [Основные способы создания сред разработки Python на NixOS](syntheses/python-nixos-development-environments.md) — [nixos] [python] [development-environment]
+* [Основные способы создания сред разработки Python на NixOS]() — [nixos] [python] [development-environment]
 * [Сравнение: RAG vs LLM Wiki Pattern (Compounding Knowledge Base)](syntheses/rag-vs-llm-wiki-pattern.md) — [rag] [llm] [knowledge-base]
 
 ## Overviews
 
-
 ## Notes
-
 
 ## Meetings
 
-
 ## Projects
-
 
 ## Bibliography
 
-
 ## Resources
-
 
 ## Documentation
 * [AI Factory Documentation — CLI Tool & Skill System for Coding Agents](docs/ai-factory.md) — [cli] [agent-tools] [development-workflow] [skill-system]

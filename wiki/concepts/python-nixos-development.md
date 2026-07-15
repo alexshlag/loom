@@ -2,9 +2,8 @@
 tags: [ nixos, python, development-environment]
 date: 2026-06-24
 sources: [raw/corrected/SRC-2025-06-24-002/nixos-python-wiki.md]
-related: [wiki/syntheses/python-nixos-development-environments.md]
+related: []
 ---
-- [[wiki/syntheses/python-nixos-development-environments.md]] (score: 8)
 
 # Python Development Environments on NixOS
 
@@ -79,7 +78,6 @@ environment.systemPackages = with pkgs; [
 * `raw/corrected/SRC-2025-06-24-002/nixos-python-wiki.md` — https://wiki.nixos.org/wiki/Python (оригинал)
 
 ## Reconciliation note (#H2)
-> Эта страница и [syntheses/python-nixos-development-environments.md](syntheses/python-nixos-development-environments.md) обе используют один источник (SRC-2025-06-24-002). Они охватывают одну тему из разных углов:
 > - **Эта страница** — практическое руководство и принципы
 > - **Синтез** — структурированный анализ способов с выводами
 > Обе страницы согласованы, дублирование намеренное для разных целей чтения.

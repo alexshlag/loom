@@ -11,6 +11,7 @@ sources: [
 aliases: ["DI Symfony", "Symfony Container"]
 related: [wiki/entities/symfony.md, wiki/concepts/service-container.md, wiki/concepts/symfony-flex.md]
 ---
+- [[wiki/concepts/symfony-service-container.md]] (score: 5, incoming)
 - [[wiki/entities/symfony.md]] (score: 8)
 - [[wiki/concepts/service-container.md]] (score: 5, incoming)
 

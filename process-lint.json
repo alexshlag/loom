@@ -30,7 +30,7 @@
       "check_id": "3",
       "name": "knowledge_gaps_detection",
       "description": "Identify topics mentioned across pages but without dedicated page. Soft-only check.",
-      "schema_ref": "process-query.json#compounding_decision"
+      "schema_ref": "process-query.json#context.compounding_decision_logic"
     },
     {
       "check_id": "4",
@@ -107,7 +107,7 @@
       "check_id": "15",
       "name": "structural_violations_check",
       "command": "./scripts/check-structural.sh --quiet || true",
-      "note": "Find pages missing body text between H1 and first ##. Auto-fix via check-structural.sh --auto-fix."
+      "note": "Find pages missing body text between H1 and first ##. Auto-fix via structural-fix.sh --fix."
     }
   ],
   "primary_command": {
@@ -129,7 +129,7 @@
         },
         {
           "condition": "structural_violations_found",
-          "action": "run scripts/check-structural.sh --auto-fix > /dev/null 2>&1 || true",
+          "action": "run scripts/structural-fix.sh --fix > /dev/null 2>&1 || true",
           "note": "Script auto-generates intro paragraphs from H1 title + category, injects between ## headings. See issues.md#issue-50 check_id=6."
         },
         {
@@ -202,15 +202,6 @@
     "description": "Memory layer hooks — triggered after lint.sh completes. Async, non-blocking.",
     "hooks": [
       {
-        "trigger": "post_lint_check",
-        "actions": [
-          {
-            "action_name": "check_pending_distillations",
-            "command": "./scripts/memory/distill.sh --check-undistilled 2>/dev/null || true"
-          }
-        ]
-      },
-      {
         "trigger": "on_hot_cache_stale_detected",
         "actions": [
           {
@@ -247,15 +238,6 @@
     "check_id_11_hot_cache_stale": {
       "trigger": "on_hot_cache_stale_detected",
       "action": "hot_cache_rebuild_hook"
-    },
-    "check_id_9_contradiction_deep": {
-      "trigger": "post_lint_check",
-      "actions": [
-        {
-          "name": "distillation_check",
-          "command": "./scripts/memory/distill.sh --check-undistilled 2>/dev/null || true"
-        }
-      ]
     },
     "check_id_2_orphan_pages": {
       "trigger": "on_orphan_pages_found",

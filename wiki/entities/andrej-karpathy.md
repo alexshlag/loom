@@ -30,7 +30,7 @@ AI Researcher, автор LLM Wiki pattern (LLM-powered personal knowledge base)
 ## Связи:
 * [Concept: LLM Wiki Pattern](concepts/llm-wiki.md) — методика построения wiki через LLM (компounding knowledge base)
 * [Synthesis: RAG vs LLM Wiki Pattern](syntheses/rag-vs-llm-wiki-pattern.md) — сравнение подхода
-* [Synthesis: Python NixOS Dev Environments](syntheses/python-nixos-development-environments.md) — пример синтеза через wiki
+* [Synthesis: Python NixOS Dev Environments]() — пример синтеза через wiki
 
 ## Источники:
 * `raw/llm-wiki.md` — оригинальный gist Karpathy с описанием паттерна (оригинал)

@@ -1,44 +1,32 @@
 {
-  "last_updated": "2026-07-09T12:00",
+  "last_updated": "2026-07-14T12:00",
   "current_mode": "project",
-  "focus_node": "Context management refactor + git sync unification + parent entity identification",
+  "focus_node": "Context optimization — cleaning closed issues from issues.md and PLAN.md",
   "next_steps_todo": [
-    "review parent_entity_identification in practice during next ingest"
+    "review pending: T5 (batch JSON reads), N6 (rename pages), D1 (discovery step integration)",
+    "await user approval for: 10 wiki/concepts/ renames (Phase 19)"
   ],
   "open_pages": [],
   "dead_ends": [],
   "query_summary": {
-    "intent": "Refactor context management architecture, unify pre-commit flow, add resource/routing rules",
+    "intent": "Clean closed issues/tasks from issues.md and PLAN.md to save context window",
     "pages_read": [
-      "rules/context_budget.json",
-      "rules/context-management-instructions.md",
-      "rules/source_transient_ingest.json",
-      "rules/session_context_rules.json",
-      "rules/session_bootstrap.json",
-      "process-ingest.json",
-      "process-query.json",
-      "process-lint.json",
+      "issues.md",
+      "PLAN.md",
       "rules/git_conventions.json",
-      "RULES.md",
-      "rules/naming_conventions.json",
-      "rules/tag-guidelines.json",
-      "rules/categories.json",
-      "rules/structural_requirements.json",
-      "wiki/concepts/context-budget.md"
+      "rules/session_context_rules.json"
     ],
     "key_findings": [
-      "362 lines of context management condensed to 32 (Cluster A merge completed)",
-      "Git pre-commit flow unified: git_conventions.json step 0 = memory_sync, RULES.md deduplicated",
-      "Resource pages now routed to wiki/resources/ not wiki/templates/ (RESOURCE-PAGE-V1)",
-      "Parent entity identification heuristic added to prevent wrong tag[0] assignment"
+      "Removed resolved Issue #53 (all 6 sub-tasks done) from issues.md",
+      "Removed resolved Issues #5/#9, #18, #27 from issues.md",
+      "Removed 15 completed phases from PLAN.md (15, 15.1, 16.1, 17-23, 24, 25, 53)",
+      "Pending: T5, N6, D1 — all awaiting user approval or external action"
     ]
   },
   "broken_links_resolved": [],
   "recent_activity": [
+    "2026-07-14 commit | Context optimization — removed closed issues from issues.md and PLAN.md",
     "2026-07-09 refactor | Cluster A: merged 4 context budget files → 1 (362→32 lines), deleted context-management-instructions.md, source_transient_ingest.json, removed context_budget_rules block",
-    "2026-07-09 schema | git_conventions.json#pre_commit_workflow step 0 = memory_sync (single entry point), RULES.md §8.1 and §11 deduplicated to schema_ref",
-    "2026-07-09 schema | RESOURCE-PAGE-V1 + routing: app templates → wiki/resources/ (not wiki/templates/), categories.json + process-ingest.json updated",
-    "2026-07-09 schema | parent_entity_identification: 4 heuristics for determining what entity owns tag[0] and file prefix",
-    "2026-07-09 commit | refactor | context budget compaction + git sync unification + resource routing + parent entity rules"
+    "2026-07-09 schema | git_conventions.json#pre_commit_workflow step 0 = memory_sync (single entry point), RULES.md §8.1 and §11 deduplicated to schema_ref"
   ]
 }

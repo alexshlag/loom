@@ -6,6 +6,7 @@ category: concept
 sources: [web_search, wiki/concepts/easyadmin-bundle.md]
 related: [wiki/entities/symfony.md, wiki/concepts/service-container.md, wiki/entities/sylius.md, wiki/entities/ibexa-dxp.md, wiki/concepts/easyadmin-bundle.md]
 ---
+- [[wiki/concepts/symfony-easyadmin-bundle.md]] (score: 6, incoming)
 - [[wiki/entities/ibexa-dxp.md]] (incoming, score: 3)
 - [[wiki/concepts/easyadmin-bundle.md]] (incoming, score: 3)
 - [[wiki/entities/sylius.md]] (score: 6, incoming)

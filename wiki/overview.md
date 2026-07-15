@@ -27,7 +27,7 @@ Wiki содержит **36+ markdown-файлов**: 4 root files (index, log, o
 
 ### Python на NixOS
 * **[Python Development on NixOS](concepts/python-nixos-development.md)** — изолированные среды разработки (virtualenv / conda аналог)
-* **Синтез**: [основные способы создания сред](syntheses/python-nixos-development-environments.md)
+* **Синтез**: [основные способы создания сред]()
 * **Related**: [Home Manager docs](https://nixos.org/manual/hm/), [Nixpkgs Manual](https://nixos.org/nixpkgs/manual/#contributing-guidelines)
 
 ### Symfony Framework

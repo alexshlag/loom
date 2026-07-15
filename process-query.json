@@ -251,7 +251,7 @@
           },
           {
             "step": 5,
-            "action": "Post-checks: rebuild-meta.sh + link-validator.sh"
+            "action": "Post-checks: route to process-ingest.json#step_9_post_checks (rebuild-meta + unified-pass + link-validator)"
           }
         ]
       },
@@ -543,21 +543,12 @@
     "post_steps": [
       {
         "step": 4,
-        "commands": [
-          "./scripts/rebuild-meta.sh",
-          "./scripts/rebuild-meta.sh --index-only"
-        ],
-        "optimization_for_large_wiki": {
-          "threshold_pages_count": 100
-        }
+        "description": "Route to process-ingest.json#step_9_post_checks — do NOT duplicate rebuild-meta/unified-pass here. The transition_target already points to process-ingest.json, so agent continues from step_9.",
+        "action": "TRANSITION_TO process-ingest.json#step_9_post_checks"
       },
       {
         "step": 5,
-        "name": "register_source_in_tracking"
-      },
-      {
-        "step": 6,
-        "command": "./scripts/link-validator.sh <new_page_path>"
+        "description": "register_source_in_tracking is part of ingest step_10, handled by transition"
       }
     ],
     "guardrails": {

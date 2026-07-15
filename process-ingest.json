@@ -389,9 +389,6 @@
             "command": "./scripts/unified-pass.sh --quiet --skip-meta --skip-crosslinks"
           },
           {
-            "command": "./scripts/auto-crosslink.sh '${NEW_PAGE_PATH}' --include-root 2>/dev/null || true"
-          },
-          {
             "command": "./scripts/rebuild-source-manifest.sh"
           },
           {
@@ -471,15 +468,6 @@
         ]
       },
       {
-        "trigger": "on_new_page_created",
-        "actions": [
-          {
-            "action_name": "auto_crosslink_new_page",
-            "command": "./scripts/auto-crosslink.sh '${NEW_PAGE_PATH}' --include-root 2>/dev/null || true"
-          }
-        ]
-      },
-      {
         "trigger": "on_ingest_complete",
         "actions": [
           {
@@ -547,10 +535,6 @@
         {
           "name": "hot_cache_check",
           "schema_ref": "rules/session_context_rules.json#write_triggers.wiki_modified"
-        },
-        {
-          "name": "auto_crosslink",
-          "command": "./scripts/auto-crosslink.sh '${NEW_PAGE_PATH}' --include-root 2>/dev/null || true"
         }
       ]
     },
@@ -564,10 +548,6 @@
         {
           "name": "wm_sync",
           "command": "echo 'INGEST_COMPLETE' >> wiki/log.md"
-        },
-        {
-          "name": "distillation_check",
-          "command": "./scripts/memory/distill.sh --check-undistilled 2>/dev/null || true"
         }
       ]
     }

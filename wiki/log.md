@@ -388,7 +388,7 @@
 
 ## [2026-07-01] ingest | EasyAdmin Bundle — новый concept page, update Sonata Admin comparison
 
-- Created `wiki/concepts/easyadmin-bundle.md` — comprehensive overview of EasyAdmin 5.x
+- Created `wiki/concepts/symfony-easyadmin-bundle.md` — comprehensive overview of EasyAdmin 5.x
   - Architecture: Dashboard + CRUD Controllers + Design System + Fields
   - Core pattern: AbstractCrudController extends Symfony AbstractController
   - EasyAdmin 5: PHP>=8.2, Symfony>=6.4/7.x/8.x support

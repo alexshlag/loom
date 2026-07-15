@@ -11,8 +11,8 @@ sources: [
 aliases: ["Symfony UX Initiative"]
 related: [wiki/entities/symfony.md, wiki/concepts/symfony-deployment.md]
 ---
-- [[wiki/concepts/twig-templating.md]] (score: 6, incoming)
-- [[wiki/concepts/assetmapper.md]] (score: 5)
+- [[wiki/concepts/symfony-twig-templating.md]] (score: 6, incoming)
+- [[wiki/concepts/symfony-assetmapper.md]] (score: 5)
 
 # Symfony UX — Packages и экосистема
 

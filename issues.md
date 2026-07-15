@@ -143,17 +143,4 @@ When agent skips discovery:
 
 ---
 
-## ✅ Resolved / Completed
-
-### Issue #5/#9: Orphan Pages + Auto-Crosslink Logic
-**Fix:** ✅ **46 → 0 orphan pages**. Multi-level auto-crosslink (score≥5) + manual crosslinks. Fixed `orphan-pages.sh` key normalization. Excluded skills/, test files from scan.
-
-### Issue #18: Hardcoded /tmp/ Overlap File
-**Fix:** ✅ Updated with `mktemp`. Trap cleanup added where applicable.
-
-### Issue #27: Broken Link Handling — Agent Escalation Rules
-**Status:** ✅ **RESOLVED** — `rules/broken_link_handling.json` created; lint/query hooks wired; pipeline complete.
-
----
-
-> Last update: 2026-07-08 | Open issues: #11, #28, #22, #23, #24+#45, #25, #8, #46, #47, #48, #49, #50, #51, #52.
+> Last update: 2026-07-14 | Open issues: #11, #28, #22, #23, #24+#45, #25, #8, #46, #47, #48, #49, #50, #51, #52.
