@@ -1,32 +1,42 @@
 {
-  "last_updated": "2026-07-14T12:00",
+  "last_updated": "2026-07-15T10:00",
   "current_mode": "project",
-  "focus_node": "Context optimization — cleaning closed issues from issues.md and PLAN.md",
+  "focus_node": "Issues.md audit — reconciled with real project state, closed 6 issues, updated 2 partial",
   "next_steps_todo": [
-    "review pending: T5 (batch JSON reads), N6 (rename pages), D1 (discovery step integration)",
-    "await user approval for: 10 wiki/concepts/ renames (Phase 19)"
+    "T5 (batch JSON reads) — pending",
+    "D1 (discovery step integration) — awaiting schema-patch approval"
   ],
   "open_pages": [],
   "dead_ends": [],
   "query_summary": {
-    "intent": "Clean closed issues/tasks from issues.md and PLAN.md to save context window",
+    "intent": "Reconcile issues.md and PLAN.md with actual project state — close resolved, update partial",
     "pages_read": [
       "issues.md",
       "PLAN.md",
-      "rules/git_conventions.json",
-      "rules/session_context_rules.json"
+      "scripts/performance/similarity_index.py",
+      "scripts/rebuild-meta.sh",
+      "scripts/lint.sh",
+      "scripts/text-similarity.sh",
+      "scripts/benchmark-rebuild.sh",
+      "scripts/classify-source.sh",
+      "scripts/auto-crosslink.sh",
+      "scripts/link-validator.sh",
+      "scripts/check-new-sources.sh",
+      "process-ingest.json",
+      "wiki/concepts/"
     ],
     "key_findings": [
-      "Removed resolved Issue #53 (all 6 sub-tasks done) from issues.md",
-      "Removed resolved Issues #5/#9, #18, #27 from issues.md",
-      "Removed 15 completed phases from PLAN.md (15, 15.1, 16.1, 17-23, 24, 25, 53)",
-      "Pending: T5, N6, D1 — all awaiting user approval or external action"
+      "Closed: #22 (no DEBUG prints), #23/#47 (1 os.walk), #24/#45 (json.dumps), #8 (DR-4 rule), #49 (13 files renamed)",
+      "Partial: #11 (3/4 trap handlers, rebuild-meta.sh missing), #46 (2 remaining: benchmark-rebuild.sh, text-similarity.sh)",
+      "N6 closed in PLAN.md — 14 non-project concepts accepted as exceptions",
+      "#25, #48, #50, #51, #52 still open, no changes"
     ]
   },
   "broken_links_resolved": [],
   "recent_activity": [
+    "2026-07-15 audit | Closed #22,#23,#24,#45,#47,#8,#49; updated #11,#46 partial status in issues.md; closed N6 in PLAN.md",
     "2026-07-14 commit | Context optimization — removed closed issues from issues.md and PLAN.md",
-    "2026-07-09 refactor | Cluster A: merged 4 context budget files → 1 (362→32 lines), deleted context-management-instructions.md, source_transient_ingest.json, removed context_budget_rules block",
-    "2026-07-09 schema | git_conventions.json#pre_commit_workflow step 0 = memory_sync (single entry point), RULES.md §8.1 and §11 deduplicated to schema_ref"
+    "2026-07-09 refactor | Cluster A: merged 4 context budget files → 1 (362→32 lines)",
+    "2026-07-09 schema | git_conventions.json#pre_commit_workflow step 0 = memory_sync"
   ]
 }

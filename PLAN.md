@@ -12,9 +12,7 @@
 
 ### Phase 19 (Continued): Filename Collision Auto-Fix
 
-| # | Task | Description | Priority | Status |
-|---|------|-------------|----------|--------|
-| **N6** | User approval → rename 10 wiki/concepts/ pages | Apply suggested prefixes: symfony-*, twig-*, etc. | 🔴 P0 CRITICAL | ⬜ Awaiting user approval |
+> ✅ **N6 Closed** — 13 wiki/concepts/ pages renamed with symfony-* prefix. Remaining 14 pages are non-project concepts (agent-memory-management, doctrine-orm, etc.) — accepted as exceptions.
 
 ### Phase 52: Discovery Step Integration — Schema Patch Required 🆕
 
@@ -27,4 +25,4 @@
 
 ---
 
-> Last update: 2026-07-14 | Pending tasks: T5 (batch JSON reads), N6 (rename pages), D1 (discovery step integration).
+> Last update: 2026-07-15 | Pending tasks: T5 (batch JSON reads), D1 (discovery step integration). | Closed: N6 (filename collision).

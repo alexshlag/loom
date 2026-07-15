@@ -6,47 +6,26 @@
 
 ### Issue #11: Trap Handlers для Cleanup
 **Проблема:** Часть скриптов не использует `trap EXIT/cleanup`.
-**Status:** ⬜ Осталось: `rebuild-meta.sh`, `check-new-sources.sh`, `text-similarity.sh`, `lint.sh`.
+**Status:** 🟡 Partial — 3/4 fixed. `lint.sh`, `check-new-sources.sh` have `_set_cleanup_trap`; `text-similarity.sh` has basic `trap EXIT`; **`rebuild-meta.sh` still missing the trap**.
 
 ### Issue #28: Page Templates Co-evolution
 **Проблема:** AGENTS.md содержит секции Template Editing Policy и Template Co-evolution Process, но фактическая работа не завершена.
 **Status:** ⬜ Open — requires discussion + user approval.
 
-### Issue #22: DEBUG Prints in Production Code
-**Проблема:** `scripts/performance/similarity_index.py` — `# DEBUG:` print statements в production.
-**Fix:** Удалить или обернуть в `if __debug__`.
-
-### Issue #23: Redundant Wiki Walks
-**Проблема:** После каждого ingest запускаются 3 независимых полных walk'а по wiki → latency при 1000+ страницах.
-
-### Issue #24 / #45: Manual JSON Construction — Unicode Break
-**Проблема:** ~15 мест в 8 скриптах генерируют JSON через `echo`/`printf`. Если данные содержат `"`, `\n`, unicode — JSON ломается.
-**Затронутые:** `classify-source.sh`, `auto-crosslink.sh`, `link-validator.sh`, `rebuild-source-manifest.sh`.
-**Fix:** Replace all manual JSON output with `jq -n --arg ...` or Python `json.dumps()`.
-
 ### Issue #25: `check_id` Numbering Inconsistency
 **Проблема:** `lint.sh` comments пишут `Check 4/9` для check_id=3, `Check 5/9` для check_id=5. Нумерация не совпадает с AGENTS.md и process-lint.json.
-
-### Issue #8: Syntheses Special Handling
-**Проблема:** `syntheses/` — аналитические синтезы, не должны обрабатываться как обычные страницы wiki.
-**Fix:** Добавить rule → `syntheses not processed like regular wiki pages`.
+**Status:** ⬜ Open — lint.sh has mixed formats: `Check 3/10`, `Check 5/10` vs `Check 11/11`, `Check 12/12`.
 
 ### Issue #46: Inconsistent `set -euo pipefail`
 **Проблема:** Из 30 скриптов только 16 используют полный `set -euo pipefail`. Остальные либо без `-e`, либо `set +e`.
 **Затронутые:** ❌ Без `-e`: `batch-ingest.sh`, `check-structural.sh`, `classify-source.sh`, `detect-contradications.sh`, `lint.sh`, `raw-correct.sh`, `rebuild-source-manifest.sh`.
 ⚠️ Явный `set +e` только в `detect-contradications.sh:23`.
-
-### Issue #47: Triple Walk in `rebuild-meta.sh`
-**Проблема:** Три независимых `os.walk(wiki_dir)` вызова → O(3n) disk I/O вместо O(n). Lines 99, 187, 358.
-**Риск:** +30% latency при каждом rebuild.
+**Status:** 🟡 Partial — 2 remaining: `benchmark-rebuild.sh` (no `set` at all), `text-similarity.sh` (`set -uo pipefail` missing `-e`).
 
 ### Issue #48: N+1 Python3 Calls Pattern
 **Проблема:** Десятки отдельных subprocess вызовов в циклах → fork overhead × 10-40 на скрипт.
-**Затронутые:** `lint.sh` (8+), `classify-source.sh`, `text-similarity.sh` (9+).
-
-### Issue #49: Filename Collision — Wiki Page Naming Violations
-**Проблема:** `wiki/concepts/` содержит 21 страницу без префикса проекта. Нарушает rule `rules/naming_conventions.json#NAMES-CORE-V1`.
-**Status:** 🟡 In Progress — N1-N5 done (exception list, audit script, lint integration). Pending: user approval to rename 10 pages.
+**Затронутые:** `lint.sh` (11), `text-similarity.sh` (13).
+**Status:** ⬜ Open — T5 pending.
 
 ### Issue #50: Lint Execution Difficulties & Script Delegation Gaps
 **Date**: 2026-07-08
@@ -143,4 +122,4 @@ When agent skips discovery:
 
 ---
 
-> Last update: 2026-07-14 | Open issues: #11, #28, #22, #23, #24+#45, #25, #8, #46, #47, #48, #49, #50, #51, #52.
+> Last update: 2026-07-15 | Open issues: #11, #28, #25, #46, #48, #50, #51, #52. | Closed: #22, #23, #24/#45, #47, #8, #49.
