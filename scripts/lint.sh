@@ -56,28 +56,31 @@ TOTAL_ISSUES=$((TOTAL_ISSUES + CONTRADICTIONS))
 
 # --- Check 2: Orphan pages ---
 ORPHAN_COUNT=0
-ORPHAN_PATHS=""
+ORPHAN_PATHS_JSON="[]"
 if [[ "$SKIP_CHECKS" != *",2,"* ]]; then
   local_orphans=""
   safe_run "./scripts/orphan-pages.sh $WIKI_DIR ${PROJECT_ROOT}/meta/backlinks.json" local_orphans "0 1" || true
-  if echo "$local_orphans" | grep -q "Orphan pages found"; then
-    ORPHAN_COUNT=$(echo "$local_orphans" | grep -oE '[0-9]+' | head -1) || ORPHAN_COUNT=0
-    # Extract orphan paths (indented lines after 'Orphan pages found')
-    ORPHAN_PATHS_JSON=$(echo "$local_orphans" | python3 -c '
-import sys,json
-lines = sys.stdin.read().split("\n")
+  # Batch extract: single python3 call replaces 2 (count + path extraction)
+  ORPHAN_COUNT=0; ORPHAN_PATHS_JSON="[]"
+  if [ -n "$local_orphans" ]; then
+    read ORPHAN_COUNT ORPHAN_PATHS_JSON <<< $(echo "$local_orphans" | python3 -c "
+import json, sys
+lines = sys.stdin.read().split('\n')
+count = 0
 paths = []
 for line in lines:
-    if line.startswith("    ") and "no backlinks" not in line.lower():
+    if 'Orphan pages found' in line:
+        count = int(line.split(':')[1].strip()) if ':' in line else 0
+    elif line.startswith('    ') and 'no backlinks' not in line.lower():
         paths.append(line.strip())
-print(json.dumps(paths))
-' 2>/dev/null) || ORPHAN_PATHS_JSON="[]"
+print(f'{count} {json.dumps(paths)}')
+" 2>/dev/null || echo "0 []")
   fi
 fi
 TOTAL_ISSUES=$((TOTAL_ISSUES + ORPHAN_COUNT))
 
 # --- Check 3: Knowledge gaps (soft check, agent review) ---
-echo "[✓] Check 3/10: knowledge_gaps — skipped (soft check, agent review required)" >&2
+$QUIET || echo "[✓] Check 3/15: knowledge_gaps — skipped (soft check, agent review required)" >&2
 
 # --- Check 4: New sources available ---
 NEW_SOURCES=0
@@ -90,7 +93,7 @@ if [[ "$SKIP_CHECKS" != *",4,"* ]]; then
 fi
 
 # --- Check 5: New topics proposal (soft check) ---
-echo "[✓] Check 5/10: new_topics_proposal — skipped (requires external sources)" >&2
+$QUIET || echo "[✓] Check 5/15: new_topics_proposal — skipped (requires external sources)" >&2
 
 # --- Check 6: Mechanical linting (frontmatter, duplicate titles) ---
 DUPLICATE_TITLES=0
@@ -130,32 +133,29 @@ if [[ "$SKIP_CHECKS" != *",8,"* ]]; then
   local_up_out=""
   safe_run "./scripts/unified-pass.sh --quiet --skip-meta --skip-crosslinks --auto" local_up_out || true
 
-  # Extract JSON from mixed stdout+stderr output via Python
-  local_up_json=$(echo "$local_up_out" | python3 -c '
+  # Batch extract: single python3 call replaces 3 (JSON extraction + count + auto-repaired + agent review)
+  BROKEN_LINKS=0; AUTO_REPAIRED=0; AGENT_REVIEW_REQUIRED_JSON="[]"
+  if [ -n "$local_up_out" ]; then
+    read BROKEN_LINKS AUTO_REPAIRED AGENT_REVIEW_REQUIRED_JSON <<< $(echo "$local_up_out" | python3 -c "
 import json, sys
 content = sys.stdin.read()
-start = content.find("{")
-end = content.rfind("}")
-if start >= 0 and end >= 0:
+start = content.find('{')
+end = content.rfind('}')
+if start >= 0 and end > start:
     try:
         d = json.loads(content[start:end+1])
-        print(json.dumps(d))
+        broken = len(d.get('broken_links', []))
+        auto_rep = d.get('auto_repaired', 0)
+        ag_req = json.dumps(d.get('agent_review_required', []))
+        print(f'{broken} {auto_rep} {ag_req}')
     except:
-        print("{}")
+        print('0 0 []')
 else:
-    print("{}")
-' 2>/dev/null) || local_up_json="{}"
-
-# Batch extract from local_up_json (single Python call replaces 3 individual ones)
-  read BROKEN_LINKS AUTO_REPAIRED AGENT_REVIEW_REQUIRED_JSON <<< $(echo "$local_up_json" | python3 -c "
-import json, sys
-data = json.loads(sys.stdin.read())
-broken = len(data.get('broken_links', []))
-auto_rep = data.get('auto_repaired', 0)
-ag_req = json.dumps(data.get('agent_review_required', []))
-print(f'{broken}\t{auto_rep}\t{ag_req}')
-" 2>/dev/null || echo "0	0	[]")
+    print('0 0 []')
+" 2>/dev/null || echo "0 0 []")
+  fi
 fi
+$QUIET || echo "[$([ $BROKEN_LINKS -gt 0 ] && echo '!' || echo '✓')] Check 8/15: link_validation — broken:${BROKEN_LINKS} auto_repaired:${AUTO_REPAIRED}" >&2
 TOTAL_ISSUES=$((TOTAL_ISSUES + BROKEN_LINKS))
 
 # D6: Rebuild meta index consolidated — single call at end after all fixes
@@ -169,6 +169,7 @@ if [[ "$SKIP_CHECKS" != *",9,"* ]]; then
   CONTCOUNT=$(echo "$local_deep" | python3 -c 'import json, sys; d=json.loads(sys.stdin.read()); print(d.get("potential_contradictions",0))' 2>/dev/null) || CONTCOUNT=0
   [[ "$CONTCOUNT" =~ ^[0-9]+$ ]] && CONTRADICTIONS_DEEP=$CONTCOUNT
 fi
+$QUIET || echo "[$([ $CONTRADICTIONS_DEEP -gt 0 ] && echo '!' || echo '✓')] Check 9/15: contradiction_deep — count:${CONTRADICTIONS_DEEP}" >&2
 TOTAL_ISSUES=$((TOTAL_ISSUES + CONTRADICTIONS_DEEP))
 
 # --- Check 10: Text similarity (n-gram overlap scan) ---
@@ -180,6 +181,7 @@ if [[ "$SKIP_CHECKS" != *",10,"* ]]; then
   TEXT_SIMILARITY_MATCHES=$(echo "$local_sim" | python3 -c 'import json, sys; d=json.loads(sys.stdin.read()); print(len(d.get("matches",[])))' 2>/dev/null) || TEXT_SIMILARITY_MATCHES=0
   [[ "$TEXT_SIMILARITY_MATCHES" =~ ^[0-9]+$ ]] || TEXT_SIMILARITY_MATCHES=0
 fi
+$QUIET || echo "[$([ $TEXT_SIMILARITY_MATCHES -gt 0 ] && echo '!' || echo '✓')] Check 10/15: text_similarity — matches:${TEXT_SIMILARITY_MATCHES}" >&2
 TOTAL_ISSUES=$((TOTAL_ISSUES + TEXT_SIMILARITY_MATCHES))
 
 # --- Check 11: Hot cache staleness ---
@@ -188,9 +190,9 @@ if [[ "$SKIP_CHECKS" != *",11,"* ]]; then
   if safe_run "./scripts/check-wiki-changes.sh" local_hot_check "0 1"; then
     if echo "$local_hot_check" | grep -q "WIKI CHANGES DETECTED"; then
       HOT_CACHE_STALE=true
-      $QUIET || echo "[!] Check 11/11: hot_cache_stale — WIKI CHANGES DETECTED" >&2
+      $QUIET || echo "[!] Check 11/15: hot_cache_stale — WIKI CHANGES DETECTED" >&2
     else
-      $QUIET || echo "[✓] Check 11/11: hot_cache_stale — no changes" >&2
+      $QUIET || echo "[✓] Check 11/15: hot_cache_stale — no changes" >&2
     fi
   fi
 fi
@@ -215,7 +217,7 @@ print(f'{issues.get("empty_tags", 0)}\t{issues.get("non_en_tags", 0)}\t{issues.g
     FIX_ITER=$((FIX_ITER+1))
     [ "$FIX_ITER" -ge 3 ] && break
   done
-  $QUIET || echo "[✓] Check 12/12: tag_audit — empty:${TAG_EMPTY} non-en:${TAG_NON_EN} generic:${TAG_GENERIC} xr:${TAG_XR_GAPS}" >&2
+  $QUIET || echo "[✓] Check 12/15: tag_audit — empty:${TAG_EMPTY} non-en:${TAG_NON_EN} generic:${TAG_GENERIC} xr:${TAG_XR_GAPS}" >&2
 fi
 TOTAL_ISSUES=$((TOTAL_ISSUES + TAG_EMPTY + TAG_NON_EN + TAG_GENERIC + TAG_XR_GAPS))
 
@@ -336,16 +338,7 @@ print(json.dumps({'count': fixed_count, 'files': fixed_paths}))
 PYEOF
 ) || EXCESSIVE_DATA='{"count":0,"files":[]}'
 
-    # Batch parse results (single Python call replaces 2 individual ones)
-    if [ "$EXCESSIVE_DATA" != '' ]; then
-        read EXCESSIVE_EMPTY_LINES EXCESSIVE_EMPTY_FILES_JSON <<< $(echo "$EXCESSIVE_DATA" | python3 -c "
-import json, sys
-data = json.loads(sys.stdin.read())
-count = data.get('count', 0)
-files_json = json.dumps(data.get('files', []))
-print(f'{count}\t{files_json}')
-" 2>/dev/null || echo '0\t[]')
-    fi
+
 fi
 
 # Final: single rebuild-meta --index-only (consolidated from D6+D7)

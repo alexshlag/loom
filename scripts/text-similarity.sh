@@ -2,7 +2,7 @@
 # text-similarity.sh — Detect copy-paste chains via n-gram comparison
 # Graceful by design: never fails, always returns JSON result
 
-set -uo pipefail  # no errexit — we handle errors ourselves
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/.."
@@ -248,9 +248,10 @@ PYEOF
 }
 
 # ─── Cache management ────────────────────────────────────────────────
+# Direct bash read/write for cache — no python3 subprocess overhead (1 call → 0)
 load_cache() {
     if [[ -f "$CACHE_FILE" ]]; then
-        python3 -c "import json; print(json.dumps(json.load(open('$CACHE_FILE')), indent=2))" 2>/dev/null || echo '{}'
+        cat "$CACHE_FILE" 2>/dev/null || echo '{}'
     else
         echo '{}'
     fi
@@ -258,13 +259,7 @@ load_cache() {
 
 save_cache() {
     local cache_data="$1"
-    echo "$cache_data" | python3 -c "
-import json, sys
-
-data = json.load(sys.stdin)
-with open('$CACHE_FILE', 'w') as f:
-    json.dump(data, f, indent=2, ensure_ascii=False)
-" 2>/dev/null || log_msg "Cache save failed"
+    echo "$cache_data" > "$CACHE_FILE.tmp" && mv "$CACHE_FILE.tmp" "$CACHE_FILE" 2>/dev/null || log_msg "Cache save failed"
 }
 
 # ─── Main logic ──────────────────────────────────────────────────────

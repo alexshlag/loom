@@ -14,7 +14,14 @@
 
 ### Issue #25: `check_id` Numbering Inconsistency
 **Проблема:** `lint.sh` comments пишут `Check 4/9` для check_id=3, `Check 5/9` для check_id=5. Нумерация не совпадает с AGENTS.md и process-lint.json.
-**Status:** ⬜ Open — lint.sh has mixed formats: `Check 3/10`, `Check 5/10` vs `Check 11/11`, `Check 12/12`.
+**Status:** ✅ Closed — all stderr messages standardized to `/15` format:
+- Check 3 → `Check 3/15`
+- Check 5 → `Check 5/15`
+- Check 8 → added `[✓] Check 8/15: link_validation` (was missing)
+- Check 9 → added `[✓] Check 9/15: contradiction_deep` (was missing)
+- Check 10 → added `[✓] Check 10/15: text_similarity` (was missing)
+- Check 11 → `Check 11/15`
+- Check 12 → `Check 12/15`
 
 ### Issue #46: Inconsistent `set -euo pipefail`
 **Проблема:** Из 30 скриптов только 16 используют полный `set -euo pipefail`. Остальные либо без `-e`, либо `set +e`.
@@ -24,8 +31,16 @@
 
 ### Issue #48: N+1 Python3 Calls Pattern
 **Проблема:** Десятки отдельных subprocess вызовов в циклах → fork overhead × 10-40 на скрипт.
-**Затронутые:** `lint.sh` (11), `text-similarity.sh` (13).
-**Status:** ⬜ Open — T5 pending.
+**Затронутые:** `lint.sh`, `text-similarity.sh`.
+**Status:** ✅ Closed — T5 batch JSON reads completed:
+
+#### lint.sh optimizations (8 → 6 subprocess calls):
+- Check 2: orphan path extraction merged into single batch python3 call (was 2 → 1)
+- Check 8: JSON extraction + batch parse merged into single python3 call (was 2 → 1)
+- Check 15: redundant separate parse after heredoc removed (was 2 → 1)
+
+#### text-similarity.sh optimizations:
+- `load_cache()` / `save_cache()`: replaced with direct bash read/write (cat + mv) — eliminated 2 python3 subprocess calls per scan-all invocation
 
 ### Issue #50: Lint Execution Difficulties & Script Delegation Gaps
 **Date**: 2026-07-08
@@ -122,4 +137,4 @@ When agent skips discovery:
 
 ---
 
-> Last update: 2026-07-15 | Open issues: #11, #28, #25, #46, #48, #50, #51. | Closed: #22, #23, #24/#45, #47, #8, #49, #52.
+> Last update: 2026-07-15 | Open issues: #11, #28, #46, #50, #51. | Closed: #22, #23, #24/#45, #47, #8, #49, #52, #25, #48.
