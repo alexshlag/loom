@@ -432,67 +432,116 @@ else
         exit 0
     fi
     
-    # Check cache first (include gram_size in key)
+    # Batch: single Python process handles cache-check → compute → cache-save → emit
     CACHE_KEY="${FILE1##*/}|${FILE2##*/}|g${GRAM_SIZE}"
-    
-    cached_result="$(python3 -c "
-import json
+    python3 << PYEOF
+import json, os, re, sys
+
+file1 = "$FILE1"
+file2 = "$FILE2"
+n_gram = $GRAM_SIZE
+cache_file = "$CACHE_FILE"
+sim_cache_file = "$SIMILARITY_CACHE"
+cache_key = "$CACHE_KEY"
+mode = "pairwise"
+
+def strip_md(text):
+    lines = text.split('\n')
+    start_idx = 0
+    if lines and lines[0].strip().startswith('---'):
+        for i in range(1, len(lines)):
+            if lines[i].strip() == '---':
+                start_idx = i + 1
+                break
+    content = '\n'.join(lines[start_idx:])
+    content = re.sub(r'\[.*?\]\(.*?\)', lambda m: m.group(0).split(']')[0].lstrip('['), content)
+    content = re.sub(r'^#+\s+', '', content, flags=re.MULTILINE)
+    return content
+
+def normalize(text):
+    text = re.sub(r'[^a-zа-яё0-9\s]', '', text.lower())
+    return text.split()
+
+def get_ngrams(words, n=3):
+    return set(' '.join(words[i:i+n]) for i in range(len(words) - n + 1))
 
 try:
-    with open('$CACHE_FILE') as f:
-        data = json.load(f)
-    key = '$CACHE_KEY'
-    if key in data:
-        print(json.dumps(data[key]))
-    else:
-        exit(1)
+    with open(file1) as f:
+        words1 = normalize(strip_md(f.read()))
+    with open(file2) as f:
+        words2 = normalize(strip_md(f.read()))
+except Exception as e:
+    print(json.dumps({'mode': mode, 'file1': file1, 'file2': file2, 'similarity': 0.0, 'match_level': 'no_match', 'common_ngrams': 0, 'error': str(e)}, indent=2))
+    sys.exit(0)
+
+if len(words1) < n_gram or len(words2) < n_gram:
+    print(json.dumps({'mode': mode, 'file1': file1, 'file2': file2, 'similarity': 0.0, 'match_level': 'no_match', 'common_ngrams': 0}, indent=2))
+    sys.exit(0)
+
+# Check similarity cache first
+sim_cache = {}
+try:
+    with open(sim_cache_file) as f:
+        sim_cache = json.load(f)
 except Exception:
-    exit(1)
-" 2>/dev/null)" || true
-    
-    if [[ -n "$cached_result" ]]; then
-        verbose_log "Cache hit for $CACHE_KEY"
-        echo "$cached_result" | python3 -c "
-import json, sys
+    pass
 
-match = json.load(sys.stdin)
-print(json.dumps({\"mode\": \"pairwise\", \"file1\": \"$FILE1\", \"file2\": \"$FILE2\", **match}, indent=2))
-" 2>/dev/null || python3 -c 'import json; print(json.dumps({"mode":"pairwise","similarity":0}))'
-        exit 0
-    fi
-    
-    # Compute similarity via the function
-    result=$(compute_similarity "$FILE1" "$FILE2" "$GRAM_SIZE")
-    
-    # Cache result (skip errors)
-    echo "$result" | python3 -c "
-import json, sys
-d = json.load(sys.stdin)
-if 'similarity' in d and 'error' not in d:
+cached_sim_key = f"{file1.replace("/", "_")}|{file2.replace("/", "_")}"
+if cached_sim_key in sim_cache:
+    result = sim_cache[cached_sim_key]
+else:
+    ngrams1 = get_ngrams(words1, n_gram)
+    ngrams2 = get_ngrams(words2, n_gram)
+    common = len(ngrams1.intersection(ngrams2))
+    union_len = len(ngrams1.union(ngrams2))
+    similarity = common / union_len if union_len > 0 else 0
+
+    if similarity >= 0.9:
+        match_level = "near_identical"
+    elif similarity >= 0.7:
+        match_level = "high_similarity"
+    elif similarity >= 0.5:
+        match_level = "moderate_similarity"
+    else:
+        match_level = "low_similarity"
+
+    result = {
+'similarity': round(similarity * 100, 2),
+'common_ngrams': common,
+'total_unique': union_len,
+'match_level': match_level
+    }
+
+# Save to similarity cache if not cached
+if cached_sim_key not in sim_cache:
+    tmp = sim_cache_file + '.tmp'
+    try:
+        with open(tmp, 'w') as f:
+            json.dump(sim_cache | result, f, indent=2)
+        os.rename(tmp, sim_cache_file)
+    except Exception:
+        pass
+
+# Also save to ngram cache for future lookups
+try:
     cache = {}
-    try:
-        with open('$CACHE_FILE') as f:
+    if os.path.exists(cache_file):
+        with open(cache_file) as f:
             cache = json.load(f)
-    except Exception:
-        pass
-    cache['$CACHE_KEY'] = d
-    tmp_f = '$CACHE_FILE' + '.tmp'
-    try:
-        with open(tmp_f, 'w') as f:
-            json.dump(cache, f, indent=2)
-        import os
-        os.rename(tmp_f, '$CACHE_FILE')
-    except Exception:
-        pass
-" 2>/dev/null || true
-    
-    # Emit result with mode/file metadata
-    echo "$result" | python3 -c "
-import json, sys
-result = json.load(sys.stdin)
-print(json.dumps({'mode': 'pairwise', 'file1': '$FILE1', 'file2': '$FILE2', **result}, indent=2))
-"
+except Exception:
+    cache = {}
 
+cache[cache_key] = result
+tmp_cache = cache_file + '.tmp'
+try:
+    with open(tmp_cache, 'w') as f:
+        json.dump(cache, f, indent=2)
+    os.rename(tmp_cache, cache_file)
+except Exception:
+    pass
+
+print(json.dumps({'mode': mode, 'file1': file1, 'file2': file2, **result}, indent=2))
+PYEOF
 fi
 
 # ─── Done gracefully ────────────────────────────────────────────────

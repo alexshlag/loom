@@ -672,3 +672,21 @@ Sources used:
 | security-guide.md | loom-security-guide.md | 8.7 |
 
 STI-V1 verified: read→extract→wiki→forget cycle working correctly for each source. No context bloat from holding multiple sources simultaneously. Total wiki/docs/ now contains 15 pages (8 pre-existing + 7 new).
+## [2026-07-15] T5 batch JSON reads — partial implementation
+### lint.sh (lines 341-342)
+- **Before**: 2 separate `python3 -c` calls to parse EXCESSIVE_DATA (count + files)
+- **After**: Single batch call using tab-separated output pattern (consistent with existing code at lines 150, 204)
+- **Savings**: 1 subprocess eliminated per lint run
+
+### text-similarity.sh pairwise mode (lines ~435-506)
+- **Before**: 7 subprocess calls per pair: cache-load → compute_similarity() → format-cache-hit → fallback → save-to-ngram-cache → emit-result (+ extract_text/generate_ngrams inside compute_similarity)
+- **After**: Single `python3 << PYEOF` heredoc that handles: strip markdown → normalize → ngrams → Jaccard similarity → sim_cache check → ngram_cache save → emit result
+- **Savings**: 7 → 1 subprocess per pairwise comparison (6 fewer forks)
+- **Note**: Old helper functions extract_text(), generate_ngrams(), compute_similarity() now dead code — can be cleaned up later
+
+### Verification
+- lint.sh --skip-checks: ✅ all checks pass, excessive_empty_lines/files parse correctly
+- text-similarity.sh pairwise: ✅ returns valid JSON with mode/file1/file2/similarity/match_level
+- text-similarity.sh scan_all: ✅ still works (unchanged)
+- Full lint.sh run: ✅ 61 issues found, no regressions
+

@@ -336,10 +336,15 @@ print(json.dumps({'count': fixed_count, 'files': fixed_paths}))
 PYEOF
 ) || EXCESSIVE_DATA='{"count":0,"files":[]}'
 
-    # Parse results
+    # Batch parse results (single Python call replaces 2 individual ones)
     if [ "$EXCESSIVE_DATA" != '' ]; then
-        EXCESSIVE_EMPTY_LINES=$(echo "$EXCESSIVE_DATA" | python3 -c 'import json, sys; d=json.loads(sys.stdin.read()); print(d.get("count",0))' 2>/dev/null || echo 0)
-        EXCESSIVE_EMPTY_FILES_JSON=$(echo "$EXCESSIVE_DATA" | python3 -c 'import json, sys; d=json.loads(sys.stdin.read()); print(json.dumps(d.get("files",[])))' 2>/dev/null || echo '[]')
+        read EXCESSIVE_EMPTY_LINES EXCESSIVE_EMPTY_FILES_JSON <<< $(echo "$EXCESSIVE_DATA" | python3 -c "
+import json, sys
+data = json.loads(sys.stdin.read())
+count = data.get('count', 0)
+files_json = json.dumps(data.get('files', []))
+print(f'{count}\t{files_json}')
+" 2>/dev/null || echo '0\t[]')
     fi
 fi
 

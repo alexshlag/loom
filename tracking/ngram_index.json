@@ -4,5 +4,11 @@
     "common_ngrams": 9,
     "total_unique": 12,
     "match_level": "high_similarity"
+  },
+  "context-budget.md|natural-memory.md|g3": {
+    "similarity": 0.08,
+    "common_ngrams": 1,
+    "total_unique": 1300,
+    "match_level": "low_similarity"
   }
 }

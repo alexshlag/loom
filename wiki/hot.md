@@ -4,7 +4,9 @@
 2026-07-14
 
 ## Key Recent Facts
-- Context optimization: removed closed issues from issues.md and PLAN.md
+: removed closed issues from issues.md and PLAN.md
+- Removed duplicate python-nixos development synthesis page
+- Fixed broken links in index.md, overview.md, and andrej-karpathy.md from issues.md and PLAN.md
 - Removed duplicate python-nixos development synthesis page
 - Fixed broken links in index.md, overview.md, and andrej-karpathy.md
 

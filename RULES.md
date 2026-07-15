@@ -74,7 +74,7 @@ After completing a task:
 LLM agent has limited context window. Every token competes with real data.
 
 **R01: Do not duplicate existing rules (schema_ref)**
-Exists in `rules/` → use `schema_ref`. Writing full description inline is prohibited if file exists.
+BEFORE writing anything new → scan `rules/` and `scripts/` for related logic. If found → extend it or reference via schema_ref — do NOT create new file. Exists in `rules/` → use `schema_ref`. Writing full description inline is prohibited if file exists.
 
 **R02: Do not repeat the same meaning**
 Each rule written ONCE. name/description/instruction say one thing — remove duplication. Different aspects (what/constraints/examples) — this is multi-layer spec, not duplicate.
@@ -141,6 +141,7 @@ When implementing changes that affect how the user or agent interacts with Looma
 1. PROBLEM IDENTIFIED → documented in issues.md (or new issue created)
 2. DISCUSSION → agent proposes solution, user approves approach
 3. PLAN CREATED → explicit steps in PLAN.md with dependencies, priorities, expected outputs
+3.5 DISCOVERY → scan `rules/` and `scripts/` for related logic before implementation. If pattern exists → extend, don't duplicate.
 4. IMPLEMENTATION → execute plan tasks one by one, validate after each step
 5. VERIFICATION → test functionality, check no regressions, run existing checks (lint/shellcheck)
 6. DOCUMENT UPDATE → refresh issues.md (close resolved), update PLAN.md (mark done), update AGENTS.md if needed, update docs/ for any feature/script/rule change
