@@ -8,7 +8,7 @@
 
 | # | Task | Description | Priority | Status |
 |---|------|-------------|----------|--------|
-| **T5** | Batch JSON reads (#48) → single python3 call | Consolidate N+1 calls in lint.sh, text-similarity.sh | 🟡 P2 MEDIUM | ⬜ Pending |
+| **T5** | Batch JSON reads (#48) → single python3 call | Consolidate N+1 calls in lint.sh, text-similarity.sh | 🟡 P2 MEDIUM | ✅ Closed |
 
 ### Phase 19 (Continued): Filename Collision Auto-Fix
 

@@ -1,46 +1,18 @@
-# Issues — Wiki Audit Tracker
-
----
-
 ## 🔴 Open / In Progress
 
 ### Issue #11: Trap Handlers для Cleanup
 **Проблема:** Часть скриптов не использует `trap EXIT/cleanup`.
-**Status:** 🟡 Partial — 3/4 fixed. `lint.sh`, `check-new-sources.sh` have `_set_cleanup_trap`; `text-similarity.sh` has basic `trap EXIT`; **`rebuild-meta.sh` still missing the trap**.
+**Status:** ⬜ Open — `rebuild-meta.sh` still missing the trap.
 
 ### Issue #28: Page Templates Co-evolution
 **Проблема:** AGENTS.md содержит секции Template Editing Policy и Template Co-evolution Process, но фактическая работа не завершена.
 **Status:** ⬜ Open — requires discussion + user approval.
-
-### Issue #25: `check_id` Numbering Inconsistency
-**Проблема:** `lint.sh` comments пишут `Check 4/9` для check_id=3, `Check 5/9` для check_id=5. Нумерация не совпадает с AGENTS.md и process-lint.json.
-**Status:** ✅ Closed — all stderr messages standardized to `/15` format:
-- Check 3 → `Check 3/15`
-- Check 5 → `Check 5/15`
-- Check 8 → added `[✓] Check 8/15: link_validation` (was missing)
-- Check 9 → added `[✓] Check 9/15: contradiction_deep` (was missing)
-- Check 10 → added `[✓] Check 10/15: text_similarity` (was missing)
-- Check 11 → `Check 11/15`
-- Check 12 → `Check 12/15`
 
 ### Issue #46: Inconsistent `set -euo pipefail`
 **Проблема:** Из 30 скриптов только 16 используют полный `set -euo pipefail`. Остальные либо без `-e`, либо `set +e`.
 **Затронутые:** ❌ Без `-e`: `batch-ingest.sh`, `check-structural.sh`, `classify-source.sh`, `detect-contradications.sh`, `lint.sh`, `raw-correct.sh`, `rebuild-source-manifest.sh`.
 ⚠️ Явный `set +e` только в `detect-contradications.sh:23`.
 **Status:** 🟡 Partial — 2 remaining: `benchmark-rebuild.sh` (no `set` at all), `text-similarity.sh` (`set -uo pipefail` missing `-e`).
-
-### Issue #48: N+1 Python3 Calls Pattern
-**Проблема:** Десятки отдельных subprocess вызовов в циклах → fork overhead × 10-40 на скрипт.
-**Затронутые:** `lint.sh`, `text-similarity.sh`.
-**Status:** ✅ Closed — T5 batch JSON reads completed:
-
-#### lint.sh optimizations (8 → 6 subprocess calls):
-- Check 2: orphan path extraction merged into single batch python3 call (was 2 → 1)
-- Check 8: JSON extraction + batch parse merged into single python3 call (was 2 → 1)
-- Check 15: redundant separate parse after heredoc removed (was 2 → 1)
-
-#### text-similarity.sh optimizations:
-- `load_cache()` / `save_cache()`: replaced with direct bash read/write (cat + mv) — eliminated 2 python3 subprocess calls per scan-all invocation
 
 ### Issue #50: Lint Execution Difficulties & Script Delegation Gaps
 **Date**: 2026-07-08
@@ -94,47 +66,6 @@ During lint execution, the agent wrote **inline Python scripts** for tasks that 
 
 *Status: ⬜ Open — requires creating missing scripts and updating process-lint.json auto_fix_phase.*
 
-
-### Issue #52: Missing Discovery Step in Development Workflow
-**Date**: 2026-07-08  
-**Trigger:** Analysis of context optimization gap — agent wrote new rule/script instead of extending existing infrastructure.
-
-#### 🧠 Problem Statement
-
-RULES.md §9 R01-R08 defines principles of compactification (do not duplicate, write once, minimal context) but **lacks explicit discovery step before implementation**. Agent transitions directly from PLAN → IMPLEMENTATION without scanning existing rules/scripts for related logic.
-
-**What was missing:**
-- No explicit "check existing infrastructure" trigger between Plan and Implementation steps
-- R01 says "Do not duplicate existing rules (schema_ref)" but doesn't say "CHECK FIRST — scan rules/ scripts/"
-- §11 TASK EXECUTION CYCLE workflow: Problem → Discussion → Plan → **IMPLEMENTATION** (skip discovery) → Verify → Document → Git
-
-**Consequence observed:** Agent created `rules/memory-sync-at-task-end.md` + `scripts/memory/sync-working-memory.sh` instead of extending existing `hot-cache-auto-refresh.sh` logic or adding one-line instruction to existing workflow.
-
-#### 🔍 Root Causes in RULES.md
-
-| Section | What it says | What's missing |
-|---------|-------------|----------------|
-| §9 R01 | "Do not duplicate existing rules" | No step: "BEFORE writing → scan existing rules/scripts" |
-| §9 R02 | "Each rule written ONCE" | No step: "Find already written logic first" |
-| §11 TASK EXECUTION CYCLE | Problem → Plan → Implementation → Verify... | Missing discovery step between Plan and Implementation |
-
-#### 📍 Where to Add Discovery Step
-
-**Option A (preferred):** Add single sentence to R01 in RULES.md §9:
-> **BEFORE writing anything new → scan `rules/` and `scripts/` for related logic. If found → extend it or reference via schema_ref — do NOT create new file.**
-
-**Option B:** Add step 3.5 between Plan (step 3) and Implementation (step 4) in §11:
-> **3.5 DISCOVERY → scan existing rules/ scripts/ for related logic before implementation. If pattern exists → extend, don't duplicate.**
-
-#### ⚠️ Impact on Context Optimization
-
-When agent skips discovery:
-- Creates new files instead of extending existing ones → context bloat
-- Duplicates logic that already exists in memory → wasted tokens
-- Breaks progressive disclosure principle (R04) — loads more files per session
-
-*Status: 🟡 In Progress — awaiting schema-patch proposal to add discovery step.*
-
 ---
 
-> Last update: 2026-07-15 | Open issues: #11, #28, #46, #50, #51. | Closed: #22, #23, #24/#45, #47, #8, #49, #52, #25, #48.
+> Last update: 2026-07-15 | Open issues: #11, #28, #46, #50, #51. | Closed: #22, #23, #24/#45, #47, #8, #49, #52, #25, #48, T5.

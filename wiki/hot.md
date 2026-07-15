@@ -1,25 +1,22 @@
-# Hot Cache — Recent Changes
+---
+tags: [memory, session, status]
+date: 2026-07-15
+type: live_state
+category: note
+aliases: [current_session_snapshot]
+sources: [working_memory.json]
+related: [wiki/concepts/natural_memory.md]
+---
 
-## Last Updated
-2026-07-14
+# Active Session Context
+**Focus Node:** T5 batch JSON reads — lint.sh + text-similarity.sh pairwise optimized
 
-## Key Recent Facts
-: removed closed issues from issues.md and PLAN.md
-- Removed duplicate python-nixos development synthesis page
-- Fixed broken links in index.md, overview.md, and andrej-karpathy.md from issues.md and PLAN.md
-- Removed duplicate python-nixos development synthesis page
-- Fixed broken links in index.md, overview.md, and andrej-karpathy.md
+**Next Steps:**
+- Cleanup dead code in text-similarity.sh (extract_text, generate_ngrams, compute_similarity functions)
 
-## Recent Changes
-### Modified Files
-- issues.md — removed resolved Issues #53, #5/#9, #18, #27
-- PLAN.md — removed 15 completed phases (15, 15.1, 16.1, 17-23, 24, 25, 53)
-- wiki/index.md — removed broken link to deleted synthesis page
-- wiki/concepts/python-nixos-development.md — removed self-reference to deleted page
-- wiki/overview.md — updated synthesis link
-- wiki/entities/andrej-karpathy.md — fixed broken link
-
-## Active Threads
-- 3 soft contradictions remain (python-nixos overlap, date groups)
-- Wiki health: 69 pages, all links valid
-- Pending: T5 (batch JSON reads), N6 (rename pages), D1 (discovery step integration)
+**Recent Changes:**
+- 2026-07-15 D1 complete | Applied schema-patch: RULES.md R01 strengthened + §11 step 3.5 DISCOVERY inserted; closed #52 in issues.md and PLAN.md
+- 2026-07-15 audit | Closed #22,#23,#24,#45,#47,#8,#49; updated #11,#46 partial status in issues.md; closed N6 in PLAN.md
+- 2026-07-14 commit | Context optimization — removed closed issues from issues.md and PLAN.md
+- 2026-07-09 refactor | Cluster A: merged 4 context budget files → 1 (362→32 lines)
+- 2026-07-09 schema | git_conventions.json#pre_commit_workflow step 0 = memory_sync

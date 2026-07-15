@@ -83,52 +83,11 @@ verbose_log() {
 }
 
 # ─── Extract plain text from markdown (strip headers, links, formatting) ──
-extract_text() {
-    local file="$1"
-    
-    if [[ ! -f "$file" ]]; then
-        verbose_log "File not found: $file"
-        return 2
-    fi
-    
-    # Use Python for robust markdown text extraction
-    python3 << PYEOF
-import re, sys
+# (Note: This function is now integrated into the main Python blocks below)
 
-try:
-    with open("$file") as f:
-        content = f.read()
-    
-    # Remove YAML frontmatter
-    lines = content.split('\n')
-    start_idx = 0
-    if lines[0].strip().startswith('---'):
-        for i in range(1, len(lines)):
-            if lines[i].strip() == '---':
-                start_idx = i + 1
-                break
-    
-    # Remove markdown links: [text](url) → text
-    content = '\n'.join(lines[start_idx:])
-    content = re.sub(r'\[.*?\]\(.*?\)', lambda m: m.group(0).split(']')[0].strip(), content)
-    
-    # Remove headers (#, ##, ###) but keep the text
-    content = re.sub(r'^#+\s+', '', content, flags=re.MULTILINE)
-    
-    # Remove horizontal rules and excessive blank lines
-    content = re.sub(r'\n(-{3,}|\*{3,})\n', '\n\n', content)
-    content = re.sub(r'\n{4,}', '\n\n\n', content)
-    
-    print(content.strip())
-    
-except Exception as e:
-    sys.exit(2)
-PYEOF
-
-    return $?
-}
 
 # ─── Generate n-grams from text ──────────────────────────────────────
+# (Note: This function is now integrated into the main Python blocks below)
 generate_ngrams() {
     local file="$1"
     local n="${2:-3}"
@@ -163,6 +122,7 @@ PYEOF
 }
 
 # ─── Compute similarity between two files (Jaccard on n-grams) ────────
+# (Note: This function is now integrated into the main Python blocks below)
 compute_similarity() {
     local file1="$1"
     local file2="$2"
