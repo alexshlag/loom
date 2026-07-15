@@ -1,27 +1,24 @@
 {
-  "protocol_name": "Summary / FAQ Pages Policy",
-  "description": "Rules for creating, managing, and maintaining summary pages in wiki/syntheses/. Defines creation triggers, lifecycle rules, frontmatter requirements.",
-
   "search_priority": ["syntheses/", "concepts/", "entities/"],
 
   "creation_triggers": [
-    {"scenario": "answer_aggregates_from_3_plus_wiki_pages",     "action": "auto_create_summary_page_in_syntheses",         "details": "Establish internal links (crosslinks), add external sources via ingest flow"},
-    {"scenario": "answer_from_internet_web_search",              "action": "propose_to_user_create_faq_page",             "approval_required": true,  "after_approval": "full ingest + links"},
-    {"scenario": "answer_from_1_to_2_sources_no_new_insight",    "action": "do_not_create_summary",                     "alternative": "just answer, possibly add to existing entity/concept"}
+    {"when": "answer aggregates from 3+ wiki pages", "action": "auto_create summary page in syntheses"},
+    {"when": "answer from internet/web_search", "action": "propose to user create FAQ page (approval_required: true)"},
+    {"when": "answer from 1-2 sources, no new insight", "action": "do_not_create_summary"}
   ],
 
   "lifecycle_rules": [
-    {"event": "two_summaries_cover_same_topic",            "when": "duplicate topics detected in syntheses/",          "action": "merge_to_one_page",         "details": "Old links updated"},
-    {"event": "summary_outdated_stale",                   "when": "last_seen > 30 days without queries",              "action": "decay_apply_penalty",       "details": "-50% popularity boost; merge into fresher page or delete if duplicate"},
-    {"event": "new_query_different_top_path_same_topic",  "when": "topic exists but new query leads to different top_path", "action": "update_existing_summary", "details": "last_seen = current, popularity_score++"},
-    {"event": "summary_page_requires_user_approval_external_sources", "rule": "do_not_create_without_explicit_confirmation_from_user"}
+    {"when": "two summaries cover same topic", "action": "merge_to_one_page"},
+    {"when": "last_seen > 30 days without queries", "action": "decay_apply_penalty (-50% popularity; merge into fresher page or delete if duplicate)"},
+    {"when": "topic exists but new query leads to different top_path", "action": "update_existing_summary (last_seen = current, popularity_score++)"},
+    {"when": "summary requires external sources", "action": "do_not_create_without_explicit_confirmation_from_user"}
   ],
 
   "frontmatter_template": {
     "required_fields": [
-      {"field": "tags",           "pattern": "[summary, faq, ...]", "description": "Must include summary and faq tags"},
+      {"field": "tags",           "pattern": "[summary, faq, ...]"},
       {"field": "date",           "format": "YYYY-MM-DD"},
-      {"field": "type",           "value": "faq_summary",    "note": "← explicitly mark as question response"},
+      {"field": "type",           "value": "faq_summary"},
       {"field": "sources",        "pattern": "[...]"},
       {"field": "related",        "pattern": "[]"}
     ]

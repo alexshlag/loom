@@ -5,15 +5,10 @@
     "full": "./scripts/rebuild-meta.sh",
     "index_only": "./scripts/rebuild-meta.sh --index-only"
   },
-  "modes": [
-    { "command": "./scripts/rebuild-meta.sh", "rebuilds": ["registry.json", "backlinks.json", "wiki/index.md"], "use_when": "After any wiki edit (create/update/delete) in Ingest/Query/Lint." },
-    { "command": "./scripts/rebuild-meta.sh --index-only", "rebuilds": ["wiki/index.md"], "use_when": "Index-only rebuild: H1 headers + first sentences per category. Trigger: after create_page/update_existing (Ingest), or after link_validation (Lint)." }
-  ],
   "trigger_by_process": {
     "ingest": "After create_page → full rebuild (step_3a)",
     "query": "Post-checks: rebuild-meta + link-validator.sh",
     "lint": "After link_validation → index-only rebuild"
   },
-  "schema_ref_to_agent_rules": "AGENTS.md#rules-reference",
-  "agent_note": "Never call manually outside process flow. Triggered automatically at defined hook points in process files."
+  "schema_ref_to_agent_rules": "AGENTS.md#rules-reference"
 }

@@ -8,9 +8,9 @@
   },
 
   "steps": [
-    {"step_id": "0_delta_check",       "action": "./scripts/rebuild-source-manifest.sh --scan-only"},
-    {"condition": "source_status == processed",        "action": "SKIP_INGEST — Corrected copy exists with current hash → proceed to Step 2 (discussion)"},
-    {"condition": "source_status == unprocessed OR stale", "action": "PROCEED_TO_ANALYSIS"}
+    {"step_id": "0_delta_check", "action": "./scripts/rebuild-source-manifest.sh --scan-only"},
+    {"when": "source_status == processed", "action": "SKIP_INGEST — proceed to Step 2 (discussion)"},
+    {"when": "source_status == unprocessed OR stale", "action": "PROCEED_TO_ANALYSIS"}
   ],
 
   "manifest_structure": {
@@ -22,9 +22,8 @@
   },
 
   "contradiction_resolution_flow": [
-    "Read manifest.json for source → compare hash_original with current file",
-    "If match → use existing corrected copy",
-    "If mismatch → flag as stale, proceed to ingest"
+    {"when": "hash matches", "action": "use existing corrected copy"},
+    {"when": "hash mismatch", "action": "flag as stale, proceed to ingest"}
   ],
 
   "schema_ref_to_agent_rules": "rules/delta_tracking.json"

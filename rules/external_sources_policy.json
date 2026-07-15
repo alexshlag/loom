@@ -9,54 +9,12 @@
   },
 
   "routing_table": [
-    {
-      "scenario": "web_search_update_existing_page",
-      "process_file": "process-query.json#web_ingest_flow → process-ingest.json",
-      "transition_trigger": "existing_page_identified_from_web_data",
-      "user_confirm": false,
-      "auto_mode": true
-    },
-    {
-      "scenario": "web_search_topic_expansion",
-      "process_file": "process-query.json#web_ingest_flow → process-ingest.json",
-      "transition_trigger": "new_subtopic_of_existing_topic",
-      "user_confirm": false,
-      "auto_mode": true,
-      "note": "No user confirmation required — create new wiki page + links to existing topic"
-    },
-    {
-      "scenario": "web_search_new_independent_topic",
-      "process_file": "process-query.json#web_ingest_flow → process-ingest.json",
-      "transition_trigger": "new_independent_topic_not_in_wiki",
-      "user_confirm": true,
-      "auto_mode": false,
-      "note": "Required only for first page of this topic"
-    },
-    {
-      "scenario": "update_existing_page_with_new_facts",
-      "process_file": "process-ingest.json#step_8b_update_page",
-      "transition_trigger": "source_identifies_existing_page",
-      "user_confirm": false,
-      "auto_mode": true
-    },
-    {
-      "scenario": "simple_query_answer_no_save",
-      "process_file": "process-query.json only",
-      "transition_trigger": "no_compounding_flag",
-      "user_confirm": null,
-      "auto_mode": true,
-      "note": "N/A — no save operation"
-    }
+    {"scenario": "web_search_update_existing_page", "transition": "existing_page_identified_from_web_data → auto_ingest", "user_confirm": false, "auto_mode": true},
+    {"scenario": "web_search_topic_expansion", "transition": "new_subtopic_of_existing_topic → auto_ingest", "user_confirm": false, "auto_mode": true},
+    {"scenario": "web_search_new_independent_topic", "transition": "new_independent_topic_not_in_wiki → propose_to_user", "user_confirm": true, "auto_mode": false},
+    {"scenario": "update_existing_page_with_new_facts", "transition": "source_identifies_existing_page → process-ingest.json#step_8b_update_page", "user_confirm": false, "auto_mode": true},
+    {"scenario": "simple_query_answer_no_save", "transition": "no_compounding_flag → no save", "user_confirm": null, "auto_mode": true}
   ],
 
-  "ingress_points_from_lint": {
-    "trigger": "new_sources_detected",
-    "action": "web_ingest_flow.trigger",
-    "schema_ref_process_file": "process-query.json#web_ingest_flow"
-  },
-
-  "ingress_points_from_query": {
-    "trigger": "topic_expansion_detected",
-    "action": "TRANSITION_TO process-ingest.json via web_ingest_flow (create_new_expansion_of_existing, auto)"
-  }
+  "schema_ref_to_agent_rules": "rules/external_sources_policy.json"
 }

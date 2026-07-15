@@ -2,40 +2,17 @@
   "rule_id": "EVIDENCE-GRADE-V1",
   "protocol_name": "Evidence Grade Auto-computation",
   "description": "Auto-computed field for fact evidence level. Agent assigns grade during ingest based on source authority.",
-  "applicable_to": [
-    "documentation"
-  ],
-  "auto_status_for_code_reality_live_state": "documented",
+  "applicable_to": ["documentation"],
   "grade_levels": [
-    {
-      "grade": "documented",
-      "when_to_assign": "fact_from_authoritative_source_official_docs_project_wiki_core_maintainer_blog",
-      "meaning": "high_confidence"
-    },
-    {
-      "grade": "corroborated",
-      "when_to_assign": "fact_confirmed_by_2_or_more_independent_sources",
-      "meaning": "medium_high_confidence"
-    },
-    {
-      "grade": "assertion_only",
-      "when_to_assign": "assertion_without_confirmation_or_from_weak_source_generic_blog_forum_post",
-      "meaning": "low_confidence"
-    }
+    {"grade": "documented", "when": "fact from authoritative source (official docs, project wiki, core maintainer blog)", "meaning": "high confidence"},
+    {"grade": "corroborated", "when": "fact confirmed by 2+ independent sources", "meaning": "medium-high confidence"},
+    {"grade": "assertion_only", "when": "assertion without confirmation or from weak source (generic blog, forum post)", "meaning": "low confidence"}
   ],
   "auto_compute_rules": [
-    {
-      "rule": "agent_analyzes_source_during_ingest_and_automatically_assigns_grade_to_each_fact"
-    },
-    {
-      "rule": "grade_recorded_in_page_metadata_not_in_body"
-    },
-    {
-      "rule": "during_contradiction_resolution: documented(1) > corroborated(2) > assertion_only(3) — works_as_sub_priority_for_documentation_sources"
-    },
-    {
-      "rule": "never_set_manually — only_by_agent_from_source_authority_analysis"
-    }
+    {"rule": "agent assigns grade during ingest from source authority analysis"},
+    {"rule": "grade recorded in page metadata, not body"},
+    {"rule": "contradiction resolution priority: documented > corroborated > assertion_only"},
+    {"rule": "never set manually — only by agent from source authority analysis"}
   ],
   "schema_ref_to_agent_rules": "rules/evidence_grade.json"
 }

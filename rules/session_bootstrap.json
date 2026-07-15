@@ -13,25 +13,8 @@
       "action": "read_file",
       "path": "wiki/hot.md"
     },
-    {
-      "order": 3,
-      "action": "read_file",
-      "path": "rules/git_conventions.json",
-      "note": "MUST read before any commit operation — defines staging mode, commit format, memory sync rules"
-    },
-    {
-      "order": 4,
-      "action": "read_file",
-      "path": "wiki/docs-existence-check.json",
-      "note": "Existence check for wiki/docs/ — BEFORE creating ANY new docs page, agent MUST scan existing pages matching entity prefix. If found → UPDATE (step_8b), DO NOT create duplicate."
-    },
-    {
-      "order": 5,
-      "action": "scan_directory",
-      "path": "wiki/skills/",
-      "output": "working_memory.skills_loaded = [{name, category}]",
-      "note": "Non-blocking — failure does not abort session. Skills loaded into WM for agent awareness during processes. — filter results by tags containing 'skill'",
-      "schema_ref": "rules/skill_format.json#category_taxonomy"
-    }
+    {"order": 3, "action": "read_file", "path": "rules/git_conventions.json"},
+    {"order": 4, "action": "read_file", "path": "wiki/docs-existence-check.json"},
+    {"order": 5, "action": "scan_directory", "path": "wiki/skills/", "output": "working_memory.skills_loaded = [{name, category}]", "note": "Non-blocking — filter results by tags containing 'skill'", "schema_ref": "rules/skill_format.json#category_taxonomy"}
   ]
 }

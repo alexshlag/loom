@@ -1,6 +1,5 @@
 {
   "protocol_name": "Link Conventions & Auto-Fix",
-  "description": "Internal and external link usage conventions plus auto-fix logic.",
   "internal_links": {
     "format": "[text](wiki-relative-path.md)",
     "prohibited": "./ (never use dot-relative paths)",
@@ -21,11 +20,11 @@
       "shared_sources": "2 base + diminishing factor (+1 per additional shared source)",
       "frontmatter_related": 4
     },
-    "thresholds": {
-      ">=5": "Strong candidate \u2014 suggest with confidence",
-      "3-4": "Weak signal \u2014 suggest review",
-      "<3": "Ignore (below noise floor)"
-    },
+    "thresholds": [
+      {"when": "score >=5", "action": "Strong candidate — suggest with confidence"},
+      {"when": "score 3-4", "action": "Weak signal — suggest review"},
+      {"when": "score <3", "action": "Ignore (below noise floor)"}
+    ],
     "system_file_exclusion": [
       "wiki/log.md",
       "wiki/issues.md",

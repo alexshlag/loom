@@ -1,11 +1,12 @@
 # Wiki Index
 
+
 ## Entities
 * [AI Factory](entities/ai-factory.md) — [AI Factory] [obsidian-cli] [vault-transport] [cli-tool]
 * [API Platform](entities/api-platform.md) — [API Platform] [api] [rest] [graphql]
 * [Andrej Karpathy](entities/andrej-karpathy.md) — [Andrej Karpathy] [machine-learning] [deep-learning] [computer-vision]
 * [Clippy](entities/rust-clippy.md) — [rust] [linter] [linting-tool]
-* [Ibexa DXP](entities/ibexa-dxp.md) — [Ibexa DXP] [dxp] [commerce-cms] [ecommerce-platform]
+* [Ibexa DXP](entities/ibexa-dxp.md) — [Ibexa DXP] [dxp] [commerce-cms] [symfony]
 * [Loomana — Wiki System Documentation](entities/loomana.md) — [llm-wiki] [personal-knowledge-base] [compounding] [rag-alternative] [karpathy-wiki] [Loomana] [loom] [wiki-system]
 * [Node.js](entities/nodejs.md) — [node-runtime] [javascript-runtime] [backend-npm] [nixos-package]
 * [Nvidia](entities/nvidia.md) — [gpu-manufacturer] [semiconductor] [ai-hardware]
@@ -18,30 +19,30 @@
 ## Concepts
 * [AI Factory vs Pi Coding Agent — Category Distinction](concepts/ai-factory-vs-pi.md) — [agent-workflow-schema] [harness-comparison] [claude-obsidian-alternative]
 * [Agent Memory Management — Techniques and Recommendations](concepts/agent-memory-management.md) — [memory] [agent-behavior] [recall-system] [trajectory-capture]
-* [AssetMapper](concepts/assetmapper.md) — [symfony-assetmapper] [frontend-pipeline] [static-assets]
+* [AssetMapper](concepts/symfony-assetmapper.md) — [symfony-assetmapper] [frontend-pipeline] [static-assets]
 * [Cache System](concepts/cache-system.md) — [psr6-caching] [cache-invalidation] [symfony-cache]
 * [Context Budget — Управление контекстным окном LLM при Ingest](concepts/context-budget.md) — [context-management] [ingest-optimization] [agent-behavior] [attention-budget]
 * [Dependency Injection в Symfony](concepts/symfony-dependency-injection.md) — [symfony] [dependency-injection] [service-container] [autowiring] [compiler-passes] [service-tags]
 * [Doctrine ORM Integration](concepts/doctrine-orm.md) — [doctrine] [orm] [entities] [repositories]
-* [EasyAdmin Bundle](concepts/easyadmin-bundle.md) — [easyadmin-admin-ui] [symfony-bundle] [crud-generation]
-* [Event Dispatcher](concepts/event-dispatcher.md) — [event-dispatcher] [symfony-messenger] [psr-event] [observable-pattern] [event-bus]
+* [EasyAdmin Bundle](concepts/symfony-easyadmin-bundle.md) — [easyadmin-admin-ui] [symfony-bundle] [crud-generation]
+* [Event Dispatcher](concepts/symfony-event-dispatcher.md) — [event-dispatcher] [symfony-messenger] [psr-event] [observable-pattern] [event-bus]
 * [Harness-Aware Wiki Setup Flow](concepts/harness-aware-setup.md) — [harness] [wiki-setup] [design-idea] [pending]
 * [Hexagonal Architecture & Clean Patterns in Symfony](concepts/hexagonal-architecture.md) — [hexagonal-pattern] [ports-and-adapters] [clean-architecture] [ddd-patterns]
 * [LLM Wiki Pattern — Incremental Knowledge Base Building](concepts/llm-wiki.md) — [rag] [knowledge-base] [llm] [compounding-knowledge]
-* [Messenger Component](concepts/messenger-component.md) — [async-message-queue] [symfony-messaging] [psr-75]
+* [Messenger Component](concepts/symfony-messenger-component.md) — [async-message-queue] [symfony-messaging] [psr-75]
 * [Natural Memory Translation — Перевод машинных фактов в живую память](concepts/natural-memory.md) — [memory] [agent-behavior] [wiki-pattern]
 * [Python Development Environments on NixOS](concepts/python-nixos-development.md) — [nixos] [python] [development-environment]
 * [Routing System & Controllers](concepts/routing-system.md) — [routing] [controllers] [attributes]
-* [Security System (AuthN & AuthZ)](concepts/security-system.md) — [access-control-voters] [symfony-security] [authz-patterns]
-* [Service Container & Dependency Injection](concepts/service-container.md) — [dependency-injection] [service-container] [autowiring] [di-pattern] [symfony]
+* [Security System (AuthN & AuthZ)](concepts/symfony-security-system.md) — [access-control-voters] [symfony-security] [authz-patterns]
+* [Service Container & Dependency Injection](concepts/symfony-service-container.md) — [dependency-injection] [service-container] [autowiring] [di-pattern] [symfony]
 * [Sonata Admin Bundle](concepts/sonata-admin-bundle.md) — [sonata-admin-ui] [content-management-bundle] [symfony-bundle]
 * [Symfony AI Component](concepts/symfony-ai.md) — [llm-integration] [symfony-ai] [rag-patterns] [embedding-vector]
 * [Symfony Deployment & Production Setup](concepts/symfony-deployment.md) — [deployment] [production] [setup] [php]
 * [Symfony Flex & Recipes](concepts/symfony-flex.md) — [composer] [flex] [recipes]
 * [Temporal Decay in Compounding Knowledge Base](concepts/temporal-decay-in-wiki.md) — [temporal-decay] [maintenance] [wiki-growth]
-* [Testing Strategy & Best Practices](concepts/testing-strategy.md) — [test-framework-comparison] [symfony-testing] [phpunit-bests]
-* [Twig Templating](concepts/twig-templating.md) — [twig] [php-templates] [template-inheritance] [cacheable-blocks] [symfony]
-* [Workflow & State Machine](concepts/workflow-state-machine.md) — [state-machinery-pattern] [symfony-workflow] [fsm-implementation]
+* [Testing Strategy & Best Practices](concepts/symfony-testing-strategy.md) — [test-framework-comparison] [symfony-testing] [phpunit-bests]
+* [Twig Templating](concepts/symfony-twig-templating.md) — [twig] [php-templates] [template-inheritance] [cacheable-blocks] [symfony]
+* [Workflow & State Machine](concepts/symfony-workflow-state-machine.md) — [state-machinery-pattern] [symfony-workflow] [fsm-implementation]
 
 ## Comparisons
 * [LOOM vs claude-obsidian — Сравнение двух реализаций LLM Wiki Companion](comparisons/loom-vs-claude-obsidian.md) — [vault-architecture] [knowledge-workflow] [loomana-comparison] [claude-obsidian]
@@ -50,20 +51,25 @@
 * [Сравнение: Loomana (Markdown-driven wiki) vs pi-llm-wiki/ (TypeScript platform)](comparisons/llm-wiki-implementations.md) — [llm-wiki-patterns] [wiki-implementations] [compounding-knowledge]
 
 ## Syntheses
-* [Основные способы создания сред разработки Python на NixOS]() — [nixos] [python] [development-environment]
 * [Сравнение: RAG vs LLM Wiki Pattern (Compounding Knowledge Base)](syntheses/rag-vs-llm-wiki-pattern.md) — [rag] [llm] [knowledge-base]
 
 ## Overviews
 
+
 ## Notes
+
 
 ## Meetings
 
+
 ## Projects
+
 
 ## Bibliography
 
+
 ## Resources
+
 
 ## Documentation
 * [AI Factory Documentation — CLI Tool & Skill System for Coding Agents](docs/ai-factory.md) — [cli] [agent-tools] [development-workflow] [skill-system]
@@ -83,7 +89,7 @@
 * [Wiki Structure Guide — Page Organization & Conventions](docs/loom-wiki-structure.md) — [Loomana] [loom] [wiki-structure] [frontmatter] [naming-conventions]
 
 ---
-*Created: auto-generated | Last updated: 2026-07-09 00:50*
+*Created: auto-generated | Last updated: 2026-07-15 19:06*
 
 ## Timeline
 | Дата | Событие |

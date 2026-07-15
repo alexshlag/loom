@@ -4,32 +4,17 @@
   "format": {
     "title": "# Wiki Snapshot — Active Projects",
     "structure": [
-      { "header": "# Wiki Snapshot — Active Projects" },
-      {
-        "section": "## Active Projects",
-        "type": "project_list"
-      },
-      {
-        "section": "### [Project Name]",
-        "properties": [
-          "status: active/completed/on-hold",
-          "context: brief project goal and current status",
-          "related_pages: links to Entity/Concept pages"
-        ]
-      },
-      { "footer": "---\\n*Last updated: YYYY-MM-DD*" }
+      {"header": "# Wiki Snapshot — Active Projects"},
+      {"section": "## Active Projects", "type": "project_list"},
+      {"section": "### [Project Name]", "properties": ["status: active/completed/on-hold", "context: brief project goal and current status", "related_pages: links to Entity/Concept pages"]},
+      {"footer": "---\\n*Last updated: YYYY-MM-DD*"}
     ],
-    "load_conditions": {
-      "read_when": "WORK_MODE is project AND snapshot contains entry for this project",
-      "never_read": ["oneoff questions", "deep-dive study (query/discussion modes)"]
-    },
     "update_rules": [
-      { "action": "create", "trigger": "user declares new project" },
-      { "action": "update", "trigger": "every ingest/query that adds or changes related wiki pages" },
-      { "action": "archive", "trigger": "project completed — entry moved to wiki/projects/, removed from snapshot.md" }
+      {"action": "create", "trigger": "user declares new project"},
+      {"action": "update", "trigger": "every ingest/query that adds or changes related wiki pages"},
+      {"action": "archive", "trigger": "project completed — entry moved to wiki/projects/, removed from snapshot.md"}
     ],
     "rule": "agent never loads wiki/snapshot.md if user is not working on a project. session starts with wiki/index.md + wiki/overview.md."
   },
-  "schema_ref_to_agent_rules": "AGENTS.md#rules-reference",
-  "agent_note": "Read only when WORK_MODE=project AND snapshot has entry for this project. Never load for oneoff queries or deep-dive study."
+  "schema_ref_to_agent_rules": "AGENTS.md#rules-reference"
 }

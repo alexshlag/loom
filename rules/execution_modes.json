@@ -1,23 +1,13 @@
 {
   "protocol_name": "Execution Modes",
-  "description": "Agent mode definitions controlling scope (what to do) and output style (how results are shown).",
   "modes": {
     "current_mode": {
-      "values": [
-        "query",
-        "ingest",
-        "project"
-      ],
-      "storage": "working_memory.json",
-      "description": "Defines WHAT the agent does in current moment."
+      "values": ["query", "ingest", "project"],
+      "storage": "working_memory.json"
     },
     "execution_mode": {
-      "values": [
-        "silent",
-        "verbose"
-      ],
-      "storage": "working_memory.json",
-      "description": "Defines HOW the agent shows result to user."
+      "values": ["silent", "verbose"],
+      "storage": "working_memory.json"
     }
   },
   "rules": {
@@ -26,9 +16,9 @@
     "auto_reset": "After verbose answer, agent resets to 'silent'.",
     "explicit_reset": "When user says 'quiet', 'silent', or 'less' -> instant reset.",
     "prohibited_output": [
-      "Bash stdout/stderr (grep output, script results, file listings)",
-      "Intermediate search data (web_search snippets before final synthesis)",
-      "Thinking aloud ('thinking about doing X...')"
+      "Bash stdout/stderr",
+      "Intermediate search data",
+      "Thinking aloud"
     ],
     "allowed_output": [
       "Final answer/synthesis (completed response with sources)",

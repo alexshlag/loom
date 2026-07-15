@@ -2,26 +2,26 @@
   "rule_name": "error_handling_protocol",
   "rule_id": "EHP-V2",
 
-  "golden_rule": "Error != stop. Every error is a signal for action, not reason to stall.",
+  "golden_rule": "Error != stop. Every error is a signal for action.",
 
   "steps": {
-    "step_1": "Detect & Log [!] → write to wiki/log.md with type [error], description, context. Always append (>>), never overwrite.",
-    "step_2": "Analyze — root cause (not just 'error', but why instruction broke)",
+    "step_1": "Detect & Log → write to wiki/log.md with type [error], description, context",
+    "step_2": "Analyze — root cause",
     "step_3": "Resolve",
     "strategies": {
       "local-fix":        "path/link/logic problem → fix independently",
-      "schema-patch":     "contradiction in Schema/AGENTS.md → propose patch to user for review",
+      "schema-patch":     "contradiction in Schema/AGENTS.md → propose patch to user",
       "source-conflict":  "two sources say opposite things → mark CONFLICT on page, continue",
-      "dead-end":         "approach doesn't work (e.g., grep noise) → document reason, change strategy"
+      "dead-end":         "approach doesn't work → document reason, change strategy"
     },
-    "step_4": "Continue — move forward, not stuck on broken instruction"
+    "step_4": "Continue — move forward"
   },
 
   "resolution_actions": [
-    {"situation": "git add * blocked by guardrails",       "action": "[!] Log: protected zone blocked → local-fix: switch to git add wiki/"},
-    {"situation": "fetch_content returned truncated markdown", "action": "[!] Log: truncation detected → local-fix: fallback web_search + get_search_content"},
-    {"situation": "New command incompatible with Schema",   "action": "[!] Log: schema conflict → schema-patch: propose AGENTS.md patch to user"},
-    {"situation": "Grep gave >100 matches without meaning",  "action": "[!] Log: grep noise → dead-end: switch to wiki/index.md"}
+    {"when": "git add * blocked by guardrails",       "action": "Log protected zone blocked → local-fix: git add wiki/"},
+    {"when": "fetch_content returned truncated markdown", "action": "Log truncation detected → local-fix: fallback web_search + get_search_content"},
+    {"when": "New command incompatible with Schema",   "action": "Log schema conflict → schema-patch: propose AGENTS.md patch to user"},
+    {"when": "Grep gave >100 matches without meaning",  "action": "Log grep noise → dead-end: switch to wiki/index.md"}
   ],
 
   "schema_ref_to_agent_rules": "rules/error_handling.json"

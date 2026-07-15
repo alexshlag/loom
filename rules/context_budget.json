@@ -1,29 +1,25 @@
 {
   "rule_id": "CBUDGET-V2",
   "rule_name": "context_budget",
-  "description": "Token budget management: read only what you need now. Three operational rules — replaces CBUDGET-V1, STI-V2, CB-V1.",
-
   "lazy_loading": {
     "rule_id": "CB-LAZY",
-    "principle": "Process files (process-*.json) are schema_refs — read specific step when needed, not the whole file upfront.",
+    "principle": "Process files are schema_refs — read specific step when needed.",
     "examples": [
-      {"when": "only step_8a needed", "then": "read process-ingest.json#step_8a_new_page, not the entire 600-line file"},
-      {"when": "only step_1.5 needed", "then": "read process-query.json#step_1.5, not the entire 666-line file"}
+      {"when": "only step_8a needed", "action": "read process-ingest.json#step_8a_new_page"},
+      {"when": "only step_1.5 needed", "action": "read process-query.json#step_1.5"}
     ]
   },
 
   "source_lifecycle": {
     "rule_id": "CB-SOURCE",
-    "principle": "One source at a time: read → extract → write wiki → close. Before reading next, ensure previous is closed.",
-    "prohibited": "Holding ≥2 source texts simultaneously during batch ingest",
-    "rationale": "Raw source text is re-fetchable from disk once wiki page exists. Keeping it wastes context on data already captured."
+    "principle": "One source at a time: read → extract → write wiki → close.",
+    "prohibited": "Holding ≥2 source texts simultaneously during batch ingest"
   },
 
   "context_bubble": {
     "rule_id": "CB-BUBBLE",
     "max_open_wiki_pages": 3,
-    "rule": "When opening N+1th wiki page for reading → close one of the current N first.",
-    "rationale": "Ensures space for new reading without accumulating stale page content."
+    "rule": "When opening N+1th wiki page → close one of current N first."
   },
 
   "schema_ref": {

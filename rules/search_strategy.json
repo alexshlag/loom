@@ -1,87 +1,40 @@
 {
   "rule_name": "search_and_discovery",
   "rule_id": "SD-V2",
-  "description": "Search strategy: primary tool, fallback chain, query intent analysis, relevance scoring algorithm",
   "primary_tool": {
     "command": "./scripts/wiki-search.sh --dynamic \"<query>\""
   },
   "fallback_chain": [
-    {
-      "pattern": "grep -m 30 \"<keyword>\" wiki/index.md",
-      "condition": "if >=2 matches → use"
-    },
-    {
-      "pattern": "grep -m 20 \"<keyword>\" meta/search-index.json"
-    }
+    {"pattern": "grep -m 30 \"<keyword>\" wiki/index.md", "condition": "if >=2 matches → use"},
+    {"pattern": "grep -m 20 \"<keyword>\" meta/search-index.json"}
   ],
   "constraints": {
-    "prohibited_tools": [
-      "find",
-      "ls",
-      "cat"
-    ],
+    "prohibited_tools": ["find", "ls", "cat"],
     "rule": "only wiki-search.sh --dynamic first for search"
   },
   "if_broken": {
-    "action": "STOP_SEARCH -> ./scripts/wiki-search.sh --dynamic <query>"
+    "action": "STOP_SEARCH → ./scripts/wiki-search.sh --dynamic <query>"
   },
   "relevance_scoring": {
     "tool": "./scripts/wiki-search.sh --dynamic \"query\"",
     "description": "Dynamic category order based on query intent; results sorted by combined score descending"
   },
   "intent_analysis": {
-    "entity_keywords": [
-      "entities/",
-      "concepts/",
-      "syntheses/"
-    ],
-    "comparison (vs, compared to)": [
-      "comparisons/",
-      "syntheses/",
-      "concepts/"
-    ],
-    "concept keywords": [
-      "concepts/",
-      "syntheses/",
-      "entities/"
-    ]
+    "entity_keywords": ["entities/", "concepts/", "syntheses/"],
+    "comparison (vs, compared to)": ["comparisons/", "syntheses/", "concepts/"],
+    "concept keywords": ["concepts/", "syntheses/", "entities/"]
   },
-  "intent_fallback_order": [
-    "syntheses/",
-    "concepts/",
-    "entities/"
-  ],
+  "intent_fallback_order": ["syntheses/", "concepts/", "entities/"],
   "scoring_weights": [
-    {
-      "factor": "position_weight",
-      "rule": "query in H1 = +3, body = +1 per occurrence"
-    },
-    {
-      "factor": "frequency_weight",
-      "rule": "total occurrences x 1"
-    },
-    {
-      "factor": "backlink_weight",
-      "rule": "mentions in other wiki pages x 5"
-    },
-    {
-      "factor": "category_bonus",
-      "rule": "earlier priority category gets +10x(max_priority - index)"
-    }
+    {"factor": "position_weight", "weight": "query in H1 = +3, body = +1 per occurrence"},
+    {"factor": "frequency_weight", "weight": "total occurrences x 1"},
+    {"factor": "backlink_weight", "weight": "mentions in other wiki pages x 5"},
+    {"factor": "category_bonus", "weight": "earlier priority category gets +10x(max_priority - index)"}
   ],
   "scoring_thresholds": [
-    {
-      "score_min": 5,
-      "action": "Strong candidate — suggest crosslink with confidence"
-    },
-    {
-      "score_range": "3-4",
-      "action": "Weak signal — suggest review, agent decides"
-    },
-    {
-      "score_max": 2,
-      "action": "Ignore (below noise floor)"
-    }
+    {"when": "score >=5", "action": "Strong candidate — suggest crosslink with confidence"},
+    {"when": "score 3-4", "action": "Weak signal — suggest review, agent decides"},
+    {"when": "score <=2", "action": "Ignore (below noise floor)"}
   ],
   "schema_ref_to_agent_rules": "AGENTS.md#rules-reference"
 }
