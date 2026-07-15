@@ -108,6 +108,34 @@
       "name": "structural_violations_check",
       "command": "./scripts/check-structural.sh --quiet || true",
       "note": "Find pages missing body text between H1 and first ##. Auto-fix via structural-fix.sh --fix."
+    },
+    {
+      "check_id": "16",
+      "name": "glossary_decay_cleanup",
+      "description": "Check wiki/glossary/user-query-patterns.md for stale entries — prune patterns without recent usage.",
+      "schema_ref": "rules/query_glossary.json#decay_rules",
+      "actions": [
+        {
+          "step": 1,
+          "command": "head -n 50 wiki/glossary/user-query-patterns.md",
+          "purpose": "read glossary sections (non-blocking, max 50 lines)"
+        },
+        {
+          "step": 2,
+          "description": "Check each entry: last_used > 30 days AND usage_count < 2 → mark stale"
+        },
+        {
+          "step": 3,
+          "condition": "stale_entries_found",
+          "action": "move_to_stale_section OR remove_if_no_new_usage_in_30_days"
+        },
+        {
+          "step": 4,
+          "description": "Write back glossary if changes made (Clear & Rewrite contract)",
+          "note": "Non-blocking — skip write if no stale entries found"
+        }
+      ],
+      "constraint": "Never read full glossary file — max head -n 50, grep -m 10 for pattern lookup"
     }
   ],
   "primary_command": {
@@ -151,6 +179,11 @@
           "condition": "agent_review_required_from_unified_pass",
           "action": "capture_agent_review_required_to_wm",
           "note": "non-auto-fixed broken links (score<80) propagate to WM.broken_links_resolved[] for query step_0.75"
+        },
+        {
+          "condition": "glossary_stale_entries_found_from_check_id=16",
+          "action": "run scripts/glossary-cleanup.sh --quiet > /dev/null 2>&1 || true",
+          "note": "Non-blocking — prune stale patterns from wiki/glossary/user-query-patterns.md. See rules/query_glossary.json#decay_rules"
         }
       ],
       "rule": "Auto-fix runs BEFORE user-facing output. All auto-fixed issues go to wiki/log.md only, never shown to user.",

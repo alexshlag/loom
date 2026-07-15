@@ -84,10 +84,20 @@
         {
           "step_2": "if intent=query_wiki: count wiki/**/*.md",
           "action_if_empty": "warn_and_prompt_to_fill"
+        },
+        {
+          "step_3": "confidence_boost_from_glossary",
+          "description": "After heuristic match → grep glossary for similar patterns to boost confidence",
+          "command": "grep -m 10 '<detected_keywords>' wiki/glossary/user-query-patterns.md || true",
+          "schema_ref": "rules/query_glossary.json#read_contract",
+          "action_if_match_found": "confidence_boost: high — pattern is reliable, route without ambiguity check",
+          "action_if_no_match": "continue with heuristic confidence only (non-blocking)"
         }
       ],
       "constraints": [
-        "Never use find/ls for check — only count *.md"
+        "Never use find/ls for check — only count *.md",
+        "Glossary grep -m 10 only, never read full file",
+        "Non-blocking: if glossary lookup fails → rely on hardcoded heuristics"
       ]
     },
     {
@@ -650,6 +660,23 @@
         {
           "action_name": "write_to_working_memory",
           "command": "echo 'WM_UPDATE' >> wiki/log.md; echo $(date +%Y-%m-%d) > meta/last-wm-sync.txt"
+        }
+      ]
+    },
+    "session_end_glossary_write": {
+      "trigger": "on_session_complete",
+      "description": "Batch all pattern updates into single glossary write — Clear & Rewrite contract",
+      "condition": "any_successful_routing_this_session",
+      "actions": [
+        {
+          "action_name": "record_pattern_outcome",
+          "description": "Log: user_signal → matched_process → found_pages → compounding_flag"
+        },
+        {
+          "action_name": "update_glossary",
+          "command": "read wiki/glossary/user-query-patterns.md → merge/promote/decay → write back complete document",
+          "schema_ref": "rules/query_glossary.json#write_contract",
+          "note": "Non-blocking — skip if no new patterns to record"
         }
       ]
     }

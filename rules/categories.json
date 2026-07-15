@@ -82,6 +82,14 @@
       "description": "Tools, plugins, libraries, application templates, config examples, code scaffolds"
     },
     {
+      "key": "glossary",
+      "label": {
+        "en": "Glossary",
+        "ru": "Глоссарий"
+      },
+      "description": "Living agent experience docs — query patterns, routing outcomes, skill cases distilled from session history"
+    },
+    {
       "key": "docs",
       "label": {
         "en": "Documentation",

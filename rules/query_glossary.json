@@ -1,0 +1,140 @@
+{
+  "rule_name": "query_glossary_management",
+  "rule_id": "QG-V1",
+  "description": "Living glossary lifecycle: merge, decay, promote, prune rules for wiki/glossary/user-query-patterns.md",
+
+  "glossary_path": "wiki/glossary/user-query-patterns.md",
+
+  "merge_rules": {
+    "trigger": "new_pattern_entry_similar_to_existing",
+    "similarity_check": [
+      {
+        "field": "matched_process",
+        "condition": "same"
+      },
+      {
+        "field": "intent_category",
+        "condition": "same_or_subcategory"
+      }
+    ],
+    "action": [
+      {
+        "step": 1,
+        "description": "Find existing entry with same matched_process + similar intent"
+      },
+      {
+        "step": 2,
+        "description": "Merge: usage_count++, last_used=current_date, append new examples to list"
+      },
+      {
+        "step": 3,
+        "description": "Remove duplicate entry — keep only merged version"
+      }
+    ],
+    "constraint": "Never create duplicate entries — always merge first"
+  },
+
+  "decay_rules": {
+    "trigger": "lint_check_id=16 OR end_of_session",
+    "conditions": [
+      {
+        "condition": "last_used_date > 30 days from current_date",
+        "action": "mark_stale"
+      },
+      {
+        "condition": "usage_count < 2",
+        "action": "mark_stale_if_also_last_used_old"
+      }
+    ],
+    "stale_section": "## Stale Patterns (marked for prune)",
+    "prune_action": [
+      {
+        "step": 1,
+        "description": "Move stale entries to 'Stale' section at end of file"
+      },
+      {
+        "step": 2,
+        "description": "If no new usage within next 30 days → remove from file entirely"
+      }
+    ]
+  },
+
+  "promote_rules": {
+    "trigger": "usage_count reaches threshold",
+    "thresholds": [
+      {
+        "count": 5,
+        "action": "move_to_high_confidence_section",
+        "description": "Pattern promoted to 'High-Confidence Patterns' section at top"
+      },
+      {
+        "count": 10,
+        "action": "add_confidence_boost_note",
+        "description": "Add note: 'agent auto-routes without heuristic check — pattern is reliable'"
+      }
+    ]
+  },
+
+  "write_contract": {
+    "rule": "Clear & Rewrite — never append to glossary file",
+    "steps": [
+      {
+        "step": 1,
+        "description": "read full wiki/glossary/user-query-patterns.md"
+      },
+      {
+        "step": 2,
+        "description": "modify in memory: merge/decay/promote as needed"
+      },
+      {
+        "step": 3,
+        "description": "write complete document back"
+      }
+    ],
+    "constraint": "Max 1 glossary write per session — batch all updates into single write"
+  },
+
+  "read_contract": {
+    "rule": "Grep-only access — never read full file in context",
+    "allowed": [
+      {
+        "command": "grep -m 10 '<keyword>' wiki/glossary/user-query-patterns.md",
+        "purpose": "lookup similar patterns during intent detection"
+      },
+      {
+        "command": "head -n 30 wiki/glossary/user-query-patterns.md",
+        "purpose": "read high-confidence section only (top of file)"
+      }
+    ],
+    "prohibited": [
+      {
+        "command": "cat wiki/glossary/user-query-patterns.md",
+        "reason": "file grows over time — token overload risk"
+      },
+      {
+        "command": "grep pattern wiki/glossary/",
+        "reason": "no -m flag — could output many lines"
+      }
+    ]
+  },
+
+  "integration_points": {
+    "query_step_0.5": {
+      "description": "After query_intent_decoder heuristic match → grep glossary for confidence boost",
+      "command": "grep -m 10 '<detected_keywords>' wiki/glossary/user-query-patterns.md || true"
+    },
+    "lint_check_id=16": {
+      "description": "Glossary decay/cleanup check — run at end of lint session",
+      "action": "read glossary → mark stale entries → write back if changes needed"
+    },
+    "session_end": {
+      "description": "Batch all pattern updates into single glossary write",
+      "condition": "any_successful_routing_this_session"
+    }
+  },
+
+  "non_blocking_rule": {
+    "rule": "Glossary operations are non-blocking — if grep fails or write skipped, continue process flow",
+    "fallback": "If glossary lookup returns no results → rely on hardcoded heuristics only"
+  }
+}

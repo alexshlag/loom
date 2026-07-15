@@ -69,6 +69,67 @@ Before writing/editing/debugging `process-*.json` and `rules/*.json`: read §9 o
 
 ---
 
+## Intent Detection & Routing (NEW)
+
+> **Rule**: Before any user task — detect intent → read matching `process-*.json` → follow its steps.
+
+### How It Works
+
+1. **Parse user message** for intent keywords / context clues
+2. **Match to process type** using the table below
+3. **Read the corresponding process file** (`process-ingest.json`, `process-query.json`, or `process-lint.json`)
+4. **Execute steps** from that file — do not skip bootstrap
+5. **Chain processes** if user request spans multiple types (see Mixed Intent section)
+
+### Routing Table
+
+| User Signal | Process File | Trigger Condition |
+|---|---|---|
+| `"What is X?"`, `"Tell me about Y"`, `"How does Z work?"` | **process-query.json** | `user_asks_question` |
+| `"Add this source: [URL/file]"`, `"Ingest article about X"`, `"Import GitHub repo"` | **process-ingest.json** | `user_provided_source` |
+| `"Check wiki health"`, `"Lint the wiki"`, `"Find contradictions"`, `"Scan for orphans"` | **process-lint.json** | `wiki_stagnation_detected / contradications_found / orphan_pages_detected` |
+| `"Update page about X with new info from Y"` | **process-ingest.json** (update path) | `source_updates_existing_entity_or_concept` |
+| `"Create a summary/FAQ for topic X"` | **process-query.json → process-ingest.json** | synthesis trigger in query step 2 |
+
+### Mixed Intent — Chaining
+
+When user request spans multiple processes:
+1. Execute first process to completion (or until transition point)
+2. If result triggers second process → follow `web_ingest_flow` or equivalent transition
+3. **Example**: "Add this article about Symfony and tell me what the wiki knows" → ingest → query on same topic
+4. **Example**: "Check for contradictions in LLM Wiki pages, then fix them" → lint → ingest (update path)
+
+### Detection Heuristics
+
+- **Query intent**: contains `what`, `how`, `tell me`, `explain`, `about`, `difference between`, `compare`
+- **Ingest intent**: contains URL/file path, `add`, `import`, `ingest`, `source`, `article`, `repo`, `link` + action verb
+- **Lint intent**: contains `check`, `lint`, `health`, `scan`, `find contradictions`, `orphan`, `broken links`
+- **Ambiguous**: read both query and ingest files, start with query (answer first), then ingest if source provided
+
+> Agent MUST read the process file before starting its workflow. Steps reference rules/*.json via schema_ref.
+
+### Glossary Integration (Living Query Patterns)
+
+> **Rule**: Intent detection uses TWO sources — hardcoded heuristics (fast path) + living glossary (enhancement).
+
+**Glossary location**: `wiki/glossary/user-query-patterns.md` — living doc of real user query patterns and their routing outcomes.
+
+**How agent uses glossary:**
+1. **Before routing**: After hardcoded heuristics match → grep -m 10 similar keywords in glossary for confidence boost
+2. **After successful routing**: Record outcome: `user_signal → matched_process → found_pages` (non-blocking)
+3. **During ambiguous detection**: If heuristic confidence low → search glossary for similar patterns → use as tiebreaker
+4. **Never read full glossary**: grep -m 10 only, max 2 sections in context bubble
+
+**Glossary lifecycle rules:**
+- **Merge**: Similar patterns (same intent, same process) → combine, usage_count++, keep latest examples
+- **Decay**: last_used > 30 days AND usage_count < 2 → mark `stale` for prune during lint check_id=16
+- **Promote**: usage_count ≥ 5 → move to top section "high-confidence patterns"
+- **Prune**: stale entries removed at end of session, logged in wiki/log.md
+
+> Canonical: `wiki/glossary/user-query-patterns.md` — see also rules/query_glossary.json for decay/cleanup specs.
+
+---
+
 ## Process Roles
 
 Three process files — each defines a complete workflow:
@@ -105,6 +166,7 @@ Three process files — each defines a complete workflow:
     "concepts/": "abstract ideas, principles, methodologies",
     "resources/": "application templates, config examples, code scaffolds — markdown with category: resource",
     "templates/": "page structure templates ONLY (JSON: comparison, concept, docs, entity, synthesis)",
+    "glossary/": "living agent experience docs — query patterns, routing outcomes, skill cases",
     ...
     "assets/images/": "copies of original images (.png, .jpg, .jpeg, .gif)",
     "assets/descriptions/": "markdown descriptions of images: OCR + entities + metadata",
@@ -186,6 +248,8 @@ Consolidated index of all niche/specific rules. Read on demand when a process st
 | `rules/structural_requirements.json` | Page structure validation | Page creation/update |
 | `rules/tag-guidelines.json` | Tag patterns, aliases, enforcement | Page creation/update |
 | `rules/work_modes.json` | Mode determination algorithm | Before context decisions |
+| `rules/query_glossary.json` | Living glossary: merge/decay/promote/prune rules for wiki/glossary/user-query-patterns.md | Lint check_id=16, session end |
+| `rules/session_context_rules.json` | Memory layers, save triggers, grep contract | Every memory operation |
 
 ---
 
