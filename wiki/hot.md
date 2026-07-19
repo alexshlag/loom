@@ -12,10 +12,9 @@ related: []
 - **Status**: 🟢 ACTIVE SESSION — Wiki maintenance and expansion
 
 ## Active Session Context
-- **Focus node**: Session end — closed issues #11/#28/#46/#50, cleaned plan, committed & pushed
+- **Focus node**: T6 complete — wiki clean, no collisions found
 
 ### Pending Tasks
-- **T6: Define filename collision resolution strategy (tie-breaking, escalation policy)**
 - **Issue #51: Script-first architecture — ensure all lint tasks run via scripts only**
 
 ## Recent Changes
@@ -26,7 +25,7 @@ related: []
 - Wiki maintenance and expansion (auto-fixes running on lint errors)
 - Knowledge base growth via query responses and source ingestion
 
-- **Recent activity**: ### Verification
 - **Recent activity**: session | Wiki rename/move rules audit + cleanup
 - **Recent activity**: ### Changes
 - **Recent activity**: ### Findings
+- **Recent activity**: T6: Filename collision resolution strategy — implemented

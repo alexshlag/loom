@@ -700,3 +700,10 @@ STI-V1 verified: read→extract→wiki→forget cycle working correctly for each
 - `rename-page.sh` exists and works (rename + global relink) — was undocumented
 - `filename_collision_audit` implementation EXISTS: scripts/filename-audit.sh + lint.sh check 6 + process-ingest check_filename_collision + rules/naming_conventions.json NAMES-CORE-V1
 - Only gap: no policy for *choosing* between colliding names (T6)
+
+## [2026-07-19] T6: Filename collision resolution strategy — implemented
+- Created `rules/filename_collision_strategy.json` — 3-level tie-breaking, decision matrix (auto vs escalate), rename policy
+- Extended `scripts/filename-audit.sh` — added --check (ingest mode) and --resolve (full collision scan) modes
+- Updated `process-ingest.json` — added collision_resolution step with audit → tie-breaking → auto-rename/escalate
+- Updated `scripts/rename-page.sh` — added --log flag that appends # Renamed frontmatter section
+- Verified: audit on existing wiki finds no collisions (clean)

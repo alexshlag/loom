@@ -4,6 +4,8 @@ date: 2026-06-25
 sources: [raw/corrected/SRC-2026-06-25-SYMFONY-001/symfony-comprehensive-knowledge.md]
 related: [wiki/entities/symfony.md]
 ---
+## Renamed [2026-07-19]
+Renamed from `cache-system.md` to `symfony-cache-system.md` — collision resolution: symfony wins (tie-breaking: level_1_primary_entity)
 - [[wiki/concepts/service-container.md]] (score: 3)
 - [[wiki/entities/symfony.md]] (score: 4)
 
