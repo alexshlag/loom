@@ -398,6 +398,16 @@
       }
     },
     {
+      "step_id": "step_10_stage",
+      "name": "stage_wiki_changes",
+      "description": "Stage wiki changes before commit.",
+      "actions": [
+        {
+          "command": "git add wiki/"
+        }
+      ]
+    },
+    {
       "step_id": "step_10a_commit",
       "name": "git_commit_after_meta_update",
       "description": "Commit wiki changes after meta rebuild using git-auto-commit.sh.",

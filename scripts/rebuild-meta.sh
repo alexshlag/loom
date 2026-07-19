@@ -17,21 +17,10 @@ cleanup_add "${WIKI_DIR}/index.md.tmp"
 
 mkdir -p "$META_DIR"
 
-# ─── Parse arguments ──────────────────────────────────────────────────────
-FULL_REBUILD=false
-INDEX_ONLY=false
-
-if [[ "${1:-}" == "--full" ]]; then
-  FULL_REBUILD=true; shift || true
-fi
-
-if [[ "${1:-}" == "--index-only" ]]; then
-  INDEX_ONLY=true; shift || true
-fi
-
 # ─── Incremental Update Detection ──────
 ALL_FILES=$(find "$WIKI_DIR" -name "*.md" -type f ! -path "*/meta/*" 2>/dev/null | wc -l)
 
+FULL_REBUILD=false
 CHANGED_LIST=""
 if [[ -f "$TIMESTAMP_FILE" ]]; then
     CHANGED_LIST=$(find "$WIKI_DIR" -name "*.md" -type f ! -path "*/meta/*" -newer "$TIMESTAMP_FILE" 2>/dev/null || true)
@@ -59,11 +48,20 @@ else
     echo "[*] Full rebuild (no timestamp found)" >&2
 fi
 
+INDEX_ONLY=false
+if [[ "${1:-}" == "--index-only" ]]; then
+  INDEX_ONLY=true; shift; echo "Skipping registry.json and backlinks.json (--index-only mode)" >&2
+fi
+
 # ─── Single-pass wiki walk → unified JSON output (in temp file) ──
 echo "[*] Single-pass wiki walk (one os.walk for all meta data)..." >&2
 
 WALK_JSON_FILE=$(mktemp --suffix=.json)
 CHANGED_FILE=$(mktemp --suffix=.txt)
+
+# Register for centralized cleanup (lib.sh)
+cleanup_add "$WALK_JSON_FILE"
+cleanup_add "$CHANGED_FILE"
 
 # Register for centralized cleanup (lib.sh)
 cleanup_add "$WALK_JSON_FILE"
@@ -151,68 +149,84 @@ for target, sources in backlinks.items():
             deduped.append(s)
     final_backlinks[target] = deduped
 
-# ── Write backlinks.json.tmp ───────────────────────────────────────
 with open(os.path.join(meta_dir, 'backlinks.json.tmp'), 'w') as f:
-    json.dump(final_backlinks, f, indent=2, ensure_ascii=False)
-print(f'Backlinks written: {len(final_backlinks)} targets', file=__import__('sys').stderr)
-
+    json.dump({'backlinks': final_backlinks}, f, indent=2, ensure_ascii=False)
+print(f'Backlinks updated: {len(final_backlinks)} targets with links')
 PYEOF
-else
-  echo "Building index only..."
-  python3 << 'PYEOF'
-import json, os
 
-walk_file = os.environ['WALK_JSON']
-meta_dir = os.environ['META_DIR']
-
-data = json.load(open(walk_file))
-pages = data['pages']
-
-with open(os.path.join(meta_dir, 'registry.json.tmp'), 'w') as f:
-    json.dump({'pages': pages}, f, indent=2, ensure_ascii=False)
-print(f'Registry written: {len(pages)} pages')
-PYEOF
+mv "${META_DIR}/registry.json.tmp" "${META_DIR}/registry.json"
+mv "${META_DIR}/backlinks.json.tmp" "${META_DIR}/backlinks.json"
 fi
 
-# ─── 3. Update index.md (if not --index-only) ──────────────────────────
-if [[ "$INDEX_ONLY" == "false" ]]; then
-    echo "[*] Updating wiki/index.md..." >&2
-    
-    INDEX_PATH="$WIKI_DIR/index.md"
-    
-    # Build the index from scratch using the unified data source
-    python3 << PYEOF
-import json, os
+# ─── 3. index.md (from unified JSON, always rebuild) ──────────────
+echo "Building index.md..."
+python3 << 'PYEOF'
+import json, os, sys, datetime
 
-walk_file = os.environ['WALK_JSON']
-meta_dir = os.environ['META_DIR']
+walk_data = json.load(open(os.environ['WALK_JSON']))
+category_pages = walk_data.get('categories', {})
 wiki_dir = os.environ['WIKI_DIR']
+script_dir = os.environ['SCRIPT_DIR']
 
-# Load registry and backlinks
-with open(os.path.join(meta_dir, 'registry.json')) as f:
-    registry_data = json.load(f)
-    pages = registry_data.get('pages', [])
+# Read categories from rules/categories.json
+cat_file = os.path.join(script_dir, "..", "rules", "categories.json")
+CATEGORY_ORDER = []
+CATEGORIES_LABELS_RAW = {}
+try:
+    with open(cat_file) as f:
+        cat_data = json.load(f)
+    CATEGORY_ORDER = [c['key'] for c in cat_data.get('categories', [])]
+    lang = os.environ.get('LOCALE', 'en')
+    CATEGORIES_LABELS_RAW = {}
+    for c in cat_data.get('categories', []):
+        labels = c.get('label', {})
+        CATEGORIES_LABELS_RAW[c['key']] = labels.get(lang, labels.get('en', c['key'].title()))
+except Exception:
+    CATEGORY_ORDER = ['entities', 'concepts', 'comparisons', 'syntheses', 'overviews', 'notes', 'meetings', 'projects', 'bibliography', 'resources']
+    CATEGORIES_LABELS_RAW = {'entities': 'Entities', 'concepts': 'Concepts', 'comparisons': 'Comparisons', 'syntheses': 'Syntheses', 'overviews': 'Overviews', 'notes': 'Notes'}
 
-with open(os.path.join(meta_dir, 'backlinks.json')) as f:
-    backlinks = json.load(f)
+def cat_label(k):
+    raw = CATEGORIES_LABELS_RAW.get(k, k.title())
+    return raw if isinstance(raw, str) else raw.get('en', k.title())
 
-# Build index.md from registry data
-index_path = os.path.join(wiki_dir, 'index.md')
-with open(index_path, 'w') as f:
-    f.write('# Loomana Wiki\n\n')
-    for page in pages:
-        path = page.get('path', '')
-        title = page.get('title', path)
-        f.write(f'## [{title}]({path})\n\n')
+lines_out = ['# Wiki Index', '', '']
+for cat_key in CATEGORY_ORDER:
+    display_name = cat_label(cat_key)
+    pages_list = category_pages.get(cat_key, [])
+    lines_out.append('## ' + display_name)
+    if not pages_list:
+        lines_out.append('')
+    else:
+        for page in sorted(pages_list, key=lambda x: x['title']):
+                # Use tags as searchable summary instead of body_text description
+                tag_str = ' '.join(f'[{t}]' for t in page.get('tags', [])) if page.get('tags') else ''
+                alias_str = ' '.join(f'[{a}]' for a in page.get('aliases', [])[:2]) if page.get('aliases') else ''
+                extra = f' — {tag_str}' + (f' ({alias_str})' if alias_str else '') if tag_str else ''
+                lines_out.append('* [' + page['title'] + '](' + page['path'] + ')' + extra)
+    lines_out.append('')
 
-print(f'Index written: {len(pages)} pages')
+lines_out.extend([
+    '---',
+    '*Created: auto-generated | Last updated: ' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M') + '*',
+    '',
+    '## Timeline',
+    '| Дата | Событие |',
+    '|------|---------|',
+    '| [Timeline](timeline.md) — полная хронологическая лента всех изменений.'
+])
+
+with open(os.path.join(wiki_dir, 'index.md.tmp'), 'w', encoding='utf-8') as f:
+    f.write('\n'.join(lines_out) + '\n')
+
+print(f'Index updated: {sum(len(v) for v in category_pages.values())} entries across {len(category_pages)} categories')
 PYEOF
-else
-  echo "[*] Index only mode - skipping registry/backlinks update" >&2
-fi
 
-# ─── Cleanup temporary files ─────────────────────────────────────────────
-rm -f "$WALK_JSON_FILE" "$CHANGED_FILE" 2>/dev/null || true
+mv "${WIKI_DIR}/index.md.tmp" "${WIKI_DIR}/index.md"
 
-# ─── Update timestamp file ──────────────────────────────────────────────
-echo "$(date +%Y-%m-%dT%H:%M:%SZ)" > "$TIMESTAMP_FILE"
+# ─── 4. IDF cache → invalidate on wiki changes (auto-rebuilt by prf_extract.py) ──
+rm -f "${META_DIR}/idf_cache.json"
+echo "IDF cache invalidated (will rebuild on next recall)"
+
+# ─── Move timestamp ────
+touch "$TIMESTAMP_FILE"
+echo "✅ Meta rebuild complete."
