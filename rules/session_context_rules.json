@@ -105,6 +105,12 @@
       "description": "After process step completes (ingest/query/lint) \u2014 follow HOT-SAVE-ACTION-V1 contract for WM update then hot cache refresh"
     },
     {
+      "event": "working_memory_modified",
+      "rule_id": "HOT-REFRESH-ON-WM-CHANGE",
+      "priority": "immediate",
+      "command": "./scripts/memory/hot-cache-auto-refresh.sh --quiet"
+    },
+    {
       "event": "compaction_complete",
       "rule_id": "HOT-RESTORE-V1",
       "ref_to_rule_id": "HOT-RESTORE-V1",
