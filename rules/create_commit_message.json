@@ -1,0 +1,32 @@
+{
+  "rule_id": "CREATE_COMMIT_MESSAGE-V1",
+  "name": "create_commit_message_from_changes",
+  "description": "Generate a meaningful commit message from git diff or file changes.",
+  "schema_ref_for_process_steps": "rules/create_commit_message.json",
+  "implementation": {
+    "steps": [
+      {"step": 1, "action": "./scripts/rebuild-meta.sh --full"},
+      {"step": 2, "action": "git add wiki/"},
+      {"step": 3, "action": "git diff --cached --stat"},
+      {"when": "no_changes", "action": "skip_commit"},
+      {"when": "changes_exist", "action": "./scripts/memory/traj-capture.sh --prompt 'Summarize the changes from git diff and create a commit message'"}
+    ]
+  },
+  "actions": {
+    "create_commit_message": {
+      "description": "Generate commit message from git diff",
+      "command": "./scripts/create-commit-msg.sh"
+    },
+    "execute_commit": {
+      "description": "Execute git commit with the generated message",
+      "command": "git commit"
+    }
+  },
+  "usage_in_processes": [
+    {
+      "process": "process-ingest.json#step_10a_commit",
+      "action_name": "create_commit_message"
+    }
+  ],
+  "schema_ref_to_agent_rules": "rules/create_commit_message.json"
+}

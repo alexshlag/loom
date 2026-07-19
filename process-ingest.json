@@ -398,6 +398,21 @@
       }
     },
     {
+      "step_id": "step_10a_commit",
+      "name": "git_commit_after_meta_update",
+      "description": "Commit wiki changes after meta rebuild using git-auto-commit.sh.",
+      "pre_check": [
+        {
+          "command": "./scripts/rebuild-meta.sh --full"
+        }
+      ],
+      "actions": [
+        {
+          "command": "./scripts/git-auto-commit.sh"
+        }
+      ]
+    },
+    {
       "step_id": "step_10_register_source",
       "name": "register_source_ingested",
       "description": "Add ID to tracking/raw_registry.json.",
