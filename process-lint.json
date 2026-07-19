@@ -16,8 +16,9 @@
   "lint_checks": [
     {
       "check_id": "1",
-      "name": "contradictions_between_pages",
-      "description": "Find pages where old claims are no longer accurate.",
+      "name": "contradictions_deep",
+      "description": "Full contradiction scan (Python). Replaces soft grep.",
+      "command": "./scripts/detect-contradications.sh --quiet",
       "schema_ref": "rules/contradiction_resolution.json"
     },
     {
@@ -150,10 +151,15 @@
       "actions": [
         {
           "condition": "orphan_pages_found",
-          "action": "run scripts/orphan-report.sh --quiet > /dev/null 2>&1 || true",
-          "note": "Returns JSON {orphans[], suggestions[]}. Agent reviews candidates (score ≥5) before inserting links. See issues.md#issue-50 orphan-auto-crosslink section.",
+          "action": "run scripts/orphan-report.sh --quiet > ORPHANS_TMP || true",
+          "note": "Writes JSON {orphans[], suggestions[]} to ORPHANS_TMP; agent reviews high-confidence (score≥5) candidates before inserting links. See scripts/orphan-report.sh for scoring logic.",
           "agent_review_required": true,
           "log_only": false
+        },
+        {
+          "condition": "contradictions_detected",
+          "action": "run scripts/detect-contradications.sh --quiet",
+          "note": "Full contradiction resolution flow (replace soft grep)."
         },
         {
           "condition": "structural_violations_found",

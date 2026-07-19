@@ -1,25 +1,27 @@
 #!/usr/bin/env bash
 set -euo pipefail
-# Graceful harness hook: early exits with 1 if prerequisites missing (no vault, no git)
-#
-# check-wiki-changes.sh — Harness-independent session hygiene at end of wiki work
-# Emulates claude-obsidian's Stop hook: detects wiki changes and guides hot.md update
-# Returns 0 if changes detected (guide agent to update), 1 otherwise
+# check-wiki-changes.sh — Detect wiki changes, return JSON
+# Exit 0 with JSON if changes, 1 otherwise
 
 [ -d .git ] || exit 1
 [ -d wiki ] || exit 1
 
 CHANGED=$(git diff --name-only HEAD 2>/dev/null | grep '^wiki/' || true)
-[ -z "$CHANGED" ] && exit 1
+if [ -z "$CHANGED" ]; then
+    echo '{"needs_update":false}'
+    exit 1
+fi
 
-cat << PROMPT
-=== WIKI CHANGES DETECTED ===
-Modified:
-$CHANGED
+CHANGED_JSON=$(printf '%s\n' "$CHANGED" | while IFS= read -r f; do printf '"%s",' "$f"; done | sed 's/,$/]/; s/^/[/')
 
-Update wiki/hot.md with a summary (under 500 words):
-- Last Updated, Key Recent Facts, Recent Changes, Active Threads
-=== END PROMPT ===
-PROMPT
+# Build a concise summary string (for potential future use)
+SUMMARY=$(echo "$CHANGED" | tr '\n' ', ' | sed 's/, $//')
 
+cat << EOF
+{
+  "needs_update": true,
+  "modified": $CHANGED_JSON,
+  "summary": "$SUMMARY"
+}
+EOF
 exit 0

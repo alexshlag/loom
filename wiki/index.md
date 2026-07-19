@@ -30,7 +30,7 @@
 * [LLM Wiki Pattern — Incremental Knowledge Base Building](concepts/llm-wiki.md) — [rag] [knowledge-base] [llm] [compounding-knowledge]
 * [Messenger Component](concepts/symfony-messenger-component.md) — [async-message-queue] [symfony-messaging] [psr-75]
 * [Natural Memory Translation — Перевод машинных фактов в живую память](concepts/natural-memory.md) — [memory] [agent-behavior] [wiki-pattern]
-* [Python Development Environments on NixOS](concepts/python-nixos-development.md) — [nixos] [python] [development-environment]
+* [Python Development Environments on NixOS](concepts/python-nixos-dev.md) — [nixos] [python] [development-environment]
 * [Routing System & Controllers](concepts/routing-system.md) — [routing] [controllers] [attributes]
 * [Security System (AuthN & AuthZ)](concepts/symfony-security-system.md) — [access-control-voters] [symfony-security] [authz-patterns]
 * [Service Container & Dependency Injection](concepts/symfony-service-container.md) — [dependency-injection] [service-container] [autowiring] [di-pattern] [symfony]
@@ -64,6 +64,8 @@
 
 ## Resources
 
+## Glossary
+
 ## Documentation
 * [AI Factory Documentation — CLI Tool & Skill System for Coding Agents](docs/ai-factory.md) — [cli] [agent-tools] [development-workflow] [skill-system]
 * [API Conventions Guide](docs/loom-api-conventions.md) — [Loomana] [loom] [conventions] [frontmatter-schema] [commit-format] [evidence-grading] [tag-patterns]
@@ -82,7 +84,7 @@
 * [Wiki Structure Guide — Page Organization & Conventions](docs/loom-wiki-structure.md) — [Loomana] [loom] [wiki-structure] [frontmatter] [naming-conventions]
 
 ---
-*Created: auto-generated | Last updated: 2026-07-15 19:06*
+*Created: auto-generated | Last updated: 2026-07-19 13:28*
 
 ## Timeline
 | Дата | Событие |

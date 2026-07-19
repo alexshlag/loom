@@ -534,8 +534,8 @@
     ],
     "entities-rust-clippymd": [
       {
-        "from": "concepts/python-nixos-development.md",
-        "context": "[text](entities/rust-clippy.md) in python-nixos-development.md"
+        "from": "concepts/python-nixos-dev.md",
+        "context": "[text](entities/rust-clippy.md) in python-nixos-dev.md"
       },
       {
         "from": "entities/php.md",
@@ -544,50 +544,50 @@
     ],
     "https:--nixosorg-manual-hm-": [
       {
-        "from": "concepts/python-nixos-development.md",
-        "context": "[text](https://nixos.org/manual/hm/) in python-nixos-development.md"
+        "from": "concepts/python-nixos-dev.md",
+        "context": "[text](https://nixos.org/manual/hm/) in python-nixos-dev.md"
       }
     ],
     "https:--nixosorg-nixpkgs-manual-": [
       {
-        "from": "concepts/python-nixos-development.md",
-        "context": "[text](https://nixos.org/nixpkgs/manual/) in python-nixos-development.md"
+        "from": "concepts/python-nixos-dev.md",
+        "context": "[text](https://nixos.org/nixpkgs/manual/) in python-nixos-dev.md"
       }
     ],
     "https:--searchnixosorg-packages": [
       {
-        "from": "concepts/python-nixos-development.md",
-        "context": "[text](https://search.nixos.org/packages) in python-nixos-development.md"
+        "from": "concepts/python-nixos-dev.md",
+        "context": "[text](https://search.nixos.org/packages) in python-nixos-dev.md"
       }
     ],
     "https:--githubcom-nix-community-poetry2nix": [
       {
-        "from": "concepts/python-nixos-development.md",
-        "context": "[text](https://github.com/nix-community/poetry2nix) in python-nixos-development.md"
+        "from": "concepts/python-nixos-dev.md",
+        "context": "[text](https://github.com/nix-community/poetry2nix) in python-nixos-dev.md"
       }
     ],
     "Python Development Environments": [
       {
-        "from": "concepts/python-nixos-development.md",
-        "context": "[text](Python Development Environments) in python-nixos-development.md"
+        "from": "concepts/python-nixos-dev.md",
+        "context": "[text](Python Development Environments) in python-nixos-dev.md"
       }
     ],
     "NixOS": [
       {
-        "from": "concepts/python-nixos-development.md",
-        "context": "[text](NixOS) in python-nixos-development.md"
+        "from": "concepts/python-nixos-dev.md",
+        "context": "[text](NixOS) in python-nixos-dev.md"
       }
     ],
     "Python": [
       {
-        "from": "concepts/python-nixos-development.md",
-        "context": "[text](Python) in python-nixos-development.md"
+        "from": "concepts/python-nixos-dev.md",
+        "context": "[text](Python) in python-nixos-dev.md"
       }
     ],
     "Nix": [
       {
-        "from": "concepts/python-nixos-development.md",
-        "context": "[text](Nix) in python-nixos-development.md"
+        "from": "concepts/python-nixos-dev.md",
+        "context": "[text](Nix) in python-nixos-dev.md"
       }
     ],
     "concepts-security-systemmd": [

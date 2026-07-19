@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# check-structural.sh — Verify H1 headers exist in wiki pages
-# Usage: ./check-structural.sh [wiki_dir]
-# Output: JSON array of violations (missing H1) to stdout
+# check-structural.sh — Verify H1 headers and auto-insert intro paragraph when missing
+# Usage: ./check-structural.sh [wiki_dir] [--auto-fix]
+# Output: JSON array of violations (missing H1) or auto-fix summary to stdout
 
 set -euo pipefail
 
@@ -11,12 +11,19 @@ if [ -z "${WIKI_DIR:-}" ]; then
     WIKI_DIR="./wiki"
 fi
 
+AUTO_FIX=false
+if [[ "${3:-}" == "--auto-fix" ]]; then
+    AUTO_FIX=true
+fi
+
 if command -v python3 &>/dev/null; then
     export WIKI_DIR
+    export AUTO_FIX
     python3 << 'PYEOF'
 import os, sys, re, json
 
 wiki_dir = os.environ.get('WIKI_DIR', './wiki')
+AUTO_FIX = os.environ.get('AUTO_FIX', 'false').lower() == 'true'
 violations = []
 
 for root, dirs, files in os.walk(wiki_dir):
@@ -68,7 +75,58 @@ for root, dirs, files in os.walk(wiki_dir):
             rel = os.path.relpath(path, wiki_dir)
             violations.append({'path': rel, 'issue': 'no_H1_header'})
 
-# Output JSON to stdout
+# --- Auto-fix mode: generate intro paragraph and prepend to files ---
+if AUTO_FIX and violations:
+    # Build intro: "# <title from H1 or filename>\n\n<first paragraph from H2>"
+    fixed = []
+    for v in violations:
+        path = os.path.join(wiki_dir, v['path'])
+        # Extract title (H1 if present, else filename)
+        with open(path) as f:
+            lines = f.readlines()
+        title = None
+        for line in lines:
+            m = re.match(r'^# (.+)$', line)
+            if m:
+                title = m.group(1).strip()
+                break
+        if not title:
+            title = v['path'].replace('/', ' - ')
+            title = re.sub(r'[-_.]+', ' ', title).strip()
+        
+        # Find first H2 as intro text
+        intro_text = ''
+        in_body = False
+        for line in lines:
+            stripped = line.strip()
+            if not in_body:
+                if re.match(r'^## ', stripped):
+                    in_body = True
+                    intro_text = stripped[3:].strip()
+                    break
+                elif re.match(r'^# ', stripped):
+                    # H1 already processed, skip
+                    pass
+        
+        # Build new intro paragraph (single line, no blank lines)
+        intro = f"# {title}\n\n{intro_text}".strip()
+        
+        # Prepend intro to file
+        with open(path, 'r') as f:
+            existing = ''.join(f.readlines())
+        with open(path, 'a') as f:
+            f.write(intro + '\n\n' + existing)
+        fixed.append(v['path'])
+    
+    # Report success
+    print(json.dumps({
+        'mode': 'auto_fix',
+        'fixed': fixed,
+        'count': len(fixed)
+    }, indent=2))
+    sys.exit(0)
+
+# Output violations JSON
 print(json.dumps(violations, indent=2))
 
 # Print violations on stderr

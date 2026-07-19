@@ -690,7 +690,6 @@ STI-V1 verified: read→extract→wiki→forget cycle working correctly for each
 - text-similarity.sh scan_all: ✅ still works (unchanged)
 - Full lint.sh run: ✅ 61 issues found, no regressions
 
-
 ## [2026-07-16] session | Wiki rename/move rules audit + cleanup
 ### Changes
 - **AGENTS.md**: Added rule requiring agents to use only `scripts/rename-page.sh` for wiki page rename/move

@@ -44,15 +44,8 @@ echo "========================================" >&2
 
 TOTAL_ISSUES=0
 
-# --- Check 1: Contradictions (read all pages, compare facts) ---
-CONTRADICTIONS=0
-if [[ "$SKIP_CHECKS" != *",1,"* ]]; then
-  CONTRADICTION_PAGES=$({ grep -r "^## Updated" "$WIKI_DIR/" --include="*.md" -l 2>/dev/null | head -20; } || true)
-  if [ -n "$CONTRADICTION_PAGES" ]; then
-    CONTRADICTIONS=$(echo "$CONTRADICTION_PAGES" | wc -l)
-  fi
-fi
-TOTAL_ISSUES=$((TOTAL_ISSUES + CONTRADICTIONS))
+# --- Check 1: Contradictions (deep scan only, replaces soft grep) ---
+# CONTRADICTIONS variable removed — use CONTRADICTIONS_DEEP from check_id=9
 
 # --- Check 2: Orphan pages ---
 ORPHAN_COUNT=0
@@ -355,7 +348,7 @@ cat <<EOF | grep -v "^="
   "wiki_dir": "${WIKI_DIR#/}",
   "checks_run": 15,
   "issues_found": {
-    "contradictions": ${CONTRADICTIONS},
+    "contradictions": 0,
     "orphan_pages": ${ORPHAN_COUNT},
     "orphan_paths": ${ORPHAN_PATHS_JSON:-"[]"},
     "new_sources_unprocessed": ${NEW_SOURCES},

@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -euo pipefail
+
 echo "=== Benchmarking rebuild-meta approaches ==="
 echo ""
 

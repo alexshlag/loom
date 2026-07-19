@@ -227,6 +227,11 @@ mv "${WIKI_DIR}/index.md.tmp" "${WIKI_DIR}/index.md"
 rm -f "${META_DIR}/idf_cache.json"
 echo "IDF cache invalidated (will rebuild on next recall)"
 
+# ─── Centralized cleanup trap (lib.sh) ───
+# Already registered cleanup_add for WALK_JSON_FILE and CHANGED_FILE
+# Explicit EXIT trap for safety if lib.sh not sourced
+trap 'rm -f "$WALK_JSON_FILE" "$CHANGED_FILE" 2>/dev/null' EXIT
+
 # ─── Move timestamp ────
 touch "$TIMESTAMP_FILE"
 echo "✅ Meta rebuild complete."
