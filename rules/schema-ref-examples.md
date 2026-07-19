@@ -2,22 +2,22 @@
 
 ## Practical examples (extracted from RULES.md for compactness)
 
-### 1. raw_corrected_zone (исправлено)
-- Было: `schema_ref: AGENTS.md#raw_corrected_zone` → битая ссылка
-- Найдено: `rules/protected_zones.json` содержит правила доступа к зонам
-- Действие: Исправить на `rules/protected_zones.json`
+### 1. raw_corrected_zone (fixed)
+- Was: `schema_ref: AGENTS.md#raw_corrected_zone` → broken link
+- Found: `rules/protected_zones.json` contains access rules for zones
+- Action: Update to `rules/protected_zones.json`
 
-### 2. batch_ingest_trigger (исправлено)
-- Было: `schema_ref: AGENTS.md#batch_ingest_trigger` → битая ссылка
-- Найдено: правила перенесены в `rules/batch_ingest_trigger.json`
-- Действие: Исправить на `rules/batch_ingest_trigger.json`
+### 2. batch_ingest_trigger (fixed)
+- Was: `schema_ref: AGENTS.md#batch_ingest_trigger` → broken link
+- Found: rules moved to `rules/batch_ingest_trigger.json`
+- Action: Update to `rules/batch_ingest_trigger.json`
 
-### 3. link-conventions (исправлено)
-- Было: `schema_ref: rules/link-conventions` → неправильное имя файла
-- Реальное имя: `rules/link_conventions.json` (с дефисом в названии)
-- Действие: Исправить путь
+### 3. link-conventions (fixed)
+- Was: `schema_ref: rules/link-conventions` → incorrect filename
+- Actual name: `rules/link_conventions.json` (with underscore in name)
+- Action: Fix path
 
-### 4. Delta Tracking (удалено)
-- Реализовано в `scripts/rebuild-source-manifest.sh`
-- Было: `schema_ref: AGENTS.md#delta_tracking` → **Удалено**
-- Причина: скрипт сам является документацией
+### 4. Delta Tracking (removed)
+- Implemented in `scripts/rebuild-source-manifest.sh`
+- Was: `schema_ref: AGENTS.md#delta_tracking` → **Removed**
+- Reason: script is self-documenting

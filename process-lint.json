@@ -137,6 +137,13 @@
         }
       ],
       "constraint": "Never read full glossary file — max head -n 50, grep -m 10 for pattern lookup"
+    },
+    {
+      "check_id": "17",
+      "name": "script_ref_validation",
+      "description": "Verify all script paths referenced in rules/*.json and process-*.json exist on disk.",
+      "command": "./scripts/check-script-refs.sh",
+      "note": "Fails with exit 1 if any referenced script is missing. Run after every new script or rule change."
     }
   ],
   "primary_command": {
@@ -197,8 +204,16 @@
       "post_fix_workflow": [
         {
           "condition": "any_auto_fixed",
-          "action": "append_to_log 'Auto-fixed: [issue_type] — see log for details'",
-          "silent": true
+          "actions": [
+            {
+              "action": "append_to_log 'Auto-fixed: [issue_type] — see log for details'",
+              "silent": true
+            },
+            {
+              "action": "run ./scripts/rebuild-meta.sh --index-only > /dev/null 2>&1 || true",
+              "description": "Rebuild wiki/index.md after any auto-fixed wiki changes"
+            }
+          ]
         },
         {
           "condition": "non_auto_fixable_issues_exist",

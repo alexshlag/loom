@@ -1,6 +1,5 @@
 # Wiki Index
 
-
 ## Entities
 * [AI Factory](entities/ai-factory.md) — [AI Factory] [obsidian-cli] [vault-transport] [cli-tool]
 * [API Platform](entities/api-platform.md) — [API Platform] [api] [rest] [graphql]
@@ -56,24 +55,17 @@
 
 ## Overviews
 
-
 ## Notes
-
 
 ## Meetings
 
-
 ## Projects
-
 
 ## Bibliography
 
-
 ## Resources
 
-
 ## Glossary
-
 
 ## Documentation
 * [AI Factory Documentation — CLI Tool & Skill System for Coding Agents](docs/ai-factory.md) — [cli] [agent-tools] [development-workflow] [skill-system]

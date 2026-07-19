@@ -25,7 +25,7 @@
     ]
   },
   "mode_detection": {
-    "auto": "only wiki/*.md \u2192 wiki; any .sh/.json in root/rules/scripts/ \u2192 dev_mode",
+    "auto": "only wiki/*.md → wiki; any .sh/.json in root/rules/scripts/ → dev_mode",
     "override": "user says 'wiki mode' or 'dev_mode'"
   },
   "pre_commit_workflow": [
@@ -41,7 +41,7 @@
     },
     {
       "step": 4,
-      "action": "git status --short \u2014 verify no untracked/unstaged remain"
+      "action": "git status --short — verify no untracked/unstaged remain"
     },
     {
       "step": 5,
@@ -52,7 +52,7 @@
     }
   ],
   "post_commit_check": {
-    "action": "if git status shows unstaged files \u2192 stage + amend or separate commit"
+    "action": "if git status shows unstaged files → stage + amend or separate commit"
   },
   "schema_ref_to_agent_rules": "AGENTS.md#git-conventions"
 }

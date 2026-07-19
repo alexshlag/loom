@@ -3,13 +3,13 @@
   "internal_links": {
     "format": "[text](wiki-relative-path.md)",
     "prohibited": "./ (never use dot-relative paths)",
-    "cross_category_exception": "../ allowed for cross-category links (e.g. concepts/ \u2192 entities/) as long as target exists under wiki/"
+    "cross_category_exception": "../ allowed for cross-category links (e.g. concepts/ → entities/) as long as target exists under wiki/"
   },
   "external_links": {
     "rule_id": "EXT-RES1",
     "standard": "EXT-LINK-V1 (canonical http/https URLs)",
-    "prohibited": "[text](raw/**) \u2014 never link to raw/. [text](../**) \u2014 relative paths prohibited.",
-    "unavailability_check": "log broken URLs (404/timeouts) \u2192 inform user, do NOT auto-remove"
+    "prohibited": "[text](raw/**) — never link to raw/. [text](../**) — relative paths prohibited.",
+    "unavailability_check": "log broken URLs (404/timeouts) → inform user, do NOT auto-remove"
   },
   "crosslink_discovery": {
     "architecture": "Script Suggests, Agent Decides",
@@ -41,6 +41,6 @@
   "schema_ref_to_agent_rules": "AGENTS.md#rules-reference",
   "broken_link_resolution": {
     "rule_file": "rules/broken_link_handling.json",
-    "agent_decision_tree": "score\u226580 \u2192 auto-fix | score<80 \u2192 escalate_non_blocking"
+    "agent_decision_tree": "score≥80 → auto-fix | score<80 → escalate_non_blocking"
   }
 }

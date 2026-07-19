@@ -628,8 +628,13 @@
         "trigger": "on_wiki_page_created_or_updated",
         "actions": [
           {
-            "action_name": "update_backlinks_and_index",
+            "action_name": "update_backlinks",
             "command": "./scripts/auto-crosslink.sh '${PAGE_PATH}' --include-root 2>/dev/null || true"
+          },
+          {
+            "action_name": "update_index",
+            "command": "./scripts/rebuild-meta.sh --index-only > /dev/null 2>&1 || true",
+            "description": "Rebuild wiki/index.md after page update — not auto-crosslink, separate rebuild"
           }
         ]
       },

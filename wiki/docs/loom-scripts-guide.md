@@ -89,6 +89,8 @@ Runs 15+ checks across wiki structure, frontmatter, links, contradictions. Non-b
 - `filename-audit.sh [--fix]` — Scans concepts/ for naming violations + suggests renames
 - `tag-audit.sh [--fix]` — Tag audit with auto-fix for generic tags
 - `structural-fix.sh [--fix]` — Fixes FIRST-BLOCK-V1 violations (missing body text between H1 and ##)
+- **`check-script-refs.sh`** — Validates all `scripts/...` paths in `rules/*.json` and `process-*.json` exist on disk. Runs as `check_id=17` in process-lint.json.
+- **`glossary-cleanup.sh [--quiet]`** — Prunes stale entries from `wiki/glossary/user-query-patterns.md`. Agent-driven (check_id=16), this script provides non-blocking validation.
 
 ---
 
@@ -150,6 +152,8 @@ Harness-independent auto-commit. Detects wiki vs dev mode from changes, stages a
 | Rebuild index | `rebuild-meta.sh` | `--index-only` |
 | Auto-crosslink | `auto-crosslink.sh` | `--score 3` |
 | Commit changes | `git-auto-commit.sh` | `<type> <scope> <desc>` |
+| Check script refs | `check-script-refs.sh` | (no args) |
+| Glossary cleanup | `glossary-cleanup.sh` | `--quiet` |
 
 ---
 

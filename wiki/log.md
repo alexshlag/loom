@@ -707,3 +707,10 @@ STI-V1 verified: read→extract→wiki→forget cycle working correctly for each
 - Updated `process-ingest.json` — added collision_resolution step with audit → tie-breaking → auto-rename/escalate
 - Updated `scripts/rename-page.sh` — added --log flag that appends # Renamed frontmatter section
 - Verified: audit on existing wiki finds no collisions (clean)
+
+## [2026-07-19T22:52:00+03:00] session | Wiki lint check + memory sync + encoding fixes
+- Lint result: CLEAN (0 issues across 15 checks)
+- Fixed encoding in rules: git_conventions.json, session_context_rules.json, link_conventions.json, decision-rules.md, create_commit_message.json, schema-ref-examples.md
+- Updated process files: process-lint.json, process-query.json
+- Updated wiki docs: wiki/docs/loom-scripts-guide.md
+- Synced working memory + hot cache before commit

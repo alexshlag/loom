@@ -2,7 +2,7 @@
 
 ## 🧠 Overview
 
-Система даёт сигналы (`scripts detect`), агент делает logical inference. **Ручные веса через скрипты = запрещены.** Agent evaluates rules from this table.
+The system provides signals (`scripts detect`), agent performs logical inference. **Manual weights via scripts are prohibited.** Agent evaluates rules from this table.
 
 ### Design Principles
 

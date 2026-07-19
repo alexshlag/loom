@@ -14,8 +14,9 @@
   },
   "actions": {
     "create_commit_message": {
-      "description": "Generate commit message from git diff",
-      "command": "./scripts/create-commit-msg.sh"
+      "description": "Generate commit message from git diff (via traj-capture)",
+      "command": "./scripts/memory/traj-capture.sh --prompt 'Generate commit message from git diff'",
+      "note": "Uses scripts/memory/traj-capture.sh (same as step 3 of this rule)"
     },
     "execute_commit": {
       "description": "Execute git commit with the generated message",
