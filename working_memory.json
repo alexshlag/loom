@@ -1,10 +1,9 @@
 {
   "last_updated": "2026-07-19T13:42",
   "current_mode": "project",
-  "focus_node": "Session end — closed issues #11/#28/#46/#50, cleaned plan, committed & pushed",
+  "focus_node": "T6 complete \u2014 wiki clean, no collisions found",
   "next_steps_todo": [
-    "T6: Define filename collision resolution strategy (tie-breaking, escalation policy)",
-    "Issue #51: Script-first architecture — ensure all lint tasks run via scripts only"
+    "Issue #51: Script-first architecture \u2014 ensure all lint tasks run via scripts only"
   ],
   "open_pages": [],
   "dead_ends": [],
@@ -32,6 +31,7 @@
   "broken_links_resolved": [],
   "recent_activity": [
     "2026-07-16 session | Audit rename-page.sh: added rule, fixed process-lint.json refs",
-    "2026-07-19 session | Closed remaining issues #11/#28/#46/#50, cleaned PLAN.md, committed & pushed"
+    "2026-07-19 session | Closed remaining issues #11/#28/#46/#50, cleaned PLAN.md, committed & pushed",
+    "2026-07-19 session | T6: filename collision resolution strategy \u2014 implemented (rule file, audit script extended, ingest step updated, rename-page --log flag)"
   ]
 }

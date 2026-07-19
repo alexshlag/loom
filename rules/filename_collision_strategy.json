@@ -1,0 +1,157 @@
+{
+  "rule_id": "FNAME-COLLISION-V1",
+  "name": "Filename collision resolution strategy",
+  "version": "1.0",
+  "date": "2026-07-19",
+  "description": "Policy for choosing between colliding filenames when multiple sources or entities claim the same base name. Covers tie-breaking, auto-resolve vs escalate, and rename documentation.",
+  "schema_ref_to_agent_rules": "rules/filename_collision_strategy.json",
+
+  "tie_breaking_rules": {
+    "level_1_primary_entity": {
+      "priority": 1,
+      "rule": "PRIMARY NAME of the parent entity wins. Entity with higher evidence_grade takes precedence.",
+      "logic": "Compare frontmatter `sources: []` → resolve each source to entity → find entity with highest evidence_grade (see rules/evidence_grade.json). That entity's primary name becomes the prefix.",
+      "example": {
+        "existing": "wiki/concepts/cache.md (sources: [symfony docs], evidence_grade: B)",
+        "new_ingest": "wiki/concepts/cache.md (sources: [pi agent docs], evidence_grade: A)",
+        "result": "New ingest wins → rename existing to pi-cache.md, keep pi-cache.md as primary"
+      }
+    },
+    "level_2_specificity": {
+      "priority": 2,
+      "rule": "Most specific prefix wins over generic prefix.",
+      "logic": "Count prefix depth: 'symfony-messenger' (depth=2) > 'symfony' (depth=1). Longer compound prefix = more specific = wins.",
+      "example": {
+        "existing": "wiki/concepts/messenger.md",
+        "new_ingest": "wiki/concepts/symfony-messenger.md (new concept about symfony messenger)",
+        "result": "Existing bare page → rename to symfony-messenger.md (same prefix already captured)"
+      }
+    },
+    "level_3_last_updated": {
+      "priority": 3,
+      "rule": "If same specificity level and same entity, most recently updated page keeps its name; older page gets renamed.",
+      "logic": "Compare `date:` frontmatter field. Older → rename-page.sh to <prefix>-<name>.md",
+      "example": {
+        "existing": "wiki/concepts/cache.md date:2026-06-01",
+        "new_ingest": "wiki/concepts/cache.md date:2026-07-15",
+        "result": "Older renamed to: symfony-cache.md, newer keeps cache.md"
+      }
+    }
+  },
+
+  "decision_matrix": {
+    "auto_resolve": [
+      {
+        "scenario": "bare_name vs prefixed_name, same entity",
+        "action": "RENAME bare → prefixed. Example: cache.md + symfony-cache.md (both about Symfony) → rename cache.md to symfony-cache-v1.md (alias 'cache.md'), merge content into symfony-cache.md",
+        "example": {
+          "existing": "wiki/concepts/cache.md (tags: [symfony-cache])",
+          "new_ingest": "wiki/concepts/symfony-cache.md",
+          "result": "Rename cache.md → symfony-cache.md, add aliases: [cache], update related links"
+        }
+      },
+      {
+        "scenario": "two bare names, same entity",
+        "action": "RENAME older → prefixed. Apply level_1_primary_entity tie-breaking.",
+        "example": {
+          "existing": "wiki/concepts/cache.md",
+          "new_ingest": "wiki/concepts/cache-system.md",
+          "result": "If both same entity (symfony), merge into one: symfony-cache.md or symfony-cache-system.md (most specific)"
+        }
+      },
+      {
+        "scenario": "two prefixed names, DIFFERENT entities",
+        "action": "ALLOW both. No collision. Example: symfony-cache.md + pi-cache.md are valid separate pages.",
+        "example": {
+          "existing": "wiki/concepts/symfony-cache.md",
+          "new_ingest": "wiki/concepts/pi-cache.md",
+          "result": "Both OK — add crosslink in related: [symfony-cache.md]"
+        }
+      },
+      {
+        "scenario": "bare abstract name (framework-agnostic)",
+        "action": "ALLOW bare. Only enforce prefix if parent entity has primary name AND page content is entity-specific.",
+        "example": {
+          "existing": "wiki/concepts/cache.md (tags: [memory, algorithm, pattern])",
+          "new_ingest": "wiki/concepts/symfony-cache.md",
+          "result": "Bare cache.md is abstract concept — OK. symfony-cache.md is specific — OK. Crosslink both."
+        }
+      }
+    ],
+    "escalate_to_user": [
+      {
+        "scenario": "two prefixed names, SAME entity, DIFFERENT scope",
+        "action": "ESCALATE. Example: symfony-messenger.md vs symfony-messaging.md — are they same concept or different? User decides.",
+        "note": "Only escalate when specificity differs but entity is same AND scope ambiguity exists"
+      },
+      {
+        "scenario": "entity primary name ambiguous",
+        "action": "ESCALATE. Cannot determine parent entity from sources/frontmatter tags.",
+        "note": "Check rules/tag-guidelines.json#parent_entity_identification first — if still unclear, escalate"
+      }
+    ]
+  },
+
+  "rename_policy": {
+    "when_to_rename": [
+      "Collision detected during process-ing ingest (collision_resolution step)",
+      "filename-audit.sh reports collision severity HIGH",
+      "Two bare pages for same entity with different names (merge candidate)"
+    ],
+    "how_to_rename": [
+      "Use ONLY scripts/rename-page.sh <old> <new>",
+      "Update frontmatter: add aliases: [<old_bare_name>]",
+      "Append # Renamed section: see rename_log_example",
+      "Update all related: links in other pages pointing to old name",
+      "Update wiki/index.md entry"
+    ],
+    "rename_log_example": {
+      "description": "Append after frontmatter closing ---",
+      "format": "## Renamed [YYYY-MM-DD]\nRenamed from `<old_name>.md` to `<new_name>.md` — collision resolution: `<reason>` (tie-breaking: level N)",
+      "example": "## Renamed 2026-07-19\nRenamed from `cache.md` to `symfony-cache.md` — collision resolution: symfony primary entity wins over bare name (tie-breaking: level_1_primary_entity)"
+    }
+  },
+
+  "workflow_integration": {
+    "process_ingest": {
+      "step": "collision_resolution (after check_filename_collision, before create_page)",
+      "calls": "scripts/filename-audit.sh --check <proposed_path>",
+      "action_on_collision": "Apply decision_matrix → auto-resolve OR escalate",
+      "action_after_rename": "scripts/rename-page.sh --log <old> <new>"
+    },
+    "process_lint": {
+      "check_id": "6 (mechanical_linting)",
+      "sub_check": "filename_collision_audit",
+      "command": "scripts/filename-audit.sh",
+      "output": "JSON array of collision violations [{old_file, new_file, tie_breaking_level, resolved: true/false}]",
+      "auto_fix": "For resolved=true: apply rename. For resolved=false: add to next_steps_todo in working_memory.json"
+    }
+  },
+
+  "examples": [
+    {
+      "case": "bare vs prefixed, same entity",
+      "before": ["wiki/concepts/cache.md", "wiki/concepts/symfony-cache.md"],
+      "action": "Rename cache.md → symfony-cache.md, add aliases: [cache], update wiki/concepts/cache.md → symfony-cache.md in all related links",
+      "after": ["wiki/concepts/symfony-cache.md (aliases: [cache])"]
+    },
+    {
+      "case": "bare vs prefixed, different entities",
+      "before": ["wiki/concepts/cache.md (abstract)", "wiki/concepts/symfony-cache.md"],
+      "action": "Keep both, add crosslink",
+      "after": ["wiki/concepts/cache.md", "wiki/concepts/symfony-cache.md (related: [cache.md])"]
+    },
+    {
+      "case": "two prefixed, different entities",
+      "before": ["wiki/concepts/symfony-cache.md", "wiki/concepts/pi-cache.md"],
+      "action": "Keep both, add crosslink",
+      "after": ["wiki/concepts/symfony-cache.md (related: [pi-cache.md])", "wiki/concepts/pi-cache.md (related: [symfony-cache.md])"]
+    },
+    {
+      "case": "same prefix, same entity, different specificity",
+      "before": ["wiki/concepts/symfony-cache.md", "wiki/concepts/symfony-cache-system.md"],
+      "action": "Merge if content overlaps significantly (>50%). Rename older → keep newer prefix",
+      "after": ["wiki/concepts/symfony-cache-system.md (aliases: [symfony-cache.md])"]
+    }
+  ]
+}

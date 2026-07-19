@@ -296,8 +296,8 @@
         },
         {
           "action_name": "check_filename_collision",
-          "description": "Scan existing wiki filenames for potential collision with proposed PAGE_PATH. If bare concept name (e.g., 'messenger.md') would collide with project-specific page, enforce project prefix.",
-          "rules_ref": "rules/naming_conventions.json#NAMES-CORE-V1",
+          "description": "Detect potential filename collision with existing files. Passes to collision_resolution step for tie-breaking.",
+          "rules_ref": "rules/filename_collision_strategy.json#decision_matrix",
           "collision_detection_logic": [
             {
               "condition": "proposed_path matches bare concept pattern AND existing_page_with_same_base_name_exists",
@@ -306,6 +306,53 @@
             {
               "condition": "existing_bare_concept_is_truly_abstract (framework-agnostic)",
               "action": "ALLOW_BARE_NAME — verify no project-specific pages exist under same base"
+            }
+          ]
+        },
+        {
+          "action_name": "collision_resolution",
+          "description": "Resolve filename collisions using tie-breaking rules. After check_filename_collision detects a collision, apply rules/filename_collision_strategy.json decision_matrix.",
+          "rules_ref": "rules/filename_collision_strategy.json",
+          "steps": [
+            {
+              "step": "1",
+              "action": "run_audit",
+              "command": "./scripts/filename-audit.sh --check ${PROPOSED_PAGE_PATH}"
+            },
+            {
+              "when": "collision detected with action == rename_bare_to_prefixed",
+              "step": "2",
+              "action": "apply_rename",
+              "command": "./scripts/rename-page.sh --log wiki/${existing_file} wiki/${proposed_path}.md",
+              "description": "Rename bare page to prefixed name, auto-append # Renamed frontmatter section"
+            },
+            {
+              "when": "collision detected with action == add_prefix_to_proposed",
+              "step": "2",
+              "action": "rename_proposed",
+              "command": "mv wiki/${PAGE_PATH}.md wiki/${suggested_name}",
+              "description": "Add prefix to proposed name before creating page"
+            },
+            {
+              "when": "collision detected with action == allow_both_with_crosslink",
+              "step": "2",
+              "action": "add_crosslink",
+              "description": "Keep both pages, add wikilink in related: [] for both"
+            },
+            {
+              "when": "collision detected with action == keep_newer_merge_older",
+              "step": "2",
+              "action": "merge_content",
+              "description": "Merge older page content into newer, add aliases: [old_name], remove older file, update backlinks via rename-page.sh"
+            },
+            {
+              "when": "no collision OR auto-resolved",
+              "action": "PROCEED_TO_EXISTING_PAGE_CHECK"
+            },
+            {
+              "when": "collision detected with action == escalate",
+              "action": "ESCALATE_TO_USER",
+              "description": "Add to working_memory.json next_steps_todo with collision details and tie_breaking_level"
             }
           ]
         },
@@ -345,6 +392,7 @@
       "schema_ref": [
         "rules/structural_requirements.json#FIRST-BLOCK-V1",
         "rules/naming_conventions.json#NAMES-CORE-V1",
+        "rules/filename_collision_strategy.json",
         "wiki/docs-existence-check.json#DOC-EXISTENCE-V1"
       ]
     },
