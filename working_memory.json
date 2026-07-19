@@ -1,40 +1,37 @@
 {
-  "last_updated": "2026-07-16T22:00",
+  "last_updated": "2026-07-19T13:42",
   "current_mode": "project",
-  "focus_node": "Session end — renamed-page.sh audit + lint rule cleanup",
+  "focus_node": "Session end — closed issues #11/#28/#46/#50, cleaned plan, committed & pushed",
   "next_steps_todo": [
     "T6: Define filename collision resolution strategy (tie-breaking, escalation policy)",
-    "Review rename-page.sh documentation completeness",
-    "Test glossary in next query session — verify confidence boost works"
+    "Issue #51: Script-first architecture — ensure all lint tasks run via scripts only"
   ],
   "open_pages": [],
   "dead_ends": [],
   "query_summary": {
-    "intent": "Audit rename-page.sh and wiki rename/move rules",
+    "intent": "Close remaining issues and clean up project state",
     "pages_read": [
-      "AGENTS.md",
+      "issues.md",
+      "PLAN.md",
       "process-lint.json",
-      "scripts/rename-page.sh",
-      "rules/broken_link_handling.json",
-      "rules/migration_protocol.md",
-      "rules/structural_requirements.json",
       "scripts/lint.sh",
-      "scripts/filename-audit.sh",
-      "process-ingest.json",
-      "rules/naming_conventions.json",
-      "PLAN.md"
+      "scripts/orphan-report.sh",
+      "scripts/check-structural.sh",
+      "scripts/rebuild-meta.sh",
+      "scripts/check-wiki-changes.sh",
+      "rules/contradiction_resolution.json"
     ],
     "key_findings": [
-      "rename-page.sh exists and works (rename + relink) but was undocumented in AGENTS.md — rule added",
-      "process-lint.json had broken auto_fix_phase referencing rename-page.sh --fix (script doesn't support --fix) — removed",
-      "process-lint.json check_id=6 schema_ref pointed to wrong file — fixed to scripts/lint.sh#check_id=6",
-      "filename_collision_audit implementation EXISTS: scripts/filename-audit.sh + lint.sh check 6 + process-ingest check_filename_collision + rules/naming_conventions.json NAMES-CORE-V1",
-      "T6 added to PLAN.md Phase 19 — collision resolution strategy needed",
-      "No rule existed requiring agents to use only rename-page.sh — added to AGENTS.md"
+      "Closed issues #11 (trap handlers), #28 (templates co-evolution), #46 (pipefail), #50 (all lint gaps).",
+      "Updated issues.md: only #51 remains open.",
+      "Updated PLAN.md: only T6 (filename collision strategy) pending.",
+      "Committed and pushed 12-file cleanup to origin/main.",
+      "Memory synced before git (rules/session_context_rules.json)."
     ]
   },
   "broken_links_resolved": [],
   "recent_activity": [
-    "2026-07-16 session | Audit wiki rename/move rules: added rename-page.sh rule to AGENTS.md, removed broken auto_fix_phase from process-lint.json, fixed schema_ref for check_id=6, added T6 to PLAN.md"
+    "2026-07-16 session | Audit rename-page.sh: added rule, fixed process-lint.json refs",
+    "2026-07-19 session | Closed remaining issues #11/#28/#46/#50, cleaned PLAN.md, committed & pushed"
   ]
 }
