@@ -128,6 +128,10 @@ See `docs/ops.md` for the complete operation matrix.
 | `batched-bench` | Benchmark batch decoding performance |
 | `perplexity` | Compute perplexity of a model |
 
+### Server and CLI Reference
+
+For detailed setup, API usage, and all command-line options, see [`wiki/docs/llama-cpp-server-and-cli.md`](./llama-cpp-server-and-cli.md).
+
 ### Quantizing a Model
 
 ```bash
